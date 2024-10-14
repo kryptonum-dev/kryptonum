@@ -37,7 +37,7 @@ export const PortableText = ({ name, title, allowHeadings = false }: { name?: st
           icon: () => '🔗',
           fields: [
             defineField({
-              name: 'type',
+              name: 'linkType',
               type: 'string',
               title: 'Type',
               description: 'Choose "External" for links to websites outside your domain, or "Internal" for links to pages within your site.',

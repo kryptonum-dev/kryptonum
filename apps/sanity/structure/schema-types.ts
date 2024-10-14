@@ -26,8 +26,8 @@ const components = [
 // UI Components
 import cta from '../schema/ui/cta';
 import seo from '../schema/ui/seo';
-import PortableText from '../schema/ui/PortableText';
-import Heading from '../schema/ui/PortableText/Heading';
+import PortableText from '../schema/ui/portable-text';
+import Heading from '../schema/ui/portable-text/Heading';
 
 const ui = [
   cta,

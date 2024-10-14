@@ -13,7 +13,7 @@ export const defineSlugForDocument = ({ prefix = '', slug }: { prefix?: string, 
   defineField({
     name: 'slug',
     type: 'slug',
-    title: `Slug`,
+    title: 'Slug',
     description: (
       <>
         Slug is a unique identifier for the document, used for SEO and links.

@@ -7,8 +7,8 @@ export const PortableTextQuery = (name: string) => `
       _type == "link" => {
         _type,
         _key,
-        type,
-        "href": select(type == "internal" => internal -> slug.current, type == "external" => external, "#"),
+        linkType,
+        "href": select(linkType == "internal" => internal -> slug.current, linkType == "external" => external, "#"),
       },
     },
   },
