@@ -1,0 +1,26 @@
+---
+import type { Props as $, Mark as MarkType } from 'astro-portabletext/types'
+import { Mark as PortableTextMark } from 'astro-portabletext/components'
+
+export type Props = $<MarkType<never>>
+
+const { node, ...props } = Astro.props
+---
+
+{
+  node.markType === 'link' ? (
+    <a
+      href={(node as MarkType<{ href: string }>).markDef.href}
+      {...((node as MarkType<{ type: 'external' | 'internal' }>).markDef.type === 'external' && {
+        target: '_blank',
+        rel: 'noreferrer',
+      })}
+      {...props}>
+      <slot />
+    </a>
+  ) : (
+    <PortableTextMark {...Astro.props}>
+      <slot />
+    </PortableTextMark>
+  )
+}

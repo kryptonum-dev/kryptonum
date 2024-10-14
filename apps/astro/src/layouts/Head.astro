@@ -1,0 +1,72 @@
+---
+import { getImage } from 'astro:assets'
+import icon from '@/assets/icon.png'
+import faviconSvg from '@/assets/favicon.svg'
+import { DOMAIN, LOCALE, THEME_COLOR } from '@/global/constants'
+import sanityFetch from '@/utils/sanity.fetch'
+
+const icons = {
+  favicon: await getImage({ src: faviconSvg, format: 'svg' }),
+  appleTouchIcon: await getImage({ src: icon, width: 180, height: 180, format: 'png' }),
+}
+
+export type OpenGraphImageProps = {
+  url: string
+  height: string
+}
+
+const seo = await sanityFetch<{ openGraphImage: OpenGraphImageProps }>({
+  query: `
+    *[_type == "global"][0].seo {
+      "openGraphImage": {
+        "url": img.asset -> url + "?w=1200",
+        "height": round(1200 / img.asset -> metadata.dimensions.aspectRatio),
+      },
+    }
+  `,
+})
+
+export type Props = {
+  path: string
+  title: string
+  description: string
+  openGraphImage?: OpenGraphImageProps
+}
+
+const { path, title, description, openGraphImage } = Astro.props
+
+const OpenGraphImage = {
+  url: openGraphImage?.url || seo.openGraphImage?.url,
+  height: openGraphImage?.height || seo.openGraphImage?.height,
+}
+
+const url = `${DOMAIN}${path}`
+---
+
+<meta charset="utf-8" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" href={icons.favicon.src} type="image/svg+xml" />
+<link rel="apple-touch-icon" href={icons.appleTouchIcon.src} />
+<meta name="theme-color" content={THEME_COLOR} />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="canonical" href={url} />
+<meta property="og:url" content={url} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:site_name" content={title} />
+<meta property="og:locale" content={LOCALE} />
+<meta property="og:image" content={OpenGraphImage.url} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content={OpenGraphImage.height} />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={OpenGraphImage.url} />
+<meta name="twitter:image:width" content="1200" />
+<meta name="twitter:image:height" content={OpenGraphImage.height} />
+<link rel="sitemap" href="/sitemap-index.xml" />

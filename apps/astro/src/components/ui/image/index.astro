@@ -1,0 +1,51 @@
+---
+import type { ComponentProps } from 'astro/types'
+import { Image as AstroImage } from 'astro:assets'
+
+export type ImageDataProps = {
+  asset: {
+    url: string
+    altText: string
+    extension: string
+    metadata: {
+      dimensions: {
+        width: number
+        height: number
+      }
+      lqip: string
+    }
+  }
+}
+
+type Props = ImageDataProps & {
+  sizes: string
+  priority?: boolean
+} & Omit<ComponentProps<typeof AstroImage>, 'src' | 'alt' | 'width' | 'height'>
+
+const { asset, sizes, priority, ...props } = Astro.props
+
+const imageProps = {
+  src: asset.url,
+  alt: asset.altText || '',
+  width: asset.metadata.dimensions.width,
+  height: asset.metadata.dimensions.height,
+  sizes,
+  style: {
+    background: `url(${asset.metadata.lqip}) center / cover no-repeat`,
+  },
+  onload: 'this.removeAttribute("style")',
+  ...(priority && {
+    loading: 'eager',
+    fetchpriority: 'high',
+  }),
+  widths: [48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+  ...(asset.extension === 'svg' && {
+    format: 'svg' as const,
+    widths: undefined,
+    sizes: undefined,
+  }),
+  ...props,
+}
+---
+
+<AstroImage {...imageProps as ComponentProps<typeof AstroImage>} />

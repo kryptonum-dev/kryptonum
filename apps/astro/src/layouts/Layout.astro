@@ -1,0 +1,19 @@
+---
+import '@/global/global.scss'
+import { LOCALE } from '../global/constants'
+import Head, { type Props as HeadProps } from './Head.astro'
+
+type Props = HeadProps
+---
+
+<!doctype html>
+<html lang={LOCALE}>
+  <head>
+    <Head {...Astro.props} />
+  </head>
+  <body>
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+name: Deploy Sanity Studio
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/sanity/**'
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    env:
+      SANITY_AUTH_TOKEN: ${{ secrets.SANITY_DEPLOY_STUDIO_TOKEN }}
+      SANITY_STUDIO_PREVIEW_DOMAIN: ${{ secrets.SANITY_STUDIO_PREVIEW_DOMAIN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18.x'
+      - uses: oven-sh/setup-bun@v2
+      - name: Deploy Sanity Studio
+        run: |
+          cd ./apps/sanity
+          bun install
+          bun run sanity deploy

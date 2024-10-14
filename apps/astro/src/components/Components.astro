@@ -1,0 +1,41 @@
+---
+import type { ComponentProps } from 'astro/types'
+import FullWidthPhoto, { FullWidthPhoto_Query } from '@/components/global/FullWidthPhoto.astro'
+
+const components = {
+  FullWidthPhoto,
+}
+
+type ComponentsMap = {
+  [Component in keyof typeof components]: {
+    _type: Component
+  } & ComponentProps<(typeof components)[Component]>
+}
+
+export type ComponentsProps = Array<ComponentsMap[keyof typeof components]>
+
+type Props = {
+  data: ComponentsProps
+  indexStart?: number
+}
+
+const { data, indexStart = 0 } = Astro.props
+
+export const Components_Query = /* groq */ `
+  components[] {
+    _type,
+    sectionId,
+    _type == "FullWidthPhoto" => ${FullWidthPhoto_Query}
+  },
+`
+---
+
+{
+  data?.map((item, i) => {
+    // NOTE: Using 'as any' is not ideal for type safety, but it's used here to simplify
+    // the implementation and avoid creating separate typed interfaces for each component.
+    const DynamicComponent = components[item._type] as any
+    if (!DynamicComponent) return null
+    return <DynamicComponent {...item} index={indexStart + i} />
+  })
+}

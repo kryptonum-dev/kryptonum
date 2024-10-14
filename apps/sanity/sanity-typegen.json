@@ -1,0 +1,4 @@
+{
+  "schema": "schema.json",
+  "generates": "../astro/sanity.types.ts"
+}

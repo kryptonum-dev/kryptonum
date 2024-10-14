@@ -1,0 +1,47 @@
+---
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const FullWidthPhoto_Query = `
+  {
+    ${ImageDataQuery('img')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  img: ImageDataProps
+}
+
+const { index, sectionId, img } = Astro.props
+---
+
+<section class="FullWidthPhoto" id={sectionId}>
+  <Image {...img} sizes="100vw" priority={index === 0} class="img" />
+</section>
+
+<style lang="scss">
+  .FullWidthPhoto {
+    overflow: clip;
+    margin: 0 calc(var(--page-margin) * -1);
+    @media (min-width: 1380px) {
+      margin: 0 calc((100vw - 1300px) * -0.5);
+    }
+  }
+  .img {
+    width: 100%;
+    @supports (animation-timeline: view()) {
+      animation: scroll-image linear forwards;
+      animation-timeline: view();
+      transform-origin: top;
+      @keyframes scroll-image {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-20%) scale(1.2);
+        }
+      }
+    }
+  }
+</style>
