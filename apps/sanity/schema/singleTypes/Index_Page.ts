@@ -13,6 +13,11 @@ export default defineType({
   fields: [
     ...defineSlugForDocument({ slug: slug }),
     defineField({
+      name: 'button',
+      type: 'button',
+      title: 'Button',
+    }),
+    defineField({
       name: 'components',
       type: 'components',
       title: 'Page Components',

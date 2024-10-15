@@ -1,12 +1,28 @@
 ---
 import Layout from '@/src/layouts/Layout.astro'
 import metadataFetch from '@/utils/metadata.fetch'
+import sanityFetch from '@/utils/sanity.fetch'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/button'
 
 const metadata = await metadataFetch('Index_Page')
+
+type QueryProps = {
+  button: ButtonDataProps
+}
+
+const data = await sanityFetch<QueryProps>({
+  query: `
+    *[_type == "Index_Page"][0] {
+      ${ButtonDataQuery('button')}
+    }
+  `,
+})
 ---
 
 <Layout {...metadata}>
-  <h1>Index <strong>special</strong> Page</h1>
+  <h1>❧ Index <strong>special</strong> Page</h1>
+  <p>Zażółć gęślą jaźń</p>
+  <h1>❧ Zażółć gęślą jaźń Zażółć gęślą</h1>
   <p>
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt cum expedita ad distinctio temporibus corrupti
     laboriosam cupiditate, impedit dolore <strong>sapiente magni neque</strong> quaerat facilis, est odio consequuntur enim
@@ -16,54 +32,16 @@ const metadata = await metadataFetch('Index_Page')
     magni qui deleniti ducimus. Quam accusamus eos id fugiat soluta corrupti modi maiores ab perspiciatis? Asperiores, sunt
     aliquam rerum ipsum magnam perferendis vero sapiente id sint unde dolor adipisci repudiandae.
   </p>
-  <h2>Index <strong>special</strong> Page</h2>
-  <h3>Index <strong>special</strong> Page</h3>
-  <p>
-    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolorem quas dignissimos voluptatem, in dolore assumenda
-    dolores totam provident distinctio beatae modi nemo iure, voluptatibus, cumque laborum officia quod ut quisquam
-    deserunt sint rerum sapiente necessitatibus maxime. Voluptatum optio officiis sint pariatur repudiandae quos
-    repellat, assumenda deserunt enim! Numquam, reiciendis perferendis! Ab repudiandae maxime vitae, iusto corrupti
-    veritatis. Optio qui eos error veniam? Doloremque, id culpa omnis, sint temporibus explicabo provident possimus,
-    deleniti unde molestias incidunt. Corporis unde corrupti totam impedit ipsa architecto temporibus doloribus laborum
-    illo vero necessitatibus, laboriosam mollitia eaque? Deserunt nisi vel debitis repudiandae expedita error cum amet
-    voluptate repellendus libero? A aperiam error consectetur quaerat expedita corrupti laboriosam, at cum itaque id
-    repellendus autem quos consequatur praesentium sint voluptatem officia culpa. Earum tempora inventore, vitae neque
-    id consequuntur possimus ullam excepturi quisquam minus perspiciatis similique praesentium modi architecto ut, quasi
-    ratione fugiat dolorem corrupti cupiditate. Ut temporibus debitis eligendi quis et fugiat qui, voluptas, amet, earum
-    blanditiis aperiam id ipsa? Quibusdam perferendis pariatur, quo mollitia, ab odit adipisci accusantium optio maiores
-    repellendus cum, minima expedita libero sit. Omnis, dolorem unde doloremque sit iste ea alias necessitatibus vero
-    soluta odio quo consequatur et, nam minus quisquam iure. Error, beatae assumenda? Nulla, fuga explicabo! Dolore
-    repellat sequi praesentium beatae laudantium accusamus minus ipsam, officiis modi assumenda qui tempore? Voluptatem
-    ipsum assumenda dolorum, similique, beatae eius molestias nulla esse, dolore autem facere rem repellendus odit
-    minima? Atque obcaecati maxime nisi laboriosam excepturi repudiandae cumque quo possimus quae. Nostrum officia
-    impedit, suscipit iure autem dolor soluta sunt quas quidem totam eum, omnis provident recusandae odit vero nam
-    voluptatem delectus! Mollitia eos non similique animi rerum ducimus quasi! Repellendus assumenda omnis ut quam
-    voluptatibus, sapiente, dolorem consectetur voluptatum veniam debitis pariatur! Nemo architecto eum debitis, aperiam
-    rerum odit sequi doloremque a, voluptate fuga quibusdam hic ea? Quasi, libero. Commodi modi vel veritatis unde
-    quisquam ab atque velit maiores consequuntur fugit a at beatae, nobis voluptas non quos iusto labore fugiat illo
-    delectus ipsum veniam. Quidem ea voluptatem tempore quisquam. Id sequi, ducimus est consectetur beatae laboriosam
-    nisi animi adipisci rerum aliquid sit illum quos sunt. Ea nihil aperiam, magnam earum vitae quasi numquam nemo?
-    Eveniet voluptates vitae repellat maiores ex ratione velit! Accusamus sit perferendis libero quas magnam laudantium
-    distinctio ut qui ad ducimus ipsa dolorum neque, sequi vero facere iusto nulla eligendi totam! Voluptatum odio
-    eligendi beatae voluptatem blanditiis ea ad nisi a quas! Magni similique qui, numquam velit accusamus deserunt
-    mollitia cumque debitis totam eaque facere vel illum consectetur quisquam quod cupiditate ut? Architecto,
-    perferendis. Tempora similique facere repudiandae delectus! Fugiat perspiciatis dolorem veniam debitis odio aut
-    molestias eligendi, ducimus earum qui nobis, nisi labore itaque tempora tenetur repudiandae blanditiis suscipit
-    dicta accusantium autem dolore! Dolorum sapiente minus obcaecati corrupti labore cumque adipisci laudantium amet
-    veritatis, eveniet expedita dolore quaerat soluta eos, ipsum, eligendi repellat. Nam dolore animi a quae enim vel
-    corporis, ex autem quasi, sit quos ipsum rem, repudiandae porro nulla soluta esse delectus non amet. Illum,
-    molestiae.
-  </p>
-  <h4>Index <strong>special</strong> Page</h4>
-  <h5>Index <strong>special</strong> Page</h5>
-  <h6>Index <strong>special</strong> Page</h6>
-  <p>
-    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perspiciatis aspernatur voluptatum provident nihil, rem
-    asperiores odit minus eveniet, suscipit minima quod delectus? Obcaecati ea nisi ducimus eveniet natus porro nemo
-    atque accusamus. Reprehenderit labore, voluptatem impedit sunt soluta dolores eligendi molestias iusto cum fuga
-    dolorem dolore natus. Dignissimos et placeat, quisquam eaque modi soluta ex tenetur commodi. Repellendus delectus
-    doloribus repudiandae, accusamus quae at hic, dicta ad architecto veniam distinctio illum quisquam, nobis
-    cupiditate! Rerum hic assumenda expedita ex voluptas corporis accusantium minima excepturi quod asperiores debitis
-    eveniet optio consequuntur iste earum corrupti aperiam sit inventore cum illum, alias aliquam!
-  </p>
+
+  <div class="cta-wrapper">
+    <Button {...data.button} />
+    <Button {...data.button} theme="secondary" />
+    <Button>Test</Button>
+  </div>
 </Layout>
+
+<style>
+  h1 {
+    text-align: center;
+  }
+</style>

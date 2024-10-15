@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "@astrojs/preact": "^3.5.3",
     "@astrojs/sitemap": "^3.2.0",
     "@astrojs/vercel": "^7.8.1",
     "@sanity/client": "^6.22.1",
@@ -28,5 +29,9 @@
     "eslint-plugin-astro": "^1.2.4",
     "eslint-plugin-jsx-a11y": "^6.10.0",
     "sass": "^1.79.5"
+  },
+  "overrides": {
+    "react": "bun:@preact/compat@latest",
+    "react-dom": "bun:@preact/compat@latest"
   }
 }

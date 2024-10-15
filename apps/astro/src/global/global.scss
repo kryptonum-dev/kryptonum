@@ -1,19 +1,19 @@
 @font-face {
-  font-family: 'Poppins';
+  font-family: 'KryptoPoppins';
   src:
-    url('/fonts/Poppins-Regular.woff2') format('woff2'),
-    url('/fonts/Poppins-Regular.woff') format('woff');
+    url('/fonts/KryptoPoppins-Regular.woff2') format('woff2'),
+    url('/fonts/KryptoPoppins-Regular.woff') format('woff');
   font-weight: 400;
   font-display: swap;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Poppins Fallback';
+  font-family: 'KryptoPoppins Fallback';
   src: local('Arial');
-  size-adjust: 109%;
-  ascent-override: 100%;
-  descent-override: 27%;
-  line-gap-override: 5%;
+  ascent-override: 93.76%;
+  descent-override: 31.25%;
+  line-gap-override: 8.93%;
+  size-adjust: 111.99%;
 }
 
 *,
@@ -144,7 +144,7 @@
   --menu-text: var(--neutral-200);
   --background: var(--neutral-900);
 
-  --easing: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --easing: cubic-bezier(0.19, 1, 0.22, 1);
 
   // Margins
   --page-margin: clamp(1rem, calc(2vw / 0.48), 2rem);
@@ -230,7 +230,7 @@ img {
 }
 :focus-visible {
   outline: 2px solid var(--neutral-200, #f0f7f7);
-  outline-offset: 3px;
+  outline-offset: 5px;
 }
 
 html,
@@ -239,6 +239,9 @@ body {
 }
 html {
   scroll-behavior: smooth;
+  @media (prefers-reduced-motion) {
+    scroll-behavior: none;
+  }
   scroll-padding-top: 123px;
   &::-webkit-scrollbar {
     width: 16px;
@@ -257,7 +260,7 @@ body {
   -webkit-tap-highlight-color: transparent;
   background-color: var(--neutral-900, #000103);
   color: var(--neutral-200, #f0f7f7);
-  font-family: 'Poppins', 'Poppins Fallback', sans-serif;
+  font-family: 'KryptoPoppins', 'KryptoPoppins Fallback', sans-serif;
   font-size: var(--typography-body-xl, 1rem);
   line-height: 175%;
   letter-spacing: 0.005em;
@@ -379,4 +382,12 @@ li {
   flex-wrap: wrap;
   align-items: center;
   gap: clamp(1rem, calc(1.5vw / 0.48), 2rem);
+}
+
+.gradient-thumbnail {
+  background:
+    linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+    linear-gradient(266deg, #2dd282, #90f4e8) border-box;
+  border: 1px solid rgba(255, 255, 255, 0);
+  border-radius: 50%;
 }
