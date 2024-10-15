@@ -3,9 +3,9 @@ import { Tooltip, Box, Text, } from '@sanity/ui';
 import { isValidUrl } from "../../utils/is-valid-url";
 import { InternalLinkableTypes } from "../../structure/internal-linkable-types";
 
-const name = 'cta';
-const title = 'Call to action';
-const icon = () => '🗣️';
+const name = 'button';
+const title = 'Button';
+const icon = () => '🔘';
 
 export default defineType({
   name,
@@ -24,7 +24,11 @@ export default defineType({
       name: 'theme',
       type: 'string',
       title: 'Theme',
-      description: 'Theme is used to style the button. Choose "Primary" for the main call to action, or "Secondary" for less important actions.',
+      description: (
+        <>
+          <em>Primary</em> (main button) or <em>Secondary</em> (less important)
+        </>
+      ),
       options: {
         list: ['primary', 'secondary'],
         layout: 'radio',
@@ -32,12 +36,17 @@ export default defineType({
       },
       initialValue: 'primary',
       validation: Rule => Rule.required(),
+      fieldset: 'style',
     }),
     defineField({
-      name: 'type',
+      name: 'linkType',
       type: 'string',
       title: 'Type',
-      description: 'Choose "External" for links to websites outside your domain, or "Internal" for links to pages within your site.',
+      description: (
+        <>
+          <em>External</em> (other websites) or <em>Internal</em> (within your site)
+        </>
+      ),
       options: {
         list: ['external', 'internal'],
         layout: 'radio',
@@ -45,13 +54,14 @@ export default defineType({
       },
       initialValue: 'external',
       validation: Rule => Rule.required(),
+      fieldset: 'style',
     }),
     defineField({
       name: 'external',
       type: 'string',
       title: 'URL',
       description: 'Specify the full URL. Ensure it starts with "https://" and is a valid URL.',
-      hidden: ({ parent }) => parent?.type !== 'external',
+      hidden: ({ parent }) => parent?.linkType !== 'external',
       validation: (Rule) => [
         Rule.custom((value, { parent }) => {
           const type = (parent as { type?: string })?.type;
@@ -76,7 +86,7 @@ export default defineType({
         disableNew: true,
         filter: 'defined(slug.current)',
       },
-      hidden: ({ parent }) => parent?.type !== 'internal',
+      hidden: ({ parent }) => parent?.linkType !== 'internal',
       validation: (rule) => [
         rule.custom((value, { parent }) => {
           const type = (parent as { type?: string })?.type;
@@ -85,6 +95,21 @@ export default defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'img',
+      type: 'image',
+      title: 'Image (optional)',
+      description: 'If you want to display small image instead of arrow, you can add it here.',
+    }),
+  ],
+  fieldsets: [
+    {
+      name: 'style',
+      title: 'Style',
+      options: {
+        columns: 2,
+      }
+    },
   ],
   preview: {
     select: {
