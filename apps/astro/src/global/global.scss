@@ -356,6 +356,21 @@ li {
   }
   &:hover {
     animation: link 800ms var(--easing);
+    &::after {
+      transform: translate(1px, -1px);
+    }
+  }
+  &[target='_blank'] {
+    &::after {
+      content: '';
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      mask-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgdmlld0JveD0iMCAwIDE3IDE3IiBmaWxsPSJub25lIj48cGF0aCBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBkPSJtNC41IDEyLjUgOC04bTAgMGgtNm02IDB2NiIvPjwvc3ZnPg==');
+      background-color: currentColor;
+      margin: -0.1em 0 -0.1em 0.1em;
+      transition: transform 300ms var(--easing);
+    }
   }
 }
 
