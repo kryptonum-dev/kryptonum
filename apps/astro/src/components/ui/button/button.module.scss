@@ -1,3 +1,4 @@
+$opacity-transition: 800ms var(--easing);
 .button {
   font-size: var(--typography-body-m, 14px);
   position: relative;
@@ -30,7 +31,7 @@
     );
     animation: rotate 2.5s linear infinite;
     animation-play-state: paused;
-    transition: opacity 500ms var(--easing);
+    transition: $opacity-transition;
     @keyframes rotate {
       from {
         transform: translate(-50%, -50%) rotate(0deg);
@@ -79,7 +80,7 @@
           linear-gradient(266deg, #2dd282, #90f4e8) border-box;
         border: 1px solid rgba(255, 255, 255, 0);
         border-radius: inherit;
-        transition: opacity 500ms var(--easing);
+        transition: $opacity-transition;
       }
     }
   }
