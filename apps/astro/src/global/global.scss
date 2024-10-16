@@ -76,10 +76,6 @@
   --journey-element-stroke: var(--neutral-200);
   --copy-text: var(--neutral-200);
   --copy-fill: var(--neutral-900);
-  --accordion-text: var(--neutral-200);
-  --accordion-fill: var(--neutral-900);
-  --accordion-stroke: var(--neutral-500);
-  --accordion-number: var(--neutral-400);
   --breadcrumbs-icon: var(--neutral-500);
   --breadcrumbs-active: var(--neutral-400);
   --breadcrumbs-previous: var(--neutral-200);
@@ -145,6 +141,8 @@
   --background: var(--neutral-900);
 
   --easing: cubic-bezier(0.19, 1, 0.22, 1);
+
+  --gradient-primary: linear-gradient(266deg, #2dd282, #90f4e8);
 
   // Margins
   --page-margin: clamp(1rem, calc(2vw / 0.48), 2rem);
@@ -238,17 +236,17 @@ body {
   overflow-x: clip;
 }
 html {
+  scroll-padding-top: 123px;
   scroll-behavior: smooth;
   @media (prefers-reduced-motion) {
     scroll-behavior: none;
   }
-  scroll-padding-top: 123px;
   &::-webkit-scrollbar {
     width: 16px;
   }
   &::-webkit-scrollbar-thumb {
     border-left: 14px solid var(--neutral-900, #000103);
-    background: linear-gradient(266deg, #2dd282, #90f4e8);
+    background: var(--gradient-primary);
   }
   &::-webkit-scrollbar-thumb:horizontal {
     border-left: none;
@@ -301,7 +299,7 @@ h6,
     'ss03' on,
     'ss04' on;
   strong {
-    background: linear-gradient(266deg, #2dd282, #90f4e8);
+    background: var(--gradient-primary);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -320,7 +318,7 @@ li {
     font-weight: 400;
     &::before,
     &::after {
-      background: linear-gradient(266deg, #2dd282, #90f4e8);
+      background: var(--gradient-primary);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -391,7 +389,7 @@ li {
 .gradient-thumbnail {
   background:
     linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
-    linear-gradient(266deg, #2dd282, #90f4e8) border-box;
+    var(--gradient-primary) border-box;
   border: 1px solid rgba(255, 255, 255, 0);
   border-radius: 50%;
 }

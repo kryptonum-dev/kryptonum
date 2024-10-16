@@ -4,7 +4,7 @@ import PortableText, { PortableTextQuery, type PortableTextValue } from '@/compo
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/cta'
 
 export const SimpleCtaSection_Query = `
-  {
+  _type == "SimpleCtaSection" => {
     ${PortableTextQuery('heading')}
     ${ButtonDataQuery('cta')}
     ${ImageDataQuery('img')}

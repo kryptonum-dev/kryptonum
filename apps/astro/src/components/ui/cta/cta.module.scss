@@ -61,7 +61,7 @@ $opacity-transition: 800ms var(--easing);
   }
   &[data-theme='primary'] {
     span {
-      background: linear-gradient(266deg, #2dd282, #90f4e8);
+      background: var(--gradient-primary);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -77,7 +77,7 @@ $opacity-transition: 800ms var(--easing);
         bottom: 0;
         background:
           linear-gradient(var(--neutral-900, #000103), var(--neutral-900, #000103)) padding-box,
-          linear-gradient(266deg, #2dd282, #90f4e8) border-box;
+          var(--gradient-primary) border-box;
         border: 1px solid rgba(255, 255, 255, 0);
         border-radius: inherit;
         transition: $opacity-transition;

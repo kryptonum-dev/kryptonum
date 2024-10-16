@@ -1,9 +1,11 @@
 ---
 import type { ComponentProps } from 'astro/types'
 import SimpleCtaSection, { SimpleCtaSection_Query } from '@/components/global/SimpleCtaSection.astro'
+import Faq, { Faq_Query } from '@/components/global/Faq.astro'
 
 const components = {
   SimpleCtaSection,
+  Faq,
 }
 
 type ComponentsMap = {
@@ -25,7 +27,8 @@ export const Components_Query = /* groq */ `
   components[] {
     _type,
     sectionId,
-    _type == "SimpleCtaSection" => ${SimpleCtaSection_Query}
+    ${SimpleCtaSection_Query}
+    ${Faq_Query}
   },
 `
 ---
