@@ -1,4 +1,5 @@
 import { defineField } from "sanity";
+import { slugify } from "../../utils/slugify";
 
 type Props = {
   _key: string;
@@ -21,6 +22,15 @@ export default [
           component._key !== currentComponent._key && component.sectionId === value
         );
         if (isDuplicate) return "This section ID is already used in another component. Section IDs must be unique.";
+        return true;
+      }),
+      Rule.custom((value) => {
+        if (!value) return true;
+        const slugified = slugify(value);
+        if (slugified !== value) {
+          return 'Section ID must contain only lowercase letters, numbers, and hyphens (not special characters). It cannot start or end with a hyphen.';
+
+        }
         return true;
       })
     ]
