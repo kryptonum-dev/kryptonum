@@ -1,0 +1,144 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import PortableText, { type PortableTextValue } from './portable-text'
+
+type Props = {
+  summary: PortableTextValue
+} & HTMLAttributes<'details'>
+
+const { summary, ...props } = Astro.props
+---
+
+<details {...props} data-expanded={props.open ? 'true' : 'false'}>
+  <summary>
+    <PortableText value={summary} class="heading" />
+    <div class="icon"><div></div><div></div></div>
+  </summary>
+  <div class="content"><slot /></div>
+</details>
+
+<style lang="scss">
+  details {
+    position: relative;
+    border-bottom: 1px solid var(--neutral-600);
+    &::after {
+      content: '';
+      width: 100%;
+      height: 1px;
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      background: var(--gradient-primary);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 800ms var(--easing);
+    }
+    &[data-expanded='true'] {
+      &::after {
+        transform-origin: left;
+        transform: scaleX(1);
+      }
+      .icon {
+        div:first-child {
+          transform: rotate(0deg);
+        }
+        div:last-child {
+          transform: rotate(-90deg) scaleX(0);
+        }
+      }
+    }
+  }
+  summary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem 1rem;
+    &:active {
+      user-select: none;
+    }
+    .heading {
+      font-size: var(--typography-body-xl, 1rem);
+      max-width: 43rem;
+    }
+  }
+  .icon {
+    width: 22px;
+    height: 22px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 500ms var(--easing);
+    background:
+      linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+      var(--gradient-primary) border-box;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    div {
+      width: 8px;
+      height: 1px;
+      background: var(--gradient-primary);
+      border-radius: 4px;
+      transition: transform 500ms var(--easing);
+      &:first-child {
+        position: absolute;
+        transform: rotate(90deg);
+      }
+    }
+  }
+  .content {
+    overflow: hidden;
+    transition: height 800ms var(--easing);
+    padding: 0 1rem;
+    max-width: 36rem;
+    font-size: var(--typography-body-m, 0.875rem);
+    :global(> :last-child) {
+      margin-bottom: 1.5rem;
+    }
+  }
+  @media (max-width: 31rem) {
+    summary,
+    .content {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('details').forEach((details) => {
+    const content = details.querySelector<HTMLDivElement>('.content')
+    const summary = details.querySelector<HTMLDivElement>('summary')
+    if (!content || !summary) return
+    summary.addEventListener('click', (event) => {
+      event.preventDefault()
+      if (details.open) {
+        content.style.height = content.scrollHeight + 'px'
+        requestAnimationFrame(() => (content.style.height = '0px'))
+        details.setAttribute('data-expanded', 'false')
+        content.addEventListener(
+          'transitionend',
+          () => {
+            details.open = false
+            content.style.height = ''
+          },
+          { once: true }
+        )
+      } else {
+        details.setAttribute('data-expanded', 'true')
+        details.open = true
+        const startHeight = content.scrollHeight + 'px'
+        content.style.height = '0px'
+        requestAnimationFrame(() => (content.style.height = startHeight))
+        content.addEventListener(
+          'transitionend',
+          () => {
+            content.style.height = ''
+          },
+          { once: true }
+        )
+      }
+    })
+  })
+</script>
