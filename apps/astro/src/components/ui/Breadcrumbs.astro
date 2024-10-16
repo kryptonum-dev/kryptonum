@@ -1,0 +1,76 @@
+---
+import { DOMAIN } from '@/src/global/constants'
+
+type Props = {
+  data?: Array<{
+    name: string
+    path: string
+  }>
+  isVisible?: boolean
+}
+
+const { data = [], isVisible = true } = Astro.props
+
+const breadcrumbsData = [
+  { name: 'Strona główna', path: '/' },
+  ...data,
+];
+
+const schema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: data?.map(({ name, path }, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: name,
+    item: `${DOMAIN}${path}`,
+  })),
+})
+---
+
+<script is:inline type="application/ld+json" set:html={schema} />
+{isVisible && breadcrumbsData.length >= 2 && (
+  <nav class="Breadcrumbs">
+    {breadcrumbsData.map(({ name, path }, i) => {
+      const isLastItem = i === breadcrumbsData.length - 1
+      return (
+        isLastItem ? <span>{name}</span> : (
+          <a href={path}>{name}</a>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" fill="none"><path stroke="#75758A" stroke-linecap="round" stroke-linejoin="round" d="m4.5 3 3 3.5-3 3.5"/></svg>
+        )
+      )
+    })}
+  </nav>
+)}
+
+<style lang="scss">
+  .Breadcrumbs {
+    font-size: var(--typography-body-s, 0.75rem);
+    margin-top: clamp(0.5rem, calc(1vw / 0.48), 2rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 48rem;
+  }
+  svg {
+    flex-shrink: 0;
+  }
+  a, span {
+    height: 3rem;
+    line-height: 3rem;
+    white-space: nowrap;
+    &:not(a:last-of-type) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  a {
+    transition: opacity 500ms;
+    &:hover {
+      opacity: 0.76;
+    }
+  }
+  span {
+    color: var(--neutral-400);
+  }
+</style>
