@@ -148,7 +148,7 @@
 
   // Margins
   --page-margin: clamp(1rem, calc(2vw / 0.48), 2rem);
-  @media (max-width: calc(899rem / 16)) and (min-width: calc(600rem / 16)) {
+  @media (max-width: 56rem) and (min-width: 38rem) {
     --page-margin: clamp(2rem, calc(5vw / 0.48), 5rem);
   }
 }
@@ -262,6 +262,10 @@ body {
   color: var(--neutral-200, #f0f7f7);
   font-family: 'KryptoPoppins', 'KryptoPoppins Fallback', sans-serif;
   font-size: var(--typography-body-xl, 1rem);
+  font-feature-settings:
+    'ss03' on,
+    'ss04' on;
+  font-variant-numeric: oldstyle-nums proportional-nums;
   line-height: 175%;
   letter-spacing: 0.005em;
 }

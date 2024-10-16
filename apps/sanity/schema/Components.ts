@@ -1,11 +1,12 @@
 import { defineType } from "sanity";
+import SimpleCtaSection from "./components/SimpleCtaSection";
 
 export default defineType({
   name: 'components',
   type: 'array',
   title: 'Components',
   of: [
-
+    SimpleCtaSection,
   ],
   options: {
     insertMenu: {

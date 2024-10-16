@@ -1,27 +1,25 @@
 ---
 import Layout from '@/src/layouts/Layout.astro'
+import sanityFetch from '@/utils/sanity.fetch'
 import metadataFetch from '@/utils/metadata.fetch'
+import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 
 const metadata = await metadataFetch('Index_Page')
+
+type QueryProps = {
+  components: ComponentsProps
+}
+
+const data = await sanityFetch<QueryProps>({
+  query: `
+    *[_type == "Index_Page"][0] {
+      ${Components_Query}
+    }
+  `,
+})
 ---
 
 <Layout {...metadata}>
-  <h1>❧ Index <strong>special</strong> Page</h1>
-  <p>Zażółć gęślą jaźń</p>
-  <h1>❧ Zażółć gęślą jaźń Zażółć gęślą</h1>
-  <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt cum expedita ad distinctio temporibus corrupti
-    laboriosam cupiditate, impedit dolore <strong>sapiente magni neque</strong> quaerat facilis, est odio consequuntur enim
-    quae rem molestiae. Tempora <a href="#" class="link">Lorem ipsum dolor sit amet.</a> labore suscipit aut optio aliquam,
-    ducimus dolore veniam, veritatis at natus ratione debitis laborum eos quisquam. Tempora quia aspernatur vero ullam necessitatibus
-    ipsa exercitationem doloribus culpa, nihil iusto, assumenda, recusandae porro fugiat rerum deserunt saepe voluptas veniam
-    magni qui deleniti ducimus. Quam accusamus eos id fugiat soluta corrupti modi maiores ab perspiciatis? Asperiores, sunt
-    aliquam rerum ipsum magnam perferendis vero sapiente id sint unde dolor adipisci repudiandae.
-  </p>
+  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Soluta quis accusantium minus natus earum molestiae eius aut non consectetur ratione id repellat molestias facilis, quasi officia illum dolor quos modi nulla vero dicta laboriosam ex atque odit. Provident porro, illum error fuga adipisci earum! Molestiae architecto, maxime quod animi unde officia minima laboriosam voluptatum repellendus cupiditate suscipit tempora beatae rem facere optio ullam vero accusamus esse iusto at hic repellat consequatur sint? Sint amet officiis sunt architecto, itaque consequuntur! Facere perspiciatis voluptatibus omnis veritatis incidunt odit doloremque, ea et ipsum hic illum sint porro tempora eos obcaecati vitae, quis fugit animi soluta nostrum inventore. Soluta nemo libero quod voluptas deserunt, pariatur illo sapiente quas consequuntur dolor rem quis repellendus aliquam reiciendis est nam. Rem placeat est illo doloribus molestias ea! Aut, laborum eos perspiciatis quae quidem, aliquid expedita eveniet in deleniti alias pariatur id minima magni eius veniam laboriosam. Temporibus commodi eligendi sit necessitatibus quasi accusamus at aut, deserunt minima vel fugiat reprehenderit aspernatur aliquid soluta blanditiis architecto quidem possimus perspiciatis consectetur doloribus accusantium repellendus provident eius? Eos, culpa ab laborum ducimus mollitia quia quod? In architecto natus at sint, veritatis fuga repellat tempora minima commodi. Quae explicabo dolore laudantium.
+  <Components data={data.components} />
 </Layout>
-
-<style>
-  h1 {
-    text-align: center;
-  }
-</style>

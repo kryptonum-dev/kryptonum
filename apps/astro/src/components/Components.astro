@@ -1,9 +1,9 @@
 ---
 import type { ComponentProps } from 'astro/types'
-import FullWidthPhoto, { FullWidthPhoto_Query } from '@/components/global/FullWidthPhoto.astro'
+import SimpleCtaSection, { SimpleCtaSection_Query } from '@/components/global/SimpleCtaSection.astro'
 
 const components = {
-  FullWidthPhoto,
+  SimpleCtaSection,
 }
 
 type ComponentsMap = {
@@ -25,7 +25,7 @@ export const Components_Query = /* groq */ `
   components[] {
     _type,
     sectionId,
-    _type == "FullWidthPhoto" => ${FullWidthPhoto_Query}
+    _type == "SimpleCtaSection" => ${SimpleCtaSection_Query}
   },
 `
 ---

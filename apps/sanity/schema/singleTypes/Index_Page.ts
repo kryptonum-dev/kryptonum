@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity"
-import { defineSlugForDocument } from "../../utils/define-slug-for-document";
+import { defineSlugForDocument } from "../ui/define-slug-for-document";
 
 const name = 'Index_Page';
 const title = 'Homepage';
@@ -12,11 +12,6 @@ export default defineType({
   icon: () => '🏠',
   fields: [
     ...defineSlugForDocument({ slug: slug }),
-    defineField({
-      name: 'button',
-      type: 'button',
-      title: 'Button',
-    }),
     defineField({
       name: 'components',
       type: 'components',

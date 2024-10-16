@@ -1,0 +1,86 @@
+---
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/cta'
+
+export const SimpleCtaSection_Query = `
+  {
+    ${PortableTextQuery('heading')}
+    ${ButtonDataQuery('cta')}
+    ${ImageDataQuery('img')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  cta: ButtonDataProps
+  img: ImageDataProps
+}
+
+const { index, sectionId, heading, cta, img } = Astro.props
+---
+
+<section class="SimpleCtaSection" id={sectionId}>
+  <Image
+    {...img}
+    sizes="(max-width: 38rem) 100vw, (max-width: 62.5rem) 38rem, 50vw"
+    priority={index === 0}
+    class="img"
+  />
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <Button {...cta} />
+  </header>
+</section>
+
+<style lang="scss">
+  $overlap: 96px;
+  $margin-y: clamp(3rem, calc(5vw / 0.48), 6rem);
+  .SimpleCtaSection {
+    border-radius: 4px;
+    border: 1px solid var(--neutral-gradient-100, #4a4a57);
+    padding: clamp(1.5rem, calc(2.5vw / 0.48), 4.5rem) clamp(1rem, calc(2vw / 0.48), 4.5rem);
+    margin: $margin-y 0;
+    margin-top: calc($margin-y + $overlap);
+    position: relative;
+  }
+  header {
+    max-width: 50%;
+    border-radius: inherit;
+    .heading {
+      margin-bottom: clamp(1.5rem, calc(3vw / 0.48), 3rem);
+    }
+  }
+  .img {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: calc(100% + $overlap);
+    object-fit: contain;
+    object-position: bottom;
+    width: 50%;
+  }
+  @media (max-width: 62.5rem) {
+    .SimpleCtaSection {
+      border: none;
+      max-width: 38rem;
+      padding: 0;
+      margin-top: $margin-y;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    header {
+      max-width: unset;
+      border: 1px solid var(--neutral-gradient-100, #4a4a57);
+      padding: clamp(1.5rem, calc(2.5vw / 0.48), 4.5rem) clamp(1rem, calc(2vw / 0.48), 4.5rem);
+    }
+    .img {
+      position: relative;
+      height: auto;
+      width: 100%;
+      max-height: 308px;
+    }
+  }
+</style>
