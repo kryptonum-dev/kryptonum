@@ -24,13 +24,13 @@ const components = [
 ];
 
 // UI Components
-import button from '../schema/ui/button';
+import cta from '../schema/ui/cta';
 import seo from '../schema/ui/seo';
 import PortableText from '../schema/ui/portable-text';
 import Heading from '../schema/ui/portable-text/Heading';
 
 const ui = [
-  button,
+  cta,
   seo,
   PortableText,
   Heading,

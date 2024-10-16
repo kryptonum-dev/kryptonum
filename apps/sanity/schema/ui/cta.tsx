@@ -3,8 +3,8 @@ import { Tooltip, Box, Text, } from '@sanity/ui';
 import { isValidUrl } from "../../utils/is-valid-url";
 import { InternalLinkableTypes } from "../../structure/internal-linkable-types";
 
-const name = 'button';
-const title = 'Button';
+const name = 'cta';
+const title = 'Call To Action (CTA)';
 const icon = () => '🔘';
 
 export default defineType({

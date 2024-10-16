@@ -1,22 +1,8 @@
 ---
 import Layout from '@/src/layouts/Layout.astro'
 import metadataFetch from '@/utils/metadata.fetch'
-import sanityFetch from '@/utils/sanity.fetch'
-import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/button'
 
 const metadata = await metadataFetch('Index_Page')
-
-type QueryProps = {
-  button: ButtonDataProps
-}
-
-const data = await sanityFetch<QueryProps>({
-  query: `
-    *[_type == "Index_Page"][0] {
-      ${ButtonDataQuery('button')}
-    }
-  `,
-})
 ---
 
 <Layout {...metadata}>
@@ -32,12 +18,6 @@ const data = await sanityFetch<QueryProps>({
     magni qui deleniti ducimus. Quam accusamus eos id fugiat soluta corrupti modi maiores ab perspiciatis? Asperiores, sunt
     aliquam rerum ipsum magnam perferendis vero sapiente id sint unde dolor adipisci repudiandae.
   </p>
-
-  <div class="cta-wrapper">
-    <Button {...data.button} />
-    <Button {...data.button} theme="secondary" />
-    <Button>Test</Button>
-  </div>
 </Layout>
 
 <style>

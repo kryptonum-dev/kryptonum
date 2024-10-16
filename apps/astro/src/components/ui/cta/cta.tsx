@@ -1,5 +1,5 @@
 import type { ImageDataProps } from '../image';
-import styles from './button.module.scss'
+import styles from './cta.module.scss'
 
 export type Props = React.HTMLAttributes<HTMLAnchorElement> & React.ButtonHTMLAttributes<HTMLButtonElement> & {
   text?: string | React.ReactNode
