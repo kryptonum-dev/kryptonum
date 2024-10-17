@@ -3,11 +3,13 @@ import type { ComponentProps } from 'astro/types'
 import SimpleCtaSection, { SimpleCtaSection_Query } from '@/components/global/SimpleCtaSection.astro'
 import Faq, { Faq_Query } from '@/components/global/Faq.astro'
 import TagsSection, { TagsSection_Query } from '@/components/global/TagsSection.astro'
+import MarqueePillSection, { MarqueePillSection_Query } from '@/components/global/MarqueePillSection.astro'
 
 const components = {
   SimpleCtaSection,
   Faq,
   TagsSection,
+  MarqueePillSection,
 }
 
 type ComponentsMap = {
@@ -32,6 +34,7 @@ export const Components_Query = /* groq */ `
     ${SimpleCtaSection_Query}
     ${Faq_Query}
     ${TagsSection_Query}
+    ${MarqueePillSection_Query}
   },
 `
 ---

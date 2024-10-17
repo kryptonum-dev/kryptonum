@@ -1,0 +1,144 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const MarqueePillSection_Query = `
+  _type == "MarqueePillSection" => {
+    ${PortableTextQuery('heading')}
+    list[] {
+      ${ImageDataQuery('icon')}
+      label,
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  list: Array<{
+    icon: ImageDataProps
+    label: string
+  }>
+}
+
+const { index, sectionId, heading, list } = Astro.props
+---
+
+<section class="MarqueePillSection" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+  </header>
+  <div class="list">
+    {
+      Array.from({ length: 2 }).map((_, index) => (
+        <ul aria-hidden={index === 1} style={`animation-duration: ${list.length * 2}s;`}>
+          {list.map(({ icon, label }) => (
+            <li>
+              <div class="icon">
+                <Image {...icon} sizes="24px" />
+              </div>
+              <span>{label}</span>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</section>
+
+<style lang="scss">
+  $gap: 0.5rem;
+  .MarqueePillSection {
+    padding: clamp(2rem, calc(4vw / 0.48), 5rem) 0;
+    display: grid;
+    gap: clamp(2rem, calc(3vw / 0.48), 3rem);
+    align-items: center;
+    header {
+      max-width: 48rem;
+    }
+    .list {
+      margin: 0 calc(var(--page-margin) * -1);
+      overflow: hidden;
+      display: flex;
+      gap: $gap;
+      position: relative;
+      padding-top: 3px;
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        width: 10%;
+        height: 100%;
+        top: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(90deg, #010104 25%, rgba(0, 0, 0, 0));
+        transition: opacity 500ms var(--easing);
+      }
+      &::before {
+        left: -1px;
+      }
+      &::after {
+        right: -1px;
+        transform: rotate(180deg);
+      }
+      ul {
+        flex-shrink: 0;
+        display: flex;
+        gap: $gap;
+        animation: marquee 10s linear infinite;
+        @keyframes marquee {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-100% - $gap));
+          }
+        }
+        li {
+          flex-shrink: 0;
+          width: 7rem;
+          min-height: clamp(11rem, calc(12vw / 0.48), 12rem);
+          border-radius: 12rem;
+          border: 1px solid var(--neutral-600, rgb(74, 74, 87));
+          padding: 0.5rem;
+          text-align: center;
+          transition: transform 500ms var(--easing);
+          &:hover {
+            transform: translateY(-3px);
+          }
+          .icon {
+            border-radius: 50%;
+            border: 1px solid var(--neutral-600, rgb(74, 74, 87));
+            width: fit-content;
+            width: 4rem;
+            height: 4rem;
+            margin: 0 auto 1rem;
+            display: grid;
+            place-items: center;
+            img {
+              width: 24px;
+              height: 24px;
+            }
+          }
+        }
+      }
+      &:hover {
+        &::before,
+        &::after {
+          opacity: 0.62;
+        }
+        ul {
+          animation-play-state: paused;
+        }
+      }
+    }
+    @media (min-width: 48em) {
+      grid-template-columns: 1fr 1fr;
+      .list {
+        margin: unset;
+      }
+    }
+  }
+</style>
