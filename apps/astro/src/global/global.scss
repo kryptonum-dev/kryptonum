@@ -261,6 +261,9 @@ body {
     'ss03' on,
     'ss04' on;
   font-variant-numeric: oldstyle-nums proportional-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: never;
   line-height: 175%;
   letter-spacing: 0.005em;
 }
