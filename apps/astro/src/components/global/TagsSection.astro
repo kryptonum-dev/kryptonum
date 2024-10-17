@@ -27,7 +27,7 @@ const { index, sectionId, heading, largeText, paragraph, tagsHeading, tags } = A
 <section class="TagsSection" id={sectionId}>
   <header>
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
-    <PortableText value={largeText} class="largeText" />
+    <PortableText value={largeText} class="largeText h2" />
     <PortableText value={paragraph} class="paragraph" />
   </header>
   <div class="line"></div>
@@ -50,7 +50,6 @@ const { index, sectionId, heading, largeText, paragraph, tagsHeading, tags } = A
       margin-bottom: 2rem;
     }
     .largeText {
-      font-size: var(--typography-heading-l, 1.375rem);
       margin-bottom: clamp(1rem, calc(1vw / 0.48), 1.25rem);
     }
     .line {
