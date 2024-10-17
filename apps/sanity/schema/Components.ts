@@ -4,6 +4,7 @@ import Faq from "./components/Faq";
 import TagsSection from "./components/TagsSection";
 import MarqueePillSection from "./components/MarqueePillSection";
 import HeaderGridIcons from "./components/HeaderGridIcons";
+import SimpleHeaderWithImage from "./components/SimpleHeaderWithImage";
 
 export default defineType({
   name: 'components',
@@ -15,6 +16,7 @@ export default defineType({
     TagsSection,
     MarqueePillSection,
     HeaderGridIcons,
+    SimpleHeaderWithImage,
   ],
   options: {
     insertMenu: {
