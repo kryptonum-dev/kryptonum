@@ -4,12 +4,14 @@ import SimpleCtaSection, { SimpleCtaSection_Query } from '@/components/global/Si
 import Faq, { Faq_Query } from '@/components/global/Faq.astro'
 import TagsSection, { TagsSection_Query } from '@/components/global/TagsSection.astro'
 import MarqueePillSection, { MarqueePillSection_Query } from '@/components/global/MarqueePillSection.astro'
+import HeaderGridIcons, { HeaderGridIcons_Query } from '@/components/global/HeaderGridIcons.astro'
 
 const components = {
   SimpleCtaSection,
   Faq,
   TagsSection,
   MarqueePillSection,
+  HeaderGridIcons,
 }
 
 type ComponentsMap = {
@@ -35,6 +37,7 @@ export const Components_Query = /* groq */ `
     ${Faq_Query}
     ${TagsSection_Query}
     ${MarqueePillSection_Query}
+    ${HeaderGridIcons_Query}
   },
 `
 ---

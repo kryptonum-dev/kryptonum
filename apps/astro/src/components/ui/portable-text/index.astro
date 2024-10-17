@@ -34,3 +34,9 @@ const valueArray = Array.isArray(value) ? value : [value]
     </div>
   )
 }
+
+<style lang="scss">
+  :global(div > *:not(:last-child)) {
+    margin-bottom: 0.5rem;
+  }
+</style>
