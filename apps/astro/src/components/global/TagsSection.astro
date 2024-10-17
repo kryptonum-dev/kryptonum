@@ -1,0 +1,85 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const TagsSection_Query = `
+  _type == "TagsSection" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('largeText')}
+    ${PortableTextQuery('paragraph')}
+    ${PortableTextQuery('tagsHeading')}
+    tags[],
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  largeText: PortableTextValue
+  paragraph: PortableTextValue
+  tagsHeading: PortableTextValue
+  tags: string[]
+}
+
+const { index, sectionId, heading, largeText, paragraph, tagsHeading, tags } = Astro.props
+---
+
+<section class="TagsSection" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <PortableText value={largeText} class="largeText" />
+    <PortableText value={paragraph} class="paragraph" />
+  </header>
+  <div class="line"></div>
+  <div>
+    <PortableText value={tagsHeading} class="tagsHeading" />
+    <ul class="tags">
+      {tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+  </div>
+</section>
+
+<style lang="scss">
+  .TagsSection {
+    padding: clamp(2rem, calc(5vw / 0.48), 6rem) 0;
+    display: grid;
+    align-items: center;
+    gap: clamp(2rem, calc(3vw / 0.48), 8rem);
+    grid-template-columns: 1.5fr auto 1fr;
+    .heading {
+      margin-bottom: 2rem;
+    }
+    .largeText {
+      font-size: var(--typography-heading-l, 1.375rem);
+      margin-bottom: clamp(1rem, calc(1vw / 0.48), 1.25rem);
+    }
+    .line {
+      width: 1px;
+      height: calc(100% + 4rem);
+      background-color: var(--neutral-800, #4a4a57);
+    }
+    .tagsHeading {
+      font-size: var(--typography-body-m, 0.875rem);
+      margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      li {
+        border-radius: 0.25rem;
+        background-color: var(--neutral-800, #202025);
+        padding: 0.38rem 0.75rem;
+      }
+    }
+    @media (max-width: 62rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      grid-template-columns: unset;
+      .line {
+        width: 100%;
+        height: 1px;
+      }
+    }
+  }
+</style>
