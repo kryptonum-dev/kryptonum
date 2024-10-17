@@ -5,6 +5,7 @@ import TagsSection from "./components/TagsSection";
 import MarqueePillSection from "./components/MarqueePillSection";
 import HeaderGridIcons from "./components/HeaderGridIcons";
 import SimpleHeaderWithImage from "./components/SimpleHeaderWithImage";
+import SplitScreenCtaSection from "./components/SplitScreenCtaSection";
 
 export default defineType({
   name: 'components',
@@ -17,6 +18,7 @@ export default defineType({
     MarqueePillSection,
     HeaderGridIcons,
     SimpleHeaderWithImage,
+    SplitScreenCtaSection,
   ],
   options: {
     insertMenu: {

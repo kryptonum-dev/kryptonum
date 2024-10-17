@@ -6,6 +6,7 @@ import TagsSection, { TagsSection_Query } from '@/components/global/TagsSection.
 import MarqueePillSection, { MarqueePillSection_Query } from '@/components/global/MarqueePillSection.astro'
 import HeaderGridIcons, { HeaderGridIcons_Query } from '@/components/global/HeaderGridIcons.astro'
 import SimpleHeaderWithImage, { SimpleHeaderWithImage_Query } from '@/components/global/SimpleHeaderWithImage.astro'
+import SplitScreenCtaSection, { SplitScreenCtaSection_Query } from '@/components/global/SplitScreenCtaSection.astro'
 
 const components = {
   SimpleCtaSection,
@@ -14,6 +15,7 @@ const components = {
   MarqueePillSection,
   HeaderGridIcons,
   SimpleHeaderWithImage,
+  SplitScreenCtaSection,
 }
 
 type ComponentsMap = {
@@ -41,6 +43,7 @@ export const Components_Query = /* groq */ `
     ${MarqueePillSection_Query}
     ${HeaderGridIcons_Query}
     ${SimpleHeaderWithImage_Query}
+    ${SplitScreenCtaSection_Query}
   },
 `
 ---

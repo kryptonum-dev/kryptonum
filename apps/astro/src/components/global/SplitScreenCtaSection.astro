@@ -1,0 +1,98 @@
+---
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/cta'
+
+export const SplitScreenCtaSection_Query = `
+  _type == "SplitScreenCtaSection" => {
+    ${PortableTextQuery('heading')}
+    ${ButtonDataQuery('cta')}
+    ${PortableTextQuery('headingSecondary')}
+    ${ButtonDataQuery('ctaSecondary')}
+    ${ImageDataQuery('avatars[]')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  cta: ButtonDataProps
+  headingSecondary: PortableTextValue
+  ctaSecondary: ButtonDataProps
+  avatars?: ImageDataProps[]
+}
+
+const { index, sectionId, heading, cta, headingSecondary, ctaSecondary, avatars } = Astro.props
+---
+
+<section class="SplitScreenCtaSection" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <Button {...cta} />
+  </header>
+  <div class="line"></div>
+  <header>
+    <PortableText value={headingSecondary} heading={index === 0 ? 'h2' : 'h3'} class="heading h2" />
+    <div class="wrapper">
+      <Button {...ctaSecondary} />
+      {
+        avatars && (
+          <div class="avatars">
+            {avatars.map((avatar) => (
+              <Image {...avatar} sizes="32px" />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </header>
+</section>
+
+<style lang="scss">
+  .SplitScreenCtaSection {
+    padding: clamp(3rem, calc(5vw / 0.48), 6rem) 0;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr auto 1fr;
+    text-align: center;
+    gap: clamp(2.5rem, calc(3vw / 0.48), 3rem);
+    .heading {
+      margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+    }
+    .line {
+      width: 1px;
+      height: calc(100% + 4rem);
+      background-color: var(--neutral-800, #4a4a57);
+    }
+    .wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .avatars {
+      display: flex;
+      img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid var(--neutral-700, #383842);
+        background-color: var(--neutral-900, rgba(0, 1, 3, 1));
+        &:not(:first-child) {
+          margin-left: -8px;
+        }
+      }
+    }
+    @media (max-width: 62rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      grid-template-columns: unset;
+      .line {
+        width: 100%;
+        height: 1px;
+      }
+    }
+  }
+</style>
