@@ -2,9 +2,9 @@ import { defineField } from 'sanity';
 import sectionId from '../ui/sectionId';
 import { toPlainText } from '../../utils/to-plain-text';
 
-const name = 'SimpleCtaSection';
-const title = 'Simple CTA Section';
-const icon = () => '🔗';
+const name = 'TagsSection';
+const title = 'Tags Section';
+const icon = () => '🏷️';
 
 export default defineField({
   name,
@@ -19,28 +19,39 @@ export default defineField({
       validation: Rule => Rule.required(),
     }),
     defineField({
-      name: 'cta',
-      type: 'cta',
-      title: 'Call To Action',
+      name: 'largeText',
+      type: 'PortableText',
+      title: 'Large Text',
       validation: Rule => Rule.required(),
     }),
     defineField({
-      name: 'img',
-      type: 'image',
-      title: 'Image',
+      name: 'paragraph',
+      type: 'PortableText',
+      title: 'Paragraph',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
+      name: 'tagsHeading',
+      type: 'Heading',
+      title: 'Tags Heading',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
+      name: 'tags',
+      type: 'array',
+      title: 'Tags',
+      of: [{ type: 'string' }],
       validation: Rule => Rule.required(),
     }),
     ...sectionId,
   ],
   preview: {
     select: {
-      media: 'img',
       heading: 'heading',
     },
-    prepare: ({ heading, media }) => ({
+    prepare: ({ heading }) => ({
       title: title,
       subtitle: toPlainText(heading),
-      media,
     }),
   },
 });

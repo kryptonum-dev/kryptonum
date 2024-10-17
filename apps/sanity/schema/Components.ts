@@ -1,6 +1,7 @@
 import { defineType } from "sanity";
 import SimpleCtaSection from "./components/SimpleCtaSection";
 import Faq from "./components/Faq";
+import TagsSection from "./components/TagsSection";
 
 export default defineType({
   name: 'components',
@@ -9,6 +10,7 @@ export default defineType({
   of: [
     SimpleCtaSection,
     Faq,
+    TagsSection,
   ],
   options: {
     insertMenu: {

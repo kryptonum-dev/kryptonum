@@ -3,7 +3,7 @@ import sectionId from '../ui/sectionId';
 import { toPlainText } from '../../utils/to-plain-text';
 
 const name = 'Faq';
-const title = 'FAQ';
+const title = 'FAQ Section';
 const icon = () => '❓';
 
 export default defineField({
