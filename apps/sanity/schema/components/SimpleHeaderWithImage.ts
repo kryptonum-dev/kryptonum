@@ -1,6 +1,7 @@
 import { defineField } from 'sanity';
 import sectionId from '../ui/sectionId';
 import { toPlainText } from '../../utils/to-plain-text';
+import { sectionPreview } from '../ui/section-preview';
 
 const name = 'SimpleHeaderWithImage';
 const title = 'Simple Header With Image';
@@ -34,13 +35,12 @@ export default defineField({
   ],
   preview: {
     select: {
-      media: 'img',
       heading: 'heading',
     },
-    prepare: ({ heading, media }) => ({
+    prepare: ({ heading }) => ({
       title: title,
       subtitle: toPlainText(heading),
-      media,
+      ...sectionPreview({ name, icon: icon() }),
     }),
   },
 });
