@@ -1,0 +1,102 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const OverlappingCircles_Query = `
+  _type == "OverlappingCircles" => {
+    ${PortableTextQuery('heading')}
+    textFirst,
+    textSecond,
+    ${ImageDataQuery('icon')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  textFirst: string
+  textSecond: string
+  icon: ImageDataProps
+}
+
+const { index, sectionId, heading, textFirst, textSecond, icon } = Astro.props
+---
+
+<section class="OverlappingCircles" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+  </header>
+  <div class="wrapper">
+    <div class="circle">
+      <p>{textFirst}</p>
+    </div>
+    <div class="circle">
+      <p>{textSecond}</p>
+    </div>
+    <Image {...icon} sizes="34px" class="icon" priority={index === 0} />
+  </div>
+</section>
+
+<style lang="scss">
+  .OverlappingCircles {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    display: grid;
+    align-items: center;
+    gap: clamp(2rem, calc(3vw / 0.48), 3rem);
+    grid-template-columns: 1fr 2fr;
+    .wrapper {
+      display: grid;
+      position: relative;
+      grid-template-columns: 1fr 1fr;
+    }
+    $margin: clamp(2rem, calc(2.5vw / 0.48), 2.5rem);
+    .circle {
+      border-radius: 50%;
+      aspect-ratio: 1/1;
+      border: 1px solid var(--neutral-600, #4a4a57);
+      display: grid;
+      place-items: center;
+      font-size: var(--typography-body-m, 0.875rem);
+      padding: calc($margin * 2);
+      text-align: center;
+      &:nth-child(1) {
+        margin-right: calc($margin * -1);
+      }
+      &:nth-child(2) {
+        margin-left: calc($margin * -1);
+      }
+    }
+    .icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      width: clamp(24px, calc(34vw / 7.68), 34px);
+      height: clamp(24px, calc(34vw / 7.68), 34px);
+    }
+    @media (max-width: 62rem) {
+      margin: 0 auto;
+      grid-template-columns: 1fr;
+      max-width: 38rem;
+    }
+    @media (max-width: 37rem) {
+      max-width: 24rem;
+      .wrapper {
+        grid-template-columns: 1fr;
+        .circle {
+          padding: 2rem;
+          width: 62%;
+          &:nth-child(1) {
+            margin-right: unset;
+          }
+          &:nth-child(2) {
+            margin-left: auto;
+            margin-top: -33%;
+          }
+        }
+      }
+    }
+  }
+</style>

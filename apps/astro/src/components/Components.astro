@@ -7,6 +7,7 @@ import MarqueePillSection, { MarqueePillSection_Query } from '@/components/globa
 import HeaderGridIcons, { HeaderGridIcons_Query } from '@/components/global/HeaderGridIcons.astro'
 import SimpleHeaderWithImage, { SimpleHeaderWithImage_Query } from '@/components/global/SimpleHeaderWithImage.astro'
 import SplitScreenCtaSection, { SplitScreenCtaSection_Query } from '@/components/global/SplitScreenCtaSection.astro'
+import OverlappingCircles, { OverlappingCircles_Query } from '@/components/global/OverlappingCircles.astro'
 
 const components = {
   SimpleCtaSection,
@@ -16,6 +17,7 @@ const components = {
   HeaderGridIcons,
   SimpleHeaderWithImage,
   SplitScreenCtaSection,
+  OverlappingCircles,
 }
 
 type ComponentsMap = {
@@ -44,6 +46,7 @@ export const Components_Query = /* groq */ `
     ${HeaderGridIcons_Query}
     ${SimpleHeaderWithImage_Query}
     ${SplitScreenCtaSection_Query}
+    ${OverlappingCircles_Query}
   },
 `
 ---

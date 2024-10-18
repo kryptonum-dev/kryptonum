@@ -8,7 +8,7 @@ export const sectionPreview = ({ name, icon }: { name: string; icon: string }) =
       portal
       content={
         <Box padding={2}>
-          <img src={`/static/${name}.webp`} width={233} height={155} alt="" />
+          <img src={`/static/${name}.webp`} width={344} alt="" />
         </Box>
       }
     >
