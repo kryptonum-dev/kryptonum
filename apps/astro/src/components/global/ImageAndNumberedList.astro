@@ -1,0 +1,107 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/cta'
+
+export const ImageAndNumberedList_Query = `
+  _type == "ImageAndNumberedList" => {
+    ${ImageDataQuery('img')}
+    ${PortableTextQuery('heading')}
+    list[] {
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+      ${ButtonDataQuery('cta')}
+    }
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  img: ImageDataProps
+  heading: PortableTextValue
+  list: {
+    heading: PortableTextValue
+    paragraph: PortableTextValue
+    cta?: ButtonDataProps
+  }[]
+}
+
+const { index, sectionId, img, heading, list } = Astro.props
+---
+
+<section class="ImageAndNumberedList" id={sectionId}>
+  <Image {...img} sizes="100vw" class="img" />
+  <div>
+    <header>
+      <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    </header>
+    <ul class="list">
+      {
+        list?.map(({ heading, paragraph, cta }) => (
+          <li class="item">
+            <PortableText value={heading} class="heading" />
+            <PortableText value={paragraph} class="paragraph" />
+            {cta && <Button {...cta} className="cta" />}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style lang="scss">
+  .ImageAndNumberedList {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-between;
+    align-items: center;
+    gap: clamp(2.5rem, calc(3vw / 0.48), 3rem) clamp(5rem, calc(5vw / 0.48), 13rem);
+    .img {
+      width: 608px;
+    }
+    div {
+      max-width: 38rem;
+    }
+    header {
+      margin-bottom: clamp(2rem, calc(3vw / 0.48), 3rem);
+    }
+    .list {
+      display: grid;
+      gap: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+      counter-reset: item;
+      .item {
+        counter-increment: item;
+        padding-left: clamp(2.5rem, calc(3.5vw / 0.48), 4rem);
+        position: relative;
+        &::before {
+          content: counter(item);
+          position: absolute;
+          left: 0;
+          top: 0;
+          color: var(--neutral-500, #75758a);
+        }
+        &:nth-child(-n + 9) {
+          &::before {
+            content: '0' counter(item);
+          }
+        }
+        .heading {
+          margin-bottom: 1rem;
+        }
+        .paragraph {
+          color: var(--neutral-400, #c6cdc4);
+        }
+        .cta {
+          margin-top: 1.5rem;
+        }
+      }
+    }
+    @media (max-width: 68rem) {
+      grid-template-columns: 1fr;
+      margin: 0 auto;
+      max-width: 38rem;
+    }
+  }
+</style>

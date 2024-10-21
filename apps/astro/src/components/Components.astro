@@ -12,6 +12,7 @@ import PillCtaSection, { PillCtaSection_Query } from '@/components/global/PillCt
 import StackImagesWithCtaAndAvatars, {
   StackImagesWithCtaAndAvatars_Query,
 } from '@/components/global/StackImagesWithCtaAndAvatars.astro'
+import ImageAndNumberedList, { ImageAndNumberedList_Query } from '@/components/global/ImageAndNumberedList.astro'
 
 const components = {
   SimpleCtaSection,
@@ -24,6 +25,7 @@ const components = {
   OverlappingCircles,
   PillCtaSection,
   StackImagesWithCtaAndAvatars,
+  ImageAndNumberedList,
 }
 
 type ComponentsMap = {
@@ -55,6 +57,7 @@ export const Components_Query = /* groq */ `
     ${OverlappingCircles_Query}
     ${PillCtaSection_Query}
     ${StackImagesWithCtaAndAvatars_Query}
+    ${ImageAndNumberedList_Query}
   },
 `
 ---
