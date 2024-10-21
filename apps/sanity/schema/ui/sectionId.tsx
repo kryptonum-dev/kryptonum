@@ -29,7 +29,6 @@ export default [
         const slugified = slugify(value);
         if (slugified !== value) {
           return 'Section ID must contain only lowercase letters, numbers, and hyphens (not special characters). It cannot start or end with a hyphen.';
-
         }
         return true;
       })

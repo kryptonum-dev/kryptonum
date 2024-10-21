@@ -1,0 +1,161 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/cta'
+import Copy from '@/components/ui/Copy.astro'
+
+export const PillCtaSection_Query = `
+  _type == "PillCtaSection" => {
+    ${ImageDataQuery('image')}
+    ${PortableTextQuery('heading')}
+    isEmail,
+    email,
+    ${ButtonDataQuery('cta')}
+    ${ImageDataQuery('icon')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  image?: ImageDataProps
+  heading: PortableTextValue
+  isEmail: boolean
+  email: string
+  cta: ButtonDataProps
+  icon: ImageDataProps
+}
+
+const { index, sectionId, image, heading, isEmail, email, cta, icon } = Astro.props
+---
+
+<section class="PillCtaSection" id={sectionId}>
+  {image && <Image {...image} sizes="100vw" class="img" />}
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <div class="icon">
+      <Image {...icon} sizes="24px" />
+    </div>
+    <div class="glow"></div>
+    {
+      isEmail ? (
+        <p class="email">
+          <a href={`mailto:${email}`}>{email}</a>
+          <Copy data={email}>Skopiuj</Copy>
+        </p>
+      ) : (
+        <Button {...cta} />
+      )
+    }
+  </header>
+</section>
+
+<style lang="scss">
+  .PillCtaSection {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-areas: 'row';
+    .img {
+      grid-area: row;
+      border-radius: 0.25rem;
+      border: 1px solid var(--primary-500);
+    }
+    header {
+      position: relative;
+      max-width: 42rem;
+      text-align: center;
+      padding: clamp(2rem, calc(2vw / 0.48), 2.5rem) clamp(1rem, calc(3vw / 0.48), 6rem)
+        clamp(1rem, calc(1.5vw / 0.48), 2.5rem);
+      margin: 0 auto 2rem;
+      align-self: flex-end;
+      grid-area: row;
+      border-radius: 29rem;
+      background:
+        linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+        linear-gradient(266deg, #05432d66, #05503566, #1f6644, #11353133) border-box;
+      border: 1px solid rgba(255, 255, 255, 0);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(1rem, calc(1.5vw / 0.48), 1.5rem) 2rem;
+      flex-direction: column;
+      &:has(.email) {
+        flex-direction: row;
+        padding-left: clamp(1rem, calc(2vw / 0.48), 3rem);
+        padding-right: clamp(1rem, calc(2vw / 0.48), 3rem);
+      }
+      .email {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: var(--typography-body-m, 0.875rem);
+      }
+      .glow {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+        pointer-events: none;
+        border-radius: inherit;
+        &::before {
+          content: '';
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translate(-50%, -25%);
+          border-radius: 50%;
+          width: 62%;
+          max-width: 22rem;
+          aspect-ratio: 1/1;
+          background: linear-gradient(266deg, #0b0f0d, #011310, #001f1b);
+          mix-blend-mode: plus-lighter;
+          filter: blur(64px);
+        }
+      }
+    }
+    .icon {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translate(-50%, -50%);
+      border: 1px solid var(--primary-500, #064040);
+      background-color: var(--neutral-900, #000103);
+      z-index: 1;
+      width: clamp(3rem, calc(3.5vw / 0.48), 4rem);
+      height: clamp(3rem, calc(3.5vw / 0.48), 4rem);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    @media (max-width: 69rem) {
+      grid-template-areas: unset;
+      .img {
+        grid-area: unset;
+      }
+      header {
+        grid-area: unset;
+        margin-top: -1rem;
+        margin-bottom: 0;
+        width: 100%;
+      }
+    }
+    @media (max-width: 31rem) {
+      header {
+        margin-top: 0.5rem;
+        border-radius: 0.25rem;
+        text-align: left;
+        align-items: flex-start;
+      }
+    }
+  }
+</style>
