@@ -2,18 +2,22 @@
 import '@/global/global.scss'
 import { LOCALE } from '../global/constants'
 import Head, { type Props as HeadProps } from './Head.astro'
+import Toast from '@/components/ui/Toast.astro'
 
 type Props = HeadProps
+
+const { ...props } = Astro.props
 ---
 
 <!doctype html>
 <html lang={LOCALE}>
   <head>
-    <Head {...Astro.props} />
+    <Head {...props} />
   </head>
   <body>
     <main id="main">
       <slot />
     </main>
+    <Toast />
   </body>
 </html>
