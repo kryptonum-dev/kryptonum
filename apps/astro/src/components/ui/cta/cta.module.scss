@@ -100,11 +100,11 @@ $opacity-transition: 800ms var(--easing);
   }
   &:hover {
     &::before {
+      opacity: 1;
       animation-play-state: running;
       @media (prefers-reduced-motion) {
         animation-play-state: paused;
       }
-      opacity: 1;
     }
     .content {
       &::before {
