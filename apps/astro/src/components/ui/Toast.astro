@@ -1,0 +1,137 @@
+<div role="alert" aria-live="polite" class="toast" aria-hidden="true">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none">
+    <circle cx="8.003" cy="8.501" r="6.667" stroke="url(#toast-a)"></circle>
+    <path
+      stroke="url(#toast-b)"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="m5.664 8.834 1.333 1.333 3.334-3.333">
+    </path>
+    <defs>
+      <linearGradient id="toast-a" x1="14.419" x2=".543" y1="1.834" y2="2.718" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient><linearGradient
+        id="toast-b"
+        x1="10.243"
+        x2="5.405"
+        y1="6.834"
+        y2="7.265"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+    </defs>
+  </svg>
+  <p class="toast-message"></p>
+</div>
+
+<style lang="scss">
+  div {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 8;
+    width: fit-content;
+    overflow: hidden;
+    max-width: 23rem;
+    border-radius: 0.25rem;
+    box-shadow: 0px 0px 0px 1px inset var(--neutral-600, #4a4a57);
+    background-color: var(--neutral-900, rgba(0, 1, 3, 1));
+    padding: 0.5rem 1rem 0.75rem 0.75rem;
+    font-size: var(--typography-body-m, 0.875rem);
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: 0.75rem;
+    transform-origin: top right;
+    visibility: hidden;
+    svg {
+      margin-top: 0.28rem;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      border-radius: inherit;
+      background: var(--gradient-primary);
+      transform-origin: left;
+    }
+    &[aria-hidden='false'] {
+      visibility: visible;
+      animation: Toast 8s var(--easing) both;
+      &::after {
+        animation: ToastProgress 8s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+      }
+      &:hover {
+        animation-play-state: paused;
+        &::after {
+          animation-play-state: paused;
+        }
+      }
+    }
+    @keyframes Toast {
+      0%,
+      100% {
+        transform: translateY(calc(100% + 1rem)) skewY(-1deg);
+      }
+      10%,
+      90% {
+        transform: translateY(0);
+      }
+    }
+    @keyframes ToastProgress {
+      from {
+        transform: scaleX(0);
+      }
+      to {
+        transform: scaleX(1);
+      }
+    }
+  }
+</style>
+
+<script>
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
+  let startTime: number
+  let remainingTime = 0
+  const duration = 8000
+  const toast = document.querySelector<HTMLDivElement>('.toast')!
+  const toastMessage = toast.querySelector('.toast-message')!
+
+  function showToast(message: string) {
+    toastMessage.textContent = message
+    toast.setAttribute('aria-hidden', 'true')
+    toast.offsetWidth
+    toast.setAttribute('aria-hidden', 'false')
+    startTime = Date.now()
+    remainingTime = duration
+    scheduleHideToast()
+  }
+
+  function pauseToast() {
+    clearTimeout(timeoutId)
+    remainingTime -= Date.now() - startTime
+  }
+
+  function resumeToast() {
+    startTime = Date.now()
+    scheduleHideToast()
+  }
+
+  function scheduleHideToast() {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => {
+      toast.setAttribute('aria-hidden', 'true')
+    }, remainingTime)
+  }
+
+  toast.addEventListener('mouseenter', pauseToast)
+  toast.addEventListener('mouseleave', resumeToast)
+
+  document.querySelectorAll<HTMLButtonElement>('[data-toast]').forEach((button) => {
+    button.addEventListener('click', () => {
+      showToast(button.dataset.toastText!)
+    })
+  })
+</script>
