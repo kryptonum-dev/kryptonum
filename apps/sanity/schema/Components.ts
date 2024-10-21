@@ -8,6 +8,7 @@ import SimpleHeaderWithImage from "./components/SimpleHeaderWithImage";
 import SplitScreenCtaSection from "./components/SplitScreenCtaSection";
 import OverlappingCircles from "./components/OverlappingCircles";
 import PillCtaSection from "./components/PillCtaSection";
+import StackImagesWithCtaAndAvatars from "./components/StackImagesWithCtaAndAvatars";
 
 export default defineType({
   name: 'components',
@@ -23,6 +24,7 @@ export default defineType({
     SplitScreenCtaSection,
     OverlappingCircles,
     PillCtaSection,
+    StackImagesWithCtaAndAvatars,
   ],
   options: {
     insertMenu: {
