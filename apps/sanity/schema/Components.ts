@@ -11,6 +11,7 @@ import PillCtaSection from "./components/PillCtaSection";
 import StackImagesWithCtaAndAvatars from "./components/StackImagesWithCtaAndAvatars";
 import ImageAndNumberedList from "./components/ImageAndNumberedList";
 import SkillsAndLinks from "./components/SkillsAndLinks";
+import ContactInfo from "./components/ContactInfo";
 
 export default defineType({
   name: 'components',
@@ -29,6 +30,7 @@ export default defineType({
     StackImagesWithCtaAndAvatars,
     ImageAndNumberedList,
     SkillsAndLinks,
+    ContactInfo,
   ],
   options: {
     insertMenu: {

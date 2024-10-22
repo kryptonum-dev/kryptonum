@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { defineSlugForDocument } from "../ui/define-slug-for-document";
 
 const title = 'Team Members Collection';
 const icon = () => <img src="https://emoji.slack-edge.com/T02CFF835B5/krypto-dzik/71c712017db908f1.png" alt="KryptoDzik" style={{
@@ -13,6 +14,7 @@ export default defineType({
   title,
   icon,
   fields: [
+    ...defineSlugForDocument({ prefix: '/pl/zespol/' }),
     defineField({
       name: 'img',
       type: 'image',

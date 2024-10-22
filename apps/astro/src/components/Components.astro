@@ -14,6 +14,7 @@ import StackImagesWithCtaAndAvatars, {
 } from '@/components/global/StackImagesWithCtaAndAvatars.astro'
 import ImageAndNumberedList, { ImageAndNumberedList_Query } from '@/components/global/ImageAndNumberedList.astro'
 import SkillsAndLinks, { SkillsAndLinks_Query } from '@/components/global/SkillsAndLinks.astro'
+import ContactInfo, { ContactInfo_Query } from '@/components/global/ContactInfo.astro'
 
 const components = {
   SimpleCtaSection,
@@ -28,6 +29,7 @@ const components = {
   StackImagesWithCtaAndAvatars,
   ImageAndNumberedList,
   SkillsAndLinks,
+  ContactInfo,
 }
 
 type ComponentsMap = {
@@ -61,6 +63,7 @@ export const Components_Query = /* groq */ `
     ${StackImagesWithCtaAndAvatars_Query}
     ${ImageAndNumberedList_Query}
     ${SkillsAndLinks_Query}
+    ${ContactInfo_Query}
   },
 `
 ---

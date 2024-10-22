@@ -41,7 +41,7 @@ const { index, sectionId, image, heading, isEmail, email, cta, icon } = Astro.pr
       isEmail ? (
         <p class="email">
           <a href={`mailto:${email}`}>{email}</a>
-          <Copy data={email}>Skopiuj</Copy>
+          <Copy data={email} />
         </p>
       ) : (
         <Button {...cta} />

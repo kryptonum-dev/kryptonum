@@ -56,7 +56,7 @@ export default defineType({
       title: 'Address',
       fields: [
         defineField({
-          name: 'address',
+          name: 'addressText',
           type: 'string',
           title: 'Address Text',
           validation: Rule => Rule.required(),
