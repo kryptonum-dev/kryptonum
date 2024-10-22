@@ -12,6 +12,7 @@ import StackImagesWithCtaAndAvatars from "./components/StackImagesWithCtaAndAvat
 import ImageAndNumberedList from "./components/ImageAndNumberedList";
 import SkillsAndLinks from "./components/SkillsAndLinks";
 import ContactInfo from "./components/ContactInfo";
+import SimpleTextSection from "./components/SimpleTextSection";
 
 export default defineType({
   name: 'components',
@@ -31,6 +32,7 @@ export default defineType({
     ImageAndNumberedList,
     SkillsAndLinks,
     ContactInfo,
+    SimpleTextSection,
   ],
   options: {
     insertMenu: {
