@@ -14,6 +14,11 @@ export default defineField({
   icon,
   fields: [
     defineField({
+      name: 'icon',
+      type: 'image',
+      title: 'Icon (optional)',
+    }),
+    defineField({
       name: 'heading',
       type: 'Heading',
       title: 'Heading',

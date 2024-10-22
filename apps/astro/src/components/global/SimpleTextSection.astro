@@ -1,8 +1,10 @@
 ---
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
 
 export const SimpleTextSection_Query = `
   _type == "SimpleTextSection" => {
+    ${ImageDataQuery('icon')}
     ${PortableTextQuery('heading')}
     ${PortableTextQuery('paragraph')}
   },
@@ -11,15 +13,86 @@ export const SimpleTextSection_Query = `
 type Props = {
   index: number
   sectionId?: string
+  icon?: ImageDataProps
   heading: PortableTextValue
   paragraph: PortableTextValue
 }
 
-const { index, sectionId, heading, paragraph } = Astro.props
+const { index, sectionId, icon, heading, paragraph } = Astro.props
 ---
 
-<section class="SimpleTextSection" id={sectionId}>
+<section class="SimpleTextSection" id={sectionId} data-variant-icon={!!icon}>
   <header>
+    {
+      icon && (
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none">
+            <path
+              fill="url(#SimpleTextSection-a)"
+              stroke="url(#SimpleTextSection-b)"
+              d="M5.859 20.289 40 .577 74.141 20.29V59.71L40 79.423 5.859 59.71V20.29Z"
+            />
+            <path
+              fill="url(#SimpleTextSection-c)"
+              d="M20 16.5h40a3.5 3.5 0 0 1 3.5 3.5v40a3.5 3.5 0 0 1-3.5 3.5H20a3.5 3.5 0 0 1-3.5-3.5V20a3.5 3.5 0 0 1 3.5-3.5Z"
+            />
+            <path
+              stroke="url(#SimpleTextSection-d)"
+              d="M20 16.5h40a3.5 3.5 0 0 1 3.5 3.5v40a3.5 3.5 0 0 1-3.5 3.5H20a3.5 3.5 0 0 1-3.5-3.5V20a3.5 3.5 0 0 1 3.5-3.5Z"
+            />
+            <defs>
+              <linearGradient
+                id="SimpleTextSection-a"
+                x1="78.5"
+                x2="-4.758"
+                y1="0"
+                y2="5.303"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#0B0F0D" />
+                <stop offset=".526" stop-color="#011310" />
+                <stop offset="1" stop-color="#001F1B" />
+              </linearGradient>
+              <linearGradient
+                id="SimpleTextSection-b"
+                x1="78.5"
+                x2="-4.758"
+                y1="0"
+                y2="5.303"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#05432D" stop-opacity=".4" />
+                <stop offset=".333" stop-color="#055035" stop-opacity=".4" />
+                <stop offset=".667" stop-color="#1F6644" />
+                <stop offset="1" stop-color="#113531" stop-opacity=".2" />
+              </linearGradient>
+              <linearGradient
+                id="SimpleTextSection-c"
+                x1="63.1"
+                x2="13.145"
+                y1="16"
+                y2="19.182"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#0B0F0D" />
+                <stop offset=".526" stop-color="#011310" />
+                <stop offset="1" stop-color="#001F1B" />
+              </linearGradient>
+              <linearGradient
+                id="SimpleTextSection-d"
+                x1="63.1"
+                x2="13.145"
+                y1="16"
+                y2="19.182"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#05432D" stop-opacity=".4" />
+                <stop offset=".333" stop-color="#055035" stop-opacity=".4" />
+                <stop offset=".667" stop-color="#1F6644" />
+                <stop offset="1" stop-color="#113531" stop-opacity=".2" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <Image {...icon} sizes="24px" />
+        </div>
+      )
+    }
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
   </header>
   <PortableText value={paragraph} class="paragraph" />
@@ -31,6 +104,24 @@ const { index, sectionId, heading, paragraph } = Astro.props
     header {
       max-width: 39rem;
       margin-bottom: clamp(2rem, calc(3vw / 0.48), 4rem);
+      .icon {
+        display: inline-flex;
+        width: clamp(64px, calc(80vw / 7.68), 80px);
+        height: clamp(64px, calc(80vw / 7.68), 80px);
+        position: relative;
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+        img {
+          position: absolute;
+          width: clamp(20px, calc(24vw / 7.68), 24px);
+          height: clamp(20px, calc(24vw / 7.68), 24px);
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
     }
     .paragraph {
       max-width: clamp(28rem, calc(28vw / 0.48), 39rem);
@@ -40,6 +131,48 @@ const { index, sectionId, heading, paragraph } = Astro.props
       }
       @media (max-width: 44rem) {
         max-width: 100%;
+      }
+    }
+    &[data-variant-icon] {
+      max-width: 67rem;
+      margin: 0 auto;
+      column-gap: 1.25rem;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      header {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        .icon {
+          margin-right: clamp(3rem, calc(5vw / 0.48), 8rem);
+        }
+      }
+      .paragraph {
+        font-size: var(--typography-body-m, 0.875rem);
+        :global(> *:not(:last-child)) {
+          margin-bottom: clamp(1rem, calc(1.25vw / 0.48), 1.25rem);
+        }
+      }
+      @media (max-width: 63rem) {
+        grid-template-columns: 1fr;
+        max-width: 38rem;
+        header {
+          .icon {
+            margin-right: 0;
+            order: 1;
+          }
+        }
+        .paragraph {
+          max-width: unset;
+        }
+      }
+      @media (max-width: 31rem) {
+        header {
+          grid-template-columns: 1fr;
+          .icon {
+            order: -1;
+          }
+        }
       }
     }
   }
