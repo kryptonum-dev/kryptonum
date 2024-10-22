@@ -1,7 +1,7 @@
 import { defineField, defineType } from "sanity";
 import { toPlainText } from "../../utils/to-plain-text";
 
-const title = 'Collection of FAQ items';
+const title = 'FAQ items Collection';
 const icon = () => '❓';
 
 export default defineType({
