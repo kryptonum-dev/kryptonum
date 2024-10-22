@@ -10,6 +10,7 @@ import OverlappingCircles from "./components/OverlappingCircles";
 import PillCtaSection from "./components/PillCtaSection";
 import StackImagesWithCtaAndAvatars from "./components/StackImagesWithCtaAndAvatars";
 import ImageAndNumberedList from "./components/ImageAndNumberedList";
+import SkillsAndLinks from "./components/SkillsAndLinks";
 
 export default defineType({
   name: 'components',
@@ -27,6 +28,7 @@ export default defineType({
     PillCtaSection,
     StackImagesWithCtaAndAvatars,
     ImageAndNumberedList,
+    SkillsAndLinks,
   ],
   options: {
     insertMenu: {
