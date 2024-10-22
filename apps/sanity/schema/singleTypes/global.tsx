@@ -48,6 +48,27 @@ export default defineType({
           validation: Rule => Rule.uri({ scheme: ['https'] }).error('Provide a valid URL (starting with https://)'),
         }),
       ],
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
+      name: 'address',
+      type: 'object',
+      title: 'Address',
+      fields: [
+        defineField({
+          name: 'address',
+          type: 'string',
+          title: 'Address Text',
+          validation: Rule => Rule.required(),
+        }),
+        defineField({
+          name: 'mapLink',
+          type: 'url',
+          title: 'Map link',
+          validation: Rule => Rule.required(),
+        }),
+      ],
+      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'seo',
