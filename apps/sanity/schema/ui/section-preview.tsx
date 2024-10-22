@@ -8,7 +8,7 @@ export const sectionPreview = ({ name, icon, label }: { name: string; icon: stri
       portal
       content={
         <Box padding={2}>
-          <img src={`/static/${name}.webp`} width={344} alt="" />
+          <img src={`/static/${name}.webp`} width={610} alt="" style={{ maxWidth: '100%' }} />
           {label && (
             <Text
               style={{
