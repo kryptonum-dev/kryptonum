@@ -88,15 +88,23 @@ export default defineField({
               type: 'url',
               title: 'Link',
               validation: Rule => Rule.required().uri({ scheme: ['https'] }),
+            }),
+            defineField({
+              name: 'name',
+              type: 'string',
+              title: 'Name',
+              validation: Rule => Rule.required(),
             })
           ],
           preview: {
             select: {
               icon: 'icon',
               link: 'link',
+              name: 'name',
             },
-            prepare: ({ icon, link }) => ({
-              title: link,
+            prepare: ({ icon, link, name }) => ({
+              title: name,
+              subtitle: link,
               media: icon
             }),
           }
