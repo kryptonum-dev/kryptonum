@@ -4,7 +4,7 @@ import { toPlainText } from '../../utils/to-plain-text';
 import { sectionPreview } from '../ui/section-preview';
 
 const name = 'PillCtaSection';
-const title = 'Pill CTA Section';
+const title = 'Pill CTA Section | with variants';
 const icon = () => '💊';
 
 export default defineField({
@@ -71,7 +71,7 @@ export default defineField({
     prepare: ({ heading }) => ({
       title: title,
       subtitle: toPlainText(heading),
-      ...sectionPreview({ name, icon: icon() }),
+      ...sectionPreview({ name, icon: icon(), label: 'With variants' }),
     }),
   },
 });
