@@ -31,7 +31,7 @@ const { index, sectionId, heading, list } = Astro.props
   </header>
   <ul>
     {
-      list.map(({ icon, text }) => (
+      list?.map(({ icon, text }) => (
         <li>
           <div class="icon">
             <Image {...icon} sizes="24px" />

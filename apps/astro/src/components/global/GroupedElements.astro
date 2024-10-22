@@ -1,0 +1,110 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const GroupedElements_Query = `
+  _type == "GroupedElements" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    groups[] {
+      ${ImageDataQuery('icon')}
+      heading,
+      list[],
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  groups: {
+    icon: ImageDataProps
+    heading: string
+    list: string[]
+  }[]
+}
+
+const { index, sectionId, heading, paragraph, groups } = Astro.props
+
+const Subheading = index === 0 ? 'h2' : 'h3'
+---
+
+<section class="GroupedElements" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <PortableText value={paragraph} class="paragraph" />
+  </header>
+  <div class="groups">
+    {
+      groups?.map(({ icon, heading, list }) => (
+        <div class="item">
+          <Subheading class="heading">
+            <Image {...icon} sizes="20px" />
+            {heading}
+          </Subheading>
+          <ul>
+            {list?.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style lang="scss">
+  .GroupedElements {
+    padding: clamp(3rem, calc(5vw / 0.48), 7rem) 0;
+    display: grid;
+    align-items: center;
+    gap: clamp(3rem, calc(4vw / 0.48), 8rem);
+    grid-template-columns: 1fr 1.75fr;
+    header {
+      .heading {
+        margin-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      }
+      .paragraph {
+        font-size: var(--typography-body-m, 0.875rem);
+      }
+    }
+    .groups {
+      border-radius: 0.75rem;
+      border: 1px solid var(--primary-500, #064040);
+      padding: clamp(1.5rem, calc(2vw / 0.48), 2.5rem);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(3rem, calc(5vw / 0.48), 5rem);
+      .heading {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        font-size: var(--typography-body-xl, 1rem);
+        margin-bottom: clamp(2rem, calc(2.5vw / 0.48), 4rem);
+        img {
+          width: 20px;
+          height: 20px;
+          margin-top: 0.125rem;
+        }
+      }
+      ul {
+        display: grid;
+        gap: 1rem;
+        font-size: var(--typography-body-m, 0.875rem);
+        color: var(--neutral-400, #c6cdcc);
+      }
+    }
+    @media (max-width: 63rem) {
+      grid-template-columns: 1fr;
+      max-width: 38rem;
+      margin: 0 auto;
+    }
+    @media (max-width: 40rem) {
+      .groups {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+</style>

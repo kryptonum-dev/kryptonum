@@ -14,6 +14,7 @@ import SkillsAndLinks from "./components/SkillsAndLinks";
 import ContactInfo from "./components/ContactInfo";
 import SimpleTextSection from "./components/SimpleTextSection";
 import AvailabilityStatus from "./components/AvailabilityStatus";
+import GroupedElements from "./components/GroupedElements";
 
 export default defineType({
   name: 'components',
@@ -35,6 +36,7 @@ export default defineType({
     ContactInfo,
     SimpleTextSection,
     AvailabilityStatus,
+    GroupedElements,
   ],
   options: {
     insertMenu: {

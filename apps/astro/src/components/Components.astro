@@ -17,6 +17,7 @@ import SkillsAndLinks, { SkillsAndLinks_Query } from '@/components/global/Skills
 import ContactInfo, { ContactInfo_Query } from '@/components/global/ContactInfo.astro'
 import SimpleTextSection, { SimpleTextSection_Query } from '@/components/global/SimpleTextSection.astro'
 import AvailabilityStatus, { AvailabilityStatus_Query } from '@/components/global/AvailabilityStatus.astro'
+import GroupedElements, { GroupedElements_Query } from '@/components/global/GroupedElements.astro'
 
 const components = {
   SimpleCtaSection,
@@ -34,6 +35,7 @@ const components = {
   ContactInfo,
   SimpleTextSection,
   AvailabilityStatus,
+  GroupedElements,
 }
 
 type ComponentsMap = {
@@ -70,6 +72,7 @@ export const Components_Query = /* groq */ `
     ${ContactInfo_Query}
     ${SimpleTextSection_Query}
     ${AvailabilityStatus_Query}
+    ${GroupedElements_Query}
   },
 `
 ---
