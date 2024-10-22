@@ -13,6 +13,7 @@ import ImageAndNumberedList from "./components/ImageAndNumberedList";
 import SkillsAndLinks from "./components/SkillsAndLinks";
 import ContactInfo from "./components/ContactInfo";
 import SimpleTextSection from "./components/SimpleTextSection";
+import AvailabilityStatus from "./components/AvailabilityStatus";
 
 export default defineType({
   name: 'components',
@@ -33,6 +34,7 @@ export default defineType({
     SkillsAndLinks,
     ContactInfo,
     SimpleTextSection,
+    AvailabilityStatus,
   ],
   options: {
     insertMenu: {
