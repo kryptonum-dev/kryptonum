@@ -21,6 +21,7 @@ import GroupedElements, { GroupedElements_Query } from '@/components/global/Grou
 import SimpleCtaColumnWithMedia, {
   SimpleCtaColumnWithMedia_Query,
 } from '@/components/global/SimpleCtaColumnWithMedia.astro'
+import TeamSpotlight, { TeamSpotlight_Query } from '@/components/global/TeamSpotlight.astro'
 
 const components = {
   SimpleCtaSection,
@@ -40,6 +41,7 @@ const components = {
   AvailabilityStatus,
   GroupedElements,
   SimpleCtaColumnWithMedia,
+  TeamSpotlight,
 }
 
 type ComponentsMap = {
@@ -78,6 +80,7 @@ export const Components_Query = /* groq */ `
     ${AvailabilityStatus_Query}
     ${GroupedElements_Query}
     ${SimpleCtaColumnWithMedia_Query}
+    ${TeamSpotlight_Query}
   },
 `
 ---

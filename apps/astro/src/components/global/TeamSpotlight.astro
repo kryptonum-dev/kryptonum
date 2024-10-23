@@ -1,0 +1,110 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const TeamSpotlight_Query = `
+  _type == "TeamSpotlight" => {
+    ${PortableTextQuery('heading')}
+    list[] -> {
+      "slug": slug.current,
+      ${ImageDataQuery('img')}
+      name,
+      headline,
+    }
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  list: Array<{
+    slug: string
+    img: ImageDataProps
+    name: string
+    headline: string
+  }>
+}
+
+const { index, sectionId, heading, list } = Astro.props
+
+const Subheading = index === 0 ? 'h2' : 'h3'
+---
+
+<section class="TeamSpotlight" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+  </header>
+  <ul class="list" style={`grid-template-columns: repeat(${Math.min(list?.length, 3)}, 1fr);`}>
+    {
+      list?.map(({ slug, img, name, headline }) => (
+        <li class="item">
+          <a href={slug}>
+            <Image {...img} sizes="78px" class="gradient-thumbnail" />
+            <div>
+              <Subheading class="subheading">{name}</Subheading>
+              <p>{headline}</p>
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style lang="scss">
+  .TeamSpotlight {
+    padding: clamp(4rem, calc(5vw / 0.48), 5rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 2.6fr;
+    gap: clamp(2rem, calc(3vw / 0.48), 5rem);
+    header {
+      max-width: 19rem;
+      .heading {
+        font-size: var(--typography-body-xl, 1rem);
+      }
+    }
+    .list {
+      display: grid;
+      gap: 1rem 2rem;
+      margin-left: auto;
+      .item {
+        a {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          gap: 0.75rem;
+          align-items: center;
+        }
+        img {
+          width: 78px;
+          height: 78px;
+          border-radius: 50%;
+        }
+        .subheading {
+          font-size: var(--typography-body-xl, 1rem);
+        }
+        p {
+          font-size: var(--typography-body-m, 0.875rem);
+          color: var(--neutral-400, #c6cdcc);
+        }
+      }
+    }
+    @media (max-width: 75rem) {
+      .list {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+    @media (max-width: 56rem) {
+      grid-template-columns: 1fr;
+      .list {
+        grid-template-columns: 1fr 1fr !important;
+        margin-left: unset;
+      }
+    }
+    @media (max-width: 37rem) {
+      .list {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  }
+</style>

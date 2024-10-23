@@ -16,7 +16,7 @@ import SimpleTextSection from "./components/SimpleTextSection";
 import AvailabilityStatus from "./components/AvailabilityStatus";
 import GroupedElements from "./components/GroupedElements";
 import SimpleCtaColumnWithMedia from "./components/SimpleCtaColumnWithMedia";
-
+import TeamSpotlight from "./components/TeamSpotlight";
 export default defineType({
   name: 'components',
   type: 'array',
@@ -39,6 +39,7 @@ export default defineType({
     AvailabilityStatus,
     GroupedElements,
     SimpleCtaColumnWithMedia,
+    TeamSpotlight,
   ],
   options: {
     insertMenu: {

@@ -28,6 +28,12 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'headline',
+      type: 'string',
+      title: 'Headline',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'email',
       type: 'string',
       title: 'Email address',
