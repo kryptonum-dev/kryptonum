@@ -9,8 +9,7 @@ type Props = {
 
 const { playbackId, aspectRatio, hideControls, ...props } = Astro.props
 
-const [width, height] = aspectRatio.split(':').map(Number)
-const paddingTopPercentage = (height / width) * 100
+const aspect_ratio = aspectRatio.replace(':', ' / ')
 
 export type VideoDataProps = Props
 
@@ -22,31 +21,24 @@ export const VideoDataQuery = (name: string) => `
 `
 ---
 
-<div style={`padding-top: ${paddingTopPercentage}%;`} {...props}>
-  <mux-player
-    class="player"
-    disable-cookies
-    playback-id={playbackId}
-    primary-color="#fff"
-    accent-color="#2DD282"
-    default-hidden-captions
-    {...hideControls ? { style: '--controls: none;', muted: true, autoplay: true, loop: true } : {}}>
-  </mux-player>
-</div>
+<mux-player
+  disable-cookies
+  playback-id={playbackId}
+  primary-color="#fff"
+  accent-color="#2DD282"
+  style={`aspect-ratio: ${aspect_ratio}; ${hideControls ? '--controls: none;' : ''}`}
+  {...hideControls ? { muted: true, autoplay: true, loop: true } : {}}
+  {...props}>
+</mux-player>
 
 <style lang="scss">
-  div {
-    position: relative;
-    width: 100%;
-    height: 0;
+  mux-player {
     overflow: hidden;
-    .player {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
+    --seek-backward-button: none;
+    --seek-forward-button: none;
+    --captions-button: none;
+    --playback-rate-button: none;
+    --pip-button: none;
   }
 </style>
 
