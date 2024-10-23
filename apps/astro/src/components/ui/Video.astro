@@ -43,18 +43,18 @@ export const VideoDataQuery = (name: string) => `
 </style>
 
 <script>
-  const videoObserver = new IntersectionObserver(
-    async (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
+  const observer = new IntersectionObserver(
+    async (videos) => {
+      for (const video of videos) {
+        if (video.isIntersecting) {
           await import('@mux/mux-player')
         }
       }
     },
-    { rootMargin: '50px' }
+    { rootMargin: '100px' }
   )
 
   document.querySelectorAll('mux-player').forEach((video) => {
-    videoObserver.observe(video)
+    observer.observe(video)
   })
 </script>
