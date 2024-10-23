@@ -35,7 +35,13 @@ const { index, sectionId, heading, paragraph, cta, isVideo, video, image } = Ast
     <PortableText value={paragraph} class="paragraph" />
     <Button {...cta} />
   </header>
-  {isVideo ? <Video {...video} class="media" /> : <Image {...image} sizes="50vw" class="media" />}
+  {
+    isVideo ? (
+      <Video {...video} class="media" />
+    ) : (
+      <Image {...image} sizes="(max-width: 63rem) 100vw, 50vw" class="media" />
+    )
+  }
 </section>
 
 <style lang="scss">
