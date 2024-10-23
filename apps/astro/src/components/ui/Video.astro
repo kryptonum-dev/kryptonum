@@ -1,0 +1,55 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type Props = {
+  playbackId: string
+  aspectRatio: string
+  hideControls?: boolean
+} & HTMLAttributes<'div'>
+
+const { playbackId, aspectRatio, hideControls, ...props } = Astro.props
+
+const [width, height] = aspectRatio.split(':').map(Number)
+const paddingTopPercentage = (height / width) * 100
+
+export type VideoDataProps = Props
+
+export const VideoDataQuery = (name: string) => `
+  ${name} {
+    "playbackId": asset -> playbackId,
+    "aspectRatio": asset -> data.aspect_ratio,
+  }
+`
+---
+
+<div style={`padding-top: ${paddingTopPercentage}%;`} {...props}>
+  <mux-player
+    class="player"
+    disable-cookies
+    playback-id={playbackId}
+    primary-color="#fff"
+    accent-color="#2DD282"
+    default-hidden-captions
+    {...hideControls ? { style: '--controls: none;', muted: true, autoplay: true, loop: true } : {}}>
+  </mux-player>
+</div>
+
+<style lang="scss">
+  div {
+    position: relative;
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    .player {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+</style>
+
+<script>
+  import '@mux/mux-player'
+</script>
