@@ -22,6 +22,7 @@ import SimpleCtaColumnWithMedia, {
   SimpleCtaColumnWithMedia_Query,
 } from '@/components/global/SimpleCtaColumnWithMedia.astro'
 import TeamSpotlight, { TeamSpotlight_Query } from '@/components/global/TeamSpotlight.astro'
+import PerformanceHighlights, { PerformanceHighlights_Query } from '@/components/global/PerformanceHighlights.astro'
 
 const components = {
   SimpleCtaSection,
@@ -42,6 +43,7 @@ const components = {
   GroupedElements,
   SimpleCtaColumnWithMedia,
   TeamSpotlight,
+  PerformanceHighlights,
 }
 
 type ComponentsMap = {
@@ -81,6 +83,7 @@ export const Components_Query = /* groq */ `
     ${GroupedElements_Query}
     ${SimpleCtaColumnWithMedia_Query}
     ${TeamSpotlight_Query}
+    ${PerformanceHighlights_Query}
   },
 `
 ---

@@ -72,7 +72,7 @@ export default defineField({
     prepare: ({ heading }) => ({
       title: title,
       subtitle: toPlainText(heading),
-      ...sectionPreview({ name, icon: icon(), label: 'With variants' }),
+      ...sectionPreview({ name, icon: icon() }),
     }),
   },
 });
