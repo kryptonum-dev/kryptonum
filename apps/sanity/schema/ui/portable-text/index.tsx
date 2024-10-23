@@ -53,11 +53,11 @@ export const PortableText = ({ name, title, allowHeadings = false }: { name?: st
               type: 'string',
               title: 'URL',
               description: 'Specify the full URL. Ensure it starts with "https://", "mailto:" or "tel:" protocol.',
-              hidden: ({ parent }) => parent?.type !== 'external',
+              hidden: ({ parent }) => parent?.linkType !== 'external',
               validation: (Rule) => [
                 Rule.custom((value, { parent }) => {
-                  const type = (parent as { type?: string })?.type;
-                  if (type === 'external') {
+                  const linkType = (parent as { linkType?: string })?.linkType;
+                  if (linkType === 'external') {
                     if (!value) return "URL is required";
                     if (!value.startsWith('https://') && !value.startsWith('mailto:') && !value.startsWith('tel:')) {
                       return 'External link must start with the "https://", "mailto:" or "tel:" protocol';
@@ -78,11 +78,11 @@ export const PortableText = ({ name, title, allowHeadings = false }: { name?: st
                 disableNew: true,
                 filter: 'defined(slug.current)',
               },
-              hidden: ({ parent }) => parent?.type !== 'internal',
+              hidden: ({ parent }) => parent?.linkType !== 'internal',
               validation: (rule) => [
                 rule.custom((value, { parent }) => {
-                  const type = (parent as { type?: string })?.type;
-                  if (type === 'internal' && !value?._ref) return "You have to choose internal page to link to.";
+                  const linkType = (parent as { linkType?: string })?.linkType;
+                  if (linkType === 'internal' && !value?._ref) return "You have to choose internal page to link to.";
                   return true;
                 }),
               ],
