@@ -2,6 +2,7 @@
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/cta'
+import CountUp from '@/components/ui/CountUp.astro'
 
 export const PerformanceHighlights_Query = `
   _type == "PerformanceHighlights" => {
@@ -40,7 +41,7 @@ const { index, sectionId, heading, paragraph, metrics, cta, img } = Astro.props
       {
         metrics.map(({ value, label }) => (
           <li class="metric">
-            <p class="value">{value}</p>
+            <CountUp class="value">{value}</CountUp>
             <p class="label">{label}</p>
           </li>
         ))
