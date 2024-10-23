@@ -4,6 +4,7 @@ import { schemaTypes, singletonActions, singletonTypes } from './structure/schem
 import { structureTool } from 'sanity/structure'
 import { media } from 'sanity-plugin-media'
 import { visionTool } from '@sanity/vision'
+import { muxInput } from 'sanity-plugin-mux-input'
 import { showProductionUrl } from './utils/show-production-url'
 
 export default defineConfig({
@@ -17,6 +18,7 @@ export default defineConfig({
     structureTool({ structure }),
     media(),
     visionTool(),
+    muxInput(),
     showProductionUrl(),
   ],
 
