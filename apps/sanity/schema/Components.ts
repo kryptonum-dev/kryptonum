@@ -15,6 +15,7 @@ import ContactInfo from "./components/ContactInfo";
 import SimpleTextSection from "./components/SimpleTextSection";
 import AvailabilityStatus from "./components/AvailabilityStatus";
 import GroupedElements from "./components/GroupedElements";
+import SimpleCtaColumnWithMedia from "./components/SimpleCtaColumnWithMedia";
 
 export default defineType({
   name: 'components',
@@ -37,6 +38,7 @@ export default defineType({
     SimpleTextSection,
     AvailabilityStatus,
     GroupedElements,
+    SimpleCtaColumnWithMedia,
   ],
   options: {
     insertMenu: {
