@@ -1,0 +1,184 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/cta'
+
+export const RichListAndCtaBox_Query = `
+  _type == "RichListAndCtaBox" => {
+    ${PortableTextQuery('heading')}
+    list[] {
+      ${ImageDataQuery('icon')}
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+    },
+    ctaBox[] {
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+    },
+    ${ButtonDataQuery('cta')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  list: Array<{
+    icon: ImageDataProps
+    heading: PortableTextValue
+    paragraph: PortableTextValue
+  }>
+  ctaBox: Array<{
+    heading: PortableTextValue
+    paragraph: PortableTextValue
+  }>
+  cta: ButtonDataProps
+}
+
+const { index, sectionId, heading, list, ctaBox, cta } = Astro.props
+---
+
+<section class="RichListAndCtaBox" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="h2" />
+  </header>
+  <div>
+    <ul class="list">
+      {
+        list?.map(({ icon, heading, paragraph }) => (
+          <li class="item">
+            <Image {...icon} sizes="20px" />
+            <div>
+              <PortableText value={heading} heading={index === 0 ? 'h2' : 'h3'} class="heading" />
+              <PortableText value={paragraph} class="paragraph" />
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="ctaBox">
+      <div class="background"></div>
+      <ul class="ctaBox-list">
+        {
+          ctaBox?.map(({ heading, paragraph }) => (
+            <li class="item">
+              <PortableText value={heading} class="heading" />
+              <PortableText value={paragraph} class="paragraph" />
+            </li>
+          ))
+        }
+      </ul>
+      <Button {...cta} className="cta" />
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  .RichListAndCtaBox {
+    padding: clamp(5rem, calc(5vw / 0.48), 8rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 2.3fr;
+    gap: clamp(4rem, calc(4vw / 0.48), 4rem) clamp(5rem, calc(7vw / 0.48), 14rem);
+    .list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1.5rem, calc(2vw / 0.48), 3rem) clamp(1rem, calc(1vw / 0.48), 2rem);
+      font-size: var(--typography-body-m, 0.875rem);
+      .item {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        img {
+          width: 20px;
+          height: 20px;
+          margin-top: 0.12rem;
+        }
+        .heading {
+          margin-bottom: 1.25rem;
+          font-size: var(--typography-body-m, 0.875rem);
+        }
+        .paragraph {
+          color: var(--neutral-400, #c6cdcc);
+        }
+      }
+    }
+    .ctaBox {
+      margin-top: clamp(2rem, calc(2.5vw / 0.48), 3rem);
+      margin-bottom: 1.5rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--primary-500, #064040);
+      text-align: center;
+      padding: 2rem 2rem clamp(0.5rem, calc(1vw / 0.48), 1rem);
+      position: relative;
+      .background {
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
+        mask-image: radial-gradient(ellipse 38% 50% at 50% 0, #000 62%, rgba(0, 0, 0, 0) 100%);
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -5%;
+          right: 0;
+          bottom: 0;
+          background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDIyIDI2IiBmaWxsPSJub25lIj48cGF0aCBzdHJva2U9IiMwMjFEMUQiIGQ9Ik0xMS41IDV2MTZNMTkgMTMuNUgzIi8+PC9zdmc+)
+            repeat top / 24px 24px;
+          transition: transform 1.5s var(--easing);
+        }
+      }
+      &:has(.cta:hover) {
+        .background::before {
+          transform: translateX(5%);
+        }
+      }
+      .ctaBox-list {
+        text-align: left;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        font-size: var(--typography-body-m, 0.875rem);
+        .heading {
+          margin-bottom: 1rem;
+        }
+        .paragraph {
+          color: var(--neutral-400, #c6cdcc);
+        }
+      }
+      .cta {
+        position: relative;
+        bottom: calc(-1.5rem - clamp(0.5rem, calc(1vw / 0.48), 1rem));
+      }
+    }
+    @media (max-width: 79rem) {
+      column-gap: clamp(3rem, calc(4vw / 0.48), 8rem);
+    }
+    @media (max-width: 69rem) {
+      grid-template-columns: 1fr;
+      max-width: 38rem;
+      margin: 0 auto;
+      header {
+        max-width: 23rem;
+      }
+    }
+    @media (max-width: 43rem) {
+      .list {
+        grid-template-columns: 1fr;
+      }
+      .ctaBox {
+        .ctaBox-list {
+          grid-template-columns: 1fr;
+        }
+        .cta {
+          margin-left: -1rem;
+          margin-right: -1rem;
+          width: calc(100% + 2rem);
+        }
+      }
+    }
+  }
+</style>

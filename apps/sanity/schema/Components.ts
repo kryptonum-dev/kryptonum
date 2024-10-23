@@ -18,6 +18,7 @@ import GroupedElements from "./components/GroupedElements";
 import SimpleCtaColumnWithMedia from "./components/SimpleCtaColumnWithMedia";
 import TeamSpotlight from "./components/TeamSpotlight";
 import PerformanceHighlights from "./components/PerformanceHighlights";
+import RichListAndCtaBox from "./components/RichListAndCtaBox";
 
 export default defineType({
   name: 'components',
@@ -43,6 +44,7 @@ export default defineType({
     SimpleCtaColumnWithMedia,
     TeamSpotlight,
     PerformanceHighlights,
+    RichListAndCtaBox,
   ],
   options: {
     insertMenu: {
