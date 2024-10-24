@@ -5,7 +5,7 @@ import { InternalLinkableTypes } from "../../structure/internal-linkable-types";
 
 const name = 'cta';
 const title = 'Call To Action (CTA)';
-const icon = () => '🔘';
+const icon = () => '👆';
 
 export default defineType({
   name,
@@ -113,18 +113,22 @@ export default defineType({
     select: {
       title: 'text',
       theme: 'theme',
-      type: 'type',
+      linkType: 'linkType',
       external: 'external',
       internal: 'internal.slug.current',
     },
-    prepare({ title, theme, type, external, internal }) {
+    prepare({ title, theme, linkType, external, internal }) {
+      const isExternal = linkType === 'external';
+      const icon = isExternal ? '🌐' : '🔗';
       return {
         title: `${title}`,
-        subtitle: type === 'external' ? external : internal,
+        subtitle: isExternal ? external : internal,
         media: () => <Tooltip
           content={
             <Box padding={1}>
               <Text size={1}>
+                {icon} {isExternal ? 'External link' : 'Internal link'}
+                &nbsp;|&nbsp;
                 {theme === 'primary' ? 'Primary button' : 'Secondary button'}
               </Text>
             </Box>
@@ -132,7 +136,7 @@ export default defineType({
           placement="top"
           portal
         >
-          <span>{icon()}</span>
+          <span>{icon}</span>
         </Tooltip>
       };
     },
