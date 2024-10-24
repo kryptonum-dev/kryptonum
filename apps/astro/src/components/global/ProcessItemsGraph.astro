@@ -42,7 +42,7 @@ const { index, sectionId, heading, paragraph, items } = Astro.props
           <div class="icon">
             <Image {...icon} sizes="20px" />
           </div>
-          <PortableText value={text} heading={index === 0 ? 'h2' : 'h3'} class="text" />
+          <PortableText value={text} class="text" />
           {label && (
             <p class="label">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none">
@@ -158,8 +158,10 @@ const { index, sectionId, heading, paragraph, items } = Astro.props
         .text {
           margin-top: clamp(1.5rem, calc(1.75vw / 0.48), 4rem);
           font-size: var(--typography-body-xl, 1rem);
-          line-height: unset;
           padding-right: 2rem;
+          & > :global(p) {
+            display: inline;
+          }
           &::before {
             content: counter(item) '. ';
           }
