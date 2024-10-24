@@ -25,6 +25,7 @@ import TeamSpotlight, { TeamSpotlight_Query } from '@/components/global/TeamSpot
 import PerformanceHighlights, { PerformanceHighlights_Query } from '@/components/global/PerformanceHighlights.astro'
 import RichListAndCtaBox, { RichListAndCtaBox_Query } from '@/components/global/RichListAndCtaBox.astro'
 import NarrowHeaderAndMedia, { NarrowHeaderAndMedia_Query } from '@/components/global/NarrowHeaderAndMedia.astro'
+import ProcessItemsGraph, { ProcessItemsGraph_Query } from '@/components/global/ProcessItemsGraph.astro'
 
 const components = {
   SimpleCtaSection,
@@ -48,6 +49,7 @@ const components = {
   PerformanceHighlights,
   RichListAndCtaBox,
   NarrowHeaderAndMedia,
+  ProcessItemsGraph,
 }
 
 type ComponentsMap = {
@@ -90,6 +92,7 @@ export const Components_Query = /* groq */ `
     ${PerformanceHighlights_Query}
     ${RichListAndCtaBox_Query}
     ${NarrowHeaderAndMedia_Query}
+    ${ProcessItemsGraph_Query}
   },
 `
 ---

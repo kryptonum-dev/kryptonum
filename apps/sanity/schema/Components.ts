@@ -20,6 +20,7 @@ import TeamSpotlight from "./components/TeamSpotlight";
 import PerformanceHighlights from "./components/PerformanceHighlights";
 import RichListAndCtaBox from "./components/RichListAndCtaBox";
 import NarrowHeaderAndMedia from "./components/NarrowHeaderAndMedia";
+import ProcessItemsGraph from "./components/ProcessItemsGraph";
 
 export default defineType({
   name: 'components',
@@ -47,6 +48,7 @@ export default defineType({
     PerformanceHighlights,
     RichListAndCtaBox,
     NarrowHeaderAndMedia,
+    ProcessItemsGraph,
   ],
   options: {
     insertMenu: {
