@@ -2,7 +2,7 @@ import type { StructureResolver } from 'sanity/structure'
 import { createSingleton } from './create-singleton'
 import { createCollection } from './create-collection';
 
-export const TYPES_TO_EXCLUDE_PREVIEWS = ['global', 'redirects', 'Faq_Collection'];
+export const TYPES_TO_EXCLUDE_PREVIEWS = ['global', 'redirects', 'Faq_Collection', 'BlogCategory_Collection'];
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -13,6 +13,8 @@ export const structure: StructureResolver = (S) =>
       createSingleton(S, "redirects"),
       S.divider(),
       createSingleton(S, "Index_Page"),
+      S.divider(),
+      createCollection(S, "Review_Collection"),
       S.divider(),
       createCollection(S, "TeamMember_Collection"),
       createCollection(S, "Faq_Collection"),
