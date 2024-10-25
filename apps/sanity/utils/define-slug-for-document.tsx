@@ -1,6 +1,6 @@
 import { defineField } from "sanity";
-import { slugify } from "../../utils/slugify";
-import { isUniqueSlug } from "../../utils/is-unique-slug";
+import { slugify } from "./slugify";
+import { isUniqueSlug } from "./is-unique-slug";
 
 export const defineSlugForDocument = ({ source, prefix = '', slug }: { source?: string, prefix?: string, slug?: string }) => [
   ...(source ? [] : [
