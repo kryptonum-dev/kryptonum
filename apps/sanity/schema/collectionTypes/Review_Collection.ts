@@ -48,6 +48,12 @@ export default defineType({
       title: 'Review',
       validation: Rule => Rule.required(),
     }),
+    defineField({
+      name: 'caseStudy',
+      type: 'reference',
+      title: 'Case Study (optional)',
+      to: [{ type: 'CaseStudy_Collection' }],
+    }),
   ],
   fieldsets: [
     {

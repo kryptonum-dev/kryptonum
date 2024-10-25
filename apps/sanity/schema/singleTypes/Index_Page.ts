@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity"
-import { defineSlugForDocument } from "../ui/define-slug-for-document";
+import { defineSlugForDocument } from "../../utils/define-slug-for-document";
 
 const name = 'Index_Page';
 const title = 'Homepage';

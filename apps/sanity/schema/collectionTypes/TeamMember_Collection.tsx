@@ -1,6 +1,7 @@
 import { defineField, defineType } from "sanity";
-import { defineSlugForDocument } from "../ui/define-slug-for-document";
+import { defineSlugForDocument } from "../../utils/define-slug-for-document";
 
+const name = 'TeamMember_Collection';
 const title = 'Team Members Collection';
 const icon = () => <img src="https://emoji.slack-edge.com/T02CFF835B5/krypto-dzik/71c712017db908f1.png" alt="KryptoDzik" style={{
   width: '80%',
@@ -9,10 +10,11 @@ const icon = () => <img src="https://emoji.slack-edge.com/T02CFF835B5/krypto-dzi
 }} />
 
 export default defineType({
-  name: 'TeamMember_Collection',
+  name: name,
   type: 'document',
   title,
   icon,
+  options: { documentPreview: true },
   fields: [
     ...defineSlugForDocument({ prefix: '/pl/zespol/' }),
     defineField({
@@ -44,6 +46,18 @@ export default defineType({
       type: 'string',
       title: 'Phone number (optional)',
     }),
+    defineField({
+      name: 'seo',
+      type: 'seo',
+      title: 'SEO',
+      group: 'seo',
+    }),
+  ],
+  groups: [
+    {
+      name: 'seo',
+      title: 'SEO',
+    },
   ],
   preview: {
     select: {

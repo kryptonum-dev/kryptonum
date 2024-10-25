@@ -1,0 +1,154 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Button from '@/components/ui/cta'
+
+export const Review_Query = `
+  ${ImageDataQuery('img')}
+  name,
+  headline,
+  scope[],
+  ${PortableTextQuery('review')}
+  "caseStudyLink": caseStudy -> slug.current
+`
+
+export const Reviews_Query = `
+  _type == "Reviews" => {
+    ${PortableTextQuery('heading')}
+    "reviews": select(reviews != null =>
+      reviews[] -> {
+        ${Review_Query}
+      },
+      *[_type == "Review_Collection"][] | order(_updatedAt desc) {
+        ${Review_Query}
+      }
+    )
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  reviews: Array<{
+    img: ImageDataProps
+    name: string
+    headline: string
+    scope: string[]
+    review: PortableTextValue
+    caseStudyLink?: string
+  }>
+}
+
+const { index, sectionId, heading, reviews } = Astro.props
+
+const Subheading = index === 0 ? 'h2' : 'h3'
+---
+
+<section class="Reviews" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="h2" />
+  </header>
+  <div class="items">
+    {
+      reviews.map(({ img, name, headline, scope, review, caseStudyLink }) => (
+        <article class="item">
+          <header>
+            <Subheading class="name">{name}</Subheading>
+            <p class="headline">{headline}</p>
+            <Image {...img} sizes="54px" />
+          </header>
+          <ul class="scope">
+            {scope.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+          <PortableText value={review} class="review" />
+          {caseStudyLink && (
+            <Button theme="secondary" href={caseStudyLink} className="cta">
+              Zobacz case study
+            </Button>
+          )}
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style lang="scss">
+  .Reviews {
+    padding: clamp(3rem, calc(5vw / 0.48), 6rem) 0;
+    > header {
+      max-width: 39rem;
+      margin: 0 auto clamp(2rem, calc(3vw / 0.48), 4rem);
+      text-align: center;
+    }
+    .items {
+      columns: 3;
+      $gap: 1.25rem;
+      gap: $gap;
+      margin-bottom: -$gap;
+      .item {
+        margin-bottom: $gap;
+        break-inside: avoid;
+        padding: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+        padding-bottom: clamp(1.25rem, calc(1.75vw / 0.48), 1.75rem);
+        border-radius: 0.25rem;
+        border: 1px solid var(--neutral-600, #4a4a57);
+        header {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          align-items: center;
+          column-gap: 1rem;
+          .name {
+            font-size: var(--typography-body-xl, 1rem);
+          }
+          .headline {
+            font-size: var(--typography-body-m, 0.875rem);
+            color: var(--neutral-400, #c6cdc4);
+          }
+          img {
+            border-radius: 50%;
+            border: 1px solid var(--neutral-700, #383842);
+            width: 54px;
+            height: 54px;
+            padding: 2px;
+            grid-column: 2;
+            grid-row: 1 / span 2;
+          }
+        }
+        .scope {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.38rem 0.75rem;
+          font-size: var(--typography-body-m, 0.875rem);
+          color: var(--neutral-400, #c6cdc4);
+          margin: 1rem 0 clamp(1.25rem, calc(1.5vw / 0.48), 1.75rem);
+        }
+        .review {
+          font-size: var(--typography-body-m, 0.875rem);
+        }
+        .cta {
+          margin-top: clamp(2.5rem, calc(2.5vw / 0.48), 4rem);
+        }
+      }
+    }
+    @media (max-width: 78rem) {
+      .items {
+        max-width: 48rem;
+        margin-left: auto;
+        margin-right: auto;
+        columns: 2;
+      }
+    }
+    @media (max-width: 56rem) {
+      > header {
+        text-align: left;
+      }
+      .items {
+        max-width: 38rem;
+        columns: 1;
+      }
+    }
+  }
+</style>
