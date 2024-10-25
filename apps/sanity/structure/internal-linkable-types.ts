@@ -6,4 +6,7 @@
  */
 export const InternalLinkableTypes: { type: string }[] = [
   { type: 'Index_Page' },
+  { type: 'BlogPost_Collection' },
+  { type: 'BlogCategory_Collection' },
+  { type: 'TeamMember_Collection' },
 ];
