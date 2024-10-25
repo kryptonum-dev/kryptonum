@@ -22,6 +22,7 @@ import RichListAndCtaBox from "./components/RichListAndCtaBox";
 import NarrowHeaderAndMedia from "./components/NarrowHeaderAndMedia";
 import ProcessItemsGraph from "./components/ProcessItemsGraph";
 import Reviews from "./components/Reviews";
+import SingleReview from "./components/SingleReview";
 
 export default defineType({
   name: 'components',
@@ -51,6 +52,7 @@ export default defineType({
     NarrowHeaderAndMedia,
     ProcessItemsGraph,
     Reviews,
+    SingleReview,
   ],
   options: {
     insertMenu: {

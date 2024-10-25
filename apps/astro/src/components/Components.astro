@@ -27,6 +27,7 @@ import RichListAndCtaBox, { RichListAndCtaBox_Query } from '@/components/global/
 import NarrowHeaderAndMedia, { NarrowHeaderAndMedia_Query } from '@/components/global/NarrowHeaderAndMedia.astro'
 import ProcessItemsGraph, { ProcessItemsGraph_Query } from '@/components/global/ProcessItemsGraph.astro'
 import Reviews, { Reviews_Query } from '@/components/global/Reviews.astro'
+import SingleReview, { SingleReview_Query } from '@/components/global/SingleReview.astro'
 
 const components = {
   SimpleCtaSection,
@@ -52,6 +53,7 @@ const components = {
   NarrowHeaderAndMedia,
   ProcessItemsGraph,
   Reviews,
+  SingleReview,
 }
 
 type ComponentsMap = {
@@ -96,6 +98,7 @@ export const Components_Query = /* groq */ `
     ${NarrowHeaderAndMedia_Query}
     ${ProcessItemsGraph_Query}
     ${Reviews_Query}
+    ${SingleReview_Query}
   },
 `
 ---
