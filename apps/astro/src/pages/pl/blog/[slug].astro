@@ -1,0 +1,48 @@
+---
+export const prerender = true
+
+import Layout from '@/src/layouts/Layout.astro'
+import sanityFetch from '@/utils/sanity.fetch'
+import metadataFetch from '@/utils/metadata.fetch'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+import Hero, { Hero_Query, type HeroProps } from './Hero.astro'
+
+export async function getStaticPaths() {
+  const collection = await sanityFetch<{ slug: string }[]>({
+    query: `
+      *[_type == 'BlogPost_Collection'][] {
+        "slug": slug.current,
+      }
+    `,
+  })
+  return collection?.map(({ slug }) => ({ params: { slug } }))
+}
+
+const { slug } = Astro.params
+
+const page = await sanityFetch<{ name: string; hero: HeroProps; components: ComponentsProps }>({
+  query: `
+    *[_type == 'BlogPost_Collection' && slug.current == $slug][0] {
+      name,
+      ${Hero_Query}
+      ${Components_Query}
+    }
+  `,
+  params: { slug },
+})
+if (!page) return Astro.rewrite('/404')
+
+const metadata = await metadataFetch('BlogPost_Collection', slug)
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs
+    data={[
+      { name: 'Blog', path: '/pl/blog/' },
+      { name: page.name, path: `/pl/blog/${slug}` },
+    ]}
+  />
+  <Hero {...page.hero} />
+  <Components data={page.components} />
+</Layout>

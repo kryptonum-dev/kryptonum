@@ -1,0 +1,153 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/src/components/ui/image'
+import { formatDate } from '@/utils/format-date'
+
+export type HeroProps = {
+  _createdAt: Date
+  _updatedAt: Date
+  heading: PortableTextValue
+  img: ImageDataProps
+  category: {
+    name: string
+    slug: string
+    postCount: number
+  }
+}
+
+export const Hero_Query = `
+  "hero": {
+    _createdAt,
+    _updatedAt,
+    ${PortableTextQuery('heading')}
+    ${ImageDataQuery('img')}
+    category -> {
+      name,
+      "slug": "/pl/blog/kategoria/" + slug.current,
+      "postCount": count(*[_type == 'BlogPost_Collection' && references(^._id)])
+    }
+  },
+`
+
+const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroProps
+---
+
+<section class="Hero">
+  <header>
+    <a href={category.slug} class="category">{category.name} ({category.postCount})</a>
+    <PortableText value={heading} heading="h1" class="h2 heading" />
+    <div class="date">
+      <p>{formatDate(_createdAt)}</p>
+      ·
+      <p class="updatedAt">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none" viewBox="0 0 16 17">
+          <path
+            stroke="#C6CDCC"
+            d="M2.453 9.167V8.056c0-3.069 2.507-5.556 5.6-5.556 2.025 0 3.8 1.068 4.783 2.667m-10.383 4 1.12-1.111m-1.12 1.11-1.12-1.11M13.543 7.833v1.112c0 3.068-2.517 5.555-5.62 5.555a5.632 5.632 0 0 1-4.803-2.666m10.423-4-1.124 1.11m1.124-1.11 1.124 1.11">
+          </path>
+        </svg>
+        <span>
+          Zaktualizowano <span data-updated-at={new Date(_updatedAt).toISOString()} class="relative-date">
+            {formatDate(_updatedAt)}
+          </span>
+        </span>
+      </p>
+    </div>
+  </header>
+  <Image {...img} sizes="(max-width: 63rem) 100vw, 60vw" />
+</section>
+
+<style lang="scss">
+  .Hero {
+    padding: 2rem 0;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr 1.4fr;
+    align-items: flex-end;
+    header {
+      .category {
+        display: inline-flex;
+        align-items: center;
+        font-size: var(--typography-body-s, 0.75rem);
+        padding: 0.5rem 1rem;
+        height: 2.4375rem;
+        $tap-increment: calc(-0.15625rem - 1px);
+        position: relative;
+        &::before {
+          content: '';
+          position: absolute;
+          left: $tap-increment;
+          top: $tap-increment;
+          bottom: $tap-increment;
+          right: $tap-increment;
+        }
+        border-radius: 2.75rem;
+        border: 1px solid var(--neutral-500);
+        transition:
+          border-color 300ms,
+          transform 500ms var(--easing);
+        &:hover {
+          border-color: var(--neutral-200, #f0f7f7);
+        }
+        &:active {
+          transition: none;
+          transform: scale(0.98);
+        }
+      }
+      .heading {
+        margin: clamp(1.5rem, calc(1.75vw / 0.48), 2rem) 0;
+      }
+      .date {
+        color: var(--neutral-400, #c6cdcc);
+        font-size: var(--typography-body-m, 0.875rem);
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.25rem 0.62rem;
+        .updatedAt {
+          display: grid;
+          align-items: center;
+          grid-template-columns: auto 1fr;
+          gap: 0.5rem;
+        }
+      }
+    }
+    img {
+      border-radius: 0.25rem;
+      border: 1px solid var(--primary-500, #064040);
+    }
+    @media (max-width: 63rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      grid-template-columns: 1fr;
+      img {
+        order: -1;
+      }
+    }
+  }
+</style>
+
+<script>
+  function getRelativeDate(date: Date): string {
+    const now = new Date()
+    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
+
+    if (diffDays === 0) {
+      return 'dzisiaj'
+    } else if (diffDays === 1) {
+      return 'wczoraj'
+    } else if (diffDays === 2) {
+      return 'przedwczoraj'
+    } else if (diffDays >= 3 && diffDays <= 6) {
+      return `${diffDays}. dni temu`
+    } else {
+      return new Date(date).toLocaleDateString('pl-PL')
+    }
+  }
+
+  const dateElements = document.querySelectorAll<HTMLSpanElement>('.relative-date')
+  dateElements.forEach((element) => {
+    const updatedAt = new Date(element.dataset.updatedAt as string)
+    element.textContent = getRelativeDate(updatedAt)
+  })
+</script>
