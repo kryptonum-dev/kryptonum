@@ -3,7 +3,7 @@ import { defineSlugForDocument } from "../../utils/define-slug-for-document";
 
 const name = 'Index_Page';
 const title = 'Homepage';
-const slug = '/';
+const slug = '/pl';
 
 export default defineType({
   name: name,
