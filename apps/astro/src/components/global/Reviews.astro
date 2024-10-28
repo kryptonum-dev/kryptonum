@@ -40,13 +40,91 @@ type Props = {
   }>
 }
 
-const { index, sectionId, heading, reviews } = Astro.props
+const { index, sectionId, heading, reviews } = Astro.props as Props
 
 const Subheading = index === 0 ? 'h2' : 'h3'
+
+const fetchGoogleReviews = async () => {
+  const placeId = 'ChIJFbxrVr65HkcR57-1w7BgXeA'
+  const fields = ['rating', 'user_ratings_total', 'url'].join(',')
+  const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY
+  const googleReviewsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=${fields}&key=${GOOGLE_API_KEY}`
+  try {
+    return (await fetch(googleReviewsUrl).then((res) => res.json())).result as {
+      rating: number
+      user_ratings_total: number
+      url: string
+    }
+  } catch (error) {
+    console.error('Failed to fetch Google reviews:', error)
+    return { rating: null }
+  }
+}
+const googleReviews = await fetchGoogleReviews()
+const countReviews = (number: number = 0) => {
+  if (number >= 5) {
+    return `${number} opinii`
+  } else if ([2, 3, 4].includes(number)) {
+    return `${number} opinie`
+  } else if (number === 1) {
+    return `${number} opinia`
+  } else {
+    return 'Brak opinii'
+  }
+}
+const renderStars = (rating: number) => {
+  const fullStars = Math.floor(rating)
+  const isEmpty = rating - fullStars >= 0.5
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" fill="none" viewBox="0 0 17 16">
+      <defs>
+        <linearGradient id="Reviews-star" x1="14.916" x2="1.04" y1="1.332" y2="2.216" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop>
+          <stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+        <path id="star-path" d="M6.602 3.604C7.446 2.09 7.868 1.332 8.5 1.332c.63 0 1.053.757 1.898 2.272l.218.392c.24.43.36.646.547.788.187.142.42.195.886.3l.424.096c1.64.371 2.46.557 2.655 1.184.195.627-.364 1.28-1.482 2.588l-.289.338c-.318.372-.476.557-.548.787-.071.23-.047.478 0 .973l.044.452c.17 1.744.254 2.616-.257 3.003-.51.388-1.278.035-2.813-.672l-.398-.183c-.436-.201-.654-.301-.885-.301-.232 0-.45.1-.886.3l-.397.184c-1.536.707-2.303 1.06-2.814.672-.51-.387-.426-1.26-.257-3.003l.044-.452c.048-.495.072-.743 0-.973-.071-.23-.23-.415-.548-.787l-.289-.338c-1.118-1.307-1.677-1.96-1.482-2.588.195-.627 1.015-.813 2.655-1.184l.424-.096c.466-.105.7-.158.886-.3.187-.142.307-.357.547-.788l.219-.392Z" />
+      </defs>
+      <use href="#star-path" fill="url(#Reviews-star)" />
+    </svg>
+    ${[...Array(4)].map((_, i) => `<svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" fill="none" viewBox="0 0 17 16"><use href="#star-path" ${i + 1 < fullStars || (i + 1 === fullStars && isEmpty) ? 'fill' : 'stroke'}="url(#Reviews-star)" /></svg>`).join('')}`
+}
 ---
 
 <section class="Reviews" id={sectionId}>
   <header>
+    {
+      googleReviews.rating && (
+        <div class="rating">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" fill="none" viewBox="0 0 17 16">
+            <path
+              fill="#4280EF"
+              d="M16.5 8.192c0-.54-.053-1.096-.142-1.618H8.66v3.078h4.409a3.625 3.625 0 0 1-1.636 2.418l2.632 2C15.61 12.66 16.5 10.609 16.5 8.192Z"
+            />
+            <path
+              fill="#34A353"
+              d="M8.66 15.982c2.204 0 4.053-.713 5.404-1.93l-2.63-1.983c-.73.487-1.672.765-2.774.765-2.133 0-3.929-1.409-4.587-3.287l-2.702 2.035c1.387 2.695 4.196 4.4 7.289 4.4Z"
+            />
+            <path
+              fill="#F6B704"
+              d="M4.074 9.531a4.75 4.75 0 0 1 0-3.06L1.372 4.417a7.838 7.838 0 0 0 0 7.165l2.702-2.052Z"
+            />
+            <path
+              fill="#E54335"
+              d="M8.66 3.181a4.507 4.507 0 0 1 3.129 1.2l2.329-2.296C12.642.73 10.687 0 8.66.016c-3.093 0-5.902 1.705-7.289 4.4l2.702 2.053c.658-1.896 2.454-3.287 4.587-3.287Z"
+            />
+          </svg>
+          <div class="rating-content">
+            <span>{googleReviews.rating.toFixed(1)}</span>
+            <div class="stars">
+              <Fragment set:html={renderStars(googleReviews.rating)} />
+            </div>
+            <a href={googleReviews.url} target="_blank" rel="noopener noreferrer" class="link">
+              {countReviews(googleReviews.user_ratings_total)}
+            </a>
+          </div>
+        </div>
+      )
+    }
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="h2" />
   </header>
   <div class="items">
@@ -82,6 +160,41 @@ const Subheading = index === 0 ? 'h2' : 'h3'
       max-width: 39rem;
       margin: 0 auto clamp(2rem, calc(3vw / 0.48), 4rem);
       text-align: center;
+      .rating {
+        font-size: var(--typography-body-m, 0.875rem);
+        color: var(--neutral-400, #c6cdc4);
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: clamp(1.5rem, calc(1.75vw / 0.48), 1.75rem);
+        align-items: center;
+        width: fit-content;
+        margin: 0 auto clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+        .rating-content {
+          display: flex;
+          align-items: center;
+          gap: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+          .stars {
+            display: flex;
+            align-items: center;
+            gap: 0.38rem;
+            position: relative;
+            &::before {
+              content: '';
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              transform: translate3d(-50%, -50%, 0);
+              width: 5rem;
+              height: 5rem;
+              background: linear-gradient(266deg, #0b0f0d, #011310, #001f1b);
+              border-radius: 50%;
+              z-index: -1;
+              mix-blend-mode: plus-lighter;
+              filter: blur(16px);
+            }
+          }
+        }
+      }
     }
     .items {
       columns: 3;
@@ -144,6 +257,9 @@ const Subheading = index === 0 ? 'h2' : 'h3'
     @media (max-width: 56rem) {
       > header {
         text-align: left;
+        .rating {
+          width: 100%;
+        }
       }
       .items {
         max-width: 38rem;
