@@ -1,7 +1,7 @@
 import { defineField, defineType } from "sanity";
 import { defineSlugForDocument } from "../../utils/define-slug-for-document";
-import { toPlainText } from "../../utils/to-plain-text";
 
+const slugPrefix = '/pl/blog/';
 const name = 'BlogPost_Collection';
 const title = 'Blog Post Collection';
 const icon = () => '📰';
@@ -11,7 +11,7 @@ export default defineType({
   type: 'document',
   title,
   icon,
-  options: { documentPreview: true },
+  options: { documentPreview: true, slugPrefix: slugPrefix },
   fields: [
     defineField({
       name: 'name',
@@ -20,7 +20,7 @@ export default defineType({
       description: 'Name will be displayed in breadcrumb and in schemas for Google',
       validation: Rule => Rule.required(),
     }),
-    ...defineSlugForDocument({ source: 'name', prefix: '/pl/blog/' }),
+    ...defineSlugForDocument({ source: 'name', slugPrefix: slugPrefix }),
     defineField({
       name: 'heading',
       type: 'Heading',
@@ -59,7 +59,7 @@ export default defineType({
     },
     prepare: ({ name, slug }) => ({
       title: name,
-      subtitle: slug,
+      subtitle: `${slugPrefix}${slug}`,
       icon,
     }),
   },
