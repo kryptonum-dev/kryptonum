@@ -28,6 +28,7 @@ import NarrowHeaderAndMedia, { NarrowHeaderAndMedia_Query } from '@/components/g
 import ProcessItemsGraph, { ProcessItemsGraph_Query } from '@/components/global/ProcessItemsGraph.astro'
 import Reviews, { Reviews_Query } from '@/components/global/Reviews.astro'
 import SingleReview, { SingleReview_Query } from '@/components/global/SingleReview.astro'
+import LatestBlogPosts, { LatestBlogPosts_Query } from '@/components/global/LatestBlogPosts.astro'
 
 const components = {
   SimpleCtaSection,
@@ -54,6 +55,7 @@ const components = {
   ProcessItemsGraph,
   Reviews,
   SingleReview,
+  LatestBlogPosts,
 }
 
 type ComponentsMap = {
@@ -99,6 +101,7 @@ export const Components_Query = /* groq */ `
     ${ProcessItemsGraph_Query}
     ${Reviews_Query}
     ${SingleReview_Query}
+    ${LatestBlogPosts_Query}
   },
 `
 ---

@@ -23,6 +23,7 @@ import NarrowHeaderAndMedia from "./components/NarrowHeaderAndMedia";
 import ProcessItemsGraph from "./components/ProcessItemsGraph";
 import Reviews from "./components/Reviews";
 import SingleReview from "./components/SingleReview";
+import LatestBlogPosts from "./components/LatestBlogPosts";
 
 export default defineType({
   name: 'components',
@@ -53,6 +54,7 @@ export default defineType({
     ProcessItemsGraph,
     Reviews,
     SingleReview,
+    LatestBlogPosts,
   ],
   options: {
     insertMenu: {

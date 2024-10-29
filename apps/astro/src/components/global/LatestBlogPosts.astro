@@ -1,0 +1,139 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/cta'
+import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@/components/ui/EstimatedReadingTime.astro'
+
+export const BlogPostDataQuery = `
+  ${ImageDataQuery('img')}
+  name,
+  "slug": slug.current,
+  content,
+`
+
+export const LatestBlogPosts_Query = `
+  _type == "LatestBlogPosts" => {
+    ${PortableTextQuery('heading')}
+    ${ButtonDataQuery('cta')}
+    "posts": select(posts != null =>
+      posts[] -> {
+        ${BlogPostDataQuery}
+      },
+      *[_type == "BlogPost_Collection"][] | order(_createdAt desc)[0...2] {
+        ${BlogPostDataQuery}
+      },
+    ),
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  cta: ButtonDataProps
+  posts: Array<{
+    img: ImageDataProps
+    name: string
+    slug: string
+    content: EstimatedReadingTimeProps['content']
+  }>
+}
+
+const { index, sectionId, heading, cta, posts } = Astro.props
+
+const Subheading = index === 0 ? 'h2' : 'h3'
+---
+
+<section class="LatestBlogPosts" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <Button {...cta} />
+  </header>
+  <section class="posts">
+    {
+      posts.map(({ img, name, slug, content }, i) => (
+        <article class="post">
+          <a href={`/pl/blog/${slug}`}>
+            <Image
+              {...img}
+              sizes="(max-width: 46rem) 100vw, 40vw"
+              priority={index === 0 && i === 0}
+              loading={index === 0 ? 'eager' : 'lazy'}
+            />
+            <header>
+              <EstimatedReadingTime content={content} />
+              <Subheading>{name}</Subheading>
+            </header>
+          </a>
+        </article>
+      ))
+    }
+  </section>
+</section>
+
+<style lang="scss">
+  .LatestBlogPosts {
+    padding: clamp(2rem, calc(4vw / 0.48), 5rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    align-items: center;
+    gap: clamp(1.25rem, calc(3vw / 0.48), 3rem) 1.25rem;
+    > header {
+      display: grid;
+      gap: clamp(1rem, calc(3vw / 0.48), 3rem);
+      justify-items: flex-start;
+    }
+    .posts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+      gap: clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+      .post {
+        a {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          border-radius: 0.25rem;
+          border: 1px solid var(--neutral-700, rgba(56, 56, 66, 1));
+          overflow: hidden;
+          transition: border-color 500ms var(--easing);
+          &:hover {
+            border-color: var(--neutral-600, rgba(74, 74, 87, 1));
+          }
+        }
+        header {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          padding: clamp(0.75rem, calc(1vw / 0.48), 1.5rem) clamp(1rem, calc(1vw / 0.48), 1.5rem)
+            clamp(1rem, calc(1vw / 0.48), 1.5rem);
+          :global(.estimated-reading-time) {
+            margin-bottom: clamp(1rem, calc(1.25vw / 0.48), 3rem);
+          }
+          h3 {
+            margin-top: auto;
+            font-size: var(--typography-body-xl, 1rem);
+          }
+        }
+      }
+    }
+    @media (max-width: 66rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      grid-template-columns: 1fr;
+      > header {
+        align-items: flex-start;
+        grid-template-columns: 1fr auto;
+      }
+    }
+    @media (max-width: 46rem) {
+      > header {
+        gap: 0.75rem;
+        grid-template-columns: 1fr;
+      }
+      .posts {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+</style>
