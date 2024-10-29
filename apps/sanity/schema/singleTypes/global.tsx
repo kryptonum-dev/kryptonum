@@ -71,6 +71,41 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'googleData',
+      type: 'object',
+      title: 'Google Data',
+      fields: [
+        defineField({
+          name: 'rating',
+          type: 'number',
+          title: 'Rating (1.0 - 5.0)',
+          validation: Rule => Rule.required().max(5).min(1),
+          fieldset: 'rating',
+        }),
+        defineField({
+          name: 'user_ratings_total',
+          type: 'number',
+          title: 'Number of reviews',
+          validation: Rule => Rule.required(),
+          fieldset: 'rating',
+        }),
+        defineField({
+          name: 'url',
+          type: 'url',
+          title: 'Google Business URL',
+          validation: Rule => Rule.required().uri({ scheme: ['https'] }),
+        }),
+      ],
+      validation: Rule => Rule.required(),
+      fieldsets: [
+        {
+          name: 'rating',
+          title: 'Rating',
+          options: { columns: 2 },
+        },
+      ],
+    }),
+    defineField({
       name: 'seo',
       type: 'object',
       title: 'Global SEO',
