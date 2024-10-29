@@ -96,7 +96,6 @@ export default defineType({
           validation: Rule => Rule.required().uri({ scheme: ['https'] }),
         }),
       ],
-      validation: Rule => Rule.required(),
       fieldsets: [
         {
           name: 'rating',

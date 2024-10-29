@@ -22,7 +22,12 @@ export const Reviews_Query = `
       *[_type == "Review_Collection"][] | order(_updatedAt desc) {
         ${Review_Query}
       }
-    )
+    ),
+    "googleData": *[_type == "global"][0].googleData {
+      rating,
+      user_ratings_total,
+      url,
+    }
   },
 `
 
@@ -38,29 +43,17 @@ type Props = {
     review: PortableTextValue
     caseStudyLink?: string
   }>
+  googleData: {
+    rating: number
+    user_ratings_total: number
+    url: string
+  }
 }
 
-const { index, sectionId, heading, reviews } = Astro.props as Props
+const { index, sectionId, heading, reviews, googleData } = Astro.props as Props
 
 const Subheading = index === 0 ? 'h2' : 'h3'
 
-const fetchGoogleReviews = async () => {
-  const placeId = 'ChIJFbxrVr65HkcR57-1w7BgXeA'
-  const fields = ['rating', 'user_ratings_total', 'url'].join(',')
-  const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY
-  const googleReviewsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=${fields}&key=${GOOGLE_API_KEY}`
-  try {
-    return (await fetch(googleReviewsUrl).then((res) => res.json())).result as {
-      rating: number
-      user_ratings_total: number
-      url: string
-    }
-  } catch (error) {
-    console.error('Failed to fetch Google reviews:', error)
-    return { rating: null }
-  }
-}
-const googleReviews = await fetchGoogleReviews()
 const countReviews = (number: number = 0) => {
   if (number >= 5) {
     return `${number} opinii`
@@ -72,6 +65,7 @@ const countReviews = (number: number = 0) => {
     return 'Brak opinii'
   }
 }
+
 const renderStars = (rating: number) => {
   const fullStars = Math.floor(rating)
   const isEmpty = rating - fullStars >= 0.5
@@ -93,7 +87,7 @@ const renderStars = (rating: number) => {
 <section class="Reviews" id={sectionId}>
   <header>
     {
-      googleReviews.rating && (
+      googleData?.rating && (
         <div class="rating">
           <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" fill="none" viewBox="0 0 17 16">
             <path
@@ -114,12 +108,12 @@ const renderStars = (rating: number) => {
             />
           </svg>
           <div class="rating-content">
-            <span>{googleReviews.rating.toFixed(1)}</span>
+            <span>{googleData.rating.toFixed(1)}</span>
             <div class="stars">
-              <Fragment set:html={renderStars(googleReviews.rating)} />
+              <Fragment set:html={renderStars(googleData.rating)} />
             </div>
-            <a href={googleReviews.url} target="_blank" rel="noopener noreferrer" class="link">
-              {countReviews(googleReviews.user_ratings_total)}
+            <a href={googleData.url} target="_blank" rel="noopener noreferrer" class="link">
+              {countReviews(googleData.user_ratings_total)}
             </a>
           </div>
         </div>
