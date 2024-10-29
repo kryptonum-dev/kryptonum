@@ -130,7 +130,10 @@ const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroPr
 <script>
   function getRelativeDate(date: Date): string {
     const now = new Date()
-    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
+    const dateToCompare = new Date(date)
+    now.setHours(0, 0, 0, 0)
+    dateToCompare.setHours(0, 0, 0, 0)
+    const diffDays = Math.floor((now.getTime() - dateToCompare.getTime()) / (1000 * 60 * 60 * 24))
 
     if (diffDays === 0) {
       return 'dzisiaj'
@@ -141,7 +144,7 @@ const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroPr
     } else if (diffDays >= 3 && diffDays <= 6) {
       return `${diffDays}. dni temu`
     } else {
-      return new Date(date).toLocaleDateString('pl-PL')
+      return dateToCompare.toLocaleDateString('pl-PL')
     }
   }
 
