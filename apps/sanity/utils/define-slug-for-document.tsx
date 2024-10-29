@@ -31,7 +31,7 @@ export const defineSlugForDocument = ({ source, slugPrefix = '', slug }: { sourc
       slugify: (slug: string) => slugify(slug),
     },
     validation: Rule => Rule.custom(value => {
-      if (value?.current && value.current !== slugify(value.current)) {
+      if (!slug && value?.current && value.current !== slugify(value.current)) {
         return 'There is a typo in the slug. Remember that slug can contain only lowercase letters, numbers and dashes.';
       }
       return true;
