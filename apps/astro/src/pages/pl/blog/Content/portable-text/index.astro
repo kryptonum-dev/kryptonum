@@ -6,6 +6,7 @@ import Video, { Video_Query } from './Video.astro'
 import Author, { Author_Query } from './Author.astro'
 import Quote, { Quote_Query } from './Quote.astro'
 import ProsAndCons, { ProsAndCons_Query } from './ProsAndCons.astro'
+import DoAndDonts, { DoAndDonts_Query } from './DoAndDonts.astro'
 
 export const PortableText_Query = `
   ${Image_Query}
@@ -13,6 +14,7 @@ export const PortableText_Query = `
   ${Author_Query}
   ${Quote_Query}
   ${ProsAndCons_Query}
+  ${DoAndDonts_Query}
 `
 
 type Props = {
@@ -31,6 +33,7 @@ const { value } = Astro.props
       Author: Author,
       Quote: Quote,
       ProsAndCons: ProsAndCons,
+      DoAndDonts: DoAndDonts,
     },
   }}
 />

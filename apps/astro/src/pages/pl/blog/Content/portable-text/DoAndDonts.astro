@@ -1,0 +1,181 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const DoAndDonts_Query = `
+  _type == "DoAndDonts" => {
+    elements[] {
+      isDo,
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+    },
+  },
+`
+
+type Props = {
+  node: {
+    elements: Array<{
+      isDo: boolean
+      heading: PortableTextValue
+      paragraph: PortableTextValue
+    }>
+  }
+}
+
+const { node } = Astro.props
+---
+
+<section class="DoAndDonts">
+  {
+    node?.elements.map(({ isDo, heading, paragraph }, index) => {
+      const isFirstDo = isDo && node.elements.findIndex((el) => el.isDo) === index
+      const isFirstDont = !isDo && node.elements.findIndex((el) => !el.isDo) === index
+
+      return (
+        <article>
+          {isFirstDo ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="48"
+              height="48"
+              fill="none"
+              viewBox="0 0 48 48"
+              id="DoAndDonts-do">
+              <rect width="47" height="47" x=".5" y=".5" fill="url(#DoAndDonts-a)" rx="23.5" />
+              <rect width="47" height="47" x=".5" y=".5" stroke="url(#DoAndDonts-b)" rx="23.5" />
+              <circle cx="24" cy="24" r="10" stroke="url(#DoAndDonts-c)" />
+              <path stroke="url(#DoAndDonts-d)" d="m20.5 24.5 2 2 5-5" />
+              <defs>
+                <linearGradient
+                  id="DoAndDonts-a"
+                  x1="47.1"
+                  x2="-2.855"
+                  y1="0"
+                  y2="3.182"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#0B0F0D" />
+                  <stop offset=".526" stop-color="#011310" />
+                  <stop offset="1" stop-color="#001F1B" />
+                </linearGradient>
+                <linearGradient
+                  id="DoAndDonts-b"
+                  x1="47.1"
+                  x2="-2.855"
+                  y1="0"
+                  y2="3.182"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#2DD282" />
+                  <stop offset="1" stop-color="#90F4E8" />
+                </linearGradient>
+                <linearGradient
+                  id="DoAndDonts-c"
+                  x1="33.625"
+                  x2="12.811"
+                  y1="14"
+                  y2="15.326"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#2DD282" />
+                  <stop offset="1" stop-color="#90F4E8" />
+                </linearGradient>
+                <linearGradient
+                  id="DoAndDonts-d"
+                  x1="27.369"
+                  x2="20.112"
+                  y1="21.5"
+                  y2="22.147"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#2DD282" />
+                  <stop offset="1" stop-color="#90F4E8" />
+                </linearGradient>
+              </defs>
+            </svg>
+          ) : isFirstDont ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="48"
+              height="48"
+              fill="none"
+              viewBox="0 0 48 48"
+              id="DoAndDonts-dont">
+              <rect width="47" height="47" x=".5" y=".5" fill="url(#DoAndDonts-e)" rx="23.5" />
+              <rect width="47" height="47" x=".5" y=".5" stroke="url(#DoAndDonts-f)" rx="23.5" />
+              <path stroke="url(#DoAndDonts-g)" stroke-linecap="round" d="M31 17 17 31m0-14 14 14" />
+              <defs>
+                <linearGradient
+                  id="DoAndDonts-e"
+                  x1="47.1"
+                  x2="-2.855"
+                  y1="0"
+                  y2="3.182"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#0F0B0B" />
+                  <stop offset=".526" stop-color="#130501" />
+                  <stop offset="1" stop-color="#290005" />
+                </linearGradient>
+                <linearGradient
+                  id="DoAndDonts-f"
+                  x1="47.1"
+                  x2="-2.855"
+                  y1="0"
+                  y2="3.182"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#D44A84" />
+                  <stop offset=".521" stop-color="#DA2B53" />
+                  <stop offset="1" stop-color="#BF3A3A" />
+                </linearGradient>
+                <linearGradient
+                  id="DoAndDonts-g"
+                  x1="30.738"
+                  x2="16.167"
+                  y1="17"
+                  y2="17.928"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#D44A84" />
+                  <stop offset=".521" stop-color="#DA2B53" />
+                  <stop offset="1" stop-color="#BF3A3A" />
+                </linearGradient>
+              </defs>
+            </svg>
+          ) : (
+            <svg width="48" height="48" viewBox="0 0 48 48">
+              <use href={isDo ? '#DoAndDonts-do' : '#DoAndDonts-dont'} />
+            </svg>
+          )}
+          <div>
+            <PortableText value={heading} class="heading" />
+            <PortableText value={paragraph} class="paragraph" />
+          </div>
+        </article>
+      )
+    })
+  }
+</section>
+
+<style lang="scss">
+  .DoAndDonts {
+    padding: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
+    display: grid;
+    gap: 2rem;
+    article {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      svg {
+        width: clamp(40px, calc(48vw / 7.68), 48px);
+        height: clamp(40px, calc(48vw / 7.68), 48px);
+      }
+      .heading {
+        font-size: var(--typography-body-2xl, 1.25rem);
+        margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+        margin-top: 0.5rem;
+      }
+    }
+    @media (max-width: 28rem) {
+      article {
+        grid-template-columns: 1fr;
+        .heading {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+</style>

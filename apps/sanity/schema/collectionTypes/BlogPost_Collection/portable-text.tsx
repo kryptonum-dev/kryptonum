@@ -6,6 +6,7 @@ import Video from "./Video";
 import Author from "./Author";
 import Quote from "./Quote";
 import ProsAndCons from "./ProsAndCons";
+import DoAndDonts from "./DoAndDonts";
 
 export default defineField({
   name: 'content',
@@ -105,5 +106,6 @@ export default defineField({
     Author,
     Quote,
     ProsAndCons,
+    DoAndDonts,
   ],
 });
