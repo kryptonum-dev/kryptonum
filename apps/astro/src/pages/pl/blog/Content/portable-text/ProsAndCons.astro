@@ -1,0 +1,156 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const ProsAndCons_Query = `
+  _type == "ProsAndCons" => {
+    pros {
+      ${PortableTextQuery('heading')}
+      items[],
+    },
+    cons {
+      ${PortableTextQuery('heading')}
+      items[],
+    },
+  },
+`
+
+type Props = {
+  node: {
+    pros?: {
+      heading: PortableTextValue
+      items: string[]
+    }
+    cons?: {
+      heading: PortableTextValue
+      items: []
+    }
+  }
+}
+
+const { node } = Astro.props
+---
+
+<section class="ProsAndCons">
+  {
+    node?.pros && (
+      <div class="Pros">
+        <PortableText value={node.pros.heading} class="heading" />
+        <ul>
+          {node.pros.items.map((item, index) => (
+            <li>
+              {index === 0 ? (
+                <svg width="24" height="24" viewBox="0 0 24 24" id="pros-icon">
+                  <circle cx="12" cy="12" r="10" stroke="url(#ProsAndCons-a)" />
+                  <path stroke="url(#ProsAndCons-b)" stroke-linecap="round" d="M15 12h-3m0 0H9m3 0V9m0 3v3" />
+                  <defs>
+                    <linearGradient
+                      id="ProsAndCons-a"
+                      x1="21.625"
+                      x2=".811"
+                      y1="2"
+                      y2="3.326"
+                      gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#2DD282" />
+                      <stop offset="1" stop-color="#90F4E8" />
+                    </linearGradient>
+                    <linearGradient
+                      id="ProsAndCons-b"
+                      x1="14.887"
+                      x2="8.643"
+                      y1="9"
+                      y2="9.398"
+                      gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#2DD282" />
+                      <stop offset="1" stop-color="#90F4E8" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              ) : (
+                <svg width="24" height="24">
+                  <use href="#pros-icon" />
+                </svg>
+              )}
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+  {
+    node?.cons && (
+      <div class="Cons">
+        <PortableText value={node.cons.heading} class="heading" />
+        <ul>
+          {node.cons.items.map((item, index) => (
+            <li>
+              {index === 0 ? (
+                <svg width="24" height="24" viewBox="0 0 24 24" id="cons-icon">
+                  <circle cx="12" cy="12" r="10" stroke="url(#ProsAndCons-c)" />
+                  <path stroke="url(#ProsAndCons-d)" stroke-linecap="round" d="M15 12H9" />
+                  <defs>
+                    <linearGradient
+                      id="ProsAndCons-c"
+                      x1="21.625"
+                      x2=".811"
+                      y1="2"
+                      y2="3.326"
+                      gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#D44A84" />
+                      <stop offset=".521" stop-color="#DA2B53" />
+                      <stop offset="1" stop-color="#BF3A3A" />
+                    </linearGradient>
+                    <linearGradient
+                      id="ProsAndCons-d"
+                      x1="15"
+                      x2="14.989"
+                      y1="12.981"
+                      y2="11.936"
+                      gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#D44A84" />
+                      <stop offset=".521" stop-color="#DA2B53" />
+                      <stop offset="1" stop-color="#BF3A3A" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              ) : (
+                <svg width="24" height="24">
+                  <use href="#cons-icon" />
+                </svg>
+              )}
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</section>
+
+<style lang="scss">
+  .ProsAndCons {
+    margin: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2.25rem, calc(2.5vw / 0.48), 2.5rem) 1.25rem;
+    .heading {
+      font-size: var(--typography-body-2xl, 1.25rem);
+      margin-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+    }
+    ul {
+      display: grid;
+      gap: 1rem;
+      li {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+        svg {
+          margin-top: 0.2rem;
+        }
+      }
+    }
+    @media (max-width: 47rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

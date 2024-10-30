@@ -5,12 +5,14 @@ import Image, { Image_Query } from './Image.astro'
 import Video, { Video_Query } from './Video.astro'
 import Author, { Author_Query } from './Author.astro'
 import Quote, { Quote_Query } from './Quote.astro'
+import ProsAndCons, { ProsAndCons_Query } from './ProsAndCons.astro'
 
 export const PortableText_Query = `
   ${Image_Query}
   ${Video_Query}
   ${Author_Query}
   ${Quote_Query}
+  ${ProsAndCons_Query}
 `
 
 type Props = {
@@ -28,6 +30,7 @@ const { value } = Astro.props
       Video: Video,
       Author: Author,
       Quote: Quote,
+      ProsAndCons: ProsAndCons,
     },
   }}
 />
