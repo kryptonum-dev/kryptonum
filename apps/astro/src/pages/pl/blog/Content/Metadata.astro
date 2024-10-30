@@ -1,0 +1,137 @@
+---
+import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@/components/ui/EstimatedReadingTime.astro'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const Metadata_Query = `
+  "author": author[0] -> {
+    ${ImageDataQuery('img')}
+    name,
+    "slug": slug.current,
+  },
+`
+
+export type MetadataProps = {
+  author: {
+    img: ImageDataProps
+    name: string
+    slug: string
+  }
+  content: EstimatedReadingTimeProps['content']
+}
+
+const { content, author } = Astro.props as MetadataProps
+---
+
+<div class="metadata">
+  <div class="wrapper">
+    <EstimatedReadingTime content={content} />
+    <div class="author">
+      <Image {...author.img} sizes="32px" class="gradient-thumbnail" loading="eager" />
+      <p>Autor: <a href={`/pl/zespol/${author.slug}`}>{author.name}</a></p>
+    </div>
+  </div>
+  <button class="share">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+      <path
+        stroke="url(#shareIcon-a)"
+        stroke-linecap="round"
+        d="M7.5 10a2.083 2.083 0 1 1-4.167 0A2.083 2.083 0 0 1 7.5 10Z">
+      </path>
+      <path stroke="url(#shareIcon-b)" stroke-linecap="round" d="M11.667 5.417 7.5 8.332"></path>
+      <path stroke="url(#shareIcon-c)" stroke-linecap="round" d="M11.667 14.584 7.5 11.667"></path>
+      <path
+        stroke="url(#shareIcon-d)"
+        stroke-linecap="round"
+        d="M15.833 15.417a2.083 2.083 0 1 1-4.167 0 2.083 2.083 0 0 1 4.167 0Z">
+      </path>
+      <path
+        stroke="url(#shareIcon-e)"
+        stroke-linecap="round"
+        d="M15.833 4.583a2.083 2.083 0 1 1-4.167 0 2.083 2.083 0 0 1 4.167 0Z">
+      </path>
+      <defs>
+        <linearGradient id="shareIcon-a" x1="7.422" x2="3.086" y1="7.917" y2="8.193" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+        <linearGradient id="shareIcon-b" x1="11.588" x2="7.27" y1="5.417" y2="5.809" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+        <linearGradient id="shareIcon-c" x1="11.588" x2="7.27" y1="14.584" y2="14.191" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+        <linearGradient id="shareIcon-d" x1="15.755" x2="11.419" y1="13.334" y2="13.61" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+        <linearGradient id="shareIcon-e" x1="15.755" x2="11.419" y1="2.5" y2="2.776" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+      </defs>
+    </svg>
+    Udostępnij
+  </button>
+</div>
+
+<style lang="scss">
+  .metadata {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem 3rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: clamp(2.5rem, calc(3vw / 0.48), 3rem);
+    border-bottom: 1px solid var(--primary-500, #064040);
+    .wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1.75rem;
+      .author {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.5rem;
+        align-items: center;
+        img {
+          width: 32px;
+          height: 32px;
+        }
+        p {
+          font-size: var(--typography-body-m, 0.875rem);
+          color: var(--neutral-400, #c6cdcc);
+          a {
+            color: var(--neutral-200, #f0f7f7);
+          }
+        }
+      }
+    }
+    .share {
+      font-size: var(--typography-body-m, 0.875rem);
+      height: 2.75rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.62rem;
+      align-items: center;
+      transition: opacity 500ms var(--easing);
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+</style>
+
+<script>
+  import { showToast } from '@/components/ui/Toast/index.ts'
+
+  document.querySelector('.share')?.addEventListener('click', () => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('feature', 'share')
+    if (navigator.share) {
+      navigator
+        .share({ title: document.title, url: url.toString() })
+        .catch((error) => console.log('Error sharing:', error))
+    } else {
+      navigator.clipboard.writeText(url.toString())
+      showToast('Pomyślnie skopiowano link')
+    }
+  })
+</script>

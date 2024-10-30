@@ -9,15 +9,17 @@ export default defineType({
     // @ts-ignore
     input: CustomInput
   },
-  of: [defineArrayMember({
-    type: 'block',
-    styles: [{ title: 'Normal', value: 'normal' }],
-    lists: [],
-    marks: {
-      annotations: [],
-      decorators: [
-        { title: 'Strong', value: 'strong' },
-      ],
-    }
-  })],
+  of: [
+    defineArrayMember({
+      type: 'block',
+      styles: [{ title: 'Normal', value: 'normal' }],
+      lists: [],
+      marks: {
+        annotations: [],
+        decorators: [
+          { title: 'Strong', value: 'strong' },
+        ],
+      }
+    })
+  ],
 });

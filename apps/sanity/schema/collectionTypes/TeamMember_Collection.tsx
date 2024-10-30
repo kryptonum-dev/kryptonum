@@ -1,6 +1,7 @@
 import { defineField, defineType } from "sanity";
 import { defineSlugForDocument } from "../../utils/define-slug-for-document";
 
+const slugPrefix = '/pl/zespol/';
 const name = 'TeamMember_Collection';
 const title = 'Team Members Collection';
 const icon = () => <img src="https://emoji.slack-edge.com/T02CFF835B5/krypto-dzik/71c712017db908f1.png" alt="KryptoDzik" style={{
@@ -16,17 +17,17 @@ export default defineType({
   icon,
   options: { documentPreview: true },
   fields: [
-    ...defineSlugForDocument({ prefix: '/pl/zespol/' }),
-    defineField({
-      name: 'img',
-      type: 'image',
-      title: 'Image',
-      validation: Rule => Rule.required(),
-    }),
     defineField({
       name: 'name',
       type: 'string',
       title: 'Name',
+      validation: Rule => Rule.required(),
+    }),
+    ...defineSlugForDocument({ source: 'name', slugPrefix: slugPrefix }),
+    defineField({
+      name: 'img',
+      type: 'image',
+      title: 'Image',
       validation: Rule => Rule.required(),
     }),
     defineField({
@@ -62,10 +63,12 @@ export default defineType({
   preview: {
     select: {
       name: 'name',
+      slug: 'slug.current',
       img: 'img',
     },
-    prepare: ({ name, img }) => ({
+    prepare: ({ name, slug, img, }) => ({
       title: name,
+      subtitle: `${slugPrefix}${slug}`,
       media: img,
       icon,
     }),

@@ -1,0 +1,15 @@
+---
+import VideoRenderer, { VideoDataQuery, type VideoDataProps } from '@/components/ui/Video.astro'
+
+export const Video_Query = `
+  _type == "video" => ${VideoDataQuery('@')}
+`
+
+type Props = {
+  node: VideoDataProps
+}
+
+const { node } = Astro.props
+---
+
+<VideoRenderer {...node} />

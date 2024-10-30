@@ -1,0 +1,46 @@
+---
+import type { PortableTextProps } from 'astro-portabletext/types'
+import Nav from './Nav.astro'
+import Metadata, { Metadata_Query, type MetadataProps } from './Metadata.astro'
+import PortableText, { PortableText_Query } from './portable-text/index.astro'
+
+export type ContentProps = MetadataProps & {
+  content: PortableTextProps['value']
+}
+
+export const Content_Query = `
+  "content": {
+    ${Metadata_Query}
+    content[] {
+      ...,
+      ${PortableText_Query}
+    },
+  }
+`
+
+const { content, author } = Astro.props as ContentProps
+---
+
+<article class="article">
+  <Nav />
+  <section class="article-content">
+    <Metadata {...{ content, author }} />
+    <PortableText value={content} />
+  </section>
+</article>
+
+<style lang="scss">
+  .article {
+    display: grid;
+    grid-template-columns: 1fr 2.66fr;
+    gap: clamp(5rem, calc(6vw / 0.48), 6rem) clamp(3rem, calc(5vw / 0.48), 7rem);
+  }
+  .article-nav {
+    max-width: 20rem;
+  }
+  .article-content {
+    :global(h2) {
+      font-size: var(--typography-heading-2xl, 2.25rem);
+    }
+  }
+</style>

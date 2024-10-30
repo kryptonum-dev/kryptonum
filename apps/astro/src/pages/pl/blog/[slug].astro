@@ -7,6 +7,7 @@ import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 import Hero, { Hero_Query, type HeroProps } from './Hero.astro'
+import Content, { Content_Query, type ContentProps } from './Content/index.astro'
 
 export async function getStaticPaths() {
   const collection = await sanityFetch<{ slug: string }[]>({
@@ -21,12 +22,18 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params
 
-const page = await sanityFetch<{ name: string; hero: HeroProps; components: ComponentsProps }>({
+const page = await sanityFetch<{
+  name: string
+  hero: HeroProps
+  components: ComponentsProps
+  content: ContentProps
+}>({
   query: `
     *[_type == 'BlogPost_Collection' && slug.current == $slug][0] {
       name,
       ${Hero_Query}
       ${Components_Query}
+      ${Content_Query}
     }
   `,
   params: { slug },
@@ -44,5 +51,6 @@ const metadata = await metadataFetch('BlogPost_Collection', slug)
     ]}
   />
   <Hero {...page.hero} />
+  <Content {...page.content} />
   <Components data={page.components} />
 </Layout>
