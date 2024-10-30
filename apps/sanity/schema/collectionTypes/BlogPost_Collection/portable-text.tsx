@@ -4,6 +4,7 @@ import { isValidUrl } from "../../../utils/is-valid-url";
 import Image from "./Image";
 import Video from "./Video";
 import Author from "./Author";
+import Quote from "./Quote";
 
 export default defineField({
   name: 'content',
@@ -101,5 +102,6 @@ export default defineField({
     Image,
     Video,
     Author,
+    Quote,
   ],
 });

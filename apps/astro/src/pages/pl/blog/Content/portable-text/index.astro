@@ -4,11 +4,13 @@ import type { PortableTextProps } from 'astro-portabletext/types'
 import Image, { Image_Query } from './Image.astro'
 import Video, { Video_Query } from './Video.astro'
 import Author, { Author_Query } from './Author.astro'
+import Quote, { Quote_Query } from './Quote.astro'
 
 export const PortableText_Query = `
   ${Image_Query}
   ${Video_Query}
   ${Author_Query}
+  ${Quote_Query}
 `
 
 type Props = {
@@ -25,6 +27,7 @@ const { value } = Astro.props
       Image: Image,
       Video: Video,
       Author: Author,
+      Quote: Quote,
     },
   }}
 />

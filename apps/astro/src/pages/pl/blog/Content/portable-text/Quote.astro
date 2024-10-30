@@ -1,0 +1,112 @@
+---
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const Quote_Query = `
+  _type == "Quote" => {
+    ${PortableTextQuery('text')}
+    person {
+      ${ImageDataQuery('img')}
+      name,
+      headline,
+    },
+  },
+`
+
+type Props = {
+  node: {
+    text: PortableTextValue
+    person: {
+      img?: ImageDataProps
+      name: string
+      headline?: string
+    }
+  }
+}
+
+const {
+  node: { text, person },
+} = Astro.props
+---
+
+<blockquote class="Quote">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+    <path
+      fill="url(#Quote)"
+      d="M5.959 3.5c1.502 0 2.685.592 3.55 1.775.864 1.137 1.296 2.776 1.296 4.914 0 2.003-.455 3.846-1.365 5.53-.864 1.683-2.161 3.367-3.89 5.05-.046.046-.114.069-.205.069-.137 0-.25-.068-.342-.205-.09-.136-.09-.25 0-.341 2.23-2.276 3.345-4.96 3.345-8.055 0-1.274-.227-2.207-.682-2.798-.41.682-1.206 1.024-2.39 1.024-1 0-1.797-.296-2.389-.888C2.296 8.938 2 8.096 2 7.05c0-1.137.341-2.002 1.024-2.593.728-.637 1.706-.956 2.935-.956Zm11.195 0c1.501 0 2.684.592 3.55 1.775C21.567 6.412 22 8.05 22 10.189c0 2.003-.455 3.846-1.365 5.53-.865 1.683-2.162 3.367-3.891 5.05-.046.046-.114.069-.205.069-.136 0-.25-.068-.341-.205-.091-.136-.091-.25 0-.341 2.23-2.276 3.345-4.96 3.345-8.055 0-1.274-.228-2.207-.683-2.798-.41.682-1.206 1.024-2.389 1.024-1.001 0-1.797-.296-2.39-.888-.59-.637-.886-1.479-.886-2.526 0-1.137.34-2.002 1.023-2.593.729-.637 1.707-.956 2.936-.956Z">
+    </path>
+    <defs>
+      <linearGradient id="Quote" x1="21.625" x2=".838" y1="3.5" y2="5.027" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+    </defs>
+  </svg>
+  <div class="content">
+    <PortableText value={text} class="text" />
+    <div class="person">
+      {person.img && <Image {...person.img} sizes="64px" class="img" />}
+      <div>
+        <h3 class="name">{person.name}</h3>
+        {person.headline && <p class="headline">{person.headline}</p>}
+      </div>
+    </div>
+  </div>
+</blockquote>
+
+<style lang="scss">
+  .Quote {
+    border-radius: 0.25rem;
+    border: 1px solid #0b0f0d;
+    background-color: var(--primary-900, #001414);
+    padding: clamp(1.5rem, calc(3vw / 0.48), 3rem);
+    padding-right: clamp(1.5rem, calc(3vw / 0.48), 4rem);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(1rem, calc(3vw / 0.48), 3rem);
+    z-index: 1;
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      $lineColor: var(--primary-600, #042b2b);
+      background-size: 44px 37px;
+      background-image: linear-gradient(90deg, $lineColor 1px, rgba(0, 0, 0, 0) 0),
+        linear-gradient(180deg, $lineColor 1px, rgba(0, 0, 0, 0) 0);
+      mask-image: radial-gradient(circle at 76% 100%, #000 0%, rgba(0, 0, 0, 0) 44%);
+    }
+    .content {
+      display: grid;
+      gap: clamp(2rem, calc(3vw / 0.48), 3rem);
+      .text {
+        font-size: var(--typography-body-2xl, 1.25rem);
+        margin-top: 0.75rem;
+      }
+      .person {
+        display: inline-grid;
+        align-items: center;
+        grid-template-columns: auto 1fr;
+        column-gap: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+        img {
+          width: clamp(44px, calc(64vw / 7.68), 64px);
+          height: clamp(44px, calc(64vw / 7.68), 64px);
+          border-radius: 50%;
+        }
+        h3 {
+          font-size: var(--typography-body-2xl, 1.125rem);
+        }
+        p {
+          font-size: var(--typography-body-xl, 1rem);
+          color: var(--neutral-400, #c6cdcc);
+        }
+      }
+    }
+    @media (max-width: 50rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

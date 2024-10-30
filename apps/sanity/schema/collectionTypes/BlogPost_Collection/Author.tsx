@@ -37,12 +37,11 @@ export default defineField({
   preview: {
     select: {
       media: 'person.img',
-      person: 'person.name',
       text: 'text',
     },
-    prepare({ person, text, media }) {
+    prepare({ text, media }) {
       return {
-        title: person,
+        title: title,
         subtitle: toPlainText(text),
         media: media,
       };
