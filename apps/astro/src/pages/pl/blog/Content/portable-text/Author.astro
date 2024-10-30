@@ -55,17 +55,20 @@ const {
       margin-left: calc(-1 * $padding);
       margin-bottom: 0.75rem;
       display: inline-grid;
+      align-items: center;
       grid-template-columns: auto 1fr;
       column-gap: 1.25rem;
       img {
-        width: clamp(48px, calc(64px / 7.68), 64px);
-        height: clamp(48px, calc(64px / 7.68), 64px);
+        width: clamp(48px, calc(64vw / 7.68), 64px);
+        height: clamp(48px, calc(64vw / 7.68), 64px);
         grid-row: 1 / span 2;
       }
       h3 {
         font-size: var(--typography-body-xl, 1rem);
+        align-self: flex-end;
       }
       p {
+        align-self: flex-start;
         font-size: var(--typography-body-m, 0.875rem);
         color: var(--neutral-400, #c6cdcc);
       }
