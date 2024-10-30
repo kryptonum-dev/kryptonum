@@ -1,0 +1,87 @@
+---
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/src/components/ui/cta'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const Author_Query = `
+  _type == "Author" => {
+    person -> {
+      name,
+      ${ImageDataQuery('img')}
+      headline,
+      "slug": slug.current,
+    },
+    ${PortableTextQuery('text')}
+    ${ButtonDataQuery('cta')}
+  },
+`
+
+type Props = {
+  node: {
+    person: {
+      img: ImageDataProps
+      name: string
+      headline: string
+      slug: string
+    }
+    text: PortableTextValue
+    cta?: ButtonDataProps
+  }
+}
+
+const {
+  node: { person, text, cta },
+} = Astro.props
+---
+
+<section class="Author">
+  <a class="person" href={`/pl/zespol/${person.slug}`}>
+    <Image {...person.img} sizes="64px" class="gradient-thumbnail" />
+    <h3>{person.name}</h3>
+    <p>{person.headline}</p>
+  </a>
+  <PortableText value={text} class="text" />
+  {cta && <Button {...cta} className="cta" />}
+</section>
+
+<style lang="scss">
+  .Author {
+    $padding: calc(clamp(48px, calc(64px / 7.68), 64px) + 1.25rem);
+    padding-left: $padding;
+    border-top: 1px solid var(--primary-600, #042b2b);
+    margin: clamp(3rem, calc(4vw / 0.48), 4rem) 0;
+    padding-top: 1rem;
+    .person {
+      margin-left: calc(-1 * $padding);
+      margin-bottom: 0.75rem;
+      display: inline-grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 1.25rem;
+      img {
+        width: clamp(48px, calc(64px / 7.68), 64px);
+        height: clamp(48px, calc(64px / 7.68), 64px);
+        grid-row: 1 / span 2;
+      }
+      h3 {
+        font-size: var(--typography-body-xl, 1rem);
+      }
+      p {
+        font-size: var(--typography-body-m, 0.875rem);
+        color: var(--neutral-400, #c6cdcc);
+      }
+    }
+    .text {
+      font-size: var(--typography-body-m, 0.875rem);
+      color: var(--neutral-400, #c6cdcc);
+    }
+    .cta {
+      margin-top: 1rem;
+    }
+    @media (max-width: 34rem) {
+      padding-left: 0;
+      .person {
+        margin-left: 0;
+      }
+    }
+  }
+</style>

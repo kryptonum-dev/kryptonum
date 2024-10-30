@@ -61,7 +61,7 @@ export default defineType({
       filter: true,
       showIcons: true,
       views: [
-        { name: 'grid', previewImageUrl: (schemaTypeName) => `/static/${schemaTypeName}.webp` },
+        { name: 'grid', previewImageUrl: (schemaTypeName) => `/static/components/${schemaTypeName}.webp` },
         { name: 'list' },
       ]
     }

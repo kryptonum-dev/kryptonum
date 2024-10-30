@@ -2,7 +2,7 @@
 import ImageRenderer, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
 
 export const Image_Query = `
-  _type == "image" => ${ImageDataQuery('@')}
+  _type == "Image" => ${ImageDataQuery('@')}
 `
 
 type Props = {
@@ -16,6 +16,7 @@ const { node } = Astro.props
 
 <style lang="scss">
   img {
+    width: 100%;
     border-radius: 0.25rem;
     border: 1px solid var(--primary-500, #064040);
   }

@@ -2,7 +2,7 @@
 import VideoRenderer, { VideoDataQuery, type VideoDataProps } from '@/components/ui/Video.astro'
 
 export const Video_Query = `
-  _type == "video" => ${VideoDataQuery('@')}
+  _type == "Video" => ${VideoDataQuery('@')},
 `
 
 type Props = {

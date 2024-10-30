@@ -32,8 +32,8 @@ const page = await sanityFetch<{
     *[_type == 'BlogPost_Collection' && slug.current == $slug][0] {
       name,
       ${Hero_Query}
-      ${Components_Query}
       ${Content_Query}
+      ${Components_Query}
     }
   `,
   params: { slug },
@@ -52,5 +52,5 @@ const metadata = await metadataFetch('BlogPost_Collection', slug)
   />
   <Hero {...page.hero} />
   <Content {...page.content} />
-  <Components data={page.components} />
+  <Components data={page.components} indexStart={1} />
 </Layout>
