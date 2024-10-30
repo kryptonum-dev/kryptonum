@@ -1,7 +1,7 @@
 import { defineField } from 'sanity';
 import sectionId from '../ui/sectionId';
 import { toPlainText } from '../../utils/to-plain-text';
-import { sectionPreview } from '../ui/section-preview';
+import { sectionPreview } from '../../utils/section-preview';
 
 const name = 'ImageAndNumberedList';
 const title = 'Image And Numbered List';
@@ -76,7 +76,7 @@ export default defineField({
     prepare: ({ heading }) => ({
       title: title,
       subtitle: toPlainText(heading),
-      ...sectionPreview({ name, icon: icon() }),
+      ...sectionPreview({ imgUrl: `/static/components/${name}.webp`, icon: icon() }),
     }),
   },
 });
