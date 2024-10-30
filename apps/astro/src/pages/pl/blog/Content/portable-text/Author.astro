@@ -46,7 +46,8 @@ const {
 
 <style lang="scss">
   .Author {
-    $padding: calc(clamp(48px, calc(64px / 7.68), 64px) + 1.25rem);
+    $imgWidth: clamp(48px, calc(64vw / 7.68), 64px);
+    $padding: calc($imgWidth + 1.25rem);
     padding-left: $padding;
     border-top: 1px solid var(--primary-600, #042b2b);
     margin: clamp(3rem, calc(4vw / 0.48), 4rem) 0;
@@ -59,8 +60,8 @@ const {
       grid-template-columns: auto 1fr;
       column-gap: 1.25rem;
       img {
-        width: clamp(48px, calc(64vw / 7.68), 64px);
-        height: clamp(48px, calc(64vw / 7.68), 64px);
+        width: $imgWidth;
+        height: $imgWidth;
         grid-row: 1 / span 2;
       }
       h3 {
