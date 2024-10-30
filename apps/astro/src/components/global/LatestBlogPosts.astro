@@ -30,7 +30,7 @@ type Props = {
   index: number
   sectionId?: string
   heading: PortableTextValue
-  cta: ButtonDataProps
+  cta?: ButtonDataProps
   posts: Array<{
     img: ImageDataProps
     name: string
@@ -47,7 +47,7 @@ const Subheading = index === 0 ? 'h2' : 'h3'
 <section class="LatestBlogPosts" id={sectionId}>
   <header>
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
-    <Button {...cta} />
+    {cta && <Button {...cta} />}
   </header>
   <section class="posts">
     {

@@ -22,8 +22,7 @@ export default defineField({
     defineField({
       name: 'cta',
       type: 'cta',
-      title: 'Call To Action (CTA)',
-      validation: Rule => Rule.required(),
+      title: 'Call To Action (optional)',
     }),
     defineField({
       name: 'posts',
