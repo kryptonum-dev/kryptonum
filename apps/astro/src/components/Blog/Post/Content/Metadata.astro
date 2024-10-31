@@ -27,12 +27,12 @@ const { content, author } = Astro.props as MetadataProps
     <EstimatedReadingTime content={content} />
     {
       author?.img && (
-        <div class="author">
+        <a href={`/pl/zespol/${author.slug}`} class="author">
           <Image {...author.img} sizes="32px" class="gradient-thumbnail" loading="eager" />
           <p>
-            Autor: <a href={`/pl/zespol/${author.slug}`}>{author.name}</a>
+            Autor: <span>{author.name}</span>
           </p>
-        </div>
+        </a>
       )
     }
   </div>
@@ -104,7 +104,7 @@ const { content, author } = Astro.props as MetadataProps
         p {
           font-size: var(--typography-body-m, 0.875rem);
           color: var(--neutral-400, #c6cdcc);
-          a {
+          span {
             color: var(--neutral-200, #f0f7f7);
           }
         }
