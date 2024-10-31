@@ -22,6 +22,8 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params
 
+console.log(slug)
+
 const page = await sanityFetch<{
   name: string
   hero: HeroProps
