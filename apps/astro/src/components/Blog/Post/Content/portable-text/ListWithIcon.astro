@@ -1,0 +1,129 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const ListWithIcon_Query = `
+  _type == "ListWithIcon" => {
+    list[] {
+      ${ImageDataQuery('icon')}
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+      sublist[] {
+        ${ImageDataQuery('icon')}
+        ${PortableTextQuery('heading')}
+        ${PortableTextQuery('paragraph')}
+      },
+    },
+  },
+`
+
+type Props = {
+  node: {
+    list: Array<{
+      icon: ImageDataProps
+      heading: PortableTextValue
+      paragraph?: PortableTextValue
+      sublist?: Array<{
+        icon: ImageDataProps
+        heading: PortableTextValue
+        paragraph?: PortableTextValue
+      }>
+    }>
+  }
+}
+
+const {
+  node: { list },
+} = Astro.props
+---
+
+<section class="ListWithIcon">
+  <ul>
+    {
+      list.map(({ icon, heading, paragraph, sublist }) => (
+        <li>
+          <div class="icon">
+            <Image {...icon} sizes="20px" />
+          </div>
+          <div>
+            <PortableText value={heading} heading="h3" class="heading" />
+            {paragraph && <PortableText value={paragraph} class="paragraph" />}
+          </div>
+          {sublist && (
+            <ul>
+              {sublist.map(({ icon, heading, paragraph }) => (
+                <li>
+                  <div class="icon">
+                    <Image {...icon} sizes="20px" />
+                  </div>
+                  <div>
+                    <PortableText value={heading} heading="h3" class="heading" />
+                    {paragraph && <PortableText value={paragraph} class="paragraph" />}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style lang="scss">
+  .ListWithIcon {
+    margin: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
+    .icon {
+      border-radius: 50%;
+      background:
+        linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+        var(--gradient-primary) border-box;
+      border: 1px solid transparent;
+      width: clamp(40px, calc(48vw / 7.68), 48px);
+      height: clamp(40px, calc(48vw / 7.68), 48px);
+      display: grid;
+      place-items: center;
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    .heading,
+    .paragraph {
+      font-size: var(--typography-body-2xl, 1.25rem);
+    }
+    .heading {
+      margin-top: 0.44rem;
+    }
+    .paragraph {
+      margin-top: 1rem;
+      color: var(--neutral-400, #c6cdcc);
+    }
+    ul {
+      display: grid;
+      gap: 1.25rem;
+    }
+    li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      > ul {
+        grid-column: 3/2;
+      }
+    }
+    @media (max-width: 43rem) {
+      li > .heading {
+        margin-top: 0;
+      }
+      li {
+        grid-template-columns: 1fr;
+        > ul {
+          grid-column: unset;
+          li {
+            grid-template-columns: auto 1fr;
+          }
+        }
+      }
+    }
+  }
+</style>

@@ -11,6 +11,7 @@ import SimpleCenteredCtaSection, { SimpleCenteredCtaSection_Query } from './Simp
 import Faq, { Faq_Query } from './Faq.astro'
 import LargeAdvantagesCta, { LargeAdvantagesCta_Query } from './LargeAdvantagesCta.astro'
 import ImageCta, { ImageCta_Query } from './ImageCta.astro'
+import ListWithIcon, { ListWithIcon_Query } from './ListWithIcon.astro'
 
 export const PortableText_Query = `
   ${Image_Query}
@@ -23,6 +24,7 @@ export const PortableText_Query = `
   ${Faq_Query}
   ${LargeAdvantagesCta_Query}
   ${ImageCta_Query}
+  ${ListWithIcon_Query}
 `
 
 type Props = {
@@ -46,6 +48,7 @@ const { value } = Astro.props
       Faq: Faq,
       LargeAdvantagesCta: LargeAdvantagesCta,
       ImageCta: ImageCta,
+      ListWithIcon: ListWithIcon,
     },
   }}
 />
