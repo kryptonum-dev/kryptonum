@@ -5,9 +5,9 @@ import Layout from '@/src/layouts/Layout.astro'
 import sanityFetch from '@/utils/sanity.fetch'
 import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Post/Hero.astro'
+import Content, { Content_Query, type ContentProps } from '@/components/Blog/Post/Content/index.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
-import Hero, { Hero_Query, type HeroProps } from './Hero.astro'
-import Content, { Content_Query, type ContentProps } from './Content/index.astro'
 
 export async function getStaticPaths() {
   const collection = await sanityFetch<{ slug: string }[]>({
@@ -21,8 +21,6 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params
-
-console.log(slug)
 
 const page = await sanityFetch<{
   name: string
