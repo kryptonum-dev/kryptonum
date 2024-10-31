@@ -7,6 +7,7 @@ import Author from "./Author";
 import Quote from "./Quote";
 import ProsAndCons from "./ProsAndCons";
 import DoAndDonts from "./DoAndDonts";
+import SimpleCenteredCtaSection from "./SimpleCenteredCtaSection";
 
 export default defineField({
   name: 'content',
@@ -107,5 +108,6 @@ export default defineField({
     Quote,
     ProsAndCons,
     DoAndDonts,
+    SimpleCenteredCtaSection,
   ],
 });

@@ -7,6 +7,7 @@ import Author, { Author_Query } from './Author.astro'
 import Quote, { Quote_Query } from './Quote.astro'
 import ProsAndCons, { ProsAndCons_Query } from './ProsAndCons.astro'
 import DoAndDonts, { DoAndDonts_Query } from './DoAndDonts.astro'
+import SimpleCenteredCtaSection, { SimpleCenteredCtaSection_Query } from './SimpleCenteredCtaSection.astro'
 
 export const PortableText_Query = `
   ${Image_Query}
@@ -15,6 +16,7 @@ export const PortableText_Query = `
   ${Quote_Query}
   ${ProsAndCons_Query}
   ${DoAndDonts_Query}
+  ${SimpleCenteredCtaSection_Query}
 `
 
 type Props = {
@@ -34,6 +36,7 @@ const { value } = Astro.props
       Quote: Quote,
       ProsAndCons: ProsAndCons,
       DoAndDonts: DoAndDonts,
+      SimpleCenteredCtaSection: SimpleCenteredCtaSection,
     },
   }}
 />

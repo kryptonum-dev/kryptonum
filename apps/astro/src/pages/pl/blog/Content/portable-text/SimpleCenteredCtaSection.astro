@@ -1,0 +1,95 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/src/components/ui/cta'
+
+export const SimpleCenteredCtaSection_Query = `
+  _type == "SimpleCenteredCtaSection" => {
+    ${PortableTextQuery('heading')}
+    ${ButtonDataQuery('ctas[]')}
+  },
+`
+
+type Props = {
+  node: {
+    heading: PortableTextValue
+    ctas: ButtonDataProps[]
+  }
+}
+
+const {
+  node: { heading, ctas },
+} = Astro.props
+---
+
+<section class="SimpleCenteredCtaSection">
+  <header>
+    <PortableText value={heading} heading="h2" />
+    <div class="cta-wrapper">
+      {ctas.map((cta) => <Button {...cta} />)}
+    </div>
+  </header>
+</section>
+
+<style lang="scss">
+  .SimpleCenteredCtaSection {
+    margin: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
+    padding: clamp(2rem, calc(4vw / 0.48), 4rem) 1rem;
+    border-radius: 0.25rem;
+    background:
+      linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+      linear-gradient(266deg, rgba(5, 67, 45, 0.4), rgba(5, 80, 53, 0.4), #1f6644, rgba(17, 53, 49, 0.2)) border-box;
+    border-top: 1px solid hsla(0, 0%, 100%, 0);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      $lineColor: var(--primary-600, #042b2b);
+      background-size: 35px;
+      background-image: linear-gradient(90deg, $lineColor 1px, rgba(0, 0, 0, 0) 0);
+      mask-image: radial-gradient(circle at 50% 0%, #000 0%, rgba(0, 0, 0, 0) 38%);
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: -2;
+      left: 50%;
+      top: 0;
+      transform: translate(-50%, -75%);
+      background-color: var(--primary-600, #042b2b);
+      width: 283px;
+      height: 283px;
+      border-radius: 50%;
+      filter: blur(96px);
+    }
+    header {
+      max-width: clamp(38rem, calc(38vw / 0.48), 46rem);
+      margin: 0 auto;
+      text-align: center;
+      h2 {
+        font-size: var(--typography-body-xl, 1rem);
+        margin-bottom: 2rem;
+        line-height: inherit;
+      }
+      .cta-wrapper {
+        width: fit-content;
+        margin: 0 auto;
+        :global(> a) {
+          flex: 1 1 auto;
+        }
+      }
+    }
+    @media (max-width: 31rem) {
+      margin-left: calc(var(--page-margin) * -1);
+      margin-right: calc(var(--page-margin) * -1);
+      padding-left: var(--page-margin);
+      padding-right: var(--page-margin);
+    }
+  }
+</style>
