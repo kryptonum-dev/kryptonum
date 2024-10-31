@@ -1,0 +1,208 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const NumberedStepsList_Query = `
+  _type == "NumberedStepsList" => {
+    ${PortableTextQuery('heading')}
+    list[] {
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+    },
+  },
+`
+
+type Props = {
+  node: {
+    paragraph: PortableTextValue
+    list: Array<{
+      heading: PortableTextValue
+      paragraph?: PortableTextValue
+    }>
+  }
+}
+
+const {
+  node: { paragraph, list },
+} = Astro.props
+---
+
+<section class="NumberedStepsList">
+  <header>
+    <PortableText value={paragraph} class="paragraph" />
+  </header>
+  <div class="wrapper">
+    <ol class="list">
+      {
+        list.map(({ heading, paragraph }) => (
+          <li class="item">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="56"
+              height="56"
+              fill="none"
+              viewBox="0 0 56 56"
+              aria-hidden="true">
+              <path
+                stroke="url(#NumberedStepsList-gradient)"
+                d="M.5 28C.5 12.812 12.812.5 28 .5S55.5 12.812 55.5 28 43.188 55.5 28 55.5.5 43.188.5 28Z"
+              />
+              <defs>
+                <linearGradient
+                  id="NumberedStepsList-gradient"
+                  x1="54.95"
+                  x2="-3.33"
+                  y1="0"
+                  y2="3.712"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#2DD282" />
+                  <stop offset="1" stop-color="#90F4E8" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <PortableText value={heading} heading="h3" class="heading" />
+            {paragraph && <PortableText value={paragraph} class="paragraph" />}
+          </li>
+        ))
+      }
+    </ol>
+    <div class="line-wrapper"><div class="line"></div></div>
+  </div>
+</section>
+
+<style lang="scss">
+  .NumberedStepsList {
+    margin: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
+    padding: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
+    border: 1px solid var(--primary-500, #064040);
+    border-radius: 0.25rem;
+    padding: 2rem;
+    header {
+      margin-bottom: 1.5rem;
+    }
+    .heading {
+      font-size: var(--typography-body-2xl, 1.125rem);
+      padding-top: clamp(0.42rem, calc(0.62vw / 0.48), 0.84rem);
+      margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+    }
+    .paragraph {
+      color: var(--neutral-400, #c6cdcc);
+      font-size: var(--typography-body-2xl, 1.125rem);
+    }
+    .wrapper {
+      position: relative;
+      $circleSize: clamp(2.5rem, calc(3.5vw / 0.48), 3.5rem);
+      .line-wrapper {
+        position: absolute;
+        left: calc($circleSize / 2);
+        top: 0;
+        bottom: 0;
+        .line {
+          width: 1px;
+          height: 100%;
+          background: var(--gradient-primary);
+          transform-origin: top;
+          will-change: transform;
+        }
+      }
+      .list {
+        counter-reset: item;
+        .item {
+          padding-left: clamp(3.25rem, calc(4.5vw / 0.48), 4.5rem);
+          position: relative;
+          counter-increment: item;
+          &:not(:last-child) {
+            padding-bottom: 1.5rem;
+          }
+          &:last-child {
+            z-index: 1;
+            background-color: var(--neutral-900, #000103);
+          }
+          &::before,
+          svg {
+            position: absolute;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: $circleSize;
+            height: $circleSize;
+          }
+          &:nth-child(-n + 9) {
+            &::before {
+              content: '0' counter(item);
+            }
+          }
+          &::before {
+            content: counter(item);
+            font-size: var(--typography-body-xl, 1rem);
+            border-radius: 50%;
+            background-color: var(--neutral-900);
+            border: 1px solid var(--primary-500, #064040);
+            display: grid;
+            place-items: center;
+          }
+          svg {
+            stroke-dasharray: 173;
+            stroke-dashoffset: 173;
+            transform: rotate(90deg);
+            transition: stroke-dashoffset 800ms var(--easing);
+            will-change: stroke-dashoffset;
+          }
+          &[data-active='true'] {
+            svg {
+              stroke-dashoffset: 0;
+            }
+          }
+        }
+      }
+    }
+    @media (max-width: 32rem) {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+</style>
+
+<script>
+  const wrapper = document.querySelector<HTMLDivElement>('.NumberedStepsList')!
+  const viewportPointPercentage = 0.66
+
+  const animateLine = () => {
+    const lineWrapper = wrapper.querySelector<HTMLDivElement>('.line-wrapper')!
+    const line = lineWrapper.querySelector<HTMLDivElement>('.line')!
+
+    const updateLineScale = () => {
+      const wrapperRect = lineWrapper.getBoundingClientRect()
+      const viewportPoint = window.innerHeight * viewportPointPercentage
+
+      const start = wrapperRect.top - viewportPoint
+      const end = wrapperRect.bottom - viewportPoint
+      const total = end - start
+      const current = -start
+
+      const progress = Math.max(0, Math.min(1, current / total))
+      line.style.transform = `scaleY(${progress})`
+    }
+    updateLineScale()
+
+    let rafId: number
+    const onScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(updateLineScale)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+  }
+  animateLine()
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        entry.target.setAttribute('data-active', entry.isIntersecting.toString())
+      })
+    },
+    {
+      threshold: 0,
+      rootMargin: `0px 0px -${100 - viewportPointPercentage * 100}% 0px`,
+    }
+  )
+  wrapper.querySelectorAll('.item').forEach((item) => observer.observe(item))
+</script>

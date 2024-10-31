@@ -12,6 +12,7 @@ import Faq from "../../components/Faq";
 import LargeAdvantagesCta from "./LargeAdvantagesCta";
 import ImageCta from "./ImageCta";
 import ListWithIcon from "./ListWithIcon";
+import NumberedStepsList from "./NumberedStepsList";
 
 export default defineField({
   name: 'content',
@@ -116,6 +117,7 @@ export default defineField({
     LargeAdvantagesCta,
     ImageCta,
     ListWithIcon,
+    NumberedStepsList,
 
     // From the main page builder sections
     Faq,

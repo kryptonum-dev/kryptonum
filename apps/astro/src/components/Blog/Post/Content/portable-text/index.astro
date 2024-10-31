@@ -12,6 +12,7 @@ import Faq, { Faq_Query } from './Faq.astro'
 import LargeAdvantagesCta, { LargeAdvantagesCta_Query } from './LargeAdvantagesCta.astro'
 import ImageCta, { ImageCta_Query } from './ImageCta.astro'
 import ListWithIcon, { ListWithIcon_Query } from './ListWithIcon.astro'
+import NumberedStepsList, { NumberedStepsList_Query } from './NumberedStepsList.astro'
 
 export const PortableText_Query = `
   ${Image_Query}
@@ -25,6 +26,7 @@ export const PortableText_Query = `
   ${LargeAdvantagesCta_Query}
   ${ImageCta_Query}
   ${ListWithIcon_Query}
+  ${NumberedStepsList_Query}
 `
 
 type Props = {
@@ -49,6 +51,7 @@ const { value } = Astro.props
       LargeAdvantagesCta: LargeAdvantagesCta,
       ImageCta: ImageCta,
       ListWithIcon: ListWithIcon,
+      NumberedStepsList: NumberedStepsList,
     },
   }}
 />
