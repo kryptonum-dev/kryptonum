@@ -302,6 +302,9 @@ li {
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem clamp(1rem, calc(1.5vw / 0.48), 2rem);
+  & > * {
+    flex: 1 1 auto;
+  }
 }
 
 .gradient-thumbnail {

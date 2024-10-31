@@ -39,7 +39,7 @@ const { node } = Astro.props
           {node.pros.items.map((item, index) => (
             <li>
               {index === 0 ? (
-                <svg width="24" height="24" viewBox="0 0 24 24" id="pros-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" id="ProsAndCons-prosIcon">
                   <circle cx="12" cy="12" r="10" stroke="url(#ProsAndCons-a)" />
                   <path stroke="url(#ProsAndCons-b)" stroke-linecap="round" d="M15 12h-3m0 0H9m3 0V9m0 3v3" />
                   <defs>
@@ -67,7 +67,7 @@ const { node } = Astro.props
                 </svg>
               ) : (
                 <svg width="24" height="24">
-                  <use href="#pros-icon" />
+                  <use href="#ProsAndCons-prosIcon" />
                 </svg>
               )}
               {item}
@@ -85,7 +85,7 @@ const { node } = Astro.props
           {node.cons.items.map((item, index) => (
             <li>
               {index === 0 ? (
-                <svg width="24" height="24" viewBox="0 0 24 24" id="cons-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" id="ProsAndCons-consIcon">
                   <circle cx="12" cy="12" r="10" stroke="url(#ProsAndCons-c)" />
                   <path stroke="url(#ProsAndCons-d)" stroke-linecap="round" d="M15 12H9" />
                   <defs>
@@ -115,7 +115,7 @@ const { node } = Astro.props
                 </svg>
               ) : (
                 <svg width="24" height="24">
-                  <use href="#cons-icon" />
+                  <use href="#ProsAndCons-consIcon" />
                 </svg>
               )}
               {item}

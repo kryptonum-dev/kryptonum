@@ -9,6 +9,7 @@ import ProsAndCons, { ProsAndCons_Query } from './ProsAndCons.astro'
 import DoAndDonts, { DoAndDonts_Query } from './DoAndDonts.astro'
 import SimpleCenteredCtaSection, { SimpleCenteredCtaSection_Query } from './SimpleCenteredCtaSection.astro'
 import Faq, { Faq_Query } from './Faq.astro'
+import LargeAdvantagesCta, { LargeAdvantagesCta_Query } from './LargeAdvantagesCta.astro'
 
 export const PortableText_Query = `
   ${Image_Query}
@@ -19,6 +20,7 @@ export const PortableText_Query = `
   ${DoAndDonts_Query}
   ${SimpleCenteredCtaSection_Query}
   ${Faq_Query}
+  ${LargeAdvantagesCta_Query}
 `
 
 type Props = {
@@ -40,6 +42,7 @@ const { value } = Astro.props
       DoAndDonts: DoAndDonts,
       SimpleCenteredCtaSection: SimpleCenteredCtaSection,
       Faq: Faq,
+      LargeAdvantagesCta: LargeAdvantagesCta,
     },
   }}
 />

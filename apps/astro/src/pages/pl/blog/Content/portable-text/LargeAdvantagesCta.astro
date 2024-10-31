@@ -1,0 +1,141 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/src/components/ui/cta'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const LargeAdvantagesCta_Query = `
+  _type == "LargeAdvantagesCta" => {
+    ${ImageDataQuery('img')}
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    list[],
+    ${ButtonDataQuery('ctas[]')}
+  },
+`
+
+type Props = {
+  node: {
+    img?: ImageDataProps
+    heading: PortableTextValue
+    paragraph: PortableTextValue
+    list: string[]
+    ctas: ButtonDataProps[]
+  }
+}
+
+const {
+  node: { img, heading, paragraph, list, ctas },
+} = Astro.props
+---
+
+<section class="LargeAdvantagesCta">
+  {img && <Image {...img} sizes="(max-width: 49rem) 100vw, 67vw" />}
+  <header>
+    <PortableText value={heading} heading="h2" class="heading" />
+    <PortableText value={paragraph} />
+    <ul>
+      {
+        list.map((item, index) => (
+          <li>
+            {index === 0 ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="none"
+                viewBox="0 0 20 20"
+                id="LargeAdvantagesCta-prosIcon">
+                <circle cx="10" cy="10" r="8.333" stroke="url(#LargeAdvantagesCta-a)" />
+                <path
+                  stroke="url(#LargeAdvantagesCta-b)"
+                  stroke-linecap="round"
+                  d="M12.5 10H10m0 0H7.5m2.5 0V7.5m0 2.5v2.5"
+                />
+                <defs>
+                  <linearGradient
+                    id="LargeAdvantagesCta-a"
+                    x1="18.021"
+                    x2=".676"
+                    y1="1.667"
+                    y2="2.771"
+                    gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#2DD282" />
+                    <stop offset="1" stop-color="#90F4E8" />
+                  </linearGradient>
+                  <linearGradient
+                    id="LargeAdvantagesCta-b"
+                    x1="12.406"
+                    x2="7.203"
+                    y1="7.5"
+                    y2="7.831"
+                    gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#2DD282" />
+                    <stop offset="1" stop-color="#90F4E8" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 20 20">
+                <use href="#LargeAdvantagesCta-prosIcon" />
+              </svg>
+            )}
+            {item}
+          </li>
+        ))
+      }
+    </ul>
+    <div class="cta-wrapper">
+      {ctas.map((cta) => <Button {...cta} />)}
+    </div>
+  </header>
+</section>
+
+<style lang="scss">
+  .LargeAdvantagesCta {
+    margin: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
+    border-radius: 0.25rem;
+    border: 1px solid var(--primary-900, rgb(0, 20, 20));
+    background: linear-gradient(180deg, transparent, rgba(8, 49, 32, 0.15), rgba(5, 42, 27, 0.6));
+    padding: 0.75rem;
+    img {
+      border: 1px solid var(--primary-600, #042b2b);
+      border-radius: 0.25rem;
+    }
+    &:has(:not(img)) {
+      header {
+        padding-top: clamp(0.5rem, calc(1vw / 0.48), 1.5rem);
+      }
+    }
+    header {
+      padding: clamp(1.5rem, calc(2vw / 0.48), 3rem) clamp(1.5rem, calc(1.5vw / 0.48), 2rem) 1.5rem;
+      .heading {
+        font-size: var(--typography-heading-l, 1.5rem);
+        margin-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      }
+      ul {
+        margin: 1.25rem 0 clamp(2rem, calc(3vw / 0.48), 4rem);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+        li {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          gap: 1rem;
+          svg {
+            margin-top: 0.31rem;
+          }
+        }
+      }
+    }
+    @media (max-width: 49rem) {
+      header {
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 0.5rem;
+        ul {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
+</style>
