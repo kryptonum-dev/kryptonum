@@ -6,6 +6,10 @@
     "email": "hello@milewski.me",
     "url": "https://milewski.me"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kryptonum-dev/kryptonum-eu"
+  },
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
