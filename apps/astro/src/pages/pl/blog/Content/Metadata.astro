@@ -25,10 +25,16 @@ const { content, author } = Astro.props as MetadataProps
 <div class="metadata">
   <div class="wrapper">
     <EstimatedReadingTime content={content} />
-    <div class="author">
-      <Image {...author.img} sizes="32px" class="gradient-thumbnail" loading="eager" />
-      <p>Autor: <a href={`/pl/zespol/${author.slug}`}>{author.name}</a></p>
-    </div>
+    {
+      author.img && (
+        <div class="author">
+          <Image {...author.img} sizes="32px" class="gradient-thumbnail" loading="eager" />
+          <p>
+            Autor: <a href={`/pl/zespol/${author.slug}`}>{author.name}</a>
+          </p>
+        </div>
+      )
+    }
   </div>
   <button class="share">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
