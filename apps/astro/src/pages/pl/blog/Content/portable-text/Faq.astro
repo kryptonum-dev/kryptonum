@@ -1,0 +1,9 @@
+---
+import GlobalFaq from '@/components/global/Faq.astro'
+
+export { Faq_Query } from '@/components/global/Faq.astro'
+
+const { node } = Astro.props
+---
+
+<GlobalFaq {...node} />

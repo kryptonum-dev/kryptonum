@@ -11,7 +11,6 @@ export default defineField({
   name,
   type: 'object',
   title,
-  icon,
   fields: [
     defineField({
       name: 'heading',
@@ -56,4 +55,5 @@ export default defineField({
       ...sectionPreview({ imgUrl: `/static/components/${name}.webp`, icon: icon() }),
     }),
   },
+  ...sectionPreview({ imgUrl: `/static/components/${name}.webp`, icon: icon() }),
 });

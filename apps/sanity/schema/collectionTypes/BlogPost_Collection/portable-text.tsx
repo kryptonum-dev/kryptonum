@@ -8,6 +8,7 @@ import Quote from "./Quote";
 import ProsAndCons from "./ProsAndCons";
 import DoAndDonts from "./DoAndDonts";
 import SimpleCenteredCtaSection from "./SimpleCenteredCtaSection";
+import Faq from "../../components/Faq";
 
 export default defineField({
   name: 'content',
@@ -109,5 +110,8 @@ export default defineField({
     ProsAndCons,
     DoAndDonts,
     SimpleCenteredCtaSection,
+
+    // From the main page builder sections
+    Faq,
   ],
 });
