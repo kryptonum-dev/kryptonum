@@ -10,6 +10,7 @@ import DoAndDonts from "./DoAndDonts";
 import SimpleCenteredCtaSection from "./SimpleCenteredCtaSection";
 import Faq from "../../components/Faq";
 import LargeAdvantagesCta from "./LargeAdvantagesCta";
+import ImageCta from "./ImageCta";
 
 export default defineField({
   name: 'content',
@@ -112,6 +113,7 @@ export default defineField({
     DoAndDonts,
     SimpleCenteredCtaSection,
     LargeAdvantagesCta,
+    ImageCta,
 
     // From the main page builder sections
     Faq,

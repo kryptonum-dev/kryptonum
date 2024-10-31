@@ -1,0 +1,108 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/src/components/ui/cta'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const ImageCta_Query = `
+  _type == "ImageCta" => {
+    ${ImageDataQuery('img')}
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    ${ButtonDataQuery('cta')}
+  },
+`
+
+type Props = {
+  node: {
+    img: ImageDataProps
+    heading: PortableTextValue
+    paragraph?: PortableTextValue
+    cta: ButtonDataProps
+  }
+}
+
+const {
+  node: { img, heading, paragraph, cta },
+} = Astro.props
+---
+
+<section class="ImageCta">
+  <div class="img">
+    <Image {...img} sizes="(max-width: 56rem) 100vw, 34vw" />
+  </div>
+  <header>
+    <PortableText value={heading} heading="h2" class="heading" />
+    {paragraph && <PortableText value={paragraph} class="paragraph" />}
+    <Button {...cta} className="cta" />
+  </header>
+</section>
+
+<style lang="scss">
+  .ImageCta {
+    margin: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--primary-900, #001414);
+    background: var(--primary-900, #001414);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+    overflow: hidden;
+    .img {
+      z-index: 1;
+      position: relative;
+      img {
+        border: 1px solid var(--primary-600, #042b2b);
+        border-radius: 0.25rem;
+      }
+      &::before {
+        content: '';
+        position: absolute;
+        z-index: -1;
+        left: 50%;
+        top: 50%;
+        transform: translate3d(-50%, -50%, 0);
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        background: var(--primary-500, #064040);
+        filter: blur(128px);
+        transition: transform 1000ms var(--easing);
+      }
+    }
+    &:has(.cta:hover) {
+      .img::before {
+        transform: translate3d(-50%, -50%, 0) scale(1.2);
+      }
+    }
+    &:has(.cta:active) {
+      .img::before {
+        transform: translate3d(-50%, -50%, 0) scale(1);
+      }
+    }
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      z-index: 2;
+      padding: 0.75rem 2rem 0.75rem 0;
+      .heading {
+        font-size: var(--typography-heading-l, 1.5rem);
+        margin-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      }
+      .paragraph {
+        margin-bottom: clamp(2rem, calc(2.5vw / 0.48), 2.5rem);
+      }
+      .cta {
+        margin-top: auto;
+      }
+    }
+    @media (max-width: 56rem) {
+      padding: clamp(1rem, calc(2vw / 0.48), 2rem);
+      grid-template-columns: 1fr;
+      header {
+        padding: 0;
+      }
+    }
+  }
+</style>
