@@ -26,7 +26,7 @@ const { content, author } = Astro.props as MetadataProps
   <div class="wrapper">
     <EstimatedReadingTime content={content} />
     {
-      author.img && (
+      author?.img && (
         <div class="author">
           <Image {...author.img} sizes="32px" class="gradient-thumbnail" loading="eager" />
           <p>
