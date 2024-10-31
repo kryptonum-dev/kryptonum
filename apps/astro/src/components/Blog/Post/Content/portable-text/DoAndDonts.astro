@@ -155,6 +155,7 @@ const { node } = Astro.props
     padding: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
     display: grid;
     gap: 2rem;
+    font-size: var(--typography-body-2xl, 1.25rem);
     article {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -164,9 +165,8 @@ const { node } = Astro.props
         height: clamp(40px, calc(48vw / 7.68), 48px);
       }
       .heading {
-        font-size: var(--typography-body-2xl, 1.25rem);
         margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1rem);
-        margin-top: 0.5rem;
+        margin-top: 0.4rem;
       }
     }
     @media (max-width: 28rem) {
