@@ -1,6 +1,7 @@
 ---
 import { PortableText } from 'astro-portabletext'
 import type { PortableTextProps } from 'astro-portabletext/types'
+import Normal from './Normal.astro'
 import Block from './Block.astro'
 import BulletList from './BulletList.astro'
 import Image, { Image_Query } from './Image.astro'
@@ -42,6 +43,7 @@ const { value } = Astro.props
   value={value}
   components={{
     block: {
+      normal: Normal,
       h2: Block,
       h3: Block,
       h4: Block,

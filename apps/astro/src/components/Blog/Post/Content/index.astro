@@ -43,11 +43,36 @@ const { headings, content, author } = Astro.props as ContentProps
       padding-right: 1rem;
     }
     .article-content {
-      :global(h2) {
-        font-size: var(--typography-heading-2xl, 2.25rem);
-      }
-      :global(> ul) {
-        margin: clamp(1.25rem, calc(2vw / 0.48), 2rem) 0;
+      font-size: var(--typography-body-2xl, 1.25rem);
+      > {
+        :global(p),
+        :global(ul),
+        :global(ol) {
+          margin-bottom: clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+        }
+        :global(:nth-child(2)) {
+          margin-top: 0;
+        }
+        :global(:last-child) {
+          margin-bottom: 0;
+        }
+        :global(h2) {
+          font-size: var(--typography-heading-2xl, 2.25rem);
+          margin: clamp(4rem, calc(6vw / 0.48), 6rem) 0 clamp(1.5rem, calc(2vw / 0.48), 2rem);
+        }
+        :global(h3) {
+          font-size: var(--typography-heading-xl, 1.875rem);
+        }
+        :global(h4) {
+          font-size: var(--typography-heading-l, 1.5rem);
+        }
+        :global(h3),
+        :global(h4) {
+          margin: clamp(1.5rem, calc(2.25vw / 0.48), 2.25rem) 0 clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+        }
+        :global(ul) {
+          margin: clamp(1.25rem, calc(2vw / 0.48), 2rem) 0;
+        }
       }
     }
     @media (max-width: 74rem) {
