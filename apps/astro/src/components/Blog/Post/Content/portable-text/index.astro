@@ -39,6 +39,14 @@ const { value } = Astro.props
 <PortableText
   value={value}
   components={{
+    block: {
+      h2: Block,
+      h3: Block,
+      h4: Block,
+    },
+    listItem: {
+      bullet: BulletList,
+    },
     type: {
       Image: Image,
       Video: Video,

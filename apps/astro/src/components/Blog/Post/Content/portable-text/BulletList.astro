@@ -1,0 +1,30 @@
+---
+// eslint-disable-next-line no-unused-vars
+const { node, index, ...attrs } = Astro.props
+---
+
+<li {...attrs}>
+  <slot />
+</li>
+
+<style lang="scss">
+  li {
+    $alignMargin: clamp(0.31rem, calc(0.62vw / 0.48), 0.62rem);
+    font-size: var(--typography-body-2xl, 1.25rem);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(0.75rem, calc(1.25vw / 0.48), 1.25rem);
+    padding-top: $alignMargin;
+    &:not(:last-child) {
+      margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+    }
+    &::before {
+      content: '';
+      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1OCIgaGVpZ2h0PSI1OCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDU4IDU4Ij48cmVjdCB3aWR0aD0iNTciIGhlaWdodD0iNTciIHg9Ii41IiB5PSIuNSIgZmlsbD0iIzAxMDEwNCIgcng9IjI4LjUiLz48cmVjdCB3aWR0aD0iNTciIGhlaWdodD0iNTciIHg9Ii41IiB5PSIuNSIgc3Ryb2tlPSIjMDY0MDQwIiByeD0iMjguNSIvPjxwYXRoIHN0cm9rZT0iI0VGRjBGMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBkPSJNMjkgMjJ2MTRtLTctN2gxNCIvPjwvc3ZnPg==')
+        center / contain no-repeat;
+      width: clamp(2.5rem, calc(3.5vw / 0.48), 3.5rem);
+      height: clamp(2.5rem, calc(3.5vw / 0.48), 3.5rem);
+      margin-top: calc($alignMargin * -1);
+    }
+  }
+</style>
