@@ -135,7 +135,8 @@ const { index, sectionId, heading, paragraph, items } = Astro.props
             z-index: -1;
           }
         }
-        &:nth-child(4n) {
+        &:nth-child(4n),
+        &:last-child {
           .decorator {
             &::before,
             &::after {
