@@ -11,6 +11,7 @@ export const structure: StructureResolver = (S) =>
       createSingleton(S, "redirects"),
       S.divider(),
       createSingleton(S, "Index_Page"),
+      createSingleton(S, "Blog_Page"),
       S.divider(),
       createCollection(S, "BlogPost_Collection"),
       createCollection(S, "BlogCategory_Collection"),

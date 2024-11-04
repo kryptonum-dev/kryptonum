@@ -5,10 +5,10 @@ import { isUniqueSlug } from "./is-unique-slug";
 export const defineSlugForDocument = ({ source, prefix = '', slug }: { source?: string, prefix?: string, slug?: string }) => [
   ...(source ? [] : [
     defineField({
-      name: 'title',
+      name: 'name',
       type: 'string',
-      title: 'Title',
-      description: 'The title of the document, used for display in the Breadcrumbs.',
+      title: 'Name',
+      description: 'The name of the document, used for display in the Breadcrumbs.',
       validation: Rule => Rule.required(),
     }),
   ]),

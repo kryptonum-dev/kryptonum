@@ -137,6 +137,11 @@ img {
   vertical-align: bottom;
   object-fit: cover;
 }
+img {
+  &::before {
+    content: 'ISEMA KURWA';
+  }
+}
 
 :focus {
   outline: none;
