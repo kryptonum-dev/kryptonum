@@ -1,5 +1,152 @@
+---
+import type { PortableTextProps } from 'astro-portabletext/types'
+import type { PortableTextBlock } from '@portabletext/types'
+import { slugify } from '@/src/utils/slugify'
+import { toPlainText } from 'astro-portabletext/utils'
+
+export type NavProps = {
+  headings: PortableTextProps['value'][]
+}
+
+export const Nav_Query = `
+  "headings": content[length(style) == 2 && string::startsWith(style, "h")],
+`
+
+const { headings } = Astro.props as NavProps
+
+type HeadingGroup = {
+  heading: { text: string; slug: string }
+  subHeadings: { text: string; slug: string }[]
+}
+
+const groupedHeadings = headings?.reduce<HeadingGroup[]>((acc, heading) => {
+  const style = (heading as PortableTextBlock).style as string
+  const text = toPlainText(heading as PortableTextBlock).replace('❧ ', '')
+  const slug = slugify(text)
+  if (style === 'h2') {
+    acc.push({ heading: { text, slug }, subHeadings: [] })
+  } else if (style === 'h3' && acc.length > 0) {
+    acc[acc.length - 1].subHeadings.push({ text, slug })
+  }
+  return acc
+}, [])
+---
+
 <nav class="article-nav">
-  <a href="/pl/blog">Blog</a>
-  <span>&gt;</span>
-  <p>Lorem, ipsum dolor.</p>
+  <p>W artykule znajdziesz:</p>
+  {
+    groupedHeadings && (
+      <ul class="list">
+        {groupedHeadings.map(({ heading, subHeadings }) => (
+          <li>
+            <a href={`#${heading.slug}`} aria-current="false">
+              {heading.text}
+              {subHeadings.length > 0 && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none" viewBox="0 0 16 17">
+                  <path
+                    stroke="#C6CDCC"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m12.67 6.5-4.667 4-4.667-4"
+                  />
+                </svg>
+              )}
+            </a>
+            {subHeadings.length > 0 && (
+              <ul class="subheadings">
+                {subHeadings.map(({ text, slug }) => (
+                  <li>
+                    <a href={`#${slug}`} aria-current="false">
+                      {text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    )
+  }
 </nav>
+
+<style lang="scss">
+  .article-nav {
+    p {
+      font-size: var(--typography-body-m, 0.875rem);
+      margin-bottom: 0.5rem;
+    }
+    .list {
+      li {
+        margin-top: 0.38rem;
+        border-radius: 0.25rem;
+        ul {
+          display: none;
+        }
+        &:has(a[aria-current='true']),
+        &:has(a:focus-visible),
+        &:focus-within {
+          background-color: var(--primary-700, #021d1d);
+          svg {
+            transform: rotateX(180deg);
+          }
+          ul {
+            display: block;
+          }
+        }
+      }
+      a {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        justify-content: space-between;
+        transition: opacity 500ms var(--easing);
+        &:hover {
+          background-color: rgba(6, 64, 64, 0.34) !important;
+        }
+        svg {
+          flex-shrink: 0;
+          margin-top: 0.25rem;
+          transition: transform 500ms var(--easing);
+          will-change: transform;
+        }
+        &[aria-current='true'] {
+          background-color: var(--primary-600, #021d1d);
+          + ul {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  const nav = document.querySelector('.article-nav')!
+  const articleContent = document.querySelector('.article-content')!
+  const headings = Array.from(articleContent.querySelectorAll(':scope > h2, :scope > h3'))
+  const navLinks = nav.querySelectorAll('a')
+
+  function updateActiveHeading() {
+    const triggerPoint = 124
+    const currentHeading = headings.reduce((current, heading) => {
+      const headingTop = heading.getBoundingClientRect().top
+      if (headingTop <= triggerPoint) return heading
+      return current
+    }, headings[0])
+
+    navLinks.forEach((link) => link.setAttribute('aria-current', 'false'))
+    if (currentHeading) {
+      const id = currentHeading.getAttribute('id')
+      nav.querySelector(`a[href="#${id}"]`)?.setAttribute('aria-current', 'true')
+    }
+  }
+
+  window.addEventListener('scroll', () => {
+    requestAnimationFrame(updateActiveHeading)
+  })
+
+  updateActiveHeading()
+</script>

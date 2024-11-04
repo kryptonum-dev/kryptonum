@@ -1,0 +1,32 @@
+---
+import { toPlainText } from 'astro-portabletext/utils'
+import { slugify } from '@/utils/slugify'
+
+// eslint-disable-next-line no-unused-vars
+const { node, index, isInline, ...attrs } = Astro.props
+
+const styleIs = (style: string) => style === node.style
+
+const props = {
+  ...attrs,
+  id: slugify(toPlainText(node)),
+}
+---
+
+{
+  styleIs('h2') ? (
+    <h2 {...props}>
+      <slot />
+    </h2>
+  ) : styleIs('h3') ? (
+    <h3 {...props}>
+      <slot />
+    </h3>
+  ) : (
+    styleIs('h4') && (
+      <h4 {...props}>
+        <slot />
+      </h4>
+    )
+  )
+}

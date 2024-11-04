@@ -1,6 +1,8 @@
 ---
 import { PortableText } from 'astro-portabletext'
 import type { PortableTextProps } from 'astro-portabletext/types'
+import Block from './Block.astro'
+import BulletList from './BulletList.astro'
 import Image, { Image_Query } from './Image.astro'
 import Video, { Video_Query } from './Video.astro'
 import Author, { Author_Query } from './Author.astro'
@@ -29,7 +31,7 @@ export const PortableText_Query = `
   ${NumberedStepsList_Query}
 `
 
-type Props = {
+export type Props = {
   value: PortableTextProps['value']
 }
 

@@ -27,11 +27,16 @@ export default defineField({
         {
           title: 'Heading 2',
           value: 'h2',
-          component: ({ children }) => <h2 style={{ fontSize: '1.75rem', fontWeight: 400, margin: 0 }}>{children}</h2>
+          component: ({ children }) => <h2 style={{ fontSize: '1.875rem', fontWeight: 400, margin: 0 }}>{children}</h2>
         },
         {
           title: 'Heading 3',
           value: 'h3',
+          component: ({ children }) => <h3 style={{ fontSize: '1.5rem', fontWeight: 400, margin: 0 }}>{children}</h3>
+        },
+        {
+          title: 'Heading 4',
+          value: 'h4',
           component: ({ children }) => <h3 style={{ fontSize: '1.375rem', fontWeight: 400, margin: 0 }}>{children}</h3>
         }
       ],

@@ -1,15 +1,16 @@
 ---
-import type { PortableTextProps } from 'astro-portabletext/types'
-import Nav from './Nav.astro'
+import Nav, { Nav_Query, type NavProps } from './Nav.astro'
 import Metadata, { Metadata_Query, type MetadataProps } from './Metadata.astro'
-import PortableText, { PortableText_Query } from './portable-text/index.astro'
+import PortableText, { PortableText_Query, type Props as PortableTextProps } from './portable-text/index.astro'
 
-export type ContentProps = MetadataProps & {
-  content: PortableTextProps['value']
-}
+export type ContentProps = NavProps &
+  MetadataProps & {
+    content: PortableTextProps['value']
+  }
 
 export const Content_Query = `
   "content": {
+    ${Nav_Query}
     ${Metadata_Query}
     content[] {
       ...,
@@ -18,11 +19,11 @@ export const Content_Query = `
   },
 `
 
-const { content, author } = Astro.props as ContentProps
+const { headings, content, author } = Astro.props as ContentProps
 ---
 
 <article class="article">
-  <Nav />
+  <Nav headings={headings} />
   <section class="article-content">
     <Metadata {...{ content, author }} />
     <PortableText value={content} />
@@ -33,14 +34,31 @@ const { content, author } = Astro.props as ContentProps
   .article {
     display: grid;
     grid-template-columns: 1fr 2.66fr;
-    gap: clamp(5rem, calc(6vw / 0.48), 6rem) clamp(3rem, calc(5vw / 0.48), 7rem);
-  }
-  .article-nav {
-    max-width: 20rem;
-  }
-  .article-content {
-    :global(h2) {
-      font-size: var(--typography-heading-2xl, 2.25rem);
+    align-items: flex-start;
+    gap: clamp(3rem, calc(4vw / 0.48), 5rem) clamp(3rem, calc(3vw / 0.48), 7rem);
+    :global(.article-nav) {
+      position: sticky;
+      top: 89px;
+      border-right: 1px solid var(--primary-600, #042b2b);
+      padding-right: 1rem;
+    }
+    .article-content {
+      :global(h2) {
+        font-size: var(--typography-heading-2xl, 2.25rem);
+      }
+      :global(> ul) {
+        margin: clamp(1.25rem, calc(2vw / 0.48), 2rem) 0;
+      }
+    }
+    @media (max-width: 74rem) {
+      max-width: 48rem;
+      margin: 0 auto;
+      grid-template-columns: 1fr;
+      :global(.article-nav) {
+        position: static;
+        border-right: none;
+        padding-right: 0;
+      }
     }
   }
 </style>
