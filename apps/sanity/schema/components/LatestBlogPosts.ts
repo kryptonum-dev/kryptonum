@@ -38,7 +38,6 @@ export default defineField({
             disableNew: true,
             filter: ({ parent }) => {
               const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
-              console.log(selectedIds);
               if (selectedIds.length > 0) {
                 return {
                   filter: '!(_id in $selectedIds) && !(_id in path("drafts.**"))',
