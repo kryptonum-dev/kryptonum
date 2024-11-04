@@ -2,7 +2,6 @@ import { defineField, defineType } from "sanity";
 import { defineSlugForDocument } from "../../../utils/define-slug-for-document";
 import PortableText from "./portable-text";
 
-const slugPrefix = '/pl/blog/';
 const name = 'BlogPost_Collection';
 const title = 'Blog Post Collection';
 const icon = () => '📰';
@@ -12,7 +11,7 @@ export default defineType({
   type: 'document',
   title,
   icon,
-  options: { documentPreview: true, slugPrefix: slugPrefix },
+  options: { documentPreview: true },
   fields: [
     defineField({
       name: 'name',
@@ -21,7 +20,7 @@ export default defineType({
       description: 'Name will be displayed in breadcrumb and in schemas for Google',
       validation: Rule => Rule.required(),
     }),
-    ...defineSlugForDocument({ source: 'name', slugPrefix: slugPrefix }),
+    ...defineSlugForDocument({ source: 'name', prefix: '/pl/blog/' }),
     defineField({
       name: 'heading',
       type: 'Heading',
@@ -95,7 +94,7 @@ export default defineType({
     },
     prepare: ({ name, slug, media }) => ({
       title: name,
-      subtitle: `${slugPrefix}${slug}`,
+      subtitle: slug,
       icon,
       media: media,
     }),

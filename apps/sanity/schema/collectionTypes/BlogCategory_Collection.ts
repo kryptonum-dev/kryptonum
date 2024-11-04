@@ -1,7 +1,6 @@
 import { defineField, defineType } from "sanity";
 import { defineSlugForDocument } from "../../utils/define-slug-for-document";
 
-const slugPrefix = '/pl/blog/kategoria/';
 const name = 'BlogCategory_Collection';
 const title = 'Blog Category Collection';
 const icon = () => '🔖';
@@ -18,7 +17,7 @@ export default defineType({
       title: 'Name',
       validation: Rule => Rule.required(),
     }),
-    ...defineSlugForDocument({ source: 'name', slugPrefix: slugPrefix }),
+    ...defineSlugForDocument({ source: 'name', prefix: '/pl/blog/kategoria/' }),
     defineField({
       name: 'seo',
       type: 'seo',
@@ -39,7 +38,7 @@ export default defineType({
     },
     prepare: ({ name, slug }) => ({
       title: name,
-      subtitle: `${slugPrefix}${slug}`,
+      subtitle: slug,
       icon,
     }),
   },

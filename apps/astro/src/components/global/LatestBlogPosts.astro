@@ -53,7 +53,7 @@ const Subheading = index === 0 ? 'h2' : 'h3'
     {
       posts.map(({ img, name, slug, content }, i) => (
         <article class="post">
-          <a href={`/pl/blog/${slug}`}>
+          <a href={slug}>
             <Image
               {...img}
               sizes="(max-width: 46rem) 100vw, 40vw"
