@@ -17,19 +17,22 @@ import ImageCta, { ImageCta_Query } from './ImageCta.astro'
 import ListWithIcon, { ListWithIcon_Query } from './ListWithIcon.astro'
 import NumberedStepsList, { NumberedStepsList_Query } from './NumberedStepsList.astro'
 
-export const PortableText_Query = `
-  ${Image_Query}
-  ${Video_Query}
-  ${Author_Query}
-  ${Quote_Query}
-  ${ProsAndCons_Query}
-  ${DoAndDonts_Query}
-  ${SimpleCenteredCtaSection_Query}
-  ${Faq_Query}
-  ${LargeAdvantagesCta_Query}
-  ${ImageCta_Query}
-  ${ListWithIcon_Query}
-  ${NumberedStepsList_Query}
+export const ContentPT_Query = `
+  content[] {
+    ...,
+    ${Image_Query}
+    ${Video_Query}
+    ${Author_Query}
+    ${Quote_Query}
+    ${ProsAndCons_Query}
+    ${DoAndDonts_Query}
+    ${SimpleCenteredCtaSection_Query}
+    ${Faq_Query}
+    ${LargeAdvantagesCta_Query}
+    ${ImageCta_Query}
+    ${ListWithIcon_Query}
+    ${NumberedStepsList_Query}
+  },
 `
 
 export type Props = {

@@ -1,6 +1,7 @@
 ---
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/src/components/ui/image'
+import CategoryTab from '@/components/ui/CategoryTab.astro'
 import { formatDate } from '@/utils/format-date'
 
 export type HeroProps = {
@@ -23,7 +24,7 @@ export const Hero_Query = `
     ${ImageDataQuery('img')}
     category -> {
       name,
-      "slug": "/pl/blog/kategoria/" + slug.current,
+      "slug": slug.current,
       "postCount": count(*[_type == 'BlogPost_Collection' && references(^._id)])
     }
   },
@@ -34,7 +35,7 @@ const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroPr
 
 <section class="Hero">
   <header>
-    <a href={category.slug} class="category">{category.name} ({category.postCount})</a>
+    <CategoryTab slug={category.slug}>{category.name} ({category.postCount})</CategoryTab>
     <PortableText value={heading} heading="h1" class="h2 heading" />
     <div class="date">
       <p>{formatDate(_createdAt)}</p>
@@ -65,35 +66,6 @@ const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroPr
     grid-template-columns: 1fr 1.4fr;
     align-items: flex-end;
     header {
-      .category {
-        display: inline-flex;
-        align-items: center;
-        font-size: var(--typography-body-s, 0.75rem);
-        padding: 0.5rem 1rem;
-        height: 2.4375rem;
-        $tap-increment: calc(-0.15625rem - 1px);
-        position: relative;
-        &::before {
-          content: '';
-          position: absolute;
-          left: $tap-increment;
-          top: $tap-increment;
-          bottom: $tap-increment;
-          right: $tap-increment;
-        }
-        border-radius: 2.75rem;
-        border: 1px solid var(--neutral-500);
-        transition:
-          border-color 300ms,
-          transform 500ms var(--easing);
-        &:hover {
-          border-color: var(--neutral-200, #f0f7f7);
-        }
-        &:active {
-          transition: none;
-          transform: scale(0.98);
-        }
-      }
       .heading {
         margin: clamp(1.5rem, calc(1.75vw / 0.48), 2rem) 0;
       }

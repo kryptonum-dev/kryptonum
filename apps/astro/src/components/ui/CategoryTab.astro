@@ -1,0 +1,43 @@
+---
+type Props = {
+  slug: string
+}
+
+const { slug } = Astro.props
+---
+
+<a href={slug} class="category-tab">
+  <slot />
+</a>
+
+<style lang="scss">
+  .category-tab {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--typography-body-s, 0.75rem);
+    padding: 0.5rem 1rem;
+    height: 2.4375rem;
+    $tap-increment: calc(-0.15625rem - 1px);
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      left: $tap-increment;
+      top: $tap-increment;
+      bottom: $tap-increment;
+      right: $tap-increment;
+    }
+    border-radius: 2.75rem;
+    border: 1px solid var(--neutral-500);
+    transition:
+      border-color 500ms,
+      transform 500ms var(--easing);
+    &:hover {
+      border-color: var(--neutral-200, #f0f7f7);
+    }
+    &:active {
+      transition: none;
+      transform: scale(0.98);
+    }
+  }
+</style>

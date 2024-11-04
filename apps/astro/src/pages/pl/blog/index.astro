@@ -3,6 +3,8 @@ import Layout from '@/src/layouts/Layout.astro'
 import sanityFetch from '@/utils/sanity.fetch'
 import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Hero.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 
 const metadata = await metadataFetch('Blog_Page')
@@ -10,6 +12,8 @@ const metadata = await metadataFetch('Blog_Page')
 type QueryProps = {
   name: string
   slug: string
+  heading: PortableTextValue
+  hero: HeroProps
   components: ComponentsProps
 }
 
@@ -18,6 +22,8 @@ const data = await sanityFetch<QueryProps>({
     *[_type == "Blog_Page"][0] {
       name,
       "slug": slug.current,
+      ${PortableTextQuery('heading')}
+      ${Hero_Query}
       ${Components_Query}
     }
   `,
@@ -26,5 +32,7 @@ const data = await sanityFetch<QueryProps>({
 
 <Layout {...metadata}>
   <Breadcrumbs data={[{ name: data.name, path: data.slug }]} />
+  <PortableText value={data.heading} heading="h1" class="visually-hidden" />
+  <Hero {...data.hero} />
   <Components data={data.components} />
 </Layout>

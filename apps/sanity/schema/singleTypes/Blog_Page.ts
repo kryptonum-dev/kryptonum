@@ -15,6 +15,12 @@ export default defineType({
   fields: [
     ...defineSlugForDocument({ slug: slug }),
     defineField({
+      name: 'heading',
+      type: 'Heading',
+      title: 'Heading',
+      description: 'In that page the H1 tag will not be visible, so you can use this field to define the main heading of the page.',
+    }),
+    defineField({
       name: 'components',
       type: 'components',
       title: 'Page Components',

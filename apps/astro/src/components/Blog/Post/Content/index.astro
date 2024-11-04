@@ -1,21 +1,18 @@
 ---
 import Nav, { Nav_Query, type NavProps } from './Nav.astro'
 import Metadata, { Metadata_Query, type MetadataProps } from './Metadata.astro'
-import PortableText, { PortableText_Query, type Props as PortableTextProps } from './portable-text/index.astro'
+import ContentPT, { ContentPT_Query, type Props as ContentPTProps } from './content-pt/index.astro'
 
 export type ContentProps = NavProps &
   MetadataProps & {
-    content: PortableTextProps['value']
+    content: ContentPTProps['value']
   }
 
 export const Content_Query = `
   "content": {
     ${Nav_Query}
     ${Metadata_Query}
-    content[] {
-      ...,
-      ${PortableText_Query}
-    },
+    ${ContentPT_Query}
   },
 `
 
@@ -26,7 +23,7 @@ const { headings, content, author } = Astro.props as ContentProps
   <Nav headings={headings} />
   <section class="article-content">
     <Metadata {...{ content, author }} />
-    <PortableText value={content} />
+    <ContentPT value={content} />
   </section>
 </article>
 
