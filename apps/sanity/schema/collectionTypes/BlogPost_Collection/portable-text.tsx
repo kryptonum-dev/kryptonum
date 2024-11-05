@@ -127,4 +127,5 @@ export default defineField({
     // From the main page builder sections
     Faq,
   ],
+  validation: Rule => Rule.required(),
 });
