@@ -1,12 +1,13 @@
 ---
 type Props = {
   slug: string
+  isActive?: boolean
 }
 
-const { slug } = Astro.props
+const { slug, isActive = false } = Astro.props
 ---
 
-<a href={slug} class="category-tab">
+<a href={slug} class="category-tab" aria-current={isActive ? 'true' : 'false'}>
   <slot />
 </a>
 
@@ -38,6 +39,12 @@ const { slug } = Astro.props
     &:active {
       transition: none;
       transform: scale(0.98);
+    }
+    &[aria-current='true'] {
+      background:
+        linear-gradient(266deg, #0b0f0d, #011310, #001f1b) padding-box,
+        var(--gradient-primary) border-box;
+      border: 1px solid rgba(255, 255, 255, 0);
     }
   }
 </style>
