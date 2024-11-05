@@ -53,5 +53,5 @@ const metadata = await metadataFetch('BlogPost_Collection', `${slugPrefix}${slug
   />
   <Hero {...page.hero} />
   <Content {...page.content} />
-  <Components data={page.components} indexStart={1} />
+  <Components data={page.components} hasPreviousSections={true} />
 </Layout>
