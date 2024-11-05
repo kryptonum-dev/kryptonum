@@ -163,46 +163,46 @@ const {
 </style>
 
 <script>
-  const wrapper = document.querySelector<HTMLDivElement>('.NumberedStepsList')!
   const viewportPointPercentage = 0.66
+  document.querySelectorAll<HTMLDivElement>('.NumberedStepsList').forEach((section) => {
+    const animateLine = () => {
+      const lineWrapper = section.querySelector<HTMLDivElement>('.line-wrapper')!
+      const line = lineWrapper.querySelector<HTMLDivElement>('.line')!
 
-  const animateLine = () => {
-    const lineWrapper = wrapper.querySelector<HTMLDivElement>('.line-wrapper')!
-    const line = lineWrapper.querySelector<HTMLDivElement>('.line')!
+      const updateLineScale = () => {
+        const wrapperRect = lineWrapper.getBoundingClientRect()
+        const viewportPoint = window.innerHeight * viewportPointPercentage
 
-    const updateLineScale = () => {
-      const wrapperRect = lineWrapper.getBoundingClientRect()
-      const viewportPoint = window.innerHeight * viewportPointPercentage
+        const start = wrapperRect.top - viewportPoint
+        const end = wrapperRect.bottom - viewportPoint
+        const total = end - start
+        const current = -start
 
-      const start = wrapperRect.top - viewportPoint
-      const end = wrapperRect.bottom - viewportPoint
-      const total = end - start
-      const current = -start
+        const progress = Math.max(0, Math.min(1, current / total))
+        line.style.transform = `scaleY(${progress})`
+      }
+      updateLineScale()
 
-      const progress = Math.max(0, Math.min(1, current / total))
-      line.style.transform = `scaleY(${progress})`
+      let rafId: number
+      const onScroll = () => {
+        if (rafId) cancelAnimationFrame(rafId)
+        rafId = requestAnimationFrame(updateLineScale)
+      }
+      window.addEventListener('scroll', onScroll, { passive: true })
     }
-    updateLineScale()
+    animateLine()
 
-    let rafId: number
-    const onScroll = () => {
-      if (rafId) cancelAnimationFrame(rafId)
-      rafId = requestAnimationFrame(updateLineScale)
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-  }
-  animateLine()
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        entry.target.setAttribute('data-active', entry.isIntersecting.toString())
-      })
-    },
-    {
-      threshold: 0,
-      rootMargin: `0px 0px -${100 - viewportPointPercentage * 100}% 0px`,
-    }
-  )
-  wrapper.querySelectorAll('.item').forEach((item) => observer.observe(item))
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.setAttribute('data-active', entry.isIntersecting.toString())
+        })
+      },
+      {
+        threshold: 0,
+        rootMargin: `0px 0px -${100 - viewportPointPercentage * 100}% 0px`,
+      }
+    )
+    section.querySelectorAll('.item').forEach((item) => observer.observe(item))
+  })
 </script>
