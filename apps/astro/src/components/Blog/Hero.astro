@@ -1,55 +1,54 @@
 ---
-import type { PortableTextBlock } from '@portabletext/types'
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/src/components/ui/image'
 import CategoryTab from '@/components/ui/CategoryTab.astro'
-import { toPlainText } from 'astro-portabletext/utils'
 import { ContentPT_Query } from '@/components/Blog/Post/Content/content-pt/index.astro'
 import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@/components/ui/EstimatedReadingTime.astro'
 
 export const Hero_Query = `
   "hero": *[_type == 'BlogPost_Collection'] | order(_createdAt desc)[0] {
+    name,
     "slug": slug.current,
-    ${ImageDataQuery('img')}
     ${PortableTextQuery('heading')}
-    ${ContentPT_Query}
-    "author": author[0] -> {
-      ${ImageDataQuery('img')}
-      name,
-      "slug": slug.current,
-    },
     category -> {
       name,
       "slug": slug.current,
       "postCount": count(*[_type == 'BlogPost_Collection' && references(^._id)])
     },
+    "author": author[0] -> {
+      ${ImageDataQuery('img')}
+      name,
+      "slug": slug.current,
+    },
+    ${ImageDataQuery('img')}
+    ${ContentPT_Query}
   },
 `
 
 export type HeroProps = {
+  name: string
   slug: string
-  img: ImageDataProps
   heading: PortableTextValue
-  content: EstimatedReadingTimeProps['content']
-  author: {
-    img: ImageDataProps
-    name: string
-    slug: string
-  }
   category: {
     name: string
     slug: string
     postCount: number
   }
+  author: {
+    img: ImageDataProps
+    name: string
+    slug: string
+  }
+  img: ImageDataProps
+  content: EstimatedReadingTimeProps['content']
 }
 
-const { slug, img, heading, content, author, category } = Astro.props as HeroProps
+const { name, slug, heading, category, author, img, content } = Astro.props as HeroProps
 ---
 
 <section class="Hero">
   <article>
-    <a href={slug} class="hero-link" aria-label={`Przejdź do artykułu: ${toPlainText(heading as PortableTextBlock)}”`}>
-    </a>
+    <a href={slug} class="hero-link" aria-label={`Przejdź do artykułu: ${name}`}></a>
     <div class="img">
       <Image {...img} sizes="(max-width: 66rem) 100vw, 50vw" priority={true} />
       <div class="tag">👉 Sprawdź najnowszy artykuł</div>
