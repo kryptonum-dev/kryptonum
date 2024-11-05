@@ -1,0 +1,82 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const TrustedCompanies_Query = `
+  _type == "TrustedCompanies" => {
+    ${PortableTextQuery('heading')}
+    ${ImageDataQuery('list[]')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  list: ImageDataProps[]
+}
+
+const { index, sectionId, heading, list } = Astro.props
+---
+
+<section class="TrustedCompanies" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+  </header>
+  <ul>
+    {
+      list.map((img) => (
+        <li>
+          <Image {...img} sizes="78px" />
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style lang="scss">
+  .TrustedCompanies {
+    margin: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    padding-top: clamp(0.75rem, calc(1.25vw / 0.48), 2rem);
+    background:
+      linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+      linear-gradient(266deg, rgba(5, 67, 45, 0.4), rgba(5, 80, 53, 0.4), #1f6644, rgba(17, 53, 49, 0.2)) border-box;
+    border-top: 1px solid hsla(0, 0%, 100%, 0);
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 3fr;
+    gap: 1rem 1.5rem;
+    header {
+      .heading {
+        font-size: var(--typography-body-xl, 1rem);
+        line-height: inherit;
+        letter-spacing: inherit;
+      }
+    }
+    ul {
+      max-width: fit-content;
+      margin-left: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+      li {
+        height: 2.5rem;
+        img {
+          width: auto;
+          height: 100%;
+        }
+      }
+    }
+    @media (max-width: 56rem) {
+      grid-template-columns: 1fr;
+      header {
+        text-align: center;
+      }
+      ul {
+        max-width: unset;
+        margin-left: 0;
+        justify-content: center;
+      }
+    }
+  }
+</style>

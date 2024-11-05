@@ -24,6 +24,7 @@ import ProcessItemsGraph from "./components/ProcessItemsGraph";
 import Reviews from "./components/Reviews";
 import SingleReview from "./components/SingleReview";
 import LatestBlogPosts from "./components/LatestBlogPosts";
+import TrustedCompanies from "./components/TrustedCompanies";
 
 export default defineType({
   name: 'components',
@@ -55,6 +56,7 @@ export default defineType({
     Reviews,
     SingleReview,
     LatestBlogPosts,
+    TrustedCompanies,
   ],
   options: {
     insertMenu: {
