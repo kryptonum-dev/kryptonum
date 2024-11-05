@@ -5,15 +5,19 @@ import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Hero.astro'
+import Listing, { Listing_Query, type Props as ListingProps } from '@/components/Blog/Listing.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 
 const metadata = await metadataFetch('Blog_Page')
+
+export const ITEMS_PER_PAGE = 3
 
 type QueryProps = {
   name: string
   slug: string
   heading: PortableTextValue
   hero: HeroProps
+  listing: ListingProps
   components: ComponentsProps
 }
 
@@ -24,6 +28,7 @@ const data = await sanityFetch<QueryProps>({
       "slug": slug.current,
       ${PortableTextQuery('heading')}
       ${Hero_Query}
+      ${Listing_Query({ currentPage: 1 })}
       ${Components_Query}
     }
   `,
@@ -34,5 +39,6 @@ const data = await sanityFetch<QueryProps>({
   <Breadcrumbs data={[{ name: data.name, path: data.slug }]} />
   <PortableText value={data.heading} heading="h1" class="visually-hidden" />
   <Hero {...data.hero} />
-  <Components data={data.components} />
+  <Listing {...data.listing} currentPage={1} totalItems={data.listing.totalBlogPosts} slugBase={'/pl/blog'} />
+  <Components data={data.components} hasPreviousSections={true} />
 </Layout>

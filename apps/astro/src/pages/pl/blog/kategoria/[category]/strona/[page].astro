@@ -1,0 +1,99 @@
+---
+export const slugPrefix = '/pl/blog/kategoria/'
+
+import Layout from '@/src/layouts/Layout.astro'
+import sanityFetch from '@/utils/sanity.fetch'
+import metadataFetch from '@/utils/metadata.fetch'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Hero.astro'
+import Listing, { Listing_Query, type Props as ListingProps } from '@/components/Blog/Listing.astro'
+import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+import { ITEMS_PER_PAGE } from '@/src/pages/pl/blog/index.astro'
+import { DOMAIN } from '@/src/global/constants'
+
+export async function getCategoryData() {
+  return await sanityFetch<{ name: string; slug: string; postCount: number }[]>({
+    query: `
+      *[_type == 'BlogCategory_Collection'][] {
+        name,
+        "slug": slug.current,
+        "postCount": count(*[_type == "BlogPost_Collection" && references(^._id) && defined(category)]),
+      }
+    `,
+  })
+}
+
+export async function getStaticPaths() {
+  const categories = await getCategoryData()
+  return categories.flatMap(({ slug, postCount }) => {
+    const totalPages = Math.ceil(postCount / ITEMS_PER_PAGE)
+    return Array.from({ length: totalPages - 1 }, (_, i) => ({
+      params: {
+        category: slug.replace(slugPrefix, ''),
+        page: (i + 2).toString(),
+      },
+    }))
+  })
+}
+
+const categories = await getCategoryData()
+const { category: _category, page: _page } = Astro.params
+const category = categories.find(({ slug }) => slug === `${slugPrefix}${_category}`)
+const page = parseInt(_page)
+
+const postCount = category?.postCount || 0
+const totalPages = Math.ceil(postCount / ITEMS_PER_PAGE)
+if (page < 2 || page > totalPages) return Astro.rewrite('/404')
+if (!category) return Astro.rewrite('/404')
+
+const data = await sanityFetch<{
+  name: string
+  slug: string
+  heading: PortableTextValue
+  hero: HeroProps
+  listing: ListingProps
+  components: ComponentsProps
+}>({
+  query: `
+    *[_type == "Blog_Page"][0] {
+      name,
+      "slug": slug.current,
+      ${PortableTextQuery('heading')}
+      ${Hero_Query}
+      ${Listing_Query({ currentPage: page, currentCategorySlug: category.slug })}
+      ${Components_Query}
+    }
+  `,
+})
+
+const metadata = await metadataFetch('BlogCategory_Collection', category.slug)
+---
+
+<Layout
+  title={`${metadata.title} | Strona ${page}`}
+  description={metadata.description}
+  openGraphImage={metadata.openGraphImage}
+  path={Astro.url.pathname}>
+  <Fragment slot="Head">
+    {page > 2 && <link rel="prev" href={`${DOMAIN}/pl/blog/strona/${page - 1}`} />}
+    {page < totalPages && <link rel="next" href={`${DOMAIN}/pl/blog/strona/${page + 1}`} />}
+  </Fragment>
+  <Breadcrumbs
+    data={[
+      { name: data.name, path: data.slug },
+      { name: category.name, path: category.slug },
+      { name: `Strona ${page}`, path: `${category.slug}/strona/${page}` },
+    ]}
+  />
+  <PortableText value={data.heading} heading="h1" class="visually-hidden" />
+  <Hero {...data.hero} />
+  <Listing
+    {...data.listing}
+    currentPage={page}
+    totalItems={data.listing.totalPostsByCategory}
+    currentCategorySlug={category.slug}
+    slugBase={category.slug}
+  />
+  <Components data={data.components} />
+</Layout>

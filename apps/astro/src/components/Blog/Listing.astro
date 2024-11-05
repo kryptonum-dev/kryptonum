@@ -1,0 +1,138 @@
+---
+import BlogCard, { BlogCard_Query, type Props as BlogCardProps } from '@/components/ui/BlogCard.astro'
+import CategoryTab from '@/components/ui/CategoryTab.astro'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Pagination from '@/components/ui/Pagination.astro'
+import { ITEMS_PER_PAGE } from '@/src/pages/pl/blog/index.astro'
+
+export const Listing_Query = ({
+  currentPage = 1,
+  currentCategorySlug = '',
+}: {
+  currentPage?: number
+  currentCategorySlug?: string
+}) => {
+  const OFFSET = ITEMS_PER_PAGE * (currentPage - 1)
+  const PAGINATION_BEFORE = OFFSET
+  const PAGINATION_AFTER = OFFSET + ITEMS_PER_PAGE
+  return `
+    listing {
+      ${PortableTextQuery('heading')}
+      "totalBlogPosts": count(*[_type == 'BlogPost_Collection']),
+      "totalPostsByCategory": count(*[_type == 'BlogPost_Collection' ${currentCategorySlug ? `&& category -> slug.current == "${currentCategorySlug}"` : ''}]),
+      "categories": *[_type == 'BlogCategory_Collection'] {
+        name,
+        "slug": slug.current,
+        "postCount": count(*[_type == 'BlogPost_Collection' && references(^._id) && defined(category)])
+      },
+      "listing": *[_type == 'BlogPost_Collection'
+        ${currentCategorySlug ? `&& category -> slug.current == "${currentCategorySlug}"` : ''}
+      ] | order(_createdAt desc) [${PAGINATION_BEFORE}...${PAGINATION_AFTER}] {
+        ${BlogCard_Query}
+      },
+    },
+  `
+}
+
+export type Props = {
+  heading: PortableTextValue
+  totalBlogPosts: number
+  totalPostsByCategory: number
+  categories: Array<{
+    name: string
+    slug: string
+    postCount: number
+  }>
+  listing: Array<BlogCardProps>
+  currentCategorySlug?: string
+  currentPage: number
+  totalItems: number
+  slugBase: string
+}
+
+const { heading, totalBlogPosts, categories, listing, currentCategorySlug, currentPage, totalItems, slugBase } =
+  Astro.props
+
+const _categories = categories?.filter(({ postCount }) => postCount > 0)
+---
+
+<section class="Listing">
+  <header>
+    <PortableText value={heading} heading="h2" />
+    <div class="categories">
+      <p>Kategorie</p>
+      <ul>
+        <li>
+          <CategoryTab slug="/pl/blog" isActive={!currentCategorySlug}>
+            Wszystkie ({totalBlogPosts})
+          </CategoryTab>
+        </li>
+        {
+          _categories.map((category) => {
+            const isActive = currentCategorySlug === category.slug
+            return (
+              <li>
+                <CategoryTab slug={isActive ? '/pl/blog' : category.slug} isActive={isActive}>
+                  {category.name} ({category.postCount})
+                </CategoryTab>
+              </li>
+            )
+          })
+        }
+      </ul>
+    </div>
+  </header>
+  <div class="listing" id="strona">
+    {
+      listing?.map((post) => (
+        <BlogCard {...post} imgProps={{ sizes: '(max-width: 47rem) 100vw, (max-width: 63rem) 50vw, 34vw' }} />
+      ))
+    }
+  </div>
+  <Pagination currentPage={currentPage} totalItems={totalItems} itemsPerPage={ITEMS_PER_PAGE} slugBase={slugBase} />
+</section>
+
+<style lang="scss">
+  .Listing {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    header {
+      padding-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--neutral-600, #4a4a57);
+      h2 {
+        margin-bottom: clamp(2rem, calc(3vw / 0.48), 3rem);
+      }
+      .categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 2.5rem;
+        align-items: center;
+        p {
+          font-size: var(--typography-body-m, 0.875rem);
+        }
+        ul {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+      }
+    }
+    .listing {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: clamp(0.75rem, calc(0.75vw / 0.48), 1.25rem);
+      @media (max-width: 63rem) {
+        grid-template-columns: 1fr 1fr;
+      }
+      @media (max-width: 47rem) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+</style>
+
+<style is:global>
+  html {
+    scroll-behavior: auto;
+  }
+</style>

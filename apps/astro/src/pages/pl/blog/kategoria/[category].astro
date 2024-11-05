@@ -1,0 +1,78 @@
+---
+export const slugPrefix = '/pl/blog/kategoria/'
+
+import Layout from '@/src/layouts/Layout.astro'
+import sanityFetch from '@/utils/sanity.fetch'
+import metadataFetch from '@/utils/metadata.fetch'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Hero.astro'
+import Listing, { Listing_Query, type Props as ListingProps } from '@/components/Blog/Listing.astro'
+import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+
+export const categories = await sanityFetch<{ slug: string }[]>({
+  query: `
+    *[_type == "BlogCategory_Collection"][] {
+      "slug": slug.current,
+    }
+  `,
+})
+export async function getStaticPaths() {
+  return categories?.map(({ slug }) => ({ params: { category: slug.replace(slugPrefix, '') } }))
+}
+
+const { category: _category } = Astro.params
+const category = `${slugPrefix}${_category}`
+
+if (!categories.find(({ slug }) => slug === category)) return Astro.rewrite('/404')
+
+const data = await sanityFetch<{
+  name: string
+  slug: string
+  category: {
+    name: string
+    slug: string
+  }
+  heading: PortableTextValue
+  hero: HeroProps
+  listing: ListingProps
+  components: ComponentsProps
+}>({
+  query: `
+  *[_type == "Blog_Page"][0] {
+    name,
+    "slug": slug.current,
+    "category": *[_type == "BlogCategory_Collection" && slug.current == $category][0] {
+      name,
+      "slug": slug.current,
+    },
+    ${PortableTextQuery('heading')}
+    ${Hero_Query}
+    ${Listing_Query({ currentPage: 1, currentCategorySlug: category })}
+    ${Components_Query}
+    }
+  `,
+  params: { category },
+})
+
+const metadata = await metadataFetch('BlogCategory_Collection', category)
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs
+    data={[
+      { name: data.name, path: data.slug },
+      { name: data.category.name, path: data.category.slug },
+    ]}
+  />
+  <PortableText value={data.heading} heading="h1" class="visually-hidden" />
+  <Hero {...data.hero} />
+  <Listing
+    {...data.listing}
+    currentPage={1}
+    totalItems={data.listing.totalPostsByCategory}
+    currentCategorySlug={data.category.slug}
+    slugBase={data.category.slug}
+  />
+  <Components data={data.components} hasPreviousSections={true} />
+</Layout>

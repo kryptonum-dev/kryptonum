@@ -13,6 +13,7 @@ const { ...props } = Astro.props
 <html lang={LOCALE}>
   <head>
     <Head {...props} />
+    <slot name="Head" />
   </head>
   <body>
     <main id="main">

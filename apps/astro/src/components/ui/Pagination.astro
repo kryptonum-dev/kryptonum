@@ -1,0 +1,178 @@
+---
+// Pagination.astro
+interface Props {
+  currentPage: number
+  totalItems: number
+  slugBase: string
+  itemsPerPage?: number
+}
+
+const ITEMS_PER_PAGE = 1
+
+const { currentPage = 1, totalItems, slugBase = '', itemsPerPage = ITEMS_PER_PAGE } = Astro.props
+
+const totalPages = Math.ceil(totalItems / itemsPerPage)
+
+const slugPrefix = (number?: number) =>
+  number && number > 1 ? `${slugBase}/strona/${number}#strona` : `${slugBase}#strona`
+
+const renderPagination = () => {
+  const pagination = []
+
+  if (totalPages <= 5) {
+    // Show all pages if total pages is 5 or less
+    for (let i = 1; i <= totalPages; i++) {
+      pagination.push(
+        `<a href="${slugPrefix(i)}" ${currentPage === i ? 'aria-current="page"' : ''}>
+          ${i}
+        </a>`
+      )
+    }
+  } else {
+    // Show pagination with ellipsis for more than 5 pages
+    if (currentPage <= 2) {
+      // Near the start
+      for (let i = 1; i <= 3; i++) {
+        pagination.push(
+          `<a href="${slugPrefix(i)}" ${currentPage === i ? 'aria-current="page"' : ''}>
+            ${i}
+          </a>`
+        )
+      }
+      pagination.push('<div>...</div>')
+      pagination.push(
+        `<a href="${slugPrefix(totalPages)}" ${currentPage === totalPages ? 'aria-current="page"' : ''}>
+          ${totalPages}
+        </a>`
+      )
+    } else if (currentPage >= 3 && totalPages - currentPage >= 3) {
+      // In the middle
+      pagination.push(
+        `<a href="${slugPrefix(1)}" ${currentPage === 1 ? 'aria-current="page"' : ''}>
+          ${1}
+        </a>`
+      )
+      pagination.push('<div>...</div>')
+      pagination.push(
+        `<a href="${slugPrefix(currentPage)}" aria-current="page">
+          ${currentPage}
+        </a>`
+      )
+      pagination.push('<div>...</div>')
+      pagination.push(
+        `<a href="${slugPrefix(totalPages)}" ${currentPage === totalPages ? 'aria-current="page"' : ''}>
+          ${totalPages}
+        </a>`
+      )
+    } else {
+      // Near the end
+      pagination.push(
+        `<a href="${slugPrefix(1)}" ${currentPage === 1 ? 'aria-current="page"' : ''}>
+          ${1}
+        </a>`
+      )
+      pagination.push('<div>...</div>')
+      for (let i = totalPages - 2; i <= totalPages; i++) {
+        pagination.push(
+          `<a href="${slugPrefix(i)}" ${currentPage === i ? 'aria-current="page"' : ''}>
+            ${i}
+          </a>`
+        )
+      }
+    }
+  }
+  return pagination.join('')
+}
+
+const ArrowLeft = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16"><path stroke="#F0F7F7" stroke-linecap="round" stroke-linejoin="round" d="M10 3.333 6 8l4 4.667" /></svg>`
+const ArrowRight = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16"><path stroke="#F0F7F7" stroke-linecap="round" stroke-linejoin="round" d="M6 3.333 10 8l-4 4.667" /></svg>`
+---
+
+{
+  totalPages > 1 && (
+    <nav class="Pagination">
+      {currentPage > 1 ? (
+        <a href={slugPrefix(currentPage - 1)} aria-label="Go to previous page" class="arrow" set:html={ArrowLeft} />
+      ) : (
+        <div class="arrow" set:html={ArrowLeft} />
+      )}
+      <Fragment set:html={renderPagination()} />
+      {currentPage < totalPages ? (
+        <a href={slugPrefix(currentPage + 1)} aria-label="Go to next page" class="arrow" set:html={ArrowRight} />
+      ) : (
+        <div class="arrow" set:html={ArrowRight} />
+      )}
+    </nav>
+  )
+}
+
+<style lang="scss">
+  .Pagination {
+    margin: 3rem auto 0;
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    align-items: center;
+    overflow: auto;
+    $gap: clamp(0.25rem, calc(0.5vw / 0.48), 0.5rem);
+    gap: $gap;
+    :global(a),
+    :global(div) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-variant-numeric: lining-nums proportional-nums;
+      width: 2.75rem;
+      height: 2.75rem;
+      font-size: var(--typography-body-m, 0.875rem);
+      border-radius: 50%;
+      background:
+        linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+        var(--gradient-primary) border-box;
+      border: 1px solid var(--neutral-500, #75758a);
+      @media (max-width: 23rem) {
+        width: 2.375rem;
+        height: 2.375rem;
+      }
+      &:first-child {
+        margin-right: $gap;
+      }
+      &:last-child {
+        margin-left: $gap;
+      }
+    }
+    :global(a) {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      transition: border-color 500ms var(--easing);
+      &:hover {
+        border-color: var(--neutral-200, #f0f7f7);
+      }
+      &::before {
+        z-index: -1;
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translate3d(-50%, -50%, 0);
+        width: 80%;
+        aspect-ratio: 1 / 1;
+        background-color: var(--primary-600, #042b2b);
+        filter: blur(8px);
+        opacity: 0;
+      }
+      &[aria-current='page'] {
+        border-color: rgba(255, 255, 255, 0);
+        color: #2dd282;
+        &::before {
+          opacity: 1;
+        }
+      }
+    }
+    :global(div.arrow) {
+      opacity: 0.62;
+      pointer-events: none;
+    }
+  }
+</style>
