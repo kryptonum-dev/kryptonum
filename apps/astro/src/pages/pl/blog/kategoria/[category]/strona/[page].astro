@@ -95,5 +95,5 @@ const metadata = await metadataFetch('BlogCategory_Collection', category.slug)
     currentCategorySlug={category.slug}
     slugBase={category.slug}
   />
-  <Components data={data.components} />
+  <Components data={data.components} hasPreviousSections={true} />
 </Layout>

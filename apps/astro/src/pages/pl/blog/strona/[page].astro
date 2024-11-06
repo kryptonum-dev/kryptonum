@@ -67,11 +67,6 @@ const metadata = await metadataFetch('Blog_Page')
   />
   <PortableText value={data.heading} heading="h1" class="visually-hidden" />
   <Hero {...data.hero} />
-  <Listing
-    {...data.listing}
-    currentPage={page}
-    totalItems={data.listing.totalBlogPosts}
-    slugBase={'/pl/blog'}
-  />
-  <Components data={data.components} />
+  <Listing {...data.listing} currentPage={page} totalItems={data.listing.totalBlogPosts} slugBase={'/pl/blog'} />
+  <Components data={data.components} hasPreviousSections={true} />
 </Layout>
