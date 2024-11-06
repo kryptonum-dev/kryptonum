@@ -1,6 +1,6 @@
 ---
 import Image from '@/components/ui/image'
-import Button, { type Props as ButtonDataProps } from './Button'
+import BaseButton, { type Props as ButtonDataProps } from './Button'
 
 type Props = ButtonDataProps
 
@@ -9,7 +9,7 @@ const { ...props } = Astro.props
 const svgId = `arrow-icon-${Math.random().toString(36).slice(2, 9)}`
 ---
 
-<Button {...props}>
+<BaseButton {...props}>
   <span>
     {props.text || <slot />}
   </span>
@@ -33,4 +33,4 @@ const svgId = `arrow-icon-${Math.random().toString(36).slice(2, 9)}`
       </svg>
     )
   }
-</Button>
+</BaseButton>
