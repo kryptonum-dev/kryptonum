@@ -2,7 +2,7 @@ import { defineField, defineType } from "sanity";
 import { defineSlugForDocument } from "../../utils/define-slug-for-document";
 
 const name = 'TeamMember_Collection';
-const title = 'Team Members Collection';
+const title = 'Team Member Collection';
 const icon = () => <img src="https://emoji.slack-edge.com/T02CFF835B5/krypto-dzik/71c712017db908f1.png" alt="KryptoDzik" style={{
   width: '80%',
   height: '80%',
