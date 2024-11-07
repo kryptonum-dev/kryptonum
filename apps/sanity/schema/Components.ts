@@ -25,6 +25,8 @@ import Reviews from "./components/Reviews";
 import SingleReview from "./components/SingleReview";
 import LatestBlogPosts from "./components/LatestBlogPosts";
 import TrustedCompanies from "./components/TrustedCompanies";
+import ContactForm from "./components/ContactForm";
+import PersonIntroduction from "./components/PersonIntroduction";
 
 export default defineType({
   name: 'components',
@@ -57,6 +59,8 @@ export default defineType({
     SingleReview,
     LatestBlogPosts,
     TrustedCompanies,
+    ContactForm,
+    PersonIntroduction
   ],
   options: {
     insertMenu: {

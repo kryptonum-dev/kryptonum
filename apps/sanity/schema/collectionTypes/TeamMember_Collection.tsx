@@ -47,6 +47,12 @@ export default defineType({
       title: 'Phone number (optional)',
     }),
     defineField({
+      name: 'components',
+      type: 'components',
+      title: 'Page Components (optional)',
+      description: 'Those components will be displayed after the content of the blog post.',
+    }),
+    defineField({
       name: 'seo',
       type: 'seo',
       title: 'SEO',

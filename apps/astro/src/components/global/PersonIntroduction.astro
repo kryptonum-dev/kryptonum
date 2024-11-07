@@ -1,0 +1,103 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const PersonIntroduction_Query = `
+  _type == "PersonIntroduction" => {
+    ${PortableTextQuery('heading')}
+    headline,
+    ${ImageDataQuery('img')}
+    ${ImageDataQuery('signature')}
+    ${PortableTextQuery('paragraph')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  headline: string
+  img: ImageDataProps
+  signature?: ImageDataProps
+  paragraph: PortableTextValue
+}
+
+const { index, sectionId, heading, headline, img, signature, paragraph } = Astro.props
+---
+
+<section class="PersonIntroduction" id={sectionId}>
+  <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="h1">{heading}</PortableText>
+  <div class="img">
+    <p class="headline">{headline}</p>
+    <Image
+      {...img}
+      sizes="(max-width: 37rem) 80vw, (max-width: 72rem) 40vw, 25vw"
+      class="gradient-thumbnail avatar"
+      priority={true}
+    />
+    {signature && <Image {...signature} sizes="" class="signature" loading="eager" />}
+  </div>
+  <PortableText value={paragraph} class="paragraph" />
+</section>
+
+<style lang="scss">
+  .PersonIntroduction {
+    margin: clamp(3rem, calc(4vw / 0.48), 5rem) auto;
+    display: grid;
+    grid-template-columns: 3fr 4fr 5fr;
+    gap: clamp(2rem, calc(4vw / 0.48), 4rem) 1rem;
+    align-items: center;
+    .img {
+      $headlineSize: clamp(7.5rem, calc(8.5vw / 0.48), 9rem);
+      position: relative;
+      width: fit-content;
+      margin: 0 auto 0 calc($headlineSize / 2);
+      .headline {
+        width: $headlineSize;
+        height: $headlineSize;
+        padding: 1rem;
+        border-radius: 50%;
+        border: 1px solid var(--neutral-600, #4a4a57);
+        background-color: var(--neutral-900, #000103);
+        font-size: var(--typography-body-m, 0.875rem);
+        display: grid;
+        place-items: center;
+        text-align: center;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .signature {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        transform: translate(25%, 20%);
+        width: clamp(56px, calc(82vw / 7.68), 82px);
+      }
+    }
+    .paragraph {
+      margin-left: clamp(3rem, calc(5vw / 0.48), 8rem);
+    }
+    @media (max-width: 72rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      grid-template-columns: 3fr 5fr;
+      .paragraph {
+        grid-column: 3/1;
+        margin-left: 0;
+      }
+    }
+    @media (max-width: 37rem) {
+      grid-template-columns: 1fr;
+      .img {
+        margin-right: 3rem;
+      }
+      .paragraph {
+        grid-column: unset;
+      }
+    }
+  }
+</style>
