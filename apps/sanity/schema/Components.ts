@@ -27,6 +27,7 @@ import LatestBlogPosts from "./components/LatestBlogPosts";
 import TrustedCompanies from "./components/TrustedCompanies";
 import ContactForm from "./components/ContactForm";
 import PersonIntroduction from "./components/PersonIntroduction";
+import PersonEmojisIntroduction from "./components/PersonEmojisIntroduction";
 
 export default defineType({
   name: 'components',
@@ -60,7 +61,8 @@ export default defineType({
     LatestBlogPosts,
     TrustedCompanies,
     ContactForm,
-    PersonIntroduction
+    PersonIntroduction,
+    PersonEmojisIntroduction,
   ],
   options: {
     insertMenu: {

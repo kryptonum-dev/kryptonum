@@ -30,6 +30,11 @@ import Reviews, { Reviews_Query } from '@/components/global/Reviews.astro'
 import SingleReview, { SingleReview_Query } from '@/components/global/SingleReview.astro'
 import LatestBlogPosts, { LatestBlogPosts_Query } from '@/components/global/LatestBlogPosts.astro'
 import TrustedCompanies, { TrustedCompanies_Query } from '@/components/global/TrustedCompanies.astro'
+import ContactForm, { ContactForm_Query } from '@/components/global/ContactForm/ContactForm.astro'
+import PersonIntroduction, { PersonIntroduction_Query } from '@/components/global/PersonIntroduction.astro'
+import PersonEmojisIntroduction, {
+  PersonEmojisIntroduction_Query,
+} from '@/components/global/PersonEmojisIntroduction.astro'
 
 const components = {
   SimpleCtaSection,
@@ -58,6 +63,9 @@ const components = {
   SingleReview,
   LatestBlogPosts,
   TrustedCompanies,
+  ContactForm,
+  PersonIntroduction,
+  PersonEmojisIntroduction,
 }
 
 type ComponentsMap = {
@@ -105,6 +113,9 @@ export const Components_Query = /* groq */ `
     ${SingleReview_Query}
     ${LatestBlogPosts_Query}
     ${TrustedCompanies_Query}
+    ${ContactForm_Query}
+    ${PersonIntroduction_Query}
+    ${PersonEmojisIntroduction_Query}
   },
 `
 ---

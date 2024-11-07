@@ -1,0 +1,91 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+
+export const PersonEmojisIntroduction_Query = `
+  _type == "PersonEmojisIntroduction" => {
+    ${ImageDataQuery('img')}
+    ${ImageDataQuery('emojis[]')}
+    ${PortableTextQuery('paragraph')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  img: ImageDataProps
+  emojis: ImageDataProps[]
+  paragraph: PortableTextValue
+}
+
+const { index, sectionId, img, emojis, paragraph } = Astro.props
+---
+
+<section class="PersonEmojisIntroduction" id={sectionId}>
+  <div class="media">
+    <Image {...img} sizes="228px" priority={index === 0} class="avatar" />
+    <ul class="emojis">
+      {
+        emojis.map((emoji) => (
+          <li class="emoji">
+            <Image {...emoji} sizes="16px" loading={index === 0 ? 'eager' : 'lazy'} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <PortableText value={paragraph} class="paragraph" />
+</section>
+
+<style lang="scss">
+  .PersonEmojisIntroduction {
+    padding: clamp(3rem, calc(5vw / 0.48), 6rem) 0;
+    padding-left: clamp(3rem, calc(5vw / 0.48), 7rem);
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    align-items: center;
+    gap: clamp(4rem, calc(5vw / 0.48), 5rem);
+    .media {
+      padding: 0 16px;
+      width: 228px;
+      .avatar {
+        border-radius: 0.25rem;
+        border: 1px solid var(--primary-500, #064040);
+      }
+      .emojis {
+        margin: -24px -16px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .emoji {
+          border-radius: 50%;
+          border: 1px solid var(--primary-500, #064040);
+          background-color: var(--neutral-900, #000103);
+          width: 48px;
+          height: 48px;
+          display: grid;
+          place-items: center;
+          img {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+    .paragraph {
+      max-width: 40rem;
+      & > :global(:first-child) {
+        font-size: var(--typography-heading-l, 1.5rem);
+        line-height: 1.6;
+        margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+      }
+    }
+    @media (max-width: 65rem) {
+      grid-template-columns: 1fr;
+      max-width: 38rem;
+      margin: 0 auto;
+      padding-left: 0;
+    }
+  }
+</style>
