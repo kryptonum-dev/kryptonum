@@ -33,9 +33,9 @@ const { index, sectionId, heading, headline, img, signature, paragraph } = Astro
       {...img}
       sizes="(max-width: 37rem) 80vw, (max-width: 72rem) 40vw, 25vw"
       class="gradient-thumbnail avatar"
-      priority={true}
+      priority={index === 0}
     />
-    {signature && <Image {...signature} sizes="" class="signature" loading="eager" />}
+    {signature && <Image {...signature} sizes="" class="signature" loading={index === 0 ? 'eager' : 'lazy'} />}
   </div>
   <PortableText value={paragraph} class="paragraph" />
 </section>
