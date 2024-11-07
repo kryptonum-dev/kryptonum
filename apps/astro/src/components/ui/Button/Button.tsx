@@ -1,4 +1,4 @@
-import type { ImageDataProps } from '../image';
+import type { ImageDataProps } from '@/components/ui/image'
 import styles from './Button.module.scss'
 
 export type Props = React.HTMLAttributes<HTMLAnchorElement> & React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -18,7 +18,7 @@ export default function Button({ children, text, theme = 'primary', linkType = '
     ...(href && { href }),
     ...(isExternal && { target: '_blank', rel: 'noreferrer' }),
     'data-theme': theme,
-    className: `${styles.button}${className ? ` ${className}` : ''}`,
+    className: `${styles.Button}${className ? ` ${className}` : ''}`,
     ...props,
   }
 
