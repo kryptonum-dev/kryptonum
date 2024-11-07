@@ -49,8 +49,9 @@ export default defineType({
     defineField({
       name: 'components',
       type: 'components',
-      title: 'Page Components (optional)',
+      title: 'Page Components',
       description: 'Those components will be displayed after the content of the blog post.',
+      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'seo',
