@@ -28,6 +28,7 @@ import TrustedCompanies from "./components/TrustedCompanies";
 import ContactForm from "./components/ContactForm";
 import PersonIntroduction from "./components/PersonIntroduction";
 import PersonEmojisIntroduction from "./components/PersonEmojisIntroduction";
+import StatsHighlight from "./components/StatsHighlight";
 
 export default defineType({
   name: 'components',
@@ -63,6 +64,7 @@ export default defineType({
     ContactForm,
     PersonIntroduction,
     PersonEmojisIntroduction,
+    StatsHighlight,
   ],
   options: {
     insertMenu: {
