@@ -30,6 +30,7 @@ import PersonIntroduction from "./components/PersonIntroduction";
 import PersonEmojisIntroduction from "./components/PersonEmojisIntroduction";
 import StatsHighlight from "./components/StatsHighlight";
 import TeamIntroduction from "./components/TeamIntroduction";
+import CenteredMediaTextSection from "./components/CenteredMediaTextSection";
 
 export default defineType({
   name: 'components',
@@ -66,7 +67,8 @@ export default defineType({
     PersonIntroduction,
     PersonEmojisIntroduction,
     StatsHighlight,
-    TeamIntroduction
+    TeamIntroduction,
+    CenteredMediaTextSection,
   ],
   options: {
     insertMenu: {

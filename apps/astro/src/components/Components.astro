@@ -37,6 +37,9 @@ import PersonEmojisIntroduction, {
 } from '@/components/global/PersonEmojisIntroduction.astro'
 import StatsHighlight, { StatsHighlight_Query } from '@/components/global/StatsHighlight.astro'
 import TeamIntroduction, { TeamIntroduction_Query } from '@/components/global/TeamIntroduction.astro'
+import CenteredMediaTextSection, {
+  CenteredMediaTextSection_Query,
+} from '@/components/global/CenteredMediaTextSection.astro'
 
 const components = {
   SimpleCtaSection,
@@ -70,6 +73,7 @@ const components = {
   PersonEmojisIntroduction,
   StatsHighlight,
   TeamIntroduction,
+  CenteredMediaTextSection,
 }
 
 type ComponentsMap = {
@@ -122,6 +126,7 @@ export const Components_Query = /* groq */ `
     ${PersonEmojisIntroduction_Query}
     ${StatsHighlight_Query}
     ${TeamIntroduction_Query}
+    ${CenteredMediaTextSection_Query}
   },
 `
 ---
