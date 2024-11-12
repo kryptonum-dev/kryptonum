@@ -7,21 +7,19 @@ import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 
-export const pages = await sanityFetch<{ slug: string }[]>({
-  query: `
-    *[_type == 'TeamMember_Collection'][] {
-      "slug": slug.current,
-    }
-  `,
-})
 export async function getStaticPaths() {
+  const pages = await sanityFetch<{ slug: string }[]>({
+    query: `
+      *[_type == 'TeamMember_Collection'][] {
+        "slug": slug.current,
+      }
+    `,
+  })
   return pages?.map(({ slug }) => ({ params: { slug: slug.replace(slugPrefix, '') } }))
 }
 
 const { slug: _slug } = Astro.params
 const slug = `${slugPrefix}${_slug}`
-
-if (!pages.find(({ slug }) => slug === slug)) return Astro.rewrite('/404')
 
 const page = await sanityFetch<{
   name: string
