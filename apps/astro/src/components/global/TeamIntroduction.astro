@@ -150,6 +150,8 @@ const Subheading = index === 0 ? 'h2' : 'h3'
     }
     &[data-with-tabs='true'] {
       header {
+        grid-template-areas: 'heading tab-section' 'paragraph tab-section';
+        grid-template-rows: auto 1fr;
         .heading {
           grid-area: heading;
         }
@@ -159,9 +161,6 @@ const Subheading = index === 0 ? 'h2' : 'h3'
         .tab-section {
           grid-area: tab-section;
         }
-        grid-template-areas:
-          'heading tab-section'
-          'paragraph tab-section';
       }
     }
     @media (max-width: 59rem) {
