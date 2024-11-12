@@ -35,7 +35,8 @@ export default defineField({
             ],
             layout: 'radio',
             direction: 'horizontal'
-          }
+          },
+          validation: Rule => Rule.required(),
         }),
         defineField({
           name: 'image',
