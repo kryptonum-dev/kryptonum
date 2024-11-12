@@ -32,15 +32,14 @@ export const defineSlugForDocument = ({ source, prefix = '', slug }: { source?: 
       slugify: (slug: string) => `${prefix || '/'}${slugify(slug)}`,
       isUnique: isUniqueSlug,
     },
-    validation: (Rule) =>
-      Rule.required().custom((value) => {
-        if (prefix && value?.current && !value.current.startsWith(prefix)) {
-          return `Slug should start with ${prefix}`;
-        }
-        if (!slug && value?.current && value.current.replace(prefix, '') !== slugify(value.current.replace(prefix, ''))) {
-          return 'There is a typo in the slug. Remember that slug can contain only lowercase letters, numbers and dashes.';
-        }
-        return true;
-      })
+    validation: Rule => Rule.custom((value) => {
+      if (prefix && value?.current && !value.current.startsWith(prefix)) {
+        return `Slug should start with ${prefix}`;
+      }
+      if (!slug && value?.current && value.current.replace(prefix, '') !== slugify(value.current.replace(prefix, ''))) {
+        return 'There is a typo in the slug. Remember that slug can contain only lowercase letters, numbers and dashes.';
+      }
+      return true;
+    }).required()
   }),
 ]
