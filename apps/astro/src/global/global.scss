@@ -301,7 +301,7 @@ li {
 }
 
 .cta-wrapper {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem clamp(1rem, calc(1.5vw / 0.48), 2rem);
