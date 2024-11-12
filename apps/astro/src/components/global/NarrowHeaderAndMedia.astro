@@ -1,7 +1,7 @@
 ---
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
-import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/cta'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/src/components/ui/Button'
 import Video, { VideoDataQuery, type VideoDataProps } from '@/components/ui/Video.astro'
 
 export const NarrowHeaderAndMedia_Query = `
@@ -52,27 +52,29 @@ const isSingleMedia = media?.length === 1
       {ctas?.map((cta) => <Button {...cta} />)}
     </div>
   </header>
-  <div class="wrapper" data-is-single-media={isSingleMedia.toString()}>
-    {
-      media?.map((item, i) =>
-        item._type === 'image' ? (
-          <Image
-            {...(item as unknown as ImageDataProps)}
-            sizes={
-              isSingleMedia
-                ? '100vw'
-                : i === 0 || i === 2
-                  ? '(max-width: 63rem) 50vw, 20vw'
-                  : '(max-width: 63rem) 100vw, 60vw'
-            }
-            class="item"
-          />
-        ) : (
-          <Video {...item.asset} hideControls={!item.hasUi} class="item" />
-        )
-      )
-    }
-  </div>
+  {
+    media && (
+      <div class="wrapper" data-is-single-media={isSingleMedia.toString()}>
+        {media?.map((item, i) =>
+          item._type === 'image' ? (
+            <Image
+              {...(item as unknown as ImageDataProps)}
+              sizes={
+                isSingleMedia
+                  ? '100vw'
+                  : i === 0 || i === 2
+                    ? '(max-width: 63rem) 50vw, 20vw'
+                    : '(max-width: 63rem) 100vw, 60vw'
+              }
+              class="item"
+            />
+          ) : (
+            <Video {...item.asset} hideControls={!item.hasUi} class="item" />
+          )
+        )}
+      </div>
+    )
+  }
 </section>
 
 <style lang="scss">
@@ -81,7 +83,7 @@ const isSingleMedia = media?.length === 1
     header {
       max-width: 39rem;
       text-align: center;
-      margin: 0 auto clamp(3rem, calc(4vw / 0.48), 4rem);
+      margin: 0 auto;
       .paragraph {
         margin: clamp(1rem, calc(1.5vw / 0.48), 1.5rem) 0 clamp(2rem, calc(3vw / 0.48), 3rem);
       }
@@ -90,6 +92,7 @@ const isSingleMedia = media?.length === 1
       }
     }
     .wrapper {
+      margin-top: clamp(3rem, calc(4vw / 0.48), 4rem) !important;
       &[data-is-single-media='false'] {
         max-width: 67rem;
         margin: 0 auto;
