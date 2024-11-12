@@ -29,6 +29,7 @@ import ContactForm from "./components/ContactForm";
 import PersonIntroduction from "./components/PersonIntroduction";
 import PersonEmojisIntroduction from "./components/PersonEmojisIntroduction";
 import StatsHighlight from "./components/StatsHighlight";
+import TeamIntroduction from "./components/TeamIntroduction";
 
 export default defineType({
   name: 'components',
@@ -65,6 +66,7 @@ export default defineType({
     PersonIntroduction,
     PersonEmojisIntroduction,
     StatsHighlight,
+    TeamIntroduction
   ],
   options: {
     insertMenu: {

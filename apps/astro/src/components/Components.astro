@@ -36,6 +36,7 @@ import PersonEmojisIntroduction, {
   PersonEmojisIntroduction_Query,
 } from '@/components/global/PersonEmojisIntroduction.astro'
 import StatsHighlight, { StatsHighlight_Query } from '@/components/global/StatsHighlight.astro'
+import TeamIntroduction, { TeamIntroduction_Query } from '@/components/global/TeamIntroduction.astro'
 
 const components = {
   SimpleCtaSection,
@@ -68,6 +69,7 @@ const components = {
   PersonIntroduction,
   PersonEmojisIntroduction,
   StatsHighlight,
+  TeamIntroduction,
 }
 
 type ComponentsMap = {
@@ -119,6 +121,7 @@ export const Components_Query = /* groq */ `
     ${PersonIntroduction_Query}
     ${PersonEmojisIntroduction_Query}
     ${StatsHighlight_Query}
+    ${TeamIntroduction_Query}
   },
 `
 ---

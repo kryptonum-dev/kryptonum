@@ -36,6 +36,12 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'formalHeadline',
+      type: 'string',
+      title: 'Formal Headline',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'email',
       type: 'string',
       title: 'Email address',

@@ -1,0 +1,319 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/Button'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import CategoryTab from '@/components/ui/CategoryTab.astro'
+
+export const TeamIntroduction_Query = `
+  _type == "TeamIntroduction" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    ${ButtonDataQuery('cta')}
+    withTabs,
+    tabs {
+      tab1 {
+        tab,
+        ${PortableTextQuery('paragraph')}
+      },
+      tab2 {
+        tab,
+        ${PortableTextQuery('paragraph')}
+      },
+    },
+    "people": *[_type == "TeamMember_Collection"][] | order(_createdAt asc) {
+      "slug": slug.current,
+      ${ImageDataQuery('img')}
+      name,
+      headline,
+      formalHeadline,
+    }
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  cta?: ButtonDataProps
+  withTabs: boolean
+  tabs?: {
+    tab1: {
+      tab: string
+      paragraph: PortableTextValue
+    }
+    tab2: {
+      tab: string
+      paragraph: PortableTextValue
+    }
+  }
+  people: Array<{
+    slug: string
+    img: ImageDataProps
+    name: string
+    headline: string
+    formalHeadline: string
+  }>
+}
+
+const { index, sectionId, heading, paragraph, cta, withTabs, tabs, people } = Astro.props
+
+console.log(tabs)
+
+const Subheading = index === 0 ? 'h2' : 'h3'
+---
+
+<section class="TeamIntroduction" id={sectionId} data-with-tabs={withTabs.toString()}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+    <div class="paragraph">
+      <PortableText value={paragraph} />
+      {cta && <Button {...cta} className="cta" />}
+    </div>
+    {
+      withTabs && tabs && (
+        <div class="tab-section">
+          <div class="tabs">
+            <CategoryTab isActive={true}>{tabs.tab1.tab}</CategoryTab>
+            <CategoryTab>{tabs.tab2.tab}</CategoryTab>
+          </div>
+          <PortableText value={tabs.tab1.paragraph} class="tab-content tab1" />
+          <PortableText value={tabs.tab2.paragraph} class="tab-content tab2" aria-hidden="true" />
+        </div>
+      )
+    }
+  </header>
+  <div class="people">
+    {
+      Array.from({ length: 2 }).map((_, index) => (
+        <ul aria-hidden={index === 1} style={`animation-duration: ${people?.length * 3}s;`}>
+          {people?.map(({ slug, img, name, headline, formalHeadline }) => (
+            <li class="person">
+              <a href={slug}>
+                <div class="img">
+                  <Image {...img} sizes="186px" />
+                </div>
+                <div class="content">
+                  <Subheading class="name">{name}</Subheading>
+                  <p class="headline formalHeadline">{formalHeadline}</p>
+                  <p class="headline" aria-hidden="true">
+                    {headline}
+                  </p>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+    <div class="glow"></div>
+  </div>
+</section>
+
+<style lang="scss">
+  .TeamIntroduction {
+    padding: clamp(4rem, calc(5vw / 0.48), 5rem) 0;
+    header {
+      display: grid;
+      grid-template-columns: auto auto;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: clamp(3rem, calc(5vw / 0.48), 6rem);
+      .heading {
+        max-width: 32rem;
+      }
+      .paragraph {
+        max-width: 32rem;
+      }
+      .cta {
+        margin-top: clamp(1rem, calc(2vw / 0.48), 2rem);
+      }
+      .tab-section {
+        max-width: 32rem;
+        .tabs {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+          padding-bottom: 1rem;
+          margin-bottom: 1.25rem;
+          border-bottom: 1px solid var(--primary-500, #064040);
+        }
+        .tab-content {
+          transition: filter 800ms var(--easing);
+          &[aria-hidden='true'] {
+            filter: blur(8px);
+            visibility: hidden;
+            position: absolute;
+          }
+        }
+      }
+    }
+    &[data-with-tabs='true'] {
+      header {
+        .heading {
+          grid-area: heading;
+        }
+        .paragraph {
+          grid-area: paragraph;
+        }
+        .tab-section {
+          grid-area: tab-section;
+        }
+        grid-template-areas:
+          'heading tab-section'
+          'paragraph tab-section';
+      }
+    }
+    @media (max-width: 59rem) {
+      header {
+        grid-template-columns: 1fr;
+      }
+      &[data-with-tabs='true'] {
+        header {
+          grid-template-areas: unset;
+          .heading {
+            grid-area: unset;
+          }
+          .paragraph {
+            grid-area: unset;
+          }
+          .tab-section {
+            margin-top: clamp(1.5rem, calc(2.5vw / 0.48), 2.5rem);
+            grid-area: unset;
+          }
+        }
+      }
+    }
+    .people {
+      display: flex;
+      gap: clamp(0.25rem, calc(0.38vw / 0.48), 0.38rem);
+      $gap: clamp(0.25rem, calc(0.38vw / 0.48), 0.38rem);
+      position: relative;
+      overflow: hidden;
+      padding: 0 var(--page-margin);
+      margin: 0 calc(var(--page-margin) * -1);
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: linear-gradient(90deg, #010104, rgba(0, 0, 0, 0));
+        width: clamp(48px, calc(112px / 7.68), 152px);
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+      }
+      &::after {
+        left: unset;
+        right: 0;
+        transform: rotate(180deg);
+      }
+      &:hover,
+      &:has(a:focus-visible) {
+        ul {
+          animation-play-state: paused;
+        }
+      }
+      ul {
+        flex-shrink: 0;
+        display: flex;
+        gap: $gap;
+        animation: marquee 10s linear infinite;
+        @keyframes marquee {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-100% - $gap));
+          }
+        }
+        .person {
+          width: calc(clamp(170px, calc(186px / 7.68), 186px) + clamp(0.25rem, calc(0.5vw / 0.48), 0.5rem) * 2);
+          flex-shrink: 0;
+          a {
+            display: block;
+          }
+          .img {
+            padding: clamp(0.25rem, calc(0.5vw / 0.48), 0.5rem);
+            border-radius: 0.25rem;
+            background: var(--primary-700, #021d1d);
+            img {
+              width: clamp(170px, calc(186px / 7.68), 186px);
+              border-radius: 0.125rem;
+              aspect-ratio: 1 / 1.25;
+              border: 1px solid var(--primary-500, #064040);
+            }
+          }
+          .content {
+            text-align: center;
+            margin-top: $gap;
+            padding: $gap;
+            border-radius: 0.25rem;
+            background: var(--primary-700, #021d1d);
+            .name {
+              font-size: var(--typography-body-xl, 1rem);
+            }
+            .headline {
+              color: var(--neutral-400, #c6cdcc);
+              font-size: var(--typography-body-m, 0.875rem);
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              transition: filter 800ms var(--easing);
+              &[aria-hidden='true'] {
+                filter: blur(8px);
+                visibility: hidden;
+                position: absolute;
+              }
+            }
+          }
+        }
+      }
+      .glow {
+        left: 50%;
+        top: 50%;
+        transform: translate3d(-50%, -50%, 0);
+        height: 80%;
+        aspect-ratio: 1/1;
+        pointer-events: none;
+        position: absolute;
+        border-radius: 50%;
+        background-color: var(--primary-700, #021d1d);
+        mix-blend-mode: plus-lighter;
+        filter: blur(40px);
+        @supports not (mix-blend-mode: plus-lighter) {
+          display: none;
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.TeamIntroduction').forEach((section) => {
+    const tabSection = section.querySelector('.tab-section')
+    if (tabSection) {
+      const tabs = tabSection.querySelectorAll<HTMLButtonElement>('[data-category-tab]')
+      const tabContents = tabSection.querySelectorAll<HTMLDivElement>('.tab-content')
+      const headlines = section.querySelectorAll<HTMLParagraphElement>('.headline')
+
+      tabs.forEach((tab, tabIndex) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach((tab) => tab.removeAttribute('aria-current'))
+          tab.setAttribute('aria-current', 'true')
+          tabContents.forEach((content, contentIndex) => {
+            content.setAttribute('aria-hidden', contentIndex === tabIndex ? 'false' : 'true')
+          })
+          headlines.forEach((headline, headlineIndex) => {
+            const isEvenHeadline = headlineIndex % 2 === 0
+            headline.setAttribute(
+              'aria-hidden',
+              (tabIndex === 0 && !isEvenHeadline) || (tabIndex === 1 && isEvenHeadline) ? 'true' : 'false'
+            )
+          })
+        })
+      })
+    }
+  })
+</script>
