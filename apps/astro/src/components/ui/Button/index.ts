@@ -1,5 +1,5 @@
 import { ImageDataQuery } from '@/components/ui/image';
-export type { Props as ButtonProps } from './Button.tsx';
+export type { Props as ButtonDataProps } from './Button.tsx';
 export { default } from './Button.astro';
 
 export const ButtonDataQuery = (name: string) => `

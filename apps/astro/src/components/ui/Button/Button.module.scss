@@ -58,6 +58,9 @@ $opacity-transition: 800ms var(--easing);
     gap: 0.5rem;
     z-index: 2;
     border-radius: inherit;
+    svg {
+      flex-shrink: 0;
+    }
   }
   &[data-theme='primary'] {
     span {
