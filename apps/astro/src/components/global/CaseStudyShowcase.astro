@@ -1,0 +1,105 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/Button'
+
+export const CaseStudy_Query = `
+  ${ImageDataQuery('img')}
+  name,
+  "slug": slug.current,
+`
+
+export const CaseStudyShowcase_Query = `
+  _type == "CaseStudyShowcase" => {
+    ${PortableTextQuery('heading')}
+    "caseStudies": select(caseStudies != null =>
+      caseStudies[] -> {
+        ${CaseStudy_Query}
+      },
+      *[_type == "CaseStudy_Collection"][] | order(_createdAt desc)[0...7] {
+        ${CaseStudy_Query}
+      },
+    ),
+    ${ButtonDataQuery('cta')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  caseStudies: Array<{
+    img: ImageDataProps
+    name: string
+    slug: string
+  }>
+  cta: ButtonDataProps
+}
+
+const { index, sectionId, heading, caseStudies, cta } = Astro.props
+---
+
+<section class="CaseStudyShowcase" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+  </header>
+  <section class="caseStudies">
+    {
+      caseStudies.map(({ img, name, slug }) => (
+        <article>
+          <a href={slug}>
+            <Image {...img} sizes="(max-width: 48rem) 50vw, (max-width: 68rem) 19rem, 20rem" priority={index === 0} />
+            <p>{name}</p>
+          </a>
+        </article>
+      ))
+    }
+    <Button {...cta} className="cta" />
+  </section>
+</section>
+
+<style lang="scss">
+  .CaseStudyShowcase {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    header {
+      max-width: 34rem;
+      margin-bottom: clamp(2rem, calc(3vw / 0.48), 3rem);
+    }
+    .caseStudies {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+      article {
+        a {
+          border-radius: 0.25rem;
+          display: block;
+          img {
+            border-radius: 0.25rem;
+            aspect-ratio: 306 / 182;
+            border: 1px solid var(--primary-500, #064040);
+            transition: border-color 500ms var(--easing);
+          }
+          p {
+            font-size: var(--typography-body-m, 0.875rem);
+            padding: clamp(0.25rem, calc(0.5vw / 0.48), 0.5rem);
+          }
+          &:hover {
+            img {
+              border-color: var(--primary-600, #042b2b);
+            }
+          }
+        }
+      }
+      .cta {
+        aspect-ratio: 306 / 182;
+      }
+    }
+    @media (max-width: 68rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      .caseStudies {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
+</style>

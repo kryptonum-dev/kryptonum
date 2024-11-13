@@ -21,6 +21,12 @@ export default defineType({
     }),
     ...defineSlugForDocument({ source: 'name', prefix: '/pl/portfolio/' }),
     defineField({
+      name: 'img',
+      type: 'image',
+      title: 'Image',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'sector',
       type: 'string',
       title: 'Sector (optional)',

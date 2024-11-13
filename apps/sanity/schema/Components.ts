@@ -32,6 +32,7 @@ import StatsHighlight from "./components/StatsHighlight";
 import TeamIntroduction from "./components/TeamIntroduction";
 import CenteredMediaTextSection from "./components/CenteredMediaTextSection";
 import DetailedInfoAndStats from "./components/DetailedInfoAndStats";
+import CaseStudyShowcase from "./components/CaseStudyShowcase";
 
 export default defineType({
   name: 'components',
@@ -71,6 +72,7 @@ export default defineType({
     TeamIntroduction,
     CenteredMediaTextSection,
     DetailedInfoAndStats,
+    CaseStudyShowcase,
   ],
   options: {
     insertMenu: {
