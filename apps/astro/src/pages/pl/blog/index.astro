@@ -8,8 +8,6 @@ import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Hero.astro'
 import Listing, { Listing_Query, type Props as ListingProps } from '@/components/Blog/Listing.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 
-const metadata = await metadataFetch('Blog_Page')
-
 export const ITEMS_PER_PAGE = 3
 
 type QueryProps = {
@@ -33,6 +31,8 @@ const data = await sanityFetch<QueryProps>({
     }
   `,
 })
+
+const metadata = await metadataFetch(data.slug)
 ---
 
 <Layout {...metadata}>

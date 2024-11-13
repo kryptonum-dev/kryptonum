@@ -22,9 +22,9 @@ export async function getStaticPaths() {
 }
 
 const { category: _category } = Astro.params
-const category = `${slugPrefix}${_category}`
+const categorySlug = `${slugPrefix}${_category}`
 
-if (!categories.find(({ slug }) => slug === category)) return Astro.rewrite('/404')
+if (!categories.find(({ slug }) => slug === categorySlug)) return Astro.rewrite('/404')
 
 const data = await sanityFetch<{
   name: string
@@ -48,14 +48,14 @@ const data = await sanityFetch<{
     },
     ${PortableTextQuery('heading')}
     ${Hero_Query}
-    ${Listing_Query({ currentPage: 1, currentCategorySlug: category })}
+    ${Listing_Query({ currentPage: 1, currentCategorySlug: categorySlug })}
     ${Components_Query}
     }
   `,
-  params: { category },
+  params: { category: categorySlug },
 })
 
-const metadata = await metadataFetch('BlogCategory_Collection', category)
+const metadata = await metadataFetch(categorySlug)
 ---
 
 <Layout {...metadata}>

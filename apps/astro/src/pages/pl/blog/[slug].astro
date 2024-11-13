@@ -43,7 +43,7 @@ const page = await sanityFetch<{
 })
 if (!page) return Astro.rewrite('/404')
 
-const metadata = await metadataFetch('BlogPost_Collection', slug)
+const metadata = await metadataFetch(slug)
 ---
 
 <Layout {...metadata}>

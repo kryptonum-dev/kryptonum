@@ -47,7 +47,7 @@ const data = await sanityFetch<{
   `,
 })
 
-const metadata = await metadataFetch('Blog_Page')
+const metadata = await metadataFetch(data.slug)
 ---
 
 <Layout

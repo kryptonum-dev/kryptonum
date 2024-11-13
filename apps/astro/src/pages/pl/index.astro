@@ -4,19 +4,21 @@ import sanityFetch from '@/utils/sanity.fetch'
 import metadataFetch from '@/utils/metadata.fetch'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 
-const metadata = await metadataFetch('Index_Page')
-
 type QueryProps = {
+  slug: string
   components: ComponentsProps
 }
 
 const data = await sanityFetch<QueryProps>({
   query: `
     *[_type == "Index_Page"][0] {
+      "slug": slug.current,
       ${Components_Query}
     }
   `,
 })
+
+const metadata = await metadataFetch(data.slug)
 ---
 
 <Layout {...metadata}>
