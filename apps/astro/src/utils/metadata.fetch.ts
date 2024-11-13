@@ -2,14 +2,10 @@
 import type { Props } from "@/src/layouts/Head.astro";
 import sanityFetch from "@/utils/sanity.fetch";
 
-export default async function metadataFetch(type: string, slug?: string): Promise<Props> {
-  const filter = slug
-    ? `*[_type == '${type}' && slug.current == $slug][0]`
-    : `*[_type == "${type}"][0]`;
-
+export default async function metadataFetch(slug: string): Promise<Props> {
   const seo = await sanityFetch<Props>({
     query: /* groq */ `
-      ${filter} {
+      *[slug.current == $slug][0] {
         "path": slug.current,
         "title": seo.title,
         "description": seo.description,
@@ -19,10 +15,10 @@ export default async function metadataFetch(type: string, slug?: string): Promis
         },
       }
     `,
-    ...(slug && { params: { slug: slug } }),
-  });
-  if (!seo?.path) throw new Error(`The path for '${type}' is not specified`);
-  if (!seo?.title) throw new Error(`The title for '${type}' is not specified`);
-  if (!seo?.description) throw new Error(`The description for '${type}' is not specified`);
+    params: { slug: slug }
+  })
+  if (!seo?.path) throw new Error(`Missing required field \`path\` for slug \`${slug}\``);
+  if (!seo?.title) throw new Error(`Missing required field \`title\` for slug \`${slug}\``);
+  if (!seo?.description) throw new Error(`Missing required field \`description\` for slug \`${slug}\``);
   return seo;
 }
