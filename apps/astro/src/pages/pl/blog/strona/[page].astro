@@ -7,7 +7,7 @@ import PortableText, { PortableTextQuery, type PortableTextValue } from '@/compo
 import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Hero.astro'
 import Listing, { Listing_Query, type Props as ListingProps } from '@/components/Blog/Listing.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
-import { ITEMS_PER_PAGE } from '@/src/pages/pl/blog/index.astro'
+import { ITEMS_PER_PAGE } from '@/src/pages/pl/blog.astro'
 import { DOMAIN } from '@/src/global/constants'
 
 export const totalPosts = await sanityFetch<number>({
