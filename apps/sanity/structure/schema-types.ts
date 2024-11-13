@@ -25,6 +25,7 @@ import BlogCategory_Collection from '../schema/collectionTypes/BlogCategory_Coll
 import TeamMember_Collection from '../schema/collectionTypes/TeamMember_Collection';
 import Review_Collection from '../schema/collectionTypes/Review_Collection';
 import CaseStudy_Collection from '../schema/collectionTypes/CaseStudy_Collection';
+import CaseStudyCategory_Collection from '../schema/collectionTypes/CaseStudyCategory_Collection';
 import Faq_Collection from '../schema/collectionTypes/Faq_Collection';
 
 const collectionTypes = [
@@ -35,6 +36,7 @@ const collectionTypes = [
   TeamMember_Collection,
   Review_Collection,
   CaseStudy_Collection,
+  CaseStudyCategory_Collection,
   Faq_Collection,
 ];
 

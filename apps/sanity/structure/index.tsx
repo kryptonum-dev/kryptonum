@@ -18,6 +18,7 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
       createSingleton(S, "Portfolio_Page"),
       createCollection(S, "CaseStudy_Collection"),
+      createCollection(S, "CaseStudyCategory_Collection"),
       S.divider(),
       createSingleton(S, "Team_Page"),
       createCollection(S, "TeamMember_Collection"),
