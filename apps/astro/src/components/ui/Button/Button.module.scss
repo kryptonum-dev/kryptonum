@@ -16,7 +16,7 @@ $opacity-transition: 800ms var(--easing);
   }
   &::before {
     content: '';
-    width: 110%;
+    width: 125%;
     aspect-ratio: 1/1;
     position: absolute;
     left: 50%;
