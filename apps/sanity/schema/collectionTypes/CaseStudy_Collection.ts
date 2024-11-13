@@ -20,6 +20,11 @@ export default defineType({
     }),
     ...defineSlugForDocument({ source: 'name', prefix: '/pl/portfolio/' }),
     defineField({
+      name: 'components',
+      type: 'components',
+      title: 'Page Components',
+    }),
+    defineField({
       name: 'seo',
       type: 'seo',
       title: 'SEO',
