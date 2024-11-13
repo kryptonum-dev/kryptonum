@@ -4,6 +4,7 @@ import redirects from '../schema/singleTypes/redirects';
 import Index_Page from '../schema/singleTypes/Index_Page';
 import Blog_Page from '../schema/singleTypes/Blog_Page';
 import Contact_Page from '../schema/singleTypes/Contact_Page';
+import Portfolio_Page from '../schema/singleTypes/Portfolio_Page';
 
 const singleTypes = [
   global,
@@ -11,6 +12,7 @@ const singleTypes = [
   Index_Page,
   Blog_Page,
   Contact_Page,
+  Portfolio_Page,
 ];
 
 // Collections Types
