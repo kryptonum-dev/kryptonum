@@ -5,6 +5,7 @@ import Index_Page from '../schema/singleTypes/Index_Page';
 import Blog_Page from '../schema/singleTypes/Blog_Page';
 import Contact_Page from '../schema/singleTypes/Contact_Page';
 import Portfolio_Page from '../schema/singleTypes/Portfolio_Page';
+import Team_Page from '../schema/singleTypes/Team_Page';
 
 const singleTypes = [
   global,
@@ -13,6 +14,7 @@ const singleTypes = [
   Blog_Page,
   Contact_Page,
   Portfolio_Page,
+  Team_Page,
 ];
 
 // Collections Types
