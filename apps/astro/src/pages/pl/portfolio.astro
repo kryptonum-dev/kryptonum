@@ -1,0 +1,30 @@
+---
+import Layout from '@/src/layouts/Layout.astro'
+import sanityFetch from '@/utils/sanity.fetch'
+import metadataFetch from '@/utils/metadata.fetch'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+
+type QueryProps = {
+  name: string
+  slug: string
+  components: ComponentsProps
+}
+
+const page = await sanityFetch<QueryProps>({
+  query: `
+    *[_type == "Portfolio_Page"][0] {
+      name,
+      "slug": slug.current,
+      ${Components_Query}
+    }
+  `,
+})
+
+const metadata = await metadataFetch(page.slug)
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={[{ name: page.name, path: page.slug }]} />
+  <Components data={page.components} />
+</Layout>
