@@ -9,7 +9,7 @@ type QueryProps = {
   components: ComponentsProps
 }
 
-const data = await sanityFetch<QueryProps>({
+const page = await sanityFetch<QueryProps>({
   query: `
     *[_type == "Index_Page"][0] {
       "slug": slug.current,
@@ -18,9 +18,9 @@ const data = await sanityFetch<QueryProps>({
   `,
 })
 
-const metadata = await metadataFetch(data.slug)
+const metadata = await metadataFetch(page.slug)
 ---
 
 <Layout {...metadata}>
-  <Components data={data.components} />
+  <Components data={page.components} />
 </Layout>
