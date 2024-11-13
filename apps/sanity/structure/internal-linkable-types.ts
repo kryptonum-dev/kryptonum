@@ -8,8 +8,9 @@ export const InternalLinkableTypes: { type: string }[] = [
   { type: 'Index_Page' },
   { type: 'Contact_Page' },
   { type: 'Blog_Page' },
-  { type: 'Service_Collection' },
-  { type: 'BlogPost_Collection' },
   { type: 'TeamMember_Collection' },
   { type: 'CaseStudy_Collection' },
+  { type: 'Service_Collection' },
+  { type: 'Location_Collection' },
+  { type: 'BlogPost_Collection' },
 ];
