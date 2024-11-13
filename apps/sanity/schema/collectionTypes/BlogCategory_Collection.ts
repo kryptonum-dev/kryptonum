@@ -19,6 +19,13 @@ export default defineType({
     }),
     ...defineSlugForDocument({ source: 'name', prefix: '/pl/blog/kategoria/' }),
     defineField({
+      name: 'heading',
+      type: 'Heading',
+      title: 'Heading',
+      description: 'In that page the H1 tag will not be visible, so you can use this field to define the main heading of the page.',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'seo',
       type: 'seo',
       title: 'SEO',
