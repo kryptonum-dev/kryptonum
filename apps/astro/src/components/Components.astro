@@ -40,6 +40,7 @@ import TeamIntroduction, { TeamIntroduction_Query } from '@/components/global/Te
 import CenteredMediaTextSection, {
   CenteredMediaTextSection_Query,
 } from '@/components/global/CenteredMediaTextSection.astro'
+import DetailedInfoAndStats, { DetailedInfoAndStats_Query } from '@/components/global/DetailedInfoAndStats.astro'
 
 const components = {
   SimpleCtaSection,
@@ -74,6 +75,7 @@ const components = {
   StatsHighlight,
   TeamIntroduction,
   CenteredMediaTextSection,
+  DetailedInfoAndStats,
 }
 
 type ComponentsMap = {
@@ -127,6 +129,7 @@ export const Components_Query = /* groq */ `
     ${StatsHighlight_Query}
     ${TeamIntroduction_Query}
     ${CenteredMediaTextSection_Query}
+    ${DetailedInfoAndStats_Query}
   },
 `
 ---

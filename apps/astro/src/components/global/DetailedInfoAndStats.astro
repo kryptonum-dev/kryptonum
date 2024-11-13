@@ -1,0 +1,193 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import CountUp from '../ui/CountUp.astro'
+
+export const DetailedInfoAndStats_Query = `
+  _type == "DetailedInfoAndStats" => {
+    ${ImageDataQuery('img')}
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    list[] {
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+    },
+    stats[] {
+      value,
+      label,
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  img?: ImageDataProps
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  list?: Array<{
+    heading: PortableTextValue
+    paragraph: PortableTextValue
+  }>
+  stats?: Array<{
+    value: string
+    label: string
+  }>
+}
+
+const { index, sectionId, img, heading, paragraph, list, stats } = Astro.props
+---
+
+<section class="DetailedInfoAndStats" id={sectionId}>
+  {img && <Image {...img} sizes="100vw" priority={index === 0} />}
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <PortableText value={paragraph} />
+    {
+      list && (
+        <div class="show-more">
+          <button>
+            Dowiedz się więcej
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none">
+              <path
+                stroke="url(#DetailedInfoAndStats)"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8 2.668v10.667m0 0 4-4m-4 4-4-4"
+              />
+              <defs>
+                <linearGradient
+                  id="DetailedInfoAndStats"
+                  x1="11.85"
+                  x2="3.509"
+                  y1="2.668"
+                  y2="3.066"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#2DD282" />
+                  <stop offset="1" stop-color="#90F4E8" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </button>
+          <div class="list" style="height: 0;" aria-expanded="false">
+            {list.map(({ heading, paragraph }) => (
+              <div class="item">
+                <PortableText value={heading} class="heading" />
+                <PortableText value={paragraph} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+    }
+    {
+      stats && (
+        <ul class="stats">
+          {stats.map(({ value, label }) => (
+            <li class="stat">
+              <CountUp class="value">{value}</CountUp>
+              <p class="label">{label}</p>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </header>
+</section>
+
+<style lang="scss">
+  .DetailedInfoAndStats {
+    padding: clamp(3rem, calc(5vw / 0.48), 7rem) 0;
+    img {
+      margin: 0 calc(var(--page-margin) * -1) clamp(1.5rem, calc(2vw / 0.48), 3rem);
+      max-width: calc(100% + var(--page-margin) * 2);
+    }
+    header {
+      max-width: 38rem;
+      .heading {
+        max-width: 33rem;
+        margin-bottom: 1rem;
+      }
+      .show-more {
+        border-bottom: 1px solid var(--primary-500, #064040);
+        font-size: var(--typography-body-m, 0.875rem);
+        button {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 0.5rem;
+          align-items: center;
+          min-height: 2.75rem;
+          margin: clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem) 0;
+          perspective: 100px;
+          svg {
+            transition: transform 800ms var(--easing);
+          }
+        }
+        &:has(.list[aria-expanded='true']) {
+          button {
+            svg {
+              transform: rotateX(180deg);
+            }
+          }
+        }
+        .list {
+          overflow: hidden;
+          transition: height 800ms var(--easing);
+          .item {
+            &:not(:last-child) {
+              margin-bottom: clamp(1.5rem, calc(2.25vw / 0.48), 2.25rem);
+            }
+            &:last-child {
+              margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+            }
+            .heading {
+              color: var(--neutral-400, #c6cdcc);
+              margin-bottom: clamp(0.5rem, calc(0.75vw / 0.48), 0.75rem);
+            }
+          }
+        }
+      }
+      .stats {
+        margin-top: clamp(2rem, calc(3vw / 0.48), 4rem);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        .stat {
+          width: calc(50% - 0.75rem);
+          max-width: 12rem;
+        }
+        .value {
+          font-size: var(--typography-heading-l, 1.5rem);
+          margin-bottom: clamp(0.25rem, calc(0.5vw / 0.48), 0.5rem);
+        }
+        .label {
+          font-size: var(--typography-body-m, 0.875rem);
+          color: var(--neutral-400, #c6cdcc);
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.DetailedInfoAndStats').forEach((section) => {
+    const showMoreList = section.querySelector<HTMLDivElement>('.show-more .list')
+    if (!showMoreList) return
+    const showMoreBtn = section.querySelector<HTMLButtonElement>('.show-more button')!
+    let timeout: ReturnType<typeof setTimeout>
+    showMoreBtn.addEventListener('click', () => {
+      const isExpanded = showMoreList.getAttribute('aria-expanded') === 'true'
+      const targetHeight = isExpanded ? 0 : showMoreList.scrollHeight
+      clearTimeout(timeout)
+      showMoreList.style.height = `${showMoreList.scrollHeight}px`
+      showMoreList.offsetHeight
+      showMoreList.style.height = `${targetHeight}px`
+      showMoreList.setAttribute('aria-expanded', (!isExpanded).toString())
+      if (!isExpanded) {
+        timeout = setTimeout(() => {
+          showMoreList.style.height = 'auto'
+        }, 800)
+      }
+    })
+  })
+</script>
