@@ -1,7 +1,8 @@
 ---
+import sanityFetch from '@/src/utils/sanity.fetch'
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
-import CountUp from '../ui/CountUp.astro'
+import CountUp from '@/components/ui/CountUp.astro'
 
 export const DetailedInfoAndStats_Query = `
   _type == "DetailedInfoAndStats" => {
@@ -36,6 +37,29 @@ type Props = {
 }
 
 const { index, sectionId, img, heading, paragraph, list, stats } = Astro.props
+
+const data = await sanityFetch<{
+  sector: string
+  client: string
+  categories: Array<{
+    name: string
+    slug: string
+  }>
+  date: Date
+}>({
+  query: `
+    *[_type == 'CaseStudy_Collection' && slug.current == $slug][0] {
+      sector,
+      client,
+      categories[] -> {
+        name,
+        "slug": slug.current,
+      },
+      date,
+    }
+  `,
+  params: { slug: Astro.url.pathname },
+})
 ---
 
 <section class="DetailedInfoAndStats" id={sectionId}>
@@ -93,14 +117,51 @@ const { index, sectionId, img, heading, paragraph, list, stats } = Astro.props
       )
     }
   </header>
+  {
+    data && (
+      <ul class="info">
+        {data.sector && (
+          <li class="info-item">
+            <p>Sektor</p>
+            <p>{data.sector}</p>
+          </li>
+        )}
+        {data.client && (
+          <li class="info-item">
+            <p>Klient</p>
+            <p>{data.client}</p>
+          </li>
+        )}
+        <li class="info-item">
+          <p>Rok</p>
+          <p>{new Date(data.date).getFullYear()}</p>
+        </li>
+        <li class="info-item">
+          <p>Usługi</p>
+          <ul class="categories">
+            {data.categories.map(({ name, slug }) => (
+              <li class="category">
+                <a href={slug}>{name}</a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      </ul>
+    )
+  }
 </section>
 
 <style lang="scss">
   .DetailedInfoAndStats {
     padding: clamp(3rem, calc(5vw / 0.48), 7rem) 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    justify-content: space-between;
+    gap: clamp(2rem, calc(3vw / 0.48), 3rem);
     img {
-      margin: 0 calc(var(--page-margin) * -1) clamp(1.5rem, calc(2vw / 0.48), 3rem);
+      margin: 0 calc(var(--page-margin) * -1);
       max-width: calc(100% + var(--page-margin) * 2);
+      grid-column: 1/3;
     }
     header {
       max-width: 38rem;
@@ -164,6 +225,37 @@ const { index, sectionId, img, heading, paragraph, list, stats } = Astro.props
           font-size: var(--typography-body-m, 0.875rem);
           color: var(--neutral-400, #c6cdcc);
         }
+      }
+    }
+    .info {
+      margin-left: auto;
+      max-width: 18rem;
+      font-size: var(--typography-body-m, 0.875rem);
+      $gap: clamp(1rem, calc(1vw / 0.48), 2rem);
+      gap: $gap;
+      margin-bottom: calc($gap * -1);
+      .info-item {
+        break-inside: avoid;
+        margin-bottom: $gap;
+        p:first-child {
+          color: var(--neutral-400, #c6cdcc);
+          margin-bottom: 0.125rem;
+        }
+        ul {
+          display: grid;
+          gap: 0.25rem;
+        }
+      }
+    }
+    @media (max-width: 47rem) {
+      grid-template-columns: 1fr;
+      img {
+        grid-column: unset;
+      }
+      .info {
+        margin-left: 0;
+        columns: 2;
+        max-width: unset;
       }
     }
   }
