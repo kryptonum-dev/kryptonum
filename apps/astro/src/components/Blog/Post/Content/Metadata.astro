@@ -132,9 +132,7 @@ const { content, author } = Astro.props as MetadataProps
     const url = new URL(window.location.href)
     url.searchParams.set('feature', 'share')
     if (navigator.share) {
-      navigator
-        .share({ title: document.title, url: url.toString() })
-        .catch((error) => console.log('Error sharing:', error))
+      navigator.share({ title: document.title, url: url.toString() })
     } else {
       navigator.clipboard.writeText(url.toString())
       showToast('Pomyślnie skopiowano link')
