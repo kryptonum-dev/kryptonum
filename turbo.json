@@ -4,7 +4,8 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".vercel/**"]
+      "outputs": ["dist/**", ".vercel/**"],
+      "env": ["VERCEL_ENV", "VERCEL_DEPLOYMENT_ID"]
     },
     "lint": {
       "dependsOn": ["^lint"]
