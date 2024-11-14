@@ -19,6 +19,7 @@ export const Listing_Query = ({
     listing {
       ${PortableTextQuery('heading')}
       "totalBlogPosts": count(*[_type == 'BlogPost_Collection']),
+      "totalPostsByCategory": count(*[_type == 'BlogPost_Collection' ${currentCategorySlug ? `&& category -> slug.current == "${currentCategorySlug}"` : ''}]),
       "categories": *[_type == 'BlogCategory_Collection'] {
         name,
         "slug": slug.current,
@@ -33,9 +34,10 @@ export const Listing_Query = ({
   `
 }
 
-export type Props = {
+export type ListingProps = {
   heading: PortableTextValue
   totalBlogPosts: number
+  totalPostsByCategory: number
   categories: Array<{
     name: string
     slug: string
@@ -57,7 +59,7 @@ const {
   currentPage,
   totalItems,
   slugBase,
-} = Astro.props
+} = Astro.props as ListingProps
 
 const categories = _categories?.filter(({ count }) => count > 0)
 ---
@@ -102,13 +104,13 @@ const categories = _categories?.filter(({ count }) => count > 0)
   .Listing {
     padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
     header {
-      padding-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
-      margin-bottom: 2rem;
-      border-bottom: 1px solid var(--neutral-600, #4a4a57);
       h2 {
         margin-bottom: clamp(2rem, calc(3vw / 0.48), 3rem);
       }
       .categories {
+        padding-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--neutral-600, #4a4a57);
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem 2.5rem;
