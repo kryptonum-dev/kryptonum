@@ -3,19 +3,23 @@ import Layout from '@/src/layouts/Layout.astro'
 import sanityFetch from '@/utils/sanity.fetch'
 import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import Listing, { Listing_Query, type ListingProps } from '@/components/Portfolio/Listing.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 
-type QueryProps = {
+export const ITEMS_PER_PAGE = 2
+const currentPage = 1
+
+const page = await sanityFetch<{
   name: string
   slug: string
+  listing: ListingProps
   components: ComponentsProps
-}
-
-const page = await sanityFetch<QueryProps>({
+}>({
   query: `
     *[_type == "Portfolio_Page"][0] {
       name,
       "slug": slug.current,
+      ${Listing_Query({ currentPage: currentPage })}
       ${Components_Query}
     }
   `,
@@ -26,5 +30,11 @@ const metadata = await metadataFetch(page.slug)
 
 <Layout {...metadata}>
   <Breadcrumbs data={[{ name: page.name, path: page.slug }]} />
-  <Components data={page.components} />
+  <Listing
+    {...page.listing}
+    currentPage={currentPage}
+    totalItems={page.listing.totalCaseStudies}
+    slugBase="/pl/portfolio"
+  />
+  <Components data={page.components} hasPreviousSections={true} />
 </Layout>
