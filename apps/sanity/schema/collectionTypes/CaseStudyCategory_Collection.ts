@@ -19,18 +19,25 @@ export default defineType({
     }),
     ...defineSlugForDocument({ source: 'name', prefix: '/pl/portfolio/kategoria/' }),
     defineField({
-      name: 'heading',
-      type: 'Heading',
-      title: 'Heading',
+      name: 'hero',
+      type: 'object',
+      title: 'Hero',
+      description: 'That will be displayed on the top of the page of each case study category',
+      fields: [
+        defineField({
+          name: 'heading',
+          type: 'Heading',
+          title: 'Heading',
+          validation: Rule => Rule.required(),
+        }),
+        defineField({
+          name: 'paragraph',
+          type: 'PortableText',
+          title: 'Paragraph',
+          validation: Rule => Rule.required(),
+        }),
+      ],
       validation: Rule => Rule.required(),
-      fieldset: 'hero',
-    }),
-    defineField({
-      name: 'paragraph',
-      type: 'PortableText',
-      title: 'Paragraph',
-      validation: Rule => Rule.required(),
-      fieldset: 'hero',
     }),
     defineField({
       name: 'seo',
@@ -38,13 +45,6 @@ export default defineType({
       title: 'SEO',
       group: 'seo',
     }),
-  ],
-  fieldsets: [
-    {
-      name: 'hero',
-      title: 'Hero',
-      description: 'That will be displayed on the top of the page of each case study category',
-    },
   ],
   groups: [
     {

@@ -15,6 +15,26 @@ export default defineType({
   fields: [
     ...defineSlugForDocument({ slug: slug }),
     defineField({
+      name: 'hero',
+      type: 'object',
+      title: 'Hero',
+      fields: [
+        defineField({
+          name: 'heading',
+          type: 'Heading',
+          title: 'Heading',
+          validation: Rule => Rule.required(),
+        }),
+        defineField({
+          name: 'paragraph',
+          type: 'PortableText',
+          title: 'Paragraph',
+          validation: Rule => Rule.required(),
+        }),
+      ],
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'components',
       type: 'components',
       title: 'Page Components',
