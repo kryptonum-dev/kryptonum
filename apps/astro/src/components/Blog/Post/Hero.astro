@@ -100,7 +100,7 @@ const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroPr
 </style>
 
 <script>
-  function getRelativeDate(date: Date): string {
+  function getRelativeDate(date: Date): string | null {
     const now = new Date()
     const dateToCompare = new Date(date)
     now.setHours(0, 0, 0, 0)
@@ -115,14 +115,14 @@ const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroPr
       return 'przedwczoraj'
     } else if (diffDays >= 3 && diffDays <= 6) {
       return `${diffDays}. dni temu`
-    } else {
-      return dateToCompare.toLocaleDateString('pl-PL')
     }
+    return null
   }
 
-  const dateElements = document.querySelectorAll<HTMLSpanElement>('.relative-date')
+  const dateElements = document.querySelectorAll<HTMLSpanElement>('.Hero .relative-date')
   dateElements.forEach((element) => {
     const updatedAt = new Date(element.dataset.updatedAt as string)
-    element.textContent = getRelativeDate(updatedAt)
+    const relativeDate = getRelativeDate(updatedAt)
+    if (relativeDate) element.textContent = relativeDate
   })
 </script>
