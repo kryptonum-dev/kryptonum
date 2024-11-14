@@ -7,7 +7,7 @@ import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Hero.astro'
-import Listing, { Listing_Query, type Props as ListingProps } from '@/components/Blog/Listing.astro'
+import Listing, { Listing_Query, type ListingProps } from '@/components/Blog/Listing.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 
 export const categories = await sanityFetch<{ slug: string }[]>({
@@ -17,6 +17,7 @@ export const categories = await sanityFetch<{ slug: string }[]>({
     }
   `,
 })
+
 export async function getStaticPaths() {
   return categories?.map(({ slug }) => ({ params: { category: slug.replace(slugPrefix, '') } }))
 }
@@ -26,7 +27,7 @@ const categorySlug = `${slugPrefix}${_category}`
 
 if (!categories.find(({ slug }) => slug === categorySlug)) return Astro.rewrite('/404')
 
-const data = await sanityFetch<{
+const page = await sanityFetch<{
   name: string
   slug: string
   category: {
@@ -61,18 +62,18 @@ const metadata = await metadataFetch(categorySlug)
 <Layout {...metadata}>
   <Breadcrumbs
     data={[
-      { name: data.name, path: data.slug },
-      { name: data.category.name, path: data.category.slug },
+      { name: page.name, path: page.slug },
+      { name: page.category.name, path: page.category.slug },
     ]}
   />
-  <PortableText value={data.category.heading} heading="h1" class="visually-hidden" />
-  <Hero {...data.hero} />
+  <PortableText value={page.category.heading} heading="h1" class="visually-hidden" />
+  <Hero {...page.hero} />
   <Listing
-    {...data.listing}
+    {...page.listing}
     currentPage={1}
-    totalItems={data.listing.totalPostsByCategory}
-    currentCategorySlug={data.category.slug}
-    slugBase={data.category.slug}
+    totalItems={page.listing.totalPostsByCategory}
+    currentCategorySlug={page.category.slug}
+    slugBase={page.category.slug}
   />
-  <Components data={data.components} hasPreviousSections={true} />
+  <Components data={page.components} hasPreviousSections={true} />
 </Layout>
