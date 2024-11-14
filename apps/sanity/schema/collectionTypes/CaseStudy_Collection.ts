@@ -21,6 +21,16 @@ export default defineType({
     }),
     ...defineSlugForDocument({ source: 'name', prefix: '/pl/portfolio/' }),
     defineField({
+      name: 'description',
+      type: 'text',
+      title: 'Description',
+      rows: 3,
+      validation: Rule => [
+        Rule.required(),
+        Rule.max(150).warning('Please keep the description short, with max 150 characters.')
+      ],
+    }),
+    defineField({
       name: 'img',
       type: 'image',
       title: 'Image',

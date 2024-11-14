@@ -1,0 +1,99 @@
+---
+export const slugPrefix = '/pl/portfolio/kategoria/'
+
+import { ITEMS_PER_PAGE } from '@/src/pages/pl/portfolio.astro'
+import { DOMAIN } from '@/src/global/constants'
+import Layout from '@/src/layouts/Layout.astro'
+import sanityFetch from '@/utils/sanity.fetch'
+import metadataFetch from '@/utils/metadata.fetch'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import Listing, { Listing_Query, type ListingProps } from '@/components/Portfolio/Listing.astro'
+import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+
+export async function getCategoryData() {
+  return await sanityFetch<{ name: string; slug: string; caseStudyCount: number }[]>({
+    query: `
+      *[_type == 'CaseStudyCategory_Collection'][] {
+        name,
+        "slug": slug.current,
+        "caseStudyCount": count(*[_type == "CaseStudy_Collection" && references(^._id) && defined(categories)]),
+      }
+    `,
+  })
+}
+
+export async function getStaticPaths() {
+  const categories = await getCategoryData()
+  return categories.flatMap(({ slug, caseStudyCount }) => {
+    const totalPages = Math.ceil(caseStudyCount / ITEMS_PER_PAGE)
+    return Array.from({ length: totalPages - 1 }, (_, i) => ({
+      params: {
+        category: slug.replace(slugPrefix, ''),
+        page: (i + 2).toString(),
+      },
+    }))
+  })
+}
+
+const categories = await getCategoryData()
+const { category: _category, page: _page } = Astro.params
+const category = categories.find(({ slug }) => slug === `${slugPrefix}${_category}`)
+const currentPage = parseInt(_page)
+
+const caseStudyCount = category?.caseStudyCount || 0
+const totalPages = Math.ceil(caseStudyCount / ITEMS_PER_PAGE)
+if (currentPage < 2 || currentPage > totalPages) return Astro.rewrite('/404')
+if (!category) return Astro.rewrite('/404')
+
+const page = await sanityFetch<{
+  name: string
+  slug: string
+  listing: ListingProps
+  components: ComponentsProps
+}>({
+  query: `
+    *[_type == "Portfolio_Page"][0] {
+      name,
+      "slug": slug.current,
+      ${Listing_Query({ currentPage: currentPage, currentCategorySlug: category.slug })}
+      ${Components_Query}
+    }
+  `,
+})
+
+const metadata = await metadataFetch(category.slug)
+---
+
+<Layout
+  title={`${metadata.title} | Strona ${currentPage}`}
+  description={metadata.description}
+  openGraphImage={metadata.openGraphImage}
+  path={Astro.url.pathname}>
+  <Fragment slot="Head">
+    {
+      currentPage > 2 && (
+        <link rel="prev" href={`${DOMAIN}/pl/portfolio/kategoria/${category.slug}/strona/${currentPage - 1}`} />
+      )
+    }
+    {
+      currentPage < totalPages && (
+        <link rel="next" href={`${DOMAIN}/pl/portfolio/kategoria/${category.slug}/strona/${currentPage + 1}`} />
+      )
+    }
+  </Fragment>
+  <Breadcrumbs
+    data={[
+      { name: page.name, path: page.slug },
+      { name: category.name, path: category.slug },
+      { name: `Strona ${currentPage}`, path: `${category.slug}/strona/${currentPage}` },
+    ]}
+  />
+  <Listing
+    {...page.listing}
+    currentPage={currentPage}
+    totalItems={page.listing.totalCaseStudiesByCategory}
+    currentCategorySlug={category.slug}
+    slugBase={category.slug}
+  />
+  <Components data={page.components} hasPreviousSections={true} />
+</Layout>

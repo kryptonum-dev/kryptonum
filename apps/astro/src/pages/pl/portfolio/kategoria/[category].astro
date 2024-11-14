@@ -1,0 +1,72 @@
+---
+export const slugPrefix = '/pl/portfolio/kategoria/'
+const currentPage = 1
+
+import Layout from '@/src/layouts/Layout.astro'
+import sanityFetch from '@/utils/sanity.fetch'
+import metadataFetch from '@/utils/metadata.fetch'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import Listing, { Listing_Query, type ListingProps } from '@/components/Portfolio/Listing.astro'
+import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+
+export const categories = await sanityFetch<{ slug: string }[]>({
+  query: `
+    *[_type == "CaseStudyCategory_Collection"][] {
+      "slug": slug.current,
+    }
+  `,
+})
+
+export async function getStaticPaths() {
+  return categories?.map(({ slug }) => ({ params: { category: slug.replace(slugPrefix, '') } }))
+}
+
+const { category: _category } = Astro.params
+const categorySlug = `${slugPrefix}${_category}`
+
+if (!categories.find(({ slug }) => slug === categorySlug)) return Astro.rewrite('/404')
+
+const page = await sanityFetch<{
+  name: string
+  slug: string
+  category: {
+    name: string
+    slug: string
+  }
+  listing: ListingProps
+  components: ComponentsProps
+}>({
+  query: `
+    *[_type == "Portfolio_Page"][0] {
+      name,
+      "slug": slug.current,
+      "category": *[_type == "CaseStudyCategory_Collection" && slug.current == $category][0] {
+        name,
+        "slug": slug.current,
+      },
+      ${Listing_Query({ currentPage: currentPage, currentCategorySlug: categorySlug })}
+      ${Components_Query}
+    }
+  `,
+  params: { category: categorySlug },
+})
+
+const metadata = await metadataFetch(categorySlug)
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs
+    data={[
+      { name: page.name, path: page.slug },
+      { name: page.category.name, path: page.category.slug },
+    ]}
+  />
+  <Listing
+    {...page.listing}
+    currentPage={currentPage}
+    totalItems={page.listing.totalCaseStudiesByCategory}
+    currentCategorySlug={page.category.slug}
+    slugBase={page.category.slug}
+  />
+  <Components data={page.components} hasPreviousSections={true} />
+</Layout>
