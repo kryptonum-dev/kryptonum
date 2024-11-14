@@ -22,7 +22,7 @@ export const Listing_Query = ({
       "categories": *[_type == 'BlogCategory_Collection'] {
         name,
         "slug": slug.current,
-        "postCount": count(*[_type == 'BlogPost_Collection' && references(^._id) && defined(category)])
+        "count": count(*[_type == 'BlogPost_Collection' && references(^._id) && defined(category)])
       },
       "listing": *[_type == 'BlogPost_Collection'
         ${currentCategorySlug ? `&& category -> slug.current == "${currentCategorySlug}"` : ''}
@@ -39,7 +39,7 @@ export type Props = {
   categories: Array<{
     name: string
     slug: string
-    postCount: number
+    count: number
   }>
   listing: Array<BlogCardProps>
   currentCategorySlug?: string
@@ -48,10 +48,18 @@ export type Props = {
   slugBase: string
 }
 
-const { heading, totalBlogPosts, categories, listing, currentCategorySlug, currentPage, totalItems, slugBase } =
-  Astro.props
+const {
+  heading,
+  totalBlogPosts,
+  categories: _categories,
+  listing,
+  currentCategorySlug,
+  currentPage,
+  totalItems,
+  slugBase,
+} = Astro.props
 
-const _categories = categories?.filter(({ postCount }) => postCount > 0)
+const categories = _categories?.filter(({ count }) => count > 0)
 ---
 
 <section class="Listing">
@@ -66,12 +74,12 @@ const _categories = categories?.filter(({ postCount }) => postCount > 0)
           </CategoryTab>
         </li>
         {
-          _categories.map((category) => {
+          categories.map((category) => {
             const isActive = currentCategorySlug === category.slug
             return (
               <li>
                 <CategoryTab slug={isActive ? '/pl/blog' : category.slug} isActive={isActive}>
-                  {category.name} ({category.postCount})
+                  {category.name} ({category.count})
                 </CategoryTab>
               </li>
             )
