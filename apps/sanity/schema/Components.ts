@@ -34,6 +34,7 @@ import CenteredMediaTextSection from "./components/CenteredMediaTextSection";
 import DetailedInfoAndStats from "./components/DetailedInfoAndStats";
 import CaseStudyShowcase from "./components/CaseStudyShowcase";
 import MediaShowcase from "./components/MediaShowcase";
+import CompareTable from "./components/CompareTable";
 
 export default defineType({
   name: 'components',
@@ -75,6 +76,7 @@ export default defineType({
     DetailedInfoAndStats,
     CaseStudyShowcase,
     MediaShowcase,
+    CompareTable,
   ],
   options: {
     insertMenu: {

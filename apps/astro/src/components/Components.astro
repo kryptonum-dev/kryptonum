@@ -43,6 +43,7 @@ import CenteredMediaTextSection, {
 import DetailedInfoAndStats, { DetailedInfoAndStats_Query } from '@/components/global/DetailedInfoAndStats.astro'
 import CaseStudyShowcase, { CaseStudyShowcase_Query } from '@/components/global/CaseStudyShowcase.astro'
 import MediaShowcase, { MediaShowcase_Query } from '@/components/global/MediaShowcase.astro'
+import CompareTable, { CompareTable_Query } from '@/components/global/CompareTable.astro'
 
 const components = {
   SimpleCtaSection,
@@ -80,6 +81,7 @@ const components = {
   DetailedInfoAndStats,
   CaseStudyShowcase,
   MediaShowcase,
+  CompareTable,
 }
 
 type ComponentsMap = {
@@ -136,6 +138,7 @@ export const Components_Query = /* groq */ `
     ${DetailedInfoAndStats_Query}
     ${CaseStudyShowcase_Query}
     ${MediaShowcase_Query}
+    ${CompareTable_Query}
   },
 `
 ---

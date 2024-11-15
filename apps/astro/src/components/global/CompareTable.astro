@@ -1,0 +1,262 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const CompareTable_Query = `
+  _type == "CompareTable" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    compare[] {
+      kryptonum,
+      others,
+      label,
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  compare: {
+    kryptonum: boolean
+    others: boolean
+    label: string
+  }[]
+}
+
+const { index, sectionId, heading, paragraph, compare } = Astro.props
+---
+
+<section class="CompareTable" id={sectionId}>
+  <svg class="visually-hidden">
+    <defs>
+      <symbol id="kryptonum-logo" viewBox="0 0 113 24">
+        <title>Kryptonum</title>
+        <path
+          fill="url(#CompareTable-a)"
+          d="M16.07 11.998a4.41 4.41 0 0 1-.778 2.495 4.725 4.725 0 0 1-2.083 1.68v7.664H9.393v-7.665a4.72 4.72 0 0 1-2.083-1.68 4.406 4.406 0 0 1-.779-2.494c0-.885.271-1.752.78-2.493a4.72 4.72 0 0 1 2.082-1.68V.16h3.816v7.663c.85.355 1.575.939 2.083 1.68.508.742.779 1.61.779 2.495Z">
+        </path>
+        <path
+          fill="url(#CompareTable-b)"
+          d="M22.92 0v5.464l-3.986 3.804-1.907-1.821-1.229 1.172c-.28-.338-.6-.644-.954-.911L22.919 0Z">
+        </path>
+        <path
+          fill="url(#CompareTable-c)"
+          d="m18.937 14.73 3.985 3.805v5.464l-8.074-7.708c.354-.267.674-.572.954-.91l1.228 1.17 1.907-1.82Z">
+        </path>
+        <path
+          fill="#F0F7F7"
+          d="M5.578 12a5.278 5.278 0 0 0 1.227 3.38l-5.043 4.816v-5.464l1.908-1.82V11.09L1.762 9.268V3.805l5.043 4.814A5.277 5.277 0 0 0 5.578 12ZM35.78 17.5l-4.592-5.088V17.5h-1.456V6.348h1.456v5.168l4.608-5.168h1.84l-5.056 5.584 5.104 5.568H35.78Zm4.346-7.344c.256-.501.619-.89 1.088-1.168.48-.277 1.062-.416 1.744-.416v1.504h-.384c-1.632 0-2.448.885-2.448 2.656V17.5H38.67V8.732h1.456v1.424Zm11.905-1.424-5.28 12.896h-1.504l1.728-4.224-3.536-8.672h1.616l2.752 7.104 2.72-7.104h1.504Zm2.28 1.616c.288-.501.714-.917 1.28-1.248.575-.341 1.242-.512 2-.512a4.06 4.06 0 0 1 2.111.56c.64.373 1.142.901 1.505 1.584.362.672.544 1.456.544 2.352 0 .885-.182 1.675-.544 2.368a4.004 4.004 0 0 1-1.505 1.616 3.974 3.974 0 0 1-2.111.576c-.747 0-1.409-.165-1.985-.496-.565-.341-.997-.763-1.296-1.264v5.776h-1.456V8.732h1.456v1.616Zm5.952 2.736c0-.661-.134-1.237-.4-1.728a2.754 2.754 0 0 0-1.088-1.12 2.946 2.946 0 0 0-1.489-.384 2.91 2.91 0 0 0-1.488.4c-.448.256-.81.635-1.087 1.136-.267.49-.4 1.061-.4 1.712 0 .661.133 1.243.4 1.744.277.49.64.87 1.087 1.136.46.256.955.384 1.488.384.544 0 1.04-.128 1.489-.384a2.864 2.864 0 0 0 1.087-1.136c.267-.501.4-1.088.4-1.76Zm4.38-3.152V15.1c0 .427.09.73.272.912.181.17.496.256.944.256h1.072V17.5h-1.312c-.81 0-1.419-.187-1.824-.56-.405-.373-.608-.987-.608-1.84V9.932h-1.136v-1.2h1.136V6.524h1.456v2.208h2.288v1.2h-2.288Zm7.236 7.712a4.534 4.534 0 0 1-2.24-.56 4.07 4.07 0 0 1-1.568-1.584c-.373-.693-.56-1.493-.56-2.4 0-.896.192-1.685.576-2.368a4.01 4.01 0 0 1 1.6-1.584c.672-.373 1.424-.56 2.256-.56.832 0 1.584.187 2.256.56a3.93 3.93 0 0 1 1.584 1.568c.395.683.592 1.477.592 2.384 0 .907-.203 1.707-.608 2.4a4.118 4.118 0 0 1-1.616 1.584c-.682.373-1.44.56-2.272.56Zm0-1.28c.523 0 1.013-.123 1.472-.368a2.748 2.748 0 0 0 1.104-1.104c.288-.49.432-1.088.432-1.792s-.138-1.301-.416-1.792c-.277-.49-.64-.853-1.088-1.088a2.983 2.983 0 0 0-1.456-.368c-.533 0-1.024.123-1.472.368-.437.235-.79.597-1.056 1.088-.267.49-.4 1.088-.4 1.792 0 .715.128 1.317.384 1.808.267.49.619.859 1.056 1.104.438.235.918.352 1.44.352Zm10.042-7.792c1.067 0 1.931.325 2.592.976.662.64.992 1.568.992 2.784V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.437-.47-1.034-.704-1.791-.704-.768 0-1.382.24-1.84.72-.449.48-.672 1.179-.672 2.096V17.5H77.65V8.732h1.456V9.98a2.903 2.903 0 0 1 1.168-1.04 3.698 3.698 0 0 1 1.647-.368Zm13.099.16V17.5h-1.456v-1.296c-.277.448-.667.8-1.168 1.056a3.598 3.598 0 0 1-1.632.368c-.683 0-1.296-.139-1.84-.416a3.184 3.184 0 0 1-1.296-1.28c-.31-.565-.464-1.253-.464-2.064V8.732h1.44v4.944c0 .864.219 1.53.656 2 .437.459 1.034.688 1.792.688.778 0 1.392-.24 1.84-.72.448-.48.672-1.179.672-2.096V8.732h1.456Zm12.362-.16c.683 0 1.291.144 1.824.432.534.277.955.699 1.264 1.264.31.565.464 1.253.464 2.064V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.426-.47-1.008-.704-1.744-.704-.757 0-1.36.245-1.808.736-.448.48-.672 1.179-.672 2.096V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.426-.47-1.008-.704-1.744-.704-.757 0-1.36.245-1.808.736-.448.48-.672 1.179-.672 2.096V17.5h-1.456V8.732h1.456v1.264a2.89 2.89 0 0 1 1.152-1.056 3.564 3.564 0 0 1 1.616-.368c.736 0 1.387.165 1.952.496.566.33.987.816 1.264 1.456a2.88 2.88 0 0 1 1.216-1.44 3.585 3.585 0 0 1 1.888-.512Z">
+        </path>
+        <defs>
+          <linearGradient id="CompareTable-a" x1="15.892" x2="5.93" y1=".16" y2=".416" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop>
+            <stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient>
+          <linearGradient id="CompareTable-b" x1="22.768" x2="14.355" y1="0" y2=".467" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop>
+            <stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient>
+          <linearGradient
+            id="CompareTable-c"
+            x1="22.771"
+            x2="14.359"
+            y1="14.73"
+            y2="15.197"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop>
+            <stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient>
+        </defs>
+      </symbol>
+      <symbol id="tick-icon" viewBox="0 0 25 25" fill="transparent">
+        <circle cx="12.5" cy="12.5" r="10" stroke="url(#CompareTable-tick-a)"></circle>
+        <path stroke="url(#CompareTable-tick-b)" stroke-linecap="round" stroke-linejoin="round" d="m9 13 2 2 5-5">
+        </path>
+        <defs>
+          <linearGradient
+            id="CompareTable-tick-a"
+            x1="22.125"
+            x2="1.311"
+            y1="2.5"
+            y2="3.826"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop>
+            <stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient>
+          <linearGradient
+            id="CompareTable-tick-b"
+            x1="15.869"
+            x2="8.612"
+            y1="10"
+            y2="10.647"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop>
+            <stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient>
+        </defs>
+      </symbol>
+      <symbol id="cross-icon" viewBox="0 0 16 15">
+        <path stroke="#C6CDCC" stroke-linecap="round" d="m15 .5-14 14m0-14 14 14"></path>
+      </symbol>
+      <symbol id="tick-icon-white" viewBox="0 0 24 25">
+        <circle cx="12" cy="12.5" r="10" stroke="#F0F7F7"></circle>
+        <path stroke="#F0F7F7" stroke-linecap="round" stroke-linejoin="round" d="m8.5 13 2 2 5-5"></path>
+      </symbol>
+    </defs>
+  </svg>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <PortableText value={paragraph} class="paragraph" />
+  </header>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col" class="feature-col"></th>
+        <th scope="col" class="company-col">
+          <svg width="113" height="24">
+            <use href="#kryptonum-logo"></use>
+          </svg>
+        </th>
+        <th scope="col" class="company-col">Inne agencje</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        compare.map(({ label, kryptonum, others }) => (
+          <tr>
+            <th scope="row">{label}</th>
+            <td>
+              {kryptonum ? (
+                <svg width="25" height="25">
+                  <use href="#tick-icon" />
+                </svg>
+              ) : (
+                <svg width="16" height="15">
+                  <use href="#cross-icon" />
+                </svg>
+              )}
+            </td>
+            <td>
+              {others ? (
+                <svg width="24" height="25">
+                  <use href="#tick-icon-white" />
+                </svg>
+              ) : (
+                <svg width="16" height="15">
+                  <use href="#cross-icon" />
+                </svg>
+              )}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</section>
+
+<style lang="scss">
+  .CompareTable {
+    padding: clamp(3rem, calc(5vw / 0.48), 7rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 1.75fr;
+    gap: clamp(2rem, calc(3vw / 0.48), 8rem);
+    header {
+      .heading {
+        margin-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      }
+    }
+    .table {
+      font-size: var(--typography-body-m, 0.875rem);
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      svg {
+        vertical-align: bottom;
+        display: inline-block;
+      }
+      th {
+        font: inherit;
+      }
+      thead {
+        th {
+          padding: 1rem;
+          svg {
+            min-width: 89px;
+          }
+          &:nth-of-type(2) {
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+            background: var(--primary-700, #021d1d);
+          }
+        }
+      }
+      tbody {
+        tr {
+          th {
+            text-align: left;
+          }
+          th,
+          td {
+            padding: clamp(1rem, calc(1.5vw / 0.48), 1.5rem) 1rem;
+            border-bottom: 1px solid var(--primary-500, #064040);
+          }
+          td:nth-of-type(1) {
+            background: var(--primary-700, #021d1d);
+          }
+        }
+      }
+    }
+    @media (max-width: 65rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      grid-template-columns: 1fr;
+    }
+    @media (max-width: 34rem) {
+      .table {
+        thead {
+          position: sticky;
+          top: 0;
+          z-index: 5;
+          background-color: var(--neutral-900, #000103);
+          tr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin: 0 calc(var(--page-margin) * -1);
+            padding: 0 var(--page-margin);
+            border-bottom: 1px solid var(--primary-500, #064040);
+          }
+          th {
+            &:nth-of-type(2) {
+              border-radius: 0;
+              background: var(--primary-700, #021d1d);
+            }
+            padding: 1.5rem;
+            &:first-child {
+              display: none;
+            }
+          }
+        }
+        tbody {
+          tr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            th {
+              padding-top: 1.5rem;
+            }
+            th[scope='row'] {
+              grid-column: 1 / -1;
+              text-align: center;
+              border: none;
+            }
+            td {
+              text-align: center;
+              font-size: 0.875rem;
+            }
+          }
+        }
+      }
+    }
+  }
+</style>
