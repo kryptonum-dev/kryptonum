@@ -18,14 +18,14 @@ const seo = await sanityFetch<{ openGraphImage: string }>({
   `,
 })
 
-export type Props = {
+export type HeadProps = {
   path: string
   title: string
   description: string
   openGraphImage?: string
 }
 
-const { path, title, description, openGraphImage } = Astro.props
+const { path, title, description, openGraphImage } = Astro.props as HeadProps
 
 const OpenGraphImage = await getImage({
   src: openGraphImage || seo.openGraphImage,
