@@ -1,6 +1,7 @@
 // Single Types
 import global from '../schema/singleTypes/global';
 import redirects from '../schema/singleTypes/redirects';
+import Links_Page from '../schema/singleTypes/Links_Page';
 import Index_Page from '../schema/singleTypes/Index_Page';
 import Blog_Page from '../schema/singleTypes/Blog_Page';
 import Contact_Page from '../schema/singleTypes/Contact_Page';
@@ -10,6 +11,7 @@ import Team_Page from '../schema/singleTypes/Team_Page';
 const singleTypes = [
   global,
   redirects,
+  Links_Page,
   Index_Page,
   Blog_Page,
   Contact_Page,
