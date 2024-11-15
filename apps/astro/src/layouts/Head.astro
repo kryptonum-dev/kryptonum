@@ -1,27 +1,19 @@
 ---
 import { getImage } from 'astro:assets'
-import icon from '@/assets/icon.png'
-import faviconSvg from '@/assets/favicon.svg'
 import { DOMAIN, LOCALE, THEME_COLOR } from '@/global/constants'
 import sanityFetch from '@/utils/sanity.fetch'
+import icon from '@/assets/icon.png'
+import faviconSvg from '@/assets/favicon.svg'
 
 const icons = {
   favicon: await getImage({ src: faviconSvg, format: 'svg' }),
   appleTouchIcon: await getImage({ src: icon, width: 180, height: 180, format: 'png' }),
 }
 
-export type OpenGraphImageProps = {
-  url: string
-  height: string
-}
-
-const seo = await sanityFetch<{ openGraphImage: OpenGraphImageProps }>({
+const seo = await sanityFetch<{ openGraphImage: string }>({
   query: `
     *[_type == "global"][0].seo {
-      "openGraphImage": {
-        "url": img.asset -> url + "?w=1200",
-        "height": round(1200 / img.asset -> metadata.dimensions.aspectRatio),
-      },
+      "openGraphImage": img.asset -> url + "?w=1200",
     }
   `,
 })
@@ -30,15 +22,17 @@ export type Props = {
   path: string
   title: string
   description: string
-  openGraphImage?: OpenGraphImageProps
+  openGraphImage?: string
 }
 
 const { path, title, description, openGraphImage } = Astro.props
 
-const OpenGraphImage = {
-  url: openGraphImage?.url || seo.openGraphImage?.url,
-  height: openGraphImage?.height || seo.openGraphImage?.height,
-}
+const OpenGraphImage = await getImage({
+  src: openGraphImage || seo.openGraphImage,
+  width: 1200,
+  format: 'png',
+  inferSize: true,
+})
 
 const url = `${DOMAIN}${path}`
 ---
@@ -59,14 +53,14 @@ const url = `${DOMAIN}${path}`
 <meta property="og:description" content={description} />
 <meta property="og:site_name" content={title} />
 <meta property="og:locale" content={LOCALE} />
-<meta property="og:image" content={OpenGraphImage.url} />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content={OpenGraphImage.height} />
+<meta property="og:image" content={OpenGraphImage.src} />
+<meta property="og:image:width" content={OpenGraphImage.attributes.width} />
+<meta property="og:image:height" content={OpenGraphImage.attributes.height} />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={OpenGraphImage.url} />
-<meta name="twitter:image:width" content="1200" />
-<meta name="twitter:image:height" content={OpenGraphImage.height} />
+<meta name="twitter:image" content={OpenGraphImage.src} />
+<meta name="twitter:image:width" content={OpenGraphImage.attributes.width} />
+<meta name="twitter:image:height" content={OpenGraphImage.attributes.height} />
 <link rel="sitemap" href="/sitemap-index.xml" />

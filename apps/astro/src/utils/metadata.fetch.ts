@@ -9,10 +9,7 @@ export default async function metadataFetch(slug: string): Promise<Props> {
         "path": slug.current,
         "title": seo.title,
         "description": seo.description,
-        "openGraphImage": {
-          "url": seo.img.asset -> url + "?w=1200",
-          "height": round(1200 / seo.img.asset -> metadata.dimensions.aspectRatio),
-        },
+        "openGraphImage": seo.img.asset -> url + "?w=1200",
       }
     `,
     params: { slug: slug }
