@@ -67,30 +67,30 @@ const categories = _categories?.filter(({ count }) => count > 0)
 <section class="Listing">
   <header>
     <PortableText value={heading} heading="h2" />
-    <div class="categories">
-      <p>Kategorie</p>
-      <ul>
-        <li>
-          <CategoryTab slug="/pl/blog" isActive={!currentCategorySlug}>
-            Wszystkie ({totalBlogPosts})
-          </CategoryTab>
-        </li>
-        {
-          categories.map((category) => {
-            const isActive = currentCategorySlug === category.slug
-            return (
-              <li>
-                <CategoryTab slug={isActive ? '/pl/blog' : category.slug} isActive={isActive}>
-                  {category.name} ({category.count})
-                </CategoryTab>
-              </li>
-            )
-          })
-        }
-      </ul>
-    </div>
   </header>
-  <div class="listing" id="strona">
+  <div class="categories" id="strona">
+    <p>Kategorie</p>
+    <ul>
+      <li>
+        <CategoryTab slug="/pl/blog#strona" isActive={!currentCategorySlug}>
+          Wszystkie ({totalBlogPosts})
+        </CategoryTab>
+      </li>
+      {
+        categories.map((category) => {
+          const isActive = currentCategorySlug === category.slug
+          return (
+            <li>
+              <CategoryTab slug={isActive ? '/pl/blog#strona' : `${category.slug}#strona`} isActive={isActive}>
+                {category.name} ({category.count})
+              </CategoryTab>
+            </li>
+          )
+        })
+      }
+    </ul>
+  </div>
+  <div class="listing">
     {
       listing?.map((post) => (
         <BlogCard {...post} imgProps={{ sizes: '(max-width: 47rem) 100vw, (max-width: 63rem) 50vw, 34vw' }} />
@@ -104,25 +104,26 @@ const categories = _categories?.filter(({ count }) => count > 0)
   .Listing {
     padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
     header {
+      max-width: 24rem;
       h2 {
         margin-bottom: clamp(2rem, calc(3vw / 0.48), 3rem);
       }
-      .categories {
-        padding-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
-        margin-bottom: 2rem;
-        border-bottom: 1px solid var(--neutral-600, #4a4a57);
+    }
+    .categories {
+      padding-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--neutral-600, #4a4a57);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 2.5rem;
+      align-items: center;
+      p {
+        font-size: var(--typography-body-m, 0.875rem);
+      }
+      ul {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem 2.5rem;
-        align-items: center;
-        p {
-          font-size: var(--typography-body-m, 0.875rem);
-        }
-        ul {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
+        gap: 0.5rem;
       }
     }
     .listing {

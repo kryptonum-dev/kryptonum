@@ -87,11 +87,11 @@ const categories = _categories?.filter(({ count }) => count > 0)
     <PortableText value={heading} heading="h1" class="h1 heading" />
     <PortableText value={paragraph} />
   </header>
-  <div class="Listing-categories">
+  <div class="Listing-categories" id="strona">
     <p>Kategorie</p>
     <ul>
       <li>
-        <CategoryTab slug="/pl/portfolio" isActive={!currentCategorySlug}>
+        <CategoryTab slug="/pl/portfolio#strona" isActive={!currentCategorySlug}>
           Wszystko ({totalCaseStudies})
         </CategoryTab>
       </li>
@@ -100,7 +100,7 @@ const categories = _categories?.filter(({ count }) => count > 0)
           const isActive = currentCategorySlug === category.slug
           return (
             <li>
-              <CategoryTab slug={isActive ? '/pl/portfolio' : category.slug} isActive={isActive}>
+              <CategoryTab slug={isActive ? '/pl/portfolio#strona' : `${category.slug}#strona`} isActive={isActive}>
                 {category.name} ({category.count})
               </CategoryTab>
             </li>
@@ -109,7 +109,7 @@ const categories = _categories?.filter(({ count }) => count > 0)
       }
     </ul>
   </div>
-  <div class="listing" id="strona">
+  <div class="listing">
     {
       listing?.map(({ slug, img, name, description, categories, date }, listingIndex) => (
         <article>
