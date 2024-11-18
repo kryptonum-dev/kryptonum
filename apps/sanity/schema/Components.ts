@@ -35,6 +35,7 @@ import DetailedInfoAndStats from "./components/DetailedInfoAndStats";
 import CaseStudyShowcase from "./components/CaseStudyShowcase";
 import MediaShowcase from "./components/MediaShowcase";
 import CompareTable from "./components/CompareTable";
+import Timeline from "./components/Timeline";
 
 export default defineType({
   name: 'components',
@@ -77,6 +78,7 @@ export default defineType({
     CaseStudyShowcase,
     MediaShowcase,
     CompareTable,
+    Timeline,
   ],
   options: {
     insertMenu: {

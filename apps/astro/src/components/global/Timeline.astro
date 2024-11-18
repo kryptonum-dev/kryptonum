@@ -1,0 +1,256 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/Button'
+
+export const Timeline_Query = `
+  _type == "Timeline" => {
+    ${ImageDataQuery('headingIcon')}
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    items[] {
+      deadline,
+      ${ImageDataQuery('icon')}
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+    },
+    ${PortableTextQuery('ctaText')}
+    ${ButtonDataQuery('cta')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  headingIcon?: ImageDataProps
+  heading: PortableTextValue
+  paragraph?: PortableTextValue
+  items: {
+    deadline: number
+    icon: ImageDataProps
+    heading: PortableTextValue
+    paragraph?: PortableTextValue
+  }[]
+  ctaText: PortableTextValue
+  cta: ButtonDataProps
+}
+
+const { index, sectionId, headingIcon, heading, paragraph, items, ctaText, cta } = Astro.props
+
+const formatDate = (days: number) => {
+  if (days === 0) return 'Dzisiaj'
+  return `Za ${days} dni`
+}
+---
+
+<section class="Timeline" id={sectionId}>
+  <header>
+    {headingIcon && <Image {...headingIcon} sizes="20px" class="headingIcon" />}
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+  </header>
+  <div class="content">
+    {paragraph && <PortableText value={paragraph} class="content-paragraph" />}
+    <div class="items">
+      <ol>
+        {
+          items.map(({ deadline, icon, heading, paragraph }) => (
+            <li>
+              <div class="icon">
+                <Image {...icon} sizes="20px" />
+              </div>
+              <div>
+                <p class="deadline" data-deadline-days={deadline}>
+                  {formatDate(deadline)}
+                </p>
+                <PortableText value={heading} heading={index === 0 ? 'h2' : 'h3'} class="heading" />
+                {paragraph && <PortableText value={paragraph} class="paragraph" />}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="line-wrapper"><div class="line"></div></div>
+    </div>
+    <div class="ctaBox">
+      <PortableText value={ctaText} class="ctaBox-paragraph" />
+      <Button {...cta} />
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  $iconSize: clamp(2rem, calc(2.75vw / 0.48), 2.75rem);
+  .Timeline {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 2.66fr;
+    gap: clamp(2rem, calc(4vw / 0.48), 8rem);
+    header {
+      max-width: 19rem;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: auto 1fr;
+      .headingIcon {
+        width: 20px;
+        height: 20px;
+        margin-top: 0.24rem;
+      }
+      .heading {
+        font-size: var(--typography-body-xl, 1rem);
+        line-height: inherit;
+      }
+    }
+    .content {
+      .content-paragraph {
+        max-width: 26rem;
+        margin-bottom: clamp(1.5rem, calc(1.75vw / 0.48), 2rem);
+        font-size: var(--typography-body-m, 0.875rem);
+      }
+      .items {
+        position: relative;
+        ol {
+          display: grid;
+          gap: clamp(2rem, calc(2.5vw / 0.48), 2.5rem);
+        }
+        li {
+          position: relative;
+          padding-left: 10rem;
+          display: grid;
+          grid-template-columns: auto 1fr;
+          gap: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+          .icon {
+            width: $iconSize;
+            height: $iconSize;
+            background-color: rgba(0, 1, 3, 0.13);
+            backdrop-filter: blur(3px);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            z-index: 1;
+            img {
+              width: 20px;
+              height: 20px;
+            }
+          }
+          .heading {
+            font-size: var(--typography-body-xl, 1rem);
+            margin-top: 0.62rem;
+          }
+          .paragraph {
+            font-size: var(--typography-body-m, 0.875rem);
+            color: var(--neutral-400, #c6cdcc);
+            margin-top: clamp(0.5rem, calc(1vw / 0.48), 1.5rem);
+          }
+          .deadline {
+            position: absolute;
+            left: 0;
+            top: 0.31rem;
+            display: inline-block;
+            font-size: var(--typography-body-m, 0.875rem);
+            border-radius: 2.125rem;
+            background-color: var(--primary-600, #042b2b);
+            padding: 0.31rem 0.62rem;
+          }
+        }
+        .line-wrapper {
+          position: absolute;
+          left: calc(10rem + $iconSize / 2);
+          top: 0;
+          bottom: 0;
+          background-color: var(--primary-500, #064040);
+          .line {
+            width: 1px;
+            height: 100%;
+            background: var(--gradient-primary);
+            transform-origin: top;
+            will-change: transform;
+            transform: scaleY(0);
+          }
+        }
+      }
+      .ctaBox {
+        margin-top: clamp(2rem, calc(4vw / 0.48), 4.5rem);
+        font-size: var(--typography-body-m, 0.875rem);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: clamp(1.5rem, calc(2vw / 0.48), 3rem);
+        .ctaBox-paragraph {
+          max-width: 19rem;
+        }
+      }
+    }
+    @media (max-width: 62rem) {
+      grid-template-columns: 1fr;
+      max-width: 38rem;
+      margin: 0 auto;
+    }
+    @media (max-width: 34rem) {
+      .content {
+        .items {
+          li {
+            padding-left: 0;
+            .heading {
+              margin-top: 1rem;
+            }
+            .deadline {
+              position: static;
+            }
+          }
+          .line-wrapper {
+            left: calc($iconSize / 2);
+          }
+        }
+        .ctaBox {
+          .ctaBox-paragraph {
+            max-width: unset;
+          }
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  const viewportPointPercentage = 0.66
+  document.querySelectorAll('.Timeline').forEach((section) => {
+    section.querySelectorAll<HTMLParagraphElement>('.deadline').forEach((deadline) => {
+      const businessDays = Number(deadline.dataset.deadlineDays!)
+      if (businessDays > 5) {
+        const date = new Date()
+        date.setDate(date.getDate() + Math.round(businessDays * 1.4))
+        if (date.getDay() === 0) date.setDate(date.getDate() + 1)
+        if (date.getDay() === 6) date.setDate(date.getDate() + 2)
+        const formatter = new Intl.DateTimeFormat('pl-PL', {
+          day: 'numeric',
+          month: 'long',
+          year: date.getFullYear() !== date.getFullYear() ? 'numeric' : undefined,
+        })
+        deadline.textContent = formatter.format(date)
+      }
+    })
+
+    const animateLine = () => {
+      const lineWrapper = section.querySelector<HTMLDivElement>('.line-wrapper')!
+      const line = lineWrapper.querySelector<HTMLDivElement>('.line')!
+      const updateLineScale = () => {
+        const wrapperRect = lineWrapper.getBoundingClientRect()
+        const viewportPoint = window.innerHeight * viewportPointPercentage
+        const start = wrapperRect.top - viewportPoint
+        const end = wrapperRect.bottom - viewportPoint
+        const total = end - start
+        const current = -start
+        const progress = Math.max(0, Math.min(1, current / total))
+        line.style.transform = `scaleY(${progress})`
+      }
+      updateLineScale()
+      let rafId: number
+      const onScroll = () => {
+        if (rafId) cancelAnimationFrame(rafId)
+        rafId = requestAnimationFrame(updateLineScale)
+      }
+      window.addEventListener('scroll', onScroll, { passive: true })
+    }
+    animateLine()
+  })
+</script>
