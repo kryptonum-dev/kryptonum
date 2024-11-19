@@ -1,0 +1,95 @@
+.Input {
+  font-size: var(--typography-body-s, 0.75rem);
+  .label-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    margin-left: 0.5rem;
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.12rem;
+      padding: 0 0.5rem;
+      background-color: var(--neutral-900, #000103);
+      z-index: 1;
+      position: relative;
+      top: 0.65625rem;
+      pointer-events: none;
+    }
+  }
+  input,
+  textarea {
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--neutral-500, #75758a);
+    $background: var(--neutral-900, #000103);
+    background:
+      linear-gradient($background, $background) padding-box,
+      var(--gradient-primary) border-box;
+    border: 1px solid var(--neutral-500, #75758a);
+    padding: 0.62rem 1rem;
+    width: 100%;
+    transition: border-color 500ms var(--easing);
+    caret-color: #90f4e8;
+    &::placeholder {
+      color: var(--neutral-500, #75758a);
+    }
+    &:hover {
+      border-color: var(--neutral-200, #f0f7f7);
+    }
+    &:focus-visible {
+      outline: none;
+      background-color: var(--primary-100, #edebe7);
+      border: 1px solid rgba(0, 0, 0, 0);
+    }
+    &[aria-invalid='true'] {
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='url(%23paint0_linear_4883_157794)' stroke-width='1.5' d='M4.424 8.968C6.856 4.656 8.072 2.5 9.997 2.5c1.926 0 3.142 2.156 5.574 6.468l.303.537c2.021 3.583 3.031 5.375 2.118 6.685-.913 1.31-3.173 1.31-7.692 1.31h-.606c-4.519 0-6.778 0-7.691-1.31-.914-1.31.097-3.102 2.118-6.685l.303-.537Z'/%3E%3Ccircle cx='9.997' cy='13.333' r='.833' fill='url(%23paint1_linear_4883_157794)'/%3E%3Cpath stroke='url(%23paint2_linear_4883_157794)' stroke-linecap='round' stroke-width='1.5' d='M10 6.666v4.167'/%3E%3Cdefs%3E%3ClinearGradient id='paint0_linear_4883_157794' x1='18.018' x2='.689' y1='2.5' y2='3.726' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23D44A84'/%3E%3Cstop offset='.521' stop-color='%23DA2B53'/%3E%3Cstop offset='1' stop-color='%23BF3A3A'/%3E%3C/linearGradient%3E%3ClinearGradient id='paint1_linear_4883_157794' x1='10.8' x2='9.065' y1='12.5' y2='12.611' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23D44A84'/%3E%3Cstop offset='.521' stop-color='%23DA2B53'/%3E%3Cstop offset='1' stop-color='%23BF3A3A'/%3E%3C/linearGradient%3E%3ClinearGradient id='paint2_linear_4883_157794' x1='10.981' x2='9.937' y1='6.666' y2='6.682' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23D44A84'/%3E%3Cstop offset='.521' stop-color='%23DA2B53'/%3E%3Cstop offset='1' stop-color='%23BF3A3A'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E")
+          right 0.75rem top 0.75rem / 1.25rem no-repeat,
+        linear-gradient($background, $background) padding-box,
+        var(--error-gradient-400) border-box;
+      border: 1px solid rgba(0, 0, 0, 0);
+      padding-right: 2.75rem;
+      caret-color: #d44a84;
+    }
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+      -webkit-text-fill-color: var(--neutral-200, #f0f7f7) !important;
+      -webkit-box-shadow: 0 0 0 8rem $background inset !important;
+    }
+    &:-webkit-autofill:focus {
+      border-color: #2dd282 !important;
+    }
+  }
+  input {
+    height: 3rem;
+  }
+  textarea {
+    min-height: 5rem;
+    max-height: 8rem;
+    resize: none;
+  }
+  &:has(input:autofill) {
+    input {
+      outline: 1px dashed var(--primary-500, #064040);
+      outline-offset: 4px;
+    }
+    .label {
+      &::after {
+        content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='9' fill='none' viewBox='0 0 8 9'%3E%3Cpath fill='url(%23paint0_linear_5397_25358)' d='m1.892 3.804 1.021-1.38c.66-.894.99-1.34 1.298-1.246.307.095.307.642.307 1.737v.103c0 .395 0 .593.127.716l.006.007c.13.121.335.121.746.121.74 0 1.11 0 1.234.224a.419.419 0 0 1 .006.012c.118.227-.096.517-.524 1.097l-1.021 1.38c-.66.893-.99 1.34-1.297 1.245-.308-.094-.308-.641-.308-1.736V5.98c0-.394 0-.592-.126-.716l-.007-.006c-.129-.121-.334-.121-.745-.121-.74 0-1.11 0-1.235-.225a.419.419 0 0 1-.006-.011c-.118-.228.096-.517.524-1.097Z'/%3E%3Cdefs%3E%3ClinearGradient id='paint0_linear_5397_25358' x1='6.569' x2='1.011' y1='1.166' y2='1.449' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%232DD282'/%3E%3Cstop offset='1' stop-color='%2390F4E8'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E");
+        display: block;
+        animation: Input_Autocomplete_Icon 500ms var(--easing) both;
+        @keyframes Input_Autocomplete_Icon {
+          0% {
+            transform: scale(0);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+      }
+    }
+  }
+}
