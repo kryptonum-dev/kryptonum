@@ -1,9 +1,9 @@
 
-import type { Props } from "@/src/layouts/Head.astro";
+import type { HeadProps } from "@/src/layouts/Head.astro";
 import sanityFetch from "@/utils/sanity.fetch";
 
-export default async function metadataFetch(slug: string): Promise<Props> {
-  const seo = await sanityFetch<Props>({
+export default async function metadataFetch(slug: string): Promise<HeadProps> {
+  const seo = await sanityFetch<HeadProps>({
     query: /* groq */ `
       *[slug.current == $slug][0] {
         "path": slug.current,
