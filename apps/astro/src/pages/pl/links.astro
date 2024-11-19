@@ -287,14 +287,14 @@ const page = await sanityFetch<{
         <div class="email">
           <p class="label-text">{page.contact.emailText}</p>
           <a href={`mailto:${page.contact.email}`}>{page.contact.email}</a>
-          <Copy data={page.contact.email} />
+          <Copy data={page.contact.email} successMessage="Pomyślnie skopiowano adres e-mail" />
         </div>
         {
           page.contact.tel && (
             <div class="tel">
               <p class="label-text">{page.contact.telText}</p>
               <a href={`tel:${page.contact.tel}`}>{page.contact.tel}</a>
-              <Copy data={page.contact.tel} />
+              <Copy data={page.contact.tel} successMessage="Pomyślnie skopiowano numer telefonu" />
             </div>
           )
         }

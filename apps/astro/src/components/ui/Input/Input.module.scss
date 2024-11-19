@@ -25,7 +25,7 @@
     $background: var(--neutral-900, #000103);
     background:
       linear-gradient($background, $background) padding-box,
-      var(--gradient-primary) border-box;
+      var(--primary-gradient-400) border-box;
     border: 1px solid var(--neutral-500, #75758a);
     padding: 0.62rem 1rem;
     width: 100%;

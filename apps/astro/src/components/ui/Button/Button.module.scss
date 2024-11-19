@@ -64,7 +64,7 @@ $opacity-transition: 800ms var(--easing);
   }
   &[data-theme='primary'] {
     span {
-      background: var(--gradient-primary);
+      background: var(--primary-gradient-400);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -80,7 +80,7 @@ $opacity-transition: 800ms var(--easing);
         bottom: 0;
         background:
           linear-gradient(var(--neutral-900, #000103), var(--neutral-900, #000103)) padding-box,
-          var(--gradient-primary) border-box;
+          var(--primary-gradient-400) border-box;
         border: 1px solid rgba(255, 255, 255, 0);
         border-radius: inherit;
         transition: $opacity-transition;

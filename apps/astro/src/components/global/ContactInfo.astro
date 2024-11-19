@@ -45,7 +45,7 @@ const { sectionId, img, emailText, email, telText, tel, address } = Astro.props
         <p class="label-text">{emailText}</p>
         <div class="copy-wrapper">
           <a href={`mailto:${email}`}>{email}</a>
-          <Copy data={email} />
+          <Copy data={email} successMessage="Pomyślnie skopiowano adres e-mail" />
         </div>
       </div>
       {
@@ -54,7 +54,7 @@ const { sectionId, img, emailText, email, telText, tel, address } = Astro.props
             <p class="label-text">{telText}</p>
             <div class="copy-wrapper">
               <a href={`tel:${tel}`}>{tel}</a>
-              <Copy data={tel} />
+              <Copy data={tel} successMessage="Pomyślnie skopiowano numer telefonu" />
             </div>
           </div>
         )

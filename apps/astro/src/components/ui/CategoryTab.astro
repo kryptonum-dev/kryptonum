@@ -1,18 +1,22 @@
 ---
-type Props = {
-  slug: string
-  isActive?: boolean
-}
+import type { HTMLAttributes } from 'astro/types'
 
-const { slug, isActive = false } = Astro.props
+type Props = {
+  slug?: string
+  isActive?: boolean
+} & HTMLAttributes<'button'>
+
+const { slug, isActive = false, ...props } = Astro.props
+
+const Element = slug ? 'a' : 'button'
 ---
 
-<a href={slug} class="category-tab" aria-current={isActive ? 'true' : 'false'}>
+<Element {...slug ? { href: slug } : {}} aria-current={isActive ? 'true' : 'false'} {...props} data-category-tab>
   <slot />
-</a>
+</Element>
 
 <style lang="scss">
-  .category-tab {
+  [data-category-tab] {
     display: inline-flex;
     align-items: center;
     font-size: var(--typography-body-s, 0.75rem);
@@ -30,9 +34,7 @@ const { slug, isActive = false } = Astro.props
     }
     border-radius: 2.75rem;
     border: 1px solid var(--neutral-500);
-    transition:
-      border-color 500ms,
-      transform 500ms var(--easing);
+    transition: transform 500ms var(--easing);
     &:hover {
       border-color: var(--neutral-200, #f0f7f7);
     }
@@ -43,7 +45,7 @@ const { slug, isActive = false } = Astro.props
     &[aria-current='true'] {
       background:
         linear-gradient(266deg, #0b0f0d, #011310, #001f1b) padding-box,
-        var(--gradient-primary) border-box;
+        var(--primary-gradient-400) border-box;
       border: 1px solid rgba(255, 255, 255, 0);
     }
   }

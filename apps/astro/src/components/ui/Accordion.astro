@@ -34,7 +34,7 @@ const { summary, ...props } = Astro.props
       transition: opacity 800ms var(--easing);
     }
     &::after {
-      background: var(--gradient-primary);
+      background: var(--primary-gradient-400);
       transform: scaleX(0);
       transform-origin: right;
       transition: transform 800ms var(--easing);
@@ -83,13 +83,13 @@ const { summary, ...props } = Astro.props
     transition: transform 500ms var(--easing);
     background:
       linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
-      var(--gradient-primary) border-box;
+      var(--primary-gradient-400) border-box;
     border: 1px solid transparent;
     border-radius: 50%;
     div {
       width: 8px;
       height: 1px;
-      background: var(--gradient-primary);
+      background: var(--primary-gradient-400);
       border-radius: 4px;
       transition: transform 500ms var(--easing);
       &:first-child {

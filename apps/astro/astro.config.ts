@@ -21,6 +21,11 @@ export default defineConfig({
   prefetch: {
     prefetchAll: true
   },
+  vite: {
+    ssr: {
+      noExternal: ['react-hook-form']
+    },
+  },
   redirects: redirects,
   output: isPreviewDeployment ? "server" : 'hybrid',
   adapter: vercel(),
