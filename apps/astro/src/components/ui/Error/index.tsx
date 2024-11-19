@@ -12,7 +12,7 @@ export default function Error({ error, withIcon = false }: Props) {
         className={styles.Error}
         aria-live="assertive"
         role='alert'
-        aria-icon={withIcon.toString()}
+        data-icon={withIcon.toString()}
       >{error}</span>
     )
   );
