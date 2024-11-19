@@ -83,6 +83,12 @@ export default defineType({
       }),
     }),
     defineField({
+      name: 'img',
+      type: 'image',
+      title: 'Featured Image',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'components',
       type: 'components',
       title: 'Page Components',
