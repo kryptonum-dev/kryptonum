@@ -6,10 +6,9 @@ type Props = {
     name: string
     path: string
   }>
-  isVisible?: boolean
 }
 
-const { data = [], isVisible = true } = Astro.props
+const { data = [] } = Astro.props
 
 const breadcrumbsData = [
   { name: 'Strona główna', path: '/' },
@@ -29,7 +28,14 @@ const schema = JSON.stringify({
 ---
 
 <script is:inline type="application/ld+json" set:html={schema} />
-{isVisible && breadcrumbsData.length >= 2 && (
+{breadcrumbsData.length >= 2 && (
+  <style is:global lang="scss">
+    main {
+      & > section:first-of-type {
+        padding-top: clamp(1rem, calc(2vw / 0.48), 2rem) !important;
+      }
+    }
+  </style>
   <nav class="Breadcrumbs">
     {breadcrumbsData.map(({ name, path }, i) => {
       const isLastItem = i === breadcrumbsData.length - 1
@@ -51,26 +57,26 @@ const schema = JSON.stringify({
     align-items: center;
     gap: 0.5rem;
     max-width: 48rem;
-  }
-  svg {
-    flex-shrink: 0;
-  }
-  a, span {
-    height: 3rem;
-    line-height: 3rem;
-    white-space: nowrap;
-    &:last-child{
-      overflow: hidden;
-      text-overflow: ellipsis;
+    svg {
+      flex-shrink: 0;
     }
-  }
-  a {
-    transition: opacity 500ms;
-    &:hover {
-      opacity: 0.76;
+    a, span {
+      height: 3rem;
+      line-height: 3rem;
+      white-space: nowrap;
+      &:last-child{
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
-  }
-  span {
-    color: var(--neutral-400);
+    a {
+      transition: opacity 500ms;
+      &:hover {
+        opacity: 0.76;
+      }
+    }
+    span {
+      color: var(--neutral-400);
+    }
   }
 </style>
