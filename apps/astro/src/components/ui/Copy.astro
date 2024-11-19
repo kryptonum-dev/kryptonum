@@ -1,12 +1,18 @@
 ---
 type Props = {
   data: string
+  successMessage?: string
 }
 
-const { data } = Astro.props
+const { data, successMessage } = Astro.props
 ---
 
-<button class="CopyToClipboard" data-copy-text={data} aria-label="Skopiuj">
+<button
+  class="CopyToClipboard"
+  data-copy-text={data}
+  aria-label="Skopiuj"
+  type="button"
+  data-success-message={successMessage}>
   <span>Skopiuj</span>
 </button>
 
@@ -82,11 +88,12 @@ const { data } = Astro.props
   import { showToast } from '@/components/ui/Toast/index.ts'
 
   document.querySelectorAll('.CopyToClipboard').forEach((element) => {
+    const successMessage = element.getAttribute('data-success-message') || 'Pomyślnie skopiowano'
     element.addEventListener('click', () => {
       const copyText = element.getAttribute('data-copy-text')
       if (copyText) {
         navigator.clipboard.writeText(copyText)
-        showToast('Pomyślnie skopiowano')
+        showToast(successMessage)
       }
     })
   })
