@@ -1,0 +1,87 @@
+$background: var(--neutral-900, #000103);
+.Checkbox {
+  display: grid;
+  width: fit-content;
+  align-items: center;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.5rem;
+  min-height: 2.75rem;
+  font-size: var(--typography-body-s, 0.75rem);
+  cursor: pointer;
+  &:not(:has(input:checked)):not(:has(input[aria-invalid='true'])):hover {
+    .checkmark {
+      border-color: var(--neutral-200, #f0f7f7);
+    }
+  }
+  &:active {
+    .checkmark {
+      transform: scale(0.98);
+    }
+  }
+  &:has(input:focus-visible) {
+    .checkmark {
+      outline: 2px solid var(--neutral-200, #f0f7f7);
+      outline-offset: 5px;
+    }
+  }
+  &:has(input:checked) {
+    .checkmark {
+      border-color: rgba(0, 0, 0, 0);
+      &::before {
+        opacity: 1;
+      }
+      svg {
+        stroke-dashoffset: 0;
+      }
+    }
+  }
+  &:has(input[aria-invalid='true']) {
+    .checkmark {
+      background:
+        linear-gradient($background, $background) padding-box,
+        var(--error-gradient-400) border-box;
+      border: 1px solid rgba(0, 0, 0, 0);
+    }
+  }
+  .checkmark {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.25rem;
+    background:
+      linear-gradient($background, $background) padding-box,
+      var(--gradient-primary) border-box;
+    border: 1px solid var(--neutral-500, #75758a);
+    transition: border-color 500ms var(--easing);
+    display: grid;
+    place-items: center;
+    transition: border-color 500ms var(--easing);
+    position: relative;
+    overflow: hidden;
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      background-color: var(--primary-600, #042b2b);
+      filter: blur(6px);
+      transform: translate3d(-50%, -50%, 0);
+      transition: opacity 500ms var(--easing);
+      opacity: 0;
+    }
+    input {
+      opacity: 0;
+      position: absolute;
+    }
+    svg {
+      z-index: 1;
+      transition: stroke-dashoffset 500ms var(--easing);
+      stroke-dasharray: 11.55;
+      stroke-dashoffset: 11.55;
+    }
+  }
+  span[role='alert'] {
+    grid-column: 1 / -1;
+  }
+}
