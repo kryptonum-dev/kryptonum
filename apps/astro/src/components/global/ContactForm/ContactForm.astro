@@ -361,7 +361,9 @@ const { sectionId, state } = Astro.props
 </style>
 
 <script>
-  document.querySelector('[data-try-again]')!.addEventListener('click', () => {
-    document.dispatchEvent(new CustomEvent('ContactForm-TryAgain'))
+  document.querySelectorAll('.ContactForm').forEach((section) => {
+    section.querySelector('[data-try-again]')!.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('ContactForm-TryAgain'))
+    })
   })
 </script>
