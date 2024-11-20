@@ -95,6 +95,8 @@ const svgId = Math.random().toString(36).slice(2)
 </div>
 
 <style lang="scss">
+  $paddingX: clamp(1.5rem, calc(3vw / 0.48), 6.75rem);
+  $paddingY: clamp(1.5rem, calc(4vw / 0.48), 5rem);
   .Form {
     position: relative;
     max-width: 26rem;
@@ -221,13 +223,18 @@ const svgId = Math.random().toString(36).slice(2)
       justify-self: flex-end;
       align-self: flex-end;
       position: relative;
-      $paddingX: clamp(1.5rem, calc(3vw / 0.48), 6.75rem);
-      $paddingY: clamp(1.5rem, calc(4vw / 0.48), 5rem);
       margin-top: calc($paddingY * -1);
       right: calc($paddingX * -1);
       bottom: calc($paddingY * -1);
     }
-    @media (max-width: 59rem) {
+  }
+  @media (max-width: 59rem) {
+    .ErrorState {
+      margin-left: calc(($paddingX * -1) - 1px);
+      margin-right: calc(($paddingX * -1) - 1px);
+      margin-bottom: calc(($paddingY * -1) - 1px);
+    }
+    .SuccessState {
       grid-template-columns: 1fr;
     }
   }

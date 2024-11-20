@@ -100,6 +100,9 @@ const { index, sectionId, email, groupId, img, heading, paragraph, state } = Ast
           display: grid;
         }
       }
+      &:global(:has(.Form[data-status='error'])) {
+        border-color: var(--error-600, #380713);
+      }
     }
     @media (max-width: 59rem) {
       margin-top: calc($marginTop - 1rem);
