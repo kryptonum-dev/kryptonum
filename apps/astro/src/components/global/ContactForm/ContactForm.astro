@@ -1,15 +1,15 @@
 ---
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Copy from '@/components/ui/Copy.astro'
 import FormWrapper from './Form/FormWrapper.astro'
-import Copy from '../../ui/Copy.astro'
 
 export const ContactForm_Query = `
   _type == "ContactForm" => {
     variant,
     "img": select(isReference => personReference -> ${ImageDataQuery('img')} ${ImageDataQuery('img')}),
     emailText,
-    "email": coalesce(email, personReference -> email),
+    "email": select(variant == "form-with-person" => select(isReference => personReference -> email, email), *[_type == "global"][0].email),
     telText,
     "tel": coalesce(tel, personReference -> tel),
     ${PortableTextQuery('heading')}
@@ -91,7 +91,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             </li>
           ))}
         </ul>
-        <FormWrapper state={state} variant={variant} />
+        <FormWrapper state={state} variant={variant} email={email} />
       </div>
     )
   }
@@ -118,7 +118,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             )}
           </div>
         </div>
-        <FormWrapper state={state} variant={variant} />
+        <FormWrapper state={state} variant={variant} email={email} />
       </div>
     )
   }
