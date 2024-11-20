@@ -9,7 +9,7 @@ $opacity-transition: 800ms var(--easing);
   justify-content: center;
   align-items: center;
   min-height: 3rem;
-  padding: 0 clamp(1rem, calc(1rem + 1vw / 0.48), 2rem);
+  padding: 0.625rem clamp(1rem, calc(1rem + 1vw / 0.48), 2rem);
   transition: transform 500ms var(--easing);
   @media (max-width: 31rem) {
     width: 100%;
