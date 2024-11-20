@@ -123,6 +123,57 @@ export default defineField({
     }),
 
     defineField({
+      name: 'heading',
+      type: 'Heading',
+      title: 'Heading',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
+      name: 'paragraph',
+      type: 'PortableText',
+      title: 'Paragraph',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
+      name: 'list',
+      type: 'array',
+      title: 'List',
+      of: [
+        defineField({
+          name: 'item',
+          type: 'object',
+          title: 'Item',
+          fields: [
+            defineField({
+              name: 'icon',
+              type: 'image',
+              title: 'Icon',
+              validation: Rule => Rule.required(),
+            }),
+            defineField({
+              name: 'label',
+              type: 'PortableText',
+              title: 'Label',
+              validation: Rule => Rule.required(),
+            }),
+          ],
+          validation: Rule => Rule.required(),
+          preview: {
+            select: {
+              icon: 'icon',
+              label: 'label',
+            },
+            prepare: ({ icon, label }) => ({
+              title: toPlainText(label),
+              media: icon,
+            }),
+          },
+        })
+      ],
+      validation: Rule => Rule.required(),
+    }),
+
+    defineField({
       name: 'state',
       type: 'object',
       title: 'Form States',
