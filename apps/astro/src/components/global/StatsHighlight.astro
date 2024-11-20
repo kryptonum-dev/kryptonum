@@ -64,11 +64,11 @@ const { index, sectionId, heading, items } = Astro.props
       margin: 0 auto clamp(2rem, calc(3vw / 0.48), 4rem);
     }
     .items {
+      row-gap: 2.75rem;
       @include flex-grid(3, 1rem);
       @media (max-width: 38rem) {
         @include flex-grid(1, 1rem);
       }
-      row-gap: 2.75rem;
       .item {
         text-align: center;
         img {
