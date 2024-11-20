@@ -1,22 +1,40 @@
 import { useState, useEffect } from 'preact/hooks';
 import { useForm, type FieldValues } from 'react-hook-form';
+import type { Props as ContactFormProps } from '../ContactForm.astro';
 import Input from '@/components/ui/Input/Input'
 import Checkbox from '@/components/ui/Checkbox'
 import { REGEX } from '@/global/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@/src/pages/api/contact/sendContactEmail';
 
-export default function Form({ children, ...props }: { children: React.ReactNode } & React.FormHTMLAttributes<HTMLFormElement>) {
+export default function Form({ children, variant, ...props }: { children: React.ReactNode, variant: ContactFormProps['variant'] } & React.FormHTMLAttributes<HTMLFormElement>) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [step, setStep] = useState<1 | 2>(1);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
+    trigger,
   } = useForm({ mode: 'onTouched' });
 
   useEffect(() => {
     const tryAgain = () => setStatus('idle');
     document.addEventListener('ContactForm-TryAgain', tryAgain);
+
+    if (variant === 'form-with-person') {
+      const nextStep = async () => {
+        const isMessageValid = await trigger('message');
+        if (isMessageValid) setStep(2);
+      }
+      const prevStep = () => setStep(1);
+      document.addEventListener('ContactForm-NextStep', nextStep);
+      document.addEventListener('ContactForm-PrevStep', prevStep);
+      return () => {
+        document.removeEventListener('ContactForm-TryAgain', tryAgain);
+        document.removeEventListener('ContactForm-NextStep', nextStep);
+        document.removeEventListener('ContactForm-PrevStep', prevStep);
+      }
+    }
     return () => document.removeEventListener('ContactForm-TryAgain', tryAgain);
   }, []);
 
@@ -32,35 +50,71 @@ export default function Form({ children, ...props }: { children: React.ReactNode
   };
 
   return (
-    <form {...props} onSubmit={handleSubmit(onSubmit)} data-status={status} >
-      <Input
-        label='Email'
-        register={register('email', {
-          required: { value: true, message: 'Email jest wymagany' },
-          pattern: { value: REGEX.email, message: 'Niepoprawny adres e-mail' },
-        })}
-        errors={errors}
-        type='email'
-      />
-      <Input
-        label='Temat rozmowy'
-        register={register('message', {
-          required: { value: true, message: 'Temat jest wymagany' },
-        })}
-        isTextarea={true}
-        errors={errors}
-        placeholder='Daj znać, o czym chcesz pogadać :)'
-      />
-      <Checkbox
-        register={register('legal', {
-          required: { value: true, message: 'Zgoda jest wymagana' },
-        })}
-        errors={errors}
-      >
-        Akceptuję <a href="/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">
-          politykę prywatności
-        </a>
-      </Checkbox>
+    <form {...props} onSubmit={handleSubmit(onSubmit)} data-status={status} data-variant={variant} data-step={variant === 'form-with-person' ? step : undefined}>
+      {variant === 'form-with-list' && (
+        <>
+          <Input
+            label='Email'
+            register={register('email', {
+              required: { value: true, message: 'Email jest wymagany' },
+              pattern: { value: REGEX.email, message: 'Niepoprawny adres e-mail' },
+            })}
+            errors={errors}
+            type='email'
+          />
+          <Input
+            label='Temat rozmowy'
+            register={register('message', {
+              required: { value: true, message: 'Temat jest wymagany' },
+            })}
+            isTextarea={true}
+            errors={errors}
+            placeholder='Daj znać, o czym chcesz pogadać :)'
+          />
+          <Checkbox
+            register={register('legal', {
+              required: { value: true, message: 'Zgoda jest wymagana' },
+            })}
+            errors={errors}
+          >
+            Akceptuję <a href="/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">
+              politykę prywatności
+            </a>
+          </Checkbox>
+        </>
+      )}
+      {variant === 'form-with-person' && (
+        <>
+          <Input
+            label='Temat rozmowy'
+            register={register('message', {
+              required: { value: true, message: 'Temat jest wymagany' },
+            })}
+            isTextarea={true}
+            errors={errors}
+            placeholder='Daj znać, o czym chcesz pogadać :)'
+          />
+          <Input
+            label='Email'
+            register={register('email', {
+              required: { value: true, message: 'Email jest wymagany' },
+              pattern: { value: REGEX.email, message: 'Niepoprawny adres e-mail' },
+            })}
+            errors={errors}
+            type='email'
+          />
+          <Checkbox
+            register={register('legal', {
+              required: { value: true, message: 'Zgoda jest wymagana' },
+            })}
+            errors={errors}
+          >
+            Akceptuję <a href="/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">
+              politykę prywatności
+            </a>
+          </Checkbox>
+        </>
+      )}
       {children}
     </form>
   )

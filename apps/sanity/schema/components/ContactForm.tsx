@@ -14,6 +14,27 @@ export default defineField({
   icon,
   fields: [
     defineField({
+      name: 'variant',
+      type: 'string',
+      title: 'Variant',
+      options: {
+        direction: 'horizontal',
+        layout: 'radio',
+        list: [
+          {
+            value: 'form-with-list',
+            title: 'Form with list',
+          },
+          {
+            value: 'form-with-person',
+            title: 'Form with person',
+          },
+        ],
+      },
+      initialValue: 'form-with-list',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'isReference',
       type: 'boolean',
       title: 'Is reference?',
@@ -22,7 +43,13 @@ export default defineField({
           If you check this option, you will have the ability to reference data from <a href="/structure/TeamMember_Collection" target="_blank" rel="noopener">Team Member Collection</a>
         </>
       ),
-      initialValue: false,
+      initialValue: true,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list',
+      validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
+        if (variant === 'form-with-person' && value === undefined) return 'That field is required';
+        return true;
+      }),
     }),
     defineField({
       name: 'personReference',
@@ -32,11 +59,11 @@ export default defineField({
       options: {
         disableNew: true,
       },
-      hidden: ({ parent }) => !parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || !parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
-        if (!isReference) return true;
-        if (!value) return 'Person reference is required';
+        if (variant === 'form-with-person' && isReference && !value) return 'Person reference is required';
         return true;
       }),
     }),
@@ -44,11 +71,11 @@ export default defineField({
       name: 'img',
       type: 'image',
       title: 'Image',
-      hidden: ({ parent }) => parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
-        if (isReference) return true;
-        if (!value) return 'Image is required';
+        if (variant === 'form-with-person' && !isReference && !value) return 'Image is required';
         return true;
       }),
     }),
@@ -87,42 +114,6 @@ export default defineField({
       fieldset: 'tel',
     }),
     defineField({
-      name: 'address',
-      type: 'object',
-      title: 'Address',
-      description: (
-        <>
-          The <em>Address Text</em> and <em>Map Link</em> are optional. If you left them blank, then we will use data from <a href='/structure/global' target='_blank' rel='noopener'>global settings</a>.
-        </>
-      ),
-      fields: [
-        defineField({
-          name: 'img',
-          type: 'image',
-          title: 'Image',
-          validation: Rule => Rule.required(),
-        }),
-        defineField({
-          name: 'text',
-          type: 'string',
-          title: 'Text',
-          validation: Rule => Rule.required(),
-        }),
-        defineField({
-          name: 'addressText',
-          type: 'string',
-          title: 'Address Text (optional)',
-        }),
-        defineField({
-          name: 'mapLink',
-          type: 'url',
-          title: 'Map Link (optional)',
-        }),
-      ],
-      validation: Rule => Rule.required(),
-    }),
-
-    defineField({
       name: 'heading',
       type: 'Heading',
       title: 'Heading',
@@ -132,7 +123,12 @@ export default defineField({
       name: 'paragraph',
       type: 'PortableText',
       title: 'Paragraph',
-      validation: Rule => Rule.required(),
+      hidden: ({ parent }) => parent?.variant === 'form-with-person',
+      validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
+        if (variant === 'form-with-list' && !value) return 'Paragraph is required';
+        return true;
+      }),
     }),
     defineField({
       name: 'list',
@@ -170,9 +166,13 @@ export default defineField({
           },
         })
       ],
-      validation: Rule => Rule.required(),
+      hidden: ({ parent }) => parent?.variant === 'form-with-person',
+      validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
+        if (variant === 'form-with-list' && !value) return 'Paragraph is required';
+        return true;
+      }),
     }),
-
     defineField({
       name: 'state',
       type: 'object',
@@ -286,9 +286,10 @@ export default defineField({
   preview: {
     select: {
       heading: 'heading',
+      variant: 'variant',
     },
-    prepare: ({ heading }) => ({
-      title: title,
+    prepare: ({ heading, variant }) => ({
+      title: `${title} (${variant})`,
       subtitle: toPlainText(heading),
       ...sectionPreview({ imgUrl: `/static/components/${name}.webp`, icon: icon() }),
     }),
