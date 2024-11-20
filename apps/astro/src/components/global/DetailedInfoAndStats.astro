@@ -70,7 +70,7 @@ const data = await sanityFetch<{
     {
       list && (
         <div class="show-more">
-          <button>
+          <button aria-expanded="false" aria-controls="expandable-list">
             Dowiedz się więcej
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none">
               <path
@@ -93,7 +93,7 @@ const data = await sanityFetch<{
               </defs>
             </svg>
           </button>
-          <div class="list" style="height: 0;" aria-expanded="false">
+          <div id="expandable-list" class="list" style="height: 0;">
             {list.map(({ heading, paragraph }) => (
               <div class="item">
                 <PortableText value={heading} class="heading" />
@@ -183,9 +183,7 @@ const data = await sanityFetch<{
           svg {
             transition: transform 800ms var(--easing);
           }
-        }
-        &:has(.list[aria-expanded='true']) {
-          button {
+          &[aria-expanded='true'] {
             svg {
               transform: rotateX(180deg);
             }
@@ -268,13 +266,13 @@ const data = await sanityFetch<{
     const showMoreBtn = section.querySelector<HTMLButtonElement>('.show-more button')!
     let timeout: ReturnType<typeof setTimeout>
     showMoreBtn.addEventListener('click', () => {
-      const isExpanded = showMoreList.getAttribute('aria-expanded') === 'true'
+      const isExpanded = showMoreBtn.getAttribute('aria-expanded') === 'true'
       const targetHeight = isExpanded ? 0 : showMoreList.scrollHeight
       clearTimeout(timeout)
       showMoreList.style.height = `${showMoreList.scrollHeight}px`
       showMoreList.offsetHeight
       showMoreList.style.height = `${targetHeight}px`
-      showMoreList.setAttribute('aria-expanded', (!isExpanded).toString())
+      showMoreBtn.setAttribute('aria-expanded', (!isExpanded).toString())
       if (!isExpanded) {
         timeout = setTimeout(() => {
           showMoreList.style.height = 'auto'
