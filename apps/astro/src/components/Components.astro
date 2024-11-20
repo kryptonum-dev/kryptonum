@@ -46,6 +46,7 @@ import MediaShowcase, { MediaShowcase_Query } from '@/components/global/MediaSho
 import CompareTable, { CompareTable_Query } from '@/components/global/CompareTable.astro'
 import Timeline, { Timeline_Query } from '@/components/global/Timeline.astro'
 import NetworkedShowcase, { NetworkedShowcase_Query } from '@/components/global/NetworkedShowcase.astro'
+import Newsletter, { Newsletter_Query } from '@/components/global/Newsletter/Newsletter.astro'
 
 const components = {
   SimpleCtaSection,
@@ -86,6 +87,7 @@ const components = {
   CompareTable,
   Timeline,
   NetworkedShowcase,
+  Newsletter,
 }
 
 type ComponentsMap = {
@@ -145,6 +147,7 @@ export const Components_Query = /* groq */ `
     ${CompareTable_Query}
     ${Timeline_Query}
     ${NetworkedShowcase_Query}
+    ${Newsletter_Query}
   },
 `
 ---

@@ -37,6 +37,7 @@ import MediaShowcase from "./components/MediaShowcase";
 import CompareTable from "./components/CompareTable";
 import Timeline from "./components/Timeline";
 import NetworkedShowcase from "./components/NetworkedShowcase";
+import Newsletter from "./components/Newsletter";
 
 export default defineType({
   name: 'components',
@@ -81,6 +82,7 @@ export default defineType({
     CompareTable,
     Timeline,
     NetworkedShowcase,
+    Newsletter,
   ],
   options: {
     insertMenu: {

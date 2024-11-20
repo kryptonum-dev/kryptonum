@@ -5,12 +5,11 @@ export type Props = {
   legal: boolean
 }
 
-export async function sendContactEmail({ email, phone, message, legal }: Props) {
+export async function sendContactEmail({ email, phone, message, legal }: Props): Promise<{ success: boolean }> {
   const response = await fetch('/api/contact', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, phone, message, legal }),
   });
-  const responseData = await response.json();
-  return responseData;
+  return await response.json();
 }

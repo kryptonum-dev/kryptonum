@@ -15,27 +15,32 @@ export default function Form({ children, variant, ...props }: { children: React.
     reset,
     formState: { errors },
     trigger,
+    setFocus,
   } = useForm({ mode: 'onTouched' });
 
   useEffect(() => {
     const tryAgain = () => setStatus('idle');
-    document.addEventListener('ContactForm-TryAgain', tryAgain);
-
+    document.addEventListener('Contact-TryAgain', tryAgain);
     if (variant === 'form-with-person') {
       const nextStep = async () => {
         const isMessageValid = await trigger('message');
         if (isMessageValid) setStep(2);
+        // Wait for next frame to ensure DOM is updated and element is visible before focusing
+        requestAnimationFrame(() => setFocus('email'));
       }
-      const prevStep = () => setStep(1);
-      document.addEventListener('ContactForm-NextStep', nextStep);
-      document.addEventListener('ContactForm-PrevStep', prevStep);
+      const prevStep = () => {
+        setStep(1);
+        requestAnimationFrame(() => setFocus('message'));
+      }
+      document.addEventListener('Contact-NextStep', nextStep);
+      document.addEventListener('Contact-PrevStep', prevStep);
       return () => {
-        document.removeEventListener('ContactForm-TryAgain', tryAgain);
-        document.removeEventListener('ContactForm-NextStep', nextStep);
-        document.removeEventListener('ContactForm-PrevStep', prevStep);
+        document.removeEventListener('Contact-TryAgain', tryAgain);
+        document.removeEventListener('Contact-NextStep', nextStep);
+        document.removeEventListener('Contact-PrevStep', prevStep);
       }
     }
-    return () => document.removeEventListener('ContactForm-TryAgain', tryAgain);
+    return () => document.removeEventListener('Contact-TryAgain', tryAgain);
   }, []);
 
   const onSubmit = async (data: FieldValues) => {

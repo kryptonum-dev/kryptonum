@@ -1,0 +1,114 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import FormWrapper from './Form/FormWrapper.astro'
+
+export const Newsletter_Query = `
+  _type == "Newsletter" => {
+    "email": *[_type == "global"][0].email,
+    groupId,
+    ${ImageDataQuery('img')}
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    state {
+      success {
+        ${PortableTextQuery('heading')}
+        ${PortableTextQuery('paragraph')}
+        ${ImageDataQuery('img')}
+      },
+      error {
+        ${PortableTextQuery('heading')}
+        ${PortableTextQuery('paragraph')}
+      },
+    },
+  },
+`
+
+export type Props = {
+  index: number
+  sectionId?: string
+  email: string
+  groupId: string
+  img: ImageDataProps
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  state: {
+    success: {
+      heading: PortableTextValue
+      paragraph: PortableTextValue
+      img: ImageDataProps
+    }
+    error: {
+      heading: PortableTextValue
+      paragraph: PortableTextValue
+    }
+  }
+}
+
+const { index, sectionId, email, groupId, img, heading, paragraph, state } = Astro.props
+---
+
+<section class="Newsletter" id={sectionId}>
+  <div class="wrapper">
+    <Image {...img} sizes="(max-width: 768px) 320px, 426px" priority={index === 0} class="img" />
+    <header>
+      <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+      <PortableText value={paragraph} />
+    </header>
+    <FormWrapper state={state} email={email} groupId={groupId} />
+  </div>
+</section>
+
+<style lang="scss">
+  .Newsletter {
+    padding: clamp(2rem, calc(3vw / 0.48), 4rem) 0;
+    $imgWidth: clamp(240px, calc(320vw / 7.68), 426px);
+    $imgHeight: clamp(87px, calc(116vw / 7.68), 154px);
+    $marginTop: $imgHeight;
+    margin-top: calc($marginTop - 2rem);
+    .wrapper {
+      border-radius: 0.25rem;
+      border: 1px solid var(--primary-500, #064040);
+      background-color: var(--neutral-900, #000103);
+      padding: clamp(2.5rem, calc(4.5vw / 0.48), 6rem) clamp(1.5rem, calc(3vw / 0.48), 6.75rem)
+        clamp(1.5rem, calc(4vw / 0.48), 5rem);
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: clamp(2rem, calc(3vw / 0.48), 8rem);
+      position: relative;
+      .img {
+        position: absolute;
+        left: 50%;
+        top: 2rem;
+        transform: translate(-50%, -100%);
+        width: $imgWidth;
+        height: $imgHeight;
+      }
+      header {
+        .heading {
+          margin-bottom: 1rem;
+        }
+      }
+      &:global(:has(.Form[data-status='success'])) {
+        gap: unset;
+        grid-template-columns: unset;
+        > header,
+        > img {
+          display: none;
+        }
+        :global(.SuccessState) {
+          display: grid;
+        }
+      }
+    }
+    @media (max-width: 59rem) {
+      margin-top: calc($marginTop - 1rem);
+      .wrapper {
+        grid-template-columns: 1fr;
+        .img {
+          top: 1rem;
+        }
+      }
+    }
+  }
+</style>

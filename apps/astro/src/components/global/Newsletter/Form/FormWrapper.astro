@@ -1,0 +1,248 @@
+---
+import Form from './index.tsx'
+import type { Props as NewsletterProps } from '../Newsletter.astro'
+import Image from '@/components/ui/image'
+import Button from '@/components/ui/Button'
+import Copy from '@/components/ui/Copy.astro'
+import Loader from '@/components/ui/Loader.astro'
+import PortableText from '@/src/components/ui/portable-text'
+
+type Props = {
+  state: NewsletterProps['state']
+  email: NewsletterProps['email']
+  groupId: NewsletterProps['groupId']
+}
+
+const { state, email, groupId } = Astro.props as Props
+
+const svgId = Math.random().toString(36).slice(2)
+---
+
+<Form className="Form" groupId={groupId} client:load>
+  <div class="submit-wrapper">
+    <button class="prev-step" type="button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" fill="none" viewBox="0 0 13 10">
+        <path stroke="#F0F7F7" stroke-linecap="round" stroke-linejoin="round" d="M11.835 5H1.168m0 0 4-4m-4 4 4 4">
+        </path>
+      </svg>
+      Wróć
+    </button>
+    <Button type="button" className="next-step">Zapisuję się</Button>
+    <Button type="submit" className="submit-button">Zapisuję się</Button>
+  </div>
+  <Loader class="Loader" />
+  <div class="ErrorState">
+    <div class="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <path
+          stroke={`url(#Newsletter-Error-${svgId})`}
+          stroke-width="1.5"
+          d="M5.312 10.761C8.23 5.587 9.689 3 12 3c2.31 0 3.77 2.587 6.688 7.761l.364.645c2.425 4.3 3.638 6.45 2.542 8.022S17.786 21 12.364 21h-.728c-5.422 0-8.134 0-9.23-1.572s.117-3.722 2.542-8.022l.364-.645Z">
+        </path>
+        <path stroke={`url(#Newsletter-Error1-${svgId})`} stroke-linecap="round" stroke-width="1.5" d="M12 8v5"></path>
+        <circle cx="12" cy="16" r="1" fill={`url(#Newsletter-Error2-${svgId})`}></circle>
+        <defs>
+          <linearGradient
+            id={`Newsletter-Error-${svgId}`}
+            x1="21.625"
+            x2=".83"
+            y1="3"
+            y2="4.472"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#D44A84"></stop><stop offset=".521" stop-color="#DA2B53"></stop><stop
+              offset="1"
+              stop-color="#BF3A3A">
+            </stop>
+          </linearGradient>
+          <linearGradient
+            id={`Newsletter-Error1-${svgId}`}
+            x1="12.981"
+            x2="11.937"
+            y1="8"
+            y2="8.013"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#D44A84"></stop><stop offset=".521" stop-color="#DA2B53"></stop>
+            <stop offset="1" stop-color="#BF3A3A"></stop>
+          </linearGradient>
+          <linearGradient
+            id={`Newsletter-Error2-${svgId}`}
+            x1="12.963"
+            x2="10.881"
+            y1="15"
+            y2="15.133"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#D44A84"></stop><stop offset=".521" stop-color="#DA2B53"></stop>
+            <stop offset="1" stop-color="#BF3A3A"></stop>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <PortableText value={state.error.heading} class="h2 heading" />
+    <PortableText value={state.error.paragraph} class="paragraph" />
+    <div class="actions">
+      <Button type="button" className="cta tryAgain">Spróbuj ponownie</Button>
+      <a href={`mailto:${email}`} class="email">{email}</a>
+      <Copy data={email} successMessage="Pomyślnie skopiowano adres e-mail" />
+    </div>
+  </div>
+</Form>
+<div class="SuccessState">
+  <header>
+    <PortableText value={state.success.heading} class="h2 heading" />
+    <PortableText value={state.success.paragraph} class="paragraph" />
+  </header>
+  <Image {...state.success.img} sizes="(max-width: 46rem) 80vw, 480px" class="img" />
+</div>
+
+<style lang="scss">
+  .Form {
+    position: relative;
+    max-width: 26rem;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+    .submit-wrapper {
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+      .prev-step {
+        flex-shrink: 0;
+        width: fit-content;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.5rem;
+        align-items: center;
+        font-size: var(--typography-body-m, 0.875rem);
+        min-height: 2.75rem;
+      }
+      .next-step,
+      .submit-button {
+        flex-grow: 1;
+      }
+    }
+    .Loader {
+      display: none;
+    }
+    .ErrorState {
+      display: none;
+      padding: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+      border-radius: 0.25rem;
+      border: 1px solid var(--error-600, #380713);
+      background: var(--error-gradient-900);
+      .icon {
+        width: clamp(2rem, calc(2.5vw / 0.48), 2.5rem);
+        height: clamp(2rem, calc(2.5vw / 0.48), 2.5rem);
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background-color: var(--error-600, #380713);
+        svg {
+          width: clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+          height: clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+        }
+      }
+      .heading {
+        font-size: var(--typography-body-2xl, 1.125rem);
+        margin: 1.25rem 0 0.75rem;
+      }
+      .paragraph {
+        font-size: var(--typography-body-m, 0.875rem);
+      }
+      .actions {
+        margin-top: 2.25rem;
+        text-align: center;
+        .cta {
+          margin-bottom: 0.75rem;
+          width: 100%;
+        }
+        .email {
+          font-size: var(--typography-body-m, 0.875rem);
+          margin-right: 0.38rem;
+        }
+      }
+    }
+    &[data-status='success'],
+    &[data-status='error'] {
+      :global(> label),
+      .submit-wrapper {
+        display: none;
+      }
+    }
+    &[data-status='loading'] {
+      .Loader {
+        display: grid;
+      }
+    }
+    &[data-status='error'] {
+      .ErrorState {
+        display: block;
+      }
+    }
+    :global(> label) {
+      transition: filter 500ms var(--easing);
+      will-change: filter;
+    }
+    &[data-step='1'] {
+      :global(> label:nth-child(2)),
+      :global(> label:nth-child(3)) {
+        filter: blur(8px);
+        visibility: hidden;
+        position: absolute;
+      }
+      .submit-wrapper {
+        .submit-button,
+        .prev-step {
+          display: none;
+        }
+      }
+    }
+    &[data-step='2'] {
+      :global(> label:nth-child(1)) {
+        filter: blur(8px);
+        visibility: hidden;
+        position: absolute;
+      }
+      .submit-wrapper {
+        .next-step {
+          display: none;
+        }
+      }
+    }
+  }
+  .SuccessState {
+    display: none;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(3rem, calc(3vw / 0.48), 8rem);
+    .heading {
+      margin-bottom: 1rem;
+    }
+    .img {
+      width: 480px;
+      justify-self: flex-end;
+      align-self: flex-end;
+      position: relative;
+      $paddingX: clamp(1.5rem, calc(3vw / 0.48), 6.75rem);
+      $paddingY: clamp(1.5rem, calc(4vw / 0.48), 5rem);
+      margin-top: calc($paddingY * -1);
+      right: calc($paddingX * -1);
+      bottom: calc($paddingY * -1);
+    }
+    @media (max-width: 59rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLDivElement>('.Newsletter').forEach((section) => {
+    section.querySelector<HTMLButtonElement>('.tryAgain')!.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('Newsletter-TryAgain'))
+    })
+    section.querySelector<HTMLButtonElement>('.next-step')!.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('Newsletter-NextStep'))
+    })
+    section.querySelector<HTMLButtonElement>('.prev-step')!.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('Newsletter-PrevStep'))
+    })
+  })
+</script>

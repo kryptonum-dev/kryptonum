@@ -139,7 +139,7 @@ const svgId = Math.random().toString(36).slice(2)
     <PortableText value={state.error.heading} class="h2 heading" />
     <PortableText value={state.error.paragraph} class="paragraph" />
     <div class="actions">
-      <Button type="button" data-try-again className="cta">Spróbuj ponownie</Button>
+      <Button type="button" className="cta tryAgain">Spróbuj ponownie</Button>
       <a href={`mailto:${email}`} class="email">{email}</a>
       <Copy data={email} successMessage="Pomyślnie skopiowano adres e-mail" />
     </div>
@@ -382,15 +382,15 @@ const svgId = Math.random().toString(36).slice(2)
 
 <script>
   document.querySelectorAll<HTMLDivElement>('.ContactForm').forEach((section) => {
-    section.querySelector('[data-try-again]')!.addEventListener('click', () => {
-      document.dispatchEvent(new CustomEvent('ContactForm-TryAgain'))
+    section.querySelector<HTMLButtonElement>('.tryAgain')!.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('Contact-TryAgain'))
     })
     if (section.dataset.variant === 'form-with-person') {
       section.querySelector<HTMLButtonElement>('.next-step')!.addEventListener('click', () => {
-        document.dispatchEvent(new CustomEvent('ContactForm-NextStep'))
+        document.dispatchEvent(new CustomEvent('Contact-NextStep'))
       })
       section.querySelector<HTMLButtonElement>('.prev-step')!.addEventListener('click', () => {
-        document.dispatchEvent(new CustomEvent('ContactForm-PrevStep'))
+        document.dispatchEvent(new CustomEvent('Contact-PrevStep'))
       })
     }
   })
