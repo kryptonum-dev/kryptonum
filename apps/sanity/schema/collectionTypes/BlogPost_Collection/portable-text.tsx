@@ -8,11 +8,11 @@ import Quote from "./Quote";
 import ProsAndCons from "./ProsAndCons";
 import DoAndDonts from "./DoAndDonts";
 import SimpleCenteredCtaSection from "./SimpleCenteredCtaSection";
-import Faq from "../../components/Faq";
 import LargeAdvantagesCta from "./LargeAdvantagesCta";
 import ImageCta from "./ImageCta";
 import ListWithIcon from "./ListWithIcon";
 import NumberedStepsList from "./NumberedStepsList";
+import Faq from "../../components/Faq";
 
 export default defineField({
   name: 'content',

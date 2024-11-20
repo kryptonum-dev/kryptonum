@@ -11,11 +11,11 @@ import Quote, { Quote_Query } from './Quote.astro'
 import ProsAndCons, { ProsAndCons_Query } from './ProsAndCons.astro'
 import DoAndDonts, { DoAndDonts_Query } from './DoAndDonts.astro'
 import SimpleCenteredCtaSection, { SimpleCenteredCtaSection_Query } from './SimpleCenteredCtaSection.astro'
-import Faq, { Faq_Query } from './Faq.astro'
 import LargeAdvantagesCta, { LargeAdvantagesCta_Query } from './LargeAdvantagesCta.astro'
 import ImageCta, { ImageCta_Query } from './ImageCta.astro'
 import ListWithIcon, { ListWithIcon_Query } from './ListWithIcon.astro'
 import NumberedStepsList, { NumberedStepsList_Query } from './NumberedStepsList.astro'
+import Faq, { Faq_Query } from './Faq.astro'
 
 export const ContentPT_Query = `
   content[] {
@@ -27,11 +27,12 @@ export const ContentPT_Query = `
     ${ProsAndCons_Query}
     ${DoAndDonts_Query}
     ${SimpleCenteredCtaSection_Query}
-    ${Faq_Query}
     ${LargeAdvantagesCta_Query}
     ${ImageCta_Query}
     ${ListWithIcon_Query}
     ${NumberedStepsList_Query}
+
+    ${Faq_Query}
   },
 `
 
@@ -62,11 +63,11 @@ const { value } = Astro.props
       ProsAndCons: ProsAndCons,
       DoAndDonts: DoAndDonts,
       SimpleCenteredCtaSection: SimpleCenteredCtaSection,
-      Faq: Faq,
       LargeAdvantagesCta: LargeAdvantagesCta,
       ImageCta: ImageCta,
       ListWithIcon: ListWithIcon,
       NumberedStepsList: NumberedStepsList,
+      Faq: Faq,
     },
   }}
 />
