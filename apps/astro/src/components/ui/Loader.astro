@@ -15,13 +15,15 @@ const { ...props } = Astro.props
 <style lang="scss">
   div {
     position: absolute;
-    left: -1rem;
-    top: -1rem;
-    right: -1rem;
-    bottom: -1rem;
+    $blur: 5px;
+    $blur-radius: $blur * 3;
+    left: -$blur-radius;
+    top: -$blur-radius;
+    right: -$blur-radius;
+    bottom: -$blur-radius;
+    backdrop-filter: blur($blur);
     display: grid;
     place-items: center;
-    backdrop-filter: blur(5px);
     z-index: 4;
     svg {
       width: 18px;
