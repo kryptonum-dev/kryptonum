@@ -37,7 +37,7 @@ export default defineField({
         {
           title: 'Heading 4',
           value: 'h4',
-          component: ({ children }) => <h3 style={{ fontSize: '1.375rem', fontWeight: 400, margin: 0 }}>{children}</h3>
+          component: ({ children }) => <h4 style={{ fontSize: '1.375rem', fontWeight: 400, margin: 0 }}>{children}</h4>
         }
       ],
       lists: [
