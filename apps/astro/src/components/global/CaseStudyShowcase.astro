@@ -1,7 +1,7 @@
 ---
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
-import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/Button'
+import Button from '@/components/ui/Button'
 
 export const CaseStudy_Query = `
   ${ImageDataQuery('img')}
@@ -20,7 +20,7 @@ export const CaseStudyShowcase_Query = `
         ${CaseStudy_Query}
       },
     ),
-    ${ButtonDataQuery('cta')}
+    "caseStudiesLink": *[_type == "Portfolio_Page"][0].slug.current,
   },
 `
 
@@ -33,10 +33,10 @@ type Props = {
     name: string
     slug: string
   }>
-  cta: ButtonDataProps
+  caseStudiesLink: string
 }
 
-const { index, sectionId, heading, caseStudies, cta } = Astro.props
+const { index, sectionId, heading, caseStudies, caseStudiesLink } = Astro.props
 ---
 
 <section class="CaseStudyShowcase" id={sectionId}>
@@ -54,7 +54,7 @@ const { index, sectionId, heading, caseStudies, cta } = Astro.props
         </article>
       ))
     }
-    <Button {...cta} className="cta" />
+    <Button theme="primary" href={caseStudiesLink} className="cta">Przejdź do projektów</Button>
   </section>
 </section>
 

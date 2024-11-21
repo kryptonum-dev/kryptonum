@@ -46,12 +46,6 @@ export default defineField({
       ],
       validation: Rule => Rule.max(8),
     }),
-    defineField({
-      name: 'cta',
-      type: 'cta',
-      title: 'Call to Action',
-      validation: Rule => Rule.required(),
-    }),
     ...sectionId,
   ],
   preview: {
