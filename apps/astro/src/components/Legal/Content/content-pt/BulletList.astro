@@ -1,0 +1,29 @@
+---
+// eslint-disable-next-line no-unused-vars
+const { node, index, ...attrs } = Astro.props
+---
+
+<li {...attrs}>
+  <slot />
+</li>
+
+<style lang="scss">
+  li {
+    $alignMargin: 0.38rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    padding-top: $alignMargin;
+    &:not(:last-child) {
+      margin-bottom: 0.75rem;
+    }
+    &::before {
+      content: '';
+      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1OCIgaGVpZ2h0PSI1OCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDU4IDU4Ij48cmVjdCB3aWR0aD0iNTciIGhlaWdodD0iNTciIHg9Ii41IiB5PSIuNSIgZmlsbD0iIzAxMDEwNCIgcng9IjI4LjUiLz48cmVjdCB3aWR0aD0iNTciIGhlaWdodD0iNTciIHg9Ii41IiB5PSIuNSIgc3Ryb2tlPSIjMDY0MDQwIiByeD0iMjguNSIvPjxwYXRoIHN0cm9rZT0iI0VGRjBGMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBkPSJNMjkgMjJ2MTRtLTctN2gxNCIvPjwvc3ZnPg==')
+        center / contain no-repeat;
+      width: 2.5rem;
+      height: 2.5rem;
+      margin-top: calc($alignMargin * -1);
+    }
+  }
+</style>

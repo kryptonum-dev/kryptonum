@@ -10,6 +10,7 @@ export const InternalLinkableTypes: { type: string }[] = [
   { type: 'Portfolio_Page' },
   { type: 'Team_Page' },
   { type: 'Blog_Page' },
+  { type: 'PrivacyPolicy_Page' },
   { type: 'TeamMember_Collection' },
   { type: 'CaseStudy_Collection' },
   { type: 'Service_Collection' },

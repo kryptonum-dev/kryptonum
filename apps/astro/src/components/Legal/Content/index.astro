@@ -1,28 +1,26 @@
 ---
 import ContentNav, { ContentNav_Query, type ContentNavProps } from '@/components/ui/ContentNav.astro'
-import Metadata, { Metadata_Query, type MetadataProps } from './Metadata.astro'
 import ContentPT, { ContentPT_Query, type Props as ContentPTProps } from './content-pt/index.astro'
+import EstimatedReadingTime from '../../ui/EstimatedReadingTime.astro'
 
-export type ContentProps = ContentNavProps &
-  MetadataProps & {
-    content: ContentPTProps['value']
-  }
+export type ContentProps = ContentNavProps & {
+  content: ContentPTProps['value']
+}
 
 export const Content_Query = `
   "content": {
     ${ContentNav_Query}
-    ${Metadata_Query}
     ${ContentPT_Query}
   },
 `
 
-const { headings, content, author } = Astro.props as ContentProps
+const { headings, content } = Astro.props as ContentProps
 ---
 
 <article class="content">
-  <ContentNav headings={headings} title="W artykule znajdziesz:" />
+  <ContentNav headings={headings} title="W tym dokumencie znajdziesz:" />
   <section class="content-body">
-    <Metadata {...{ content, author }} />
+    <EstimatedReadingTime content={content} />
     <ContentPT value={content} />
   </section>
 </article>
@@ -33,16 +31,17 @@ const { headings, content, author } = Astro.props as ContentProps
     grid-template-columns: 1fr 2.66fr;
     align-items: flex-start;
     gap: clamp(3rem, calc(4vw / 0.48), 5rem) clamp(3rem, calc(3vw / 0.48), 7rem);
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
     :global(.content-nav) {
       position: sticky;
       top: 89px;
       max-height: calc(100vh - 89px);
       overflow-y: auto;
+      bottom: 0;
       border-right: 1px solid var(--primary-600, #042b2b);
       padding-right: 1rem;
     }
     .content-body {
-      font-size: var(--typography-body-2xl, 1.25rem);
       > {
         :global(p),
         :global(ul),
@@ -60,14 +59,10 @@ const { headings, content, author } = Astro.props as ContentProps
           margin: clamp(4rem, calc(6vw / 0.48), 6rem) 0 clamp(1.5rem, calc(2vw / 0.48), 2rem);
         }
         :global(h3) {
-          font-size: var(--typography-heading-xl, 1.875rem);
-        }
-        :global(h4) {
-          font-size: var(--typography-heading-l, 1.5rem);
-        }
-        :global(h3),
-        :global(h4) {
-          margin: clamp(1.5rem, calc(2.25vw / 0.48), 2.25rem) 0 clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+          font-size: var(--typography-body-2xl, 1.25rem);
+          border-bottom: 1px solid var(--neutral-gradient-100, #4a4a57);
+          padding-bottom: 1rem;
+          margin: clamp(2rem, calc(4vw / 0.48), 4rem) 0 clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
         }
         :global(ul) {
           margin: clamp(1.25rem, calc(2vw / 0.48), 2rem) 0;

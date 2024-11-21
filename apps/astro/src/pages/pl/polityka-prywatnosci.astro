@@ -1,0 +1,41 @@
+---
+import type { ComponentProps } from 'astro/types'
+import Layout from '@/src/layouts/Layout.astro'
+import sanityFetch from '@/utils/sanity.fetch'
+import metadataFetch from '@/utils/metadata.fetch'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import HeaderGridIcons, { HeaderGridIcons_Query } from '@/src/components/global/HeaderGridIcons.astro'
+import SimpleHeaderWithImage, { SimpleHeaderWithImage_Query } from '@/src/components/global/SimpleHeaderWithImage.astro'
+import Content, { Content_Query, type ContentProps } from '@/components/Legal/Content/index.astro'
+import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+
+const page = await sanityFetch<{
+  name: string
+  slug: string
+  SimpleHeaderWithImage: ComponentProps<typeof SimpleHeaderWithImage>
+  HeaderGridIcons: ComponentProps<typeof HeaderGridIcons>
+  content: ContentProps
+  components: ComponentsProps
+}>({
+  query: `
+    *[_type == "PrivacyPolicy_Page"][0] {
+      name,
+      "slug": slug.current,
+      ${SimpleHeaderWithImage_Query(false)}
+      ${HeaderGridIcons_Query(false)}
+      ${Content_Query}
+      ${Components_Query}
+    }
+  `,
+})
+
+const metadata = await metadataFetch(page.slug)
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={[{ name: page.name, path: page.slug }]} />
+  <SimpleHeaderWithImage {...page.SimpleHeaderWithImage} index={0} />
+  <HeaderGridIcons {...page.HeaderGridIcons} />
+  <Content {...page.content} />
+  <Components data={page.components} hasPreviousSections={true} />
+</Layout>

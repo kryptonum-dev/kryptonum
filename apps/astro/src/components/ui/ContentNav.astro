@@ -1,18 +1,21 @@
 ---
 import type { PortableTextProps } from 'astro-portabletext/types'
 import type { PortableTextBlock } from '@portabletext/types'
-import { slugify } from '@/src/utils/slugify'
 import { toPlainText } from 'astro-portabletext/utils'
+import { slugify } from '@/src/utils/slugify'
 
-export type NavProps = {
+type Props = {
+  title: string
   headings: PortableTextProps['value'][]
 }
 
-export const Nav_Query = `
+export type ContentNavProps = Props
+
+export const ContentNav_Query = `
   "headings": content[length(style) == 2 && string::startsWith(style, "h")],
 `
 
-const { headings } = Astro.props as NavProps
+const { title, headings } = Astro.props
 
 type HeadingGroup = {
   heading: { text: string; slug: string }
@@ -32,8 +35,8 @@ const groupedHeadings = headings?.reduce<HeadingGroup[]>((acc, heading) => {
 }, [])
 ---
 
-<nav class="article-nav">
-  <p>W artykule znajdziesz:</p>
+<nav class="content-nav">
+  <p>{title}</p>
   {
     groupedHeadings && (
       <ul class="list">
@@ -71,9 +74,9 @@ const groupedHeadings = headings?.reduce<HeadingGroup[]>((acc, heading) => {
 </nav>
 
 <style lang="scss">
-  .article-nav {
+  .content-nav {
+    font-size: var(--typography-body-m, 0.875rem);
     p {
-      font-size: var(--typography-body-m, 0.875rem);
       margin-bottom: 0.5rem;
     }
     .list {
@@ -81,11 +84,16 @@ const groupedHeadings = headings?.reduce<HeadingGroup[]>((acc, heading) => {
         margin-top: 0.38rem;
         border-radius: 0.25rem;
         ul {
+          font-size: 0.8125rem;
           display: none;
         }
+        &:hover {
+          svg {
+            transform: translateY(0.25rem);
+          }
+        }
         &:has(a[aria-current='true']),
-        &:has(a:focus-visible),
-        &:focus-within {
+        &:focus-within:not(:active) {
           background-color: var(--primary-700, #021d1d);
           svg {
             transform: rotateX(180deg);
@@ -94,28 +102,37 @@ const groupedHeadings = headings?.reduce<HeadingGroup[]>((acc, heading) => {
             display: block;
           }
         }
-      }
-      a {
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        display: flex;
-        align-items: flex-start;
-        gap: 0.5rem;
-        justify-content: space-between;
-        transition: opacity 500ms var(--easing);
-        &:hover {
-          background-color: rgba(6, 64, 64, 0.34) !important;
+        a {
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.25rem;
+          display: flex;
+          align-items: flex-start;
+          gap: 0.5rem;
+          justify-content: space-between;
+          transition: opacity 500ms var(--easing);
+          &:hover {
+            background-color: rgba(6, 64, 64, 0.34) !important;
+          }
+          svg {
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+            transition: transform 500ms var(--easing);
+            will-change: transform;
+          }
+          &[aria-current='true'] {
+            background-color: var(--primary-600, #021d1d);
+            + ul {
+              display: block;
+            }
+          }
         }
-        svg {
-          flex-shrink: 0;
-          margin-top: 0.25rem;
-          transition: transform 500ms var(--easing);
-          will-change: transform;
-        }
-        &[aria-current='true'] {
-          background-color: var(--primary-600, #021d1d);
-          + ul {
+        @media (max-width: 69rem) {
+          background-color: var(--primary-700, #021d1d);
+          ul {
             display: block;
+          }
+          svg {
+            display: none;
           }
         }
       }
@@ -124,29 +141,27 @@ const groupedHeadings = headings?.reduce<HeadingGroup[]>((acc, heading) => {
 </style>
 
 <script>
-  const nav = document.querySelector('.article-nav')!
-  const articleContent = document.querySelector('.article-content')!
-  const headings = Array.from(articleContent.querySelectorAll(':scope > h2, :scope > h3'))
-  const navLinks = nav.querySelectorAll('a')
-
-  function updateActiveHeading() {
-    const triggerPoint = 124
-    const currentHeading = headings.reduce((current, heading) => {
-      const headingTop = heading.getBoundingClientRect().top
-      if (headingTop <= triggerPoint) return heading
-      return current
-    }, headings[0])
-
-    navLinks.forEach((link) => link.setAttribute('aria-current', 'false'))
-    if (currentHeading) {
-      const id = currentHeading.getAttribute('id')
-      nav.querySelector(`a[href="#${id}"]`)?.setAttribute('aria-current', 'true')
+  document.querySelectorAll<HTMLDivElement>('.content-nav')?.forEach((nav) => {
+    const contentBody = nav.closest('.content')?.querySelector('.content-body')
+    if (!contentBody) {
+      throw new Error('It seems that .content-body is not present in the .content, where it is supposed to be.')
     }
-  }
-
-  window.addEventListener('scroll', () => {
-    requestAnimationFrame(updateActiveHeading)
+    const navLinks = nav.querySelectorAll('a')
+    const headings = Array.from(contentBody.querySelectorAll(':scope > h2, :scope > h3'))
+    function updateActiveHeading() {
+      const triggerPoint = 124
+      const currentHeading = headings.reduce((current, heading) => {
+        const headingTop = heading.getBoundingClientRect().top
+        if (headingTop <= triggerPoint) return heading
+        return current
+      }, headings[0])
+      navLinks.forEach((link) => link.setAttribute('aria-current', 'false'))
+      if (currentHeading) {
+        const id = currentHeading.getAttribute('id')
+        nav.querySelector(`a[href="#${id}"]`)?.setAttribute('aria-current', 'true')
+      }
+    }
+    window.addEventListener('scroll', () => requestAnimationFrame(updateActiveHeading))
+    updateActiveHeading()
   })
-
-  updateActiveHeading()
 </script>

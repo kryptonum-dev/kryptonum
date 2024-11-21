@@ -1,0 +1,64 @@
+---
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const Logos_Query = `
+  _type == "Logos" => {
+    ${ImageDataQuery('icons[]')}
+    ${PortableTextQuery('paragraph')}
+  },
+`
+
+type Props = {
+  node: {
+    icons: ImageDataProps[]
+    paragraph: PortableTextValue
+  }
+}
+
+const { node } = Astro.props
+---
+
+<section class="Logos">
+  <div class="icons">
+    {
+      node.icons.map((icon) => (
+        <div class="icon">
+          <Image asset={icon.asset} sizes="20px" />
+        </div>
+      ))
+    }
+  </div>
+  <PortableText value={node.paragraph} />
+</section>
+
+<style lang="scss">
+  .Logos {
+    margin: 2rem 0;
+    border-radius: 0.25rem;
+    border: 1px solid var(--neutral-600, #4a4a57);
+    background-color: var(--neutral-900, #000103);
+    padding: 2rem clamp(1.5rem, calc(2vw / 0.48), 2rem);
+    .icons {
+      display: flex;
+      align-items: center;
+      margin-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      .icon {
+        border-radius: 50%;
+        border: 1px solid var(--neutral-600, #4a4a57);
+        background-color: var(--neutral-900, #000103);
+        width: 2.75rem;
+        height: 2.75rem;
+        display: grid;
+        place-items: center;
+        img {
+          width: 20px;
+          height: 20px;
+        }
+        &:not(:last-child) {
+          margin-right: -0.5rem;
+        }
+      }
+    }
+  }
+</style>

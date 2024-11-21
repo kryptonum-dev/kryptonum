@@ -2,8 +2,8 @@
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
 
-export const HeaderGridIcons_Query = `
-  _type == "HeaderGridIcons" => {
+export const HeaderGridIcons_Query = (isPageBuilder: boolean = true) => `
+  ${isPageBuilder ? '_type == "HeaderGridIcons" =>' : 'HeaderGridIcons'} {
     ${PortableTextQuery('heading')}
     list[] {
       ${ImageDataQuery('icon')}
@@ -21,7 +21,6 @@ type Props = {
     text: PortableTextValue
   }>
 }
-
 const { index, sectionId, heading, list } = Astro.props
 ---
 
@@ -34,7 +33,7 @@ const { index, sectionId, heading, list } = Astro.props
       list?.map(({ icon, text }) => (
         <li>
           <div class="icon">
-            <Image {...icon} sizes="24px" />
+            <Image {...icon} sizes="24px" loading={index === 0 ? 'eager' : 'lazy'} />
           </div>
           <PortableText value={text} />
         </li>

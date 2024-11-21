@@ -1,0 +1,12 @@
+---
+// eslint-disable-next-line no-unused-vars
+const { node, index, isInline, ...props } = Astro.props
+---
+
+{
+  node?.children[0]?.text?.trim() === '' ? null : (
+    <p {...props}>
+      <slot />
+    </p>
+  )
+}

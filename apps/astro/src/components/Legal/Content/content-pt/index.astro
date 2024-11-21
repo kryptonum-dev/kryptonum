@@ -1,0 +1,47 @@
+---
+import { PortableText } from 'astro-portabletext'
+import type { PortableTextProps } from 'astro-portabletext/types'
+import Normal from './Normal.astro'
+import Block from './Block.astro'
+import BulletList from './BulletList.astro'
+import NumberedList from './NumberedList.astro'
+import Image, { Image_Query } from './Image.astro'
+import ContactInfo, { ContactInfo_Query } from './ContactInfo.astro'
+import Logos, { Logos_Query } from './Logos.astro'
+
+export const ContentPT_Query = `
+  content[] {
+    ...,
+    ${Image_Query}
+    ${ContactInfo_Query}
+    ${Logos_Query}
+  },
+`
+
+export type Props = {
+  value: PortableTextProps['value']
+}
+
+const { value } = Astro.props
+---
+
+<PortableText
+  value={value}
+  components={{
+    block: {
+      normal: Normal,
+      h2: Block,
+      h3: Block,
+      h4: Block,
+    },
+    listItem: {
+      bullet: BulletList,
+      number: NumberedList,
+    },
+    type: {
+      Image: Image,
+      ContactInfo: ContactInfo,
+      Logos: Logos,
+    },
+  }}
+/>

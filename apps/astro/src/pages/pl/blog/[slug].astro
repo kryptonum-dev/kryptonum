@@ -28,8 +28,8 @@ if (!blogPosts.find(({ slug }) => slug === slug)) return Astro.rewrite('/404')
 const page = await sanityFetch<{
   name: string
   hero: HeroProps
-  components: ComponentsProps
   content: ContentProps
+  components: ComponentsProps
 }>({
   query: `
     *[_type == 'BlogPost_Collection' && slug.current == $slug][0] {
