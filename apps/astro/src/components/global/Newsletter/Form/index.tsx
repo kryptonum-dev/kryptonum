@@ -58,8 +58,10 @@ export default function Form({ children, groupId, ...props }: { children: React.
     if (response.success) {
       setStatus('success');
       reset();
+      if (typeof fathom !== 'undefined') fathom.trackEvent('newsletter_subscribe');
     } else {
       setStatus('error');
+      if (typeof fathom !== 'undefined') fathom.trackEvent('newsletter_error');
     }
   };
 
