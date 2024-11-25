@@ -1,0 +1,395 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const ChartWithSimpleText_Query = `
+  _type == "ChartWithSimpleText" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+}
+
+const { index, sectionId, heading, paragraph } = Astro.props
+---
+
+<section class="ChartWithSimpleText" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+    <PortableText value={paragraph} />
+  </header>
+
+  <svg width="1394" height="293" viewBox="0 0 1394 293" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M1393 1L1383.33 11.4166C1373.67 21.8332 1354.33 42.6664 1335 65.1989C1315.67 87.7315 1296.33 111.963 1277 119.231C1257.67 126.499 1238.33 116.803 1219 98.2708C1199.67 79.7387 1180.33 52.3705 1161 52.4001C1141.67 52.4297 1122.33 79.8572 1103 97.3311C1083.67 114.805 1064.33 122.325 1045 122.027C1025.67 121.729 1006.33 113.612 987 121.464C967.667 129.316 948.333 153.136 929 148.725C909.667 144.315 890.333 111.673 871 118.422C851.667 125.172 832.333 171.313 813 194.688C793.667 218.063 774.333 218.671 755 206.85C735.667 195.029 716.333 170.779 697 155.302C677.667 139.826 658.333 133.123 639 149.441C619.667 165.758 600.333 205.095 581 225.688C561.667 246.281 542.333 248.131 523 248.543C503.667 248.955 484.333 247.929 465 251.892C445.667 255.856 426.333 264.809 407 269.601C387.667 274.393 368.333 275.023 349 265.282C329.667 255.541 310.333 235.428 291 230.571C271.667 225.714 252.333 236.113 233 252.338C213.667 268.563 194.333 290.614 175 291.661C155.667 292.707 136.333 272.749 117 271.038C97.6665 269.327 78.3332 285.863 58.9999 287.47C39.6665 289.077 20.3332 275.755 10.6665 269.094L1 262.434"
+      stroke="url(#paint0_linear_6585_18324)"
+      stroke-linecap="round"
+      class="chart">
+    </path>
+    <g class="currency" style={{ animationDelay: `0.2s` }}>
+      <rect x="278" y="211" width="6" height="6" rx="1" transform="rotate(45 278 211)" fill="#042B2B"></rect>
+      <path
+        d="M260 184.5C260 182.015 262.015 180 264.5 180H291.5C293.985 180 296 182.015 296 184.5V211.5C296 213.985 293.985 216 291.5 216H264.5C262.015 216 260 213.985 260 211.5V184.5Z"
+        fill="#042B2B">
+      </path>
+      <circle cx="278" cy="198" r="10" stroke="url(#paint1_linear_6585_18324)"></circle>
+      <path d="M278 203V203.5V204" stroke="url(#paint2_linear_6585_18324)" stroke-linecap="round"></path>
+      <path d="M278 192V192.5V193" stroke="url(#paint3_linear_6585_18324)" stroke-linecap="round"></path>
+      <path
+        d="M281 195.5C281 194.119 279.657 193 278 193C276.343 193 275 194.119 275 195.5C275 196.881 276.343 198 278 198C279.657 198 281 199.119 281 200.5C281 201.881 279.657 203 278 203C276.343 203 275 201.881 275 200.5"
+        stroke="url(#paint4_linear_6585_18324)"
+        stroke-linecap="round">
+      </path>
+      <circle
+        cx="278"
+        cy="230"
+        r="3"
+        fill="url(#paint5_linear_6585_18324)"
+        stroke="#000103"
+        stroke-width="2"
+        stroke-linecap="round">
+      </circle>
+    </g>
+    <g class="currency" style={{ animationDelay: `0.3s` }}>
+      <rect x="662" y="120" width="6" height="6" rx="1" transform="rotate(45 662 120)" fill="#042B2B"></rect>
+      <path
+        d="M644 93.5C644 91.0147 646.015 89 648.5 89H675.5C677.985 89 680 91.0147 680 93.5V120.5C680 122.985 677.985 125 675.5 125H648.5C646.015 125 644 122.985 644 120.5V93.5Z"
+        fill="#042B2B">
+      </path>
+      <circle cx="662" cy="107" r="10" stroke="url(#paint6_linear_6585_18324)"></circle>
+      <path d="M662 112V112.5V113" stroke="url(#paint7_linear_6585_18324)" stroke-linecap="round"></path>
+      <path d="M662 101V101.5V102" stroke="url(#paint8_linear_6585_18324)" stroke-linecap="round"></path>
+      <path
+        d="M665 104.5C665 103.119 663.657 102 662 102C660.343 102 659 103.119 659 104.5C659 105.881 660.343 107 662 107C663.657 107 665 108.119 665 109.5C665 110.881 663.657 112 662 112C660.343 112 659 110.881 659 109.5"
+        stroke="url(#paint9_linear_6585_18324)"
+        stroke-linecap="round">
+      </path>
+      <circle cx="662" cy="139" r="3" fill="#000103" stroke="url(#paint10_linear_6585_18324)" stroke-linecap="round">
+      </circle>
+    </g>
+    <g class="currency" style={{ animationDelay: `0.5s` }}>
+      <rect x="1161" y="32" width="6" height="6" rx="1" transform="rotate(45 1161 32)" fill="#042B2B"></rect>
+      <path
+        d="M1143 5.5C1143 3.01472 1145.01 1 1147.5 1H1174.5C1176.99 1 1179 3.01472 1179 5.5V32.5C1179 34.9853 1176.99 37 1174.5 37H1147.5C1145.01 37 1143 34.9853 1143 32.5V5.5Z"
+        fill="#042B2B">
+      </path>
+      <circle cx="1161" cy="19" r="10" stroke="url(#paint11_linear_6585_18324)"></circle>
+      <path d="M1161 24V24.5V25" stroke="url(#paint12_linear_6585_18324)" stroke-linecap="round"></path>
+      <path d="M1161 13V13.5V14" stroke="url(#paint13_linear_6585_18324)" stroke-linecap="round"></path>
+      <path
+        d="M1164 16.5C1164 15.1193 1162.66 14 1161 14C1159.34 14 1158 15.1193 1158 16.5C1158 17.8807 1159.34 19 1161 19C1162.66 19 1164 20.1193 1164 21.5C1164 22.8807 1162.66 24 1161 24C1159.34 24 1158 22.8807 1158 21.5"
+        stroke="url(#paint14_linear_6585_18324)"
+        stroke-linecap="round">
+      </path>
+      <circle
+        cx="1161"
+        cy="51"
+        r="3"
+        fill="url(#paint15_linear_6585_18324)"
+        stroke="#000103"
+        stroke-width="2"
+        stroke-linecap="round">
+      </circle>
+    </g>
+    <defs>
+      <linearGradient
+        id="paint0_linear_6585_18324"
+        x1="27.1"
+        y1="1.00008"
+        x2="1357.87"
+        y2="406.879"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint1_linear_6585_18324"
+        x1="287.625"
+        y1="188"
+        x2="266.811"
+        y2="189.326"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint2_linear_6585_18324"
+        x1="278.981"
+        y1="203"
+        x2="277.941"
+        y2="203.066"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint3_linear_6585_18324"
+        x1="278.981"
+        y1="192"
+        x2="277.941"
+        y2="192.066"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint4_linear_6585_18324"
+        x1="280.888"
+        y1="193"
+        x2="274.627"
+        y2="193.239"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint5_linear_6585_18324"
+        x1="280.887"
+        y1="227"
+        x2="274.643"
+        y2="227.398"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint6_linear_6585_18324"
+        x1="671.625"
+        y1="97"
+        x2="650.811"
+        y2="98.3258"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint7_linear_6585_18324"
+        x1="662.981"
+        y1="112"
+        x2="661.941"
+        y2="112.066"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint8_linear_6585_18324"
+        x1="662.981"
+        y1="101"
+        x2="661.941"
+        y2="101.066"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint9_linear_6585_18324"
+        x1="664.888"
+        y1="102"
+        x2="658.627"
+        y2="102.239"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint10_linear_6585_18324"
+        x1="664.887"
+        y1="136"
+        x2="658.643"
+        y2="136.398"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint11_linear_6585_18324"
+        x1="1170.62"
+        y1="9.00001"
+        x2="1149.81"
+        y2="10.3258"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint12_linear_6585_18324"
+        x1="1161.98"
+        y1="24"
+        x2="1160.94"
+        y2="24.0663"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint13_linear_6585_18324"
+        x1="1161.98"
+        y1="13"
+        x2="1160.94"
+        y2="13.0663"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint14_linear_6585_18324"
+        x1="1163.89"
+        y1="14"
+        x2="1157.63"
+        y2="14.2393"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+      <linearGradient
+        id="paint15_linear_6585_18324"
+        x1="1163.89"
+        y1="48"
+        x2="1157.64"
+        y2="48.3977"
+        gradientUnits="userSpaceOnUse">
+        <stop stop-color="#2DD282"></stop>
+        <stop offset="1" stop-color="#90F4E8"></stop>
+      </linearGradient>
+    </defs>
+  </svg>
+  <div class="lines">
+    {Array.from({ length: 10 }).map((_, i) => <div class="line" style={{ animationDelay: `${i * 0.1}s` }} />)}
+    <div class="glow"></div>
+  </div>
+</section>
+
+<style lang="scss">
+  .ChartWithSimpleText {
+    $paddingY: clamp(3rem, calc(5vw / 0.48), 7rem);
+    padding: $paddingY 0;
+    position: relative;
+    header {
+      max-width: 26rem;
+      margin: 0 auto;
+      .heading {
+        margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+      }
+    }
+    svg {
+      margin-top: -5%;
+      margin-left: calc(var(--page-margin) * -1);
+      margin-right: calc(var(--page-margin) * -1);
+      max-width: calc(100% + var(--page-margin) * 2);
+      @media (min-width: 84.875rem) {
+        margin-left: calc((100vw - 80.375rem) / -2);
+        margin-right: calc((100vw - 80.375rem) / -2);
+        width: 100vw;
+        max-width: 100vw;
+      }
+    }
+    .chart {
+      stroke-dasharray: 1673.2;
+      stroke-dashoffset: 1673.2;
+      will-change: stroke-dashoffset;
+      animation: ChartWithSimpleText-chart 2.5s var(--easing) both paused;
+      @keyframes ChartWithSimpleText-chart {
+        to {
+          stroke-dashoffset: 3346.4;
+        }
+      }
+    }
+    .currency {
+      animation: ChartWithSimpleText-currency 800ms var(--easing) both paused;
+      @keyframes ChartWithSimpleText-currency {
+        from {
+          transform: translateY(5%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+    }
+    .lines {
+      z-index: -1;
+      position: absolute;
+      padding: $paddingY 0;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: space-between;
+      pointer-events: none;
+      overflow: hidden;
+      .line {
+        height: 1px;
+        width: 100%;
+        background: var(--primary-gradient-900, #0b0f0d);
+        transform-origin: left;
+        animation: ChartWithSimpleText-lines 1300ms var(--easing) both paused;
+        @keyframes ChartWithSimpleText-lines {
+          from {
+            transform: scaleX(0);
+          }
+          to {
+            transform: scaleX(1);
+          }
+        }
+      }
+      .glow {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translate3d(-50%, 50%, 0);
+        width: 100%;
+        border-radius: 50%;
+        mix-blend-mode: plus-lighter;
+        filter: blur(64px);
+        max-width: 48rem;
+        aspect-ratio: 1 / 1;
+        background: var(--primary-gradient-900, #0b0f0d);
+        opacity: 0;
+        transition: opacity 1300ms 300ms var(--easing);
+      }
+    }
+    @media (max-width: 34rem) {
+      svg {
+        margin-left: -30%;
+        max-width: 160%;
+      }
+      .lines {
+        padding: 0;
+      }
+    }
+    &[data-active='true'] {
+      .chart,
+      .currency,
+      .lines .line {
+        animation-play-state: running;
+      }
+      .lines .glow {
+        opacity: 1;
+      }
+    }
+  }
+</style>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (isIntersecting) {
+          ;(target as HTMLElement).dataset.active = 'true'
+          observer.unobserve(target)
+        }
+      })
+    },
+    { rootMargin: '100% 0px -125% 0px' }
+  )
+  document.querySelectorAll<HTMLDivElement>('.ChartWithSimpleText').forEach((section) => observer.observe(section))
+</script>

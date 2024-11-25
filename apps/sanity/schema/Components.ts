@@ -38,6 +38,7 @@ import CompareTable from "./components/CompareTable";
 import Timeline from "./components/Timeline";
 import NetworkedShowcase from "./components/NetworkedShowcase";
 import Newsletter from "./components/Newsletter";
+import ChartWithSimpleText from "./components/ChartWithSimpleText";
 
 export default defineType({
   name: 'components',
@@ -83,6 +84,7 @@ export default defineType({
     Timeline,
     NetworkedShowcase,
     Newsletter,
+    ChartWithSimpleText,
   ],
   options: {
     insertMenu: {
