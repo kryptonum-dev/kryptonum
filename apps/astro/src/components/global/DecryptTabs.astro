@@ -301,7 +301,6 @@ const uniqueId = `DecryptTabs-${Math.random().toString(36).substring(2, 9)}`
   document.querySelectorAll<HTMLDivElement>('.DecryptTabs').forEach((section) => {
     const tabs = section.querySelectorAll<HTMLButtonElement>('[data-category-tab]')
     const tabContents = section.querySelectorAll<HTMLDivElement>('.content')
-
     const effects = Array.from(tabs).map((tab) => new DecryptEffect(tab))
     tabs.forEach((tab, tabIndex) => {
       tab.addEventListener('click', () => {
@@ -318,5 +317,6 @@ const uniqueId = `DecryptTabs-${Math.random().toString(36).substring(2, 9)}`
         })
       })
     })
+    tabs[0].click()
   })
 </script>
