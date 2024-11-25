@@ -39,6 +39,7 @@ import Timeline from "./components/Timeline";
 import NetworkedShowcase from "./components/NetworkedShowcase";
 import Newsletter from "./components/Newsletter";
 import ChartWithSimpleText from "./components/ChartWithSimpleText";
+import TabsText from "./components/TabsText";
 
 export default defineType({
   name: 'components',
@@ -85,6 +86,7 @@ export default defineType({
     NetworkedShowcase,
     Newsletter,
     ChartWithSimpleText,
+    TabsText,
   ],
   options: {
     insertMenu: {
