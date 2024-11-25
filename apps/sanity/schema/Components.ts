@@ -40,6 +40,7 @@ import NetworkedShowcase from "./components/NetworkedShowcase";
 import Newsletter from "./components/Newsletter";
 import ChartWithSimpleText from "./components/ChartWithSimpleText";
 import TabsText from "./components/TabsText";
+import DecryptTabs from "./components/DecryptTabs";
 
 export default defineType({
   name: 'components',
@@ -87,6 +88,7 @@ export default defineType({
     Newsletter,
     ChartWithSimpleText,
     TabsText,
+    DecryptTabs,
   ],
   options: {
     insertMenu: {

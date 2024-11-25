@@ -49,6 +49,7 @@ import NetworkedShowcase, { NetworkedShowcase_Query } from '@/components/global/
 import Newsletter, { Newsletter_Query } from '@/components/global/Newsletter/Newsletter.astro'
 import ChartWithSimpleText, { ChartWithSimpleText_Query } from '@/components/global/ChartWithSimpleText.astro'
 import TabsText, { TabsText_Query } from '@/components/global/TabsText.astro'
+import DecryptTabs, { DecryptTabs_Query } from '@/components/global/DecryptTabs.astro'
 
 const components = {
   SimpleCtaSection,
@@ -92,6 +93,7 @@ const components = {
   Newsletter,
   ChartWithSimpleText,
   TabsText,
+  DecryptTabs,
 }
 
 type ComponentsMap = {
@@ -154,6 +156,7 @@ export const Components_Query = /* groq */ `
     ${Newsletter_Query}
     ${ChartWithSimpleText_Query}
     ${TabsText_Query}
+    ${DecryptTabs_Query}
   },
 `
 ---

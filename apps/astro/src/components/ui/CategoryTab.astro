@@ -11,7 +11,7 @@ const { slug, isActive = false, ...props } = Astro.props
 const Element = slug ? 'a' : 'button'
 ---
 
-<Element {...slug ? { href: slug } : {}} aria-current={isActive ? 'true' : 'false'} {...props} data-category-tab>
+<Element {...slug ? { href: slug } : {}} aria-selected={isActive ? 'true' : 'false'} {...props} data-category-tab>
   <slot />
 </Element>
 
@@ -42,7 +42,7 @@ const Element = slug ? 'a' : 'button'
       transition: none;
       transform: scale(0.98);
     }
-    &[aria-current='true'] {
+    &[aria-selected='true'] {
       background:
         linear-gradient(266deg, #0b0f0d, #011310, #001f1b) padding-box,
         var(--primary-gradient-400) border-box;

@@ -122,8 +122,8 @@ const uniqueId = `tabs-${Math.random().toString(36).substring(2, 9)}`
 
     tabs.forEach((tab, tabIndex) => {
       tab.addEventListener('click', () => {
-        tabs.forEach((tab) => tab.removeAttribute('aria-current'))
-        tab.setAttribute('aria-current', 'true')
+        tabs.forEach((tab) => tab.removeAttribute('aria-selected'))
+        tab.setAttribute('aria-selected', 'true')
         tabContents.forEach((content, contentIndex) => {
           content.setAttribute('aria-hidden', contentIndex === tabIndex ? 'false' : 'true')
         })
