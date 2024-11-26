@@ -158,17 +158,6 @@ html {
   @media (prefers-reduced-motion) {
     scroll-behavior: none;
   }
-  &::-webkit-scrollbar {
-    width: 16px;
-  }
-  &::-webkit-scrollbar-thumb {
-    border-left: 14px solid var(--neutral-900, #000103);
-    background: var(--primary-gradient-400);
-  }
-  &::-webkit-scrollbar-thumb:horizontal {
-    border-left: none;
-    border-top: 14px solid var(--neutral-900, #000103);
-  }
 }
 body {
   min-width: 320px;
