@@ -29,7 +29,7 @@ type Props = {
   media: Array<
     | {
         _type: 'image'
-        image: ImageDataProps
+        asset: ImageDataProps
       }
     | {
         _type: 'video'
@@ -58,7 +58,7 @@ const isSingleMedia = media?.length === 1
         {media?.map((item, i) =>
           item._type === 'image' ? (
             <Image
-              {...(item as unknown as ImageDataProps)}
+              asset={item.asset as unknown as ImageDataProps['asset']}
               sizes={
                 isSingleMedia
                   ? '100vw'
@@ -67,6 +67,8 @@ const isSingleMedia = media?.length === 1
                     : '(max-width: 63rem) 100vw, 60vw'
               }
               class="item"
+              loading={index === 0 ? 'eager' : 'lazy'}
+              priority={index === 0 && (isSingleMedia || i === 1)}
             />
           ) : (
             <Video {...item.asset} hideControls={!item.hasUi} class="item" />
