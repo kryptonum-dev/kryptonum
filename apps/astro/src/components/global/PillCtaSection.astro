@@ -152,9 +152,13 @@ const { index, sectionId, image, heading, isEmail, email, cta, icon } = Astro.pr
     @media (max-width: 31rem) {
       header {
         margin-top: 0.5rem;
-        border-radius: 0.25rem;
         text-align: left;
         align-items: flex-start;
+      }
+      &:not(:has(.email)) {
+        header {
+          border-radius: 0.25rem;
+        }
       }
     }
   }
