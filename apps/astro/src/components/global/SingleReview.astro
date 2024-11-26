@@ -30,14 +30,14 @@ type Props = {
 const { index, sectionId, heading, review } = Astro.props
 ---
 
-<section class="SingleReview" id={sectionId} data-is-video={(!!review.video).toString()}>
+<section class="SingleReview" id={sectionId} data-is-video={(!!review?.video).toString()}>
   <header>
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="h2" />
   </header>
   <div class="line"></div>
   <article>
     {
-      review.video ? (
+      review?.video ? (
         <Video {...review.video} class="video" />
       ) : (
         <div class="avatar">
