@@ -1,0 +1,133 @@
+---
+import Image, { ImageDataQuery, type ImageDataProps } from '@/src/components/ui/image'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const ServicesNav_Query = `
+  "ServicesNav": {
+    "links": *[_type == 'Service_Collection' && slug.current match '/pl/' + $baseServicePath + '*'] | order(name asc) {
+      name,
+      "slug": slug.current,
+      ${ImageDataQuery('img')}
+    },
+    servicesNav {
+      ${PortableTextQuery('heading')}
+    },
+  },
+`
+
+export type ServicesNavProps = {
+  ServicesNav: {
+    servicesNav: {
+      heading: PortableTextValue
+    }
+    links: {
+      name: string
+      slug: string
+      img: ImageDataProps
+    }[]
+    currentSlug?: string
+  }
+}
+
+const { servicesNav, links, currentSlug } = Astro.props as ServicesNavProps['ServicesNav']
+---
+
+<nav class="ServicesNav">
+  <PortableText value={servicesNav.heading} heading="h2" class="heading" />
+  <ul class="list">
+    {
+      links?.map(({ name, slug, img }) => (
+        <li class="item">
+          <a href={slug} aria-current={currentSlug === slug}>
+            <Image {...img} sizes="128px" />
+            <p>{name}</p>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style lang="scss">
+  .ServicesNav {
+    @mixin flex-item($columns, $gap) {
+      width: calc((100% - ($gap * ($columns - 1))) / $columns);
+    }
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    max-width: 53rem;
+    margin: 0 auto;
+    .heading {
+      margin: 0 auto clamp(2rem, calc(3vw / 0.48), 3rem);
+      max-width: fit-content;
+    }
+    .list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      $gap: clamp(0.5rem, calc(1vw / 0.48), 1.25rem);
+      gap: $gap;
+      .item {
+        @include flex-item(2, $gap);
+        @media (max-width: 47rem) {
+          @include flex-item(1, $gap);
+        }
+        a {
+          font-size: var(--typography-body-m, 0.875rem);
+          display: grid;
+          grid-template-columns: auto 1fr;
+          align-items: center;
+          border-radius: 4px;
+          border: 1px solid rgba(5, 67, 45, 0.4);
+          background:
+            linear-gradient(266deg, #0b0f0d, #011310, #001f1b) padding-box,
+            linear-gradient(266deg, #05432d66, #05503566, #1f6644, #11353133) border-box;
+          border: 1px solid rgba(255, 255, 255, 0);
+          position: relative;
+          z-index: 1;
+          overflow: hidden;
+          img {
+            border-radius: 2px;
+            width: clamp(92px, calc(128vw / 7.68), 128px);
+            height: 100%;
+            border-right: 1px solid var(--primary-500, #064040);
+            aspect-ratio: 8 / 4.75;
+          }
+          p {
+            padding: 0.5rem clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+          }
+          &::before {
+            content: '';
+            height: 100%;
+            aspect-ratio: 1/1;
+            background-color: var(--primary-500, #064040);
+            filter: blur(32px);
+            position: absolute;
+            left: 62%;
+            top: 50%;
+            transform: translate3d(-50%, 0%, 0);
+            z-index: -1;
+            transition:
+              opacity 800ms var(--easing),
+              transform 800ms var(--easing);
+            opacity: 0;
+          }
+          &:hover,
+          &:focus-visible {
+            &::before {
+              opacity: 1;
+              transform: translate3d(-50%, -50%, 0);
+            }
+          }
+          &:active {
+            &::before {
+              transform: translate3d(-50%, -50%, 0) scale(2);
+            }
+          }
+          &[aria-current='true'] {
+            filter: grayscale(1);
+          }
+        }
+      }
+    }
+  }
+</style>
