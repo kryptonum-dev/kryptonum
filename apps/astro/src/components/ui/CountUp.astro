@@ -49,7 +49,7 @@ const value = await Astro.slots.render('default')
       if (isIntersecting) {
         const element = target as HTMLElement
         const numberElements = element.querySelectorAll<HTMLElement>('.number')
-        numberElements.forEach((numberElement) => animateValue(numberElement, 3000))
+        numberElements.forEach((numberElement) => animateValue(numberElement, 2500))
         observer.unobserve(element)
       }
     })
