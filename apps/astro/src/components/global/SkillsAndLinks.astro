@@ -123,7 +123,12 @@ const { index, sectionId, heading, list, paragraph, linksText, links } = Astro.p
             border: 1px solid var(--neutral-600, #4a4a57);
             display: grid;
             place-items: center;
-            transition: transform 500ms var(--easing);
+            transition:
+              transform 500ms var(--easing),
+              border-color 500ms var(--easing);
+            &:hover {
+              border-color: var(--neutral-500, #75758a);
+            }
             &:active {
               transition: none;
               transform: scale(0.98);
