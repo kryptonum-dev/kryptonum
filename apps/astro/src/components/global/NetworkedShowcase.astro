@@ -51,7 +51,7 @@ const generateTagsAnimation = (elements: number) => {
     const stepPercentage = 100 / elements
     const startPercent = index * stepPercentage
     const endPercent = (index + 1) * stepPercentage
-    const translateValue = `-${index * 1.75}rem`
+    const translateValue = `-${index * 1.5}rem`
     keyframesCSS += `
       ${startPercent}%, ${endPercent}% {
         transform: translateY(${translateValue});
@@ -181,56 +181,18 @@ const generateTagsAnimation = (elements: number) => {
       .wrapper {
         display: flex;
         flex-wrap: wrap;
+        align-items: center;
         gap: 0.38rem 0.75rem;
         margin-bottom: 2rem;
         .tags {
           font-size: var(--typography-body-s, 0.75rem);
-          height: 1.75rem;
+          height: 1.5rem;
           overflow: hidden;
           .tags-slider {
             display: inline-flex;
             flex-direction: column;
-            animation: welcome 5s infinite;
-            @keyframes welcome {
-              0%,
-              5% {
-                transform: translateY(0);
-              }
-              12%,
-              17% {
-                transform: translateY(-1.75rem);
-              }
-              24%,
-              29% {
-                transform: translateY(-3.5rem);
-              }
-              36%,
-              41% {
-                transform: translateY(-5.25rem);
-              }
-              48%,
-              53% {
-                transform: translateY(-7rem);
-              }
-              60%,
-              65% {
-                transform: translateY(-8.75rem);
-              }
-              72%,
-              77% {
-                transform: translateY(-10.5rem);
-              }
-              84%,
-              89% {
-                transform: translateY(-12.25rem);
-              }
-              96%,
-              100% {
-                transform: translateY(-14rem);
-              }
-            }
             p {
-              height: 1.75rem;
+              height: 1.5rem;
               display: grid;
               place-items: center;
             }
