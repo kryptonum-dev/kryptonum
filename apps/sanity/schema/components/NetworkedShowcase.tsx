@@ -56,6 +56,20 @@ export default defineField({
       initialValue: true,
     }),
     defineField({
+      name: 'scrollToSectionId',
+      type: 'string',
+      title: 'Scroll to section ID (optional)',
+      description: 'If you will do not set that, the link will be to the Google rating page. If you will set that, the link will scroll to the section with that ID.',
+      hidden: ({ parent }) => !parent?.showRating,
+      validation: Rule => Rule.custom((value, context) => {
+        const showRating = (context.parent as { showRating?: boolean })?.showRating;
+        if (showRating && value && !value?.startsWith('#')) {
+          return 'Scroll to section ID must start with "#" symbol';
+        }
+        return true;
+      }),
+    }),
+    defineField({
       name: 'pages',
       type: 'array',
       title: '4 linked services pages',

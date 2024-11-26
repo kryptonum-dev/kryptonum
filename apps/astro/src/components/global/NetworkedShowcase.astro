@@ -11,6 +11,7 @@ export const NetworkedShowcase_Query = `
     ${PortableTextQuery('paragraph')}
     ${ButtonDataQuery('ctas[]')}
     showRating,
+    scrollToSectionId,
     "googleData": *[_type == "global"][0].googleData {
       rating,
       url,
@@ -32,6 +33,7 @@ type Props = {
   paragraph: PortableTextValue
   ctas: ButtonDataProps[]
   showRating: boolean
+  scrollToSectionId?: string
   googleData: {
     rating: number
     url: string
@@ -43,7 +45,21 @@ type Props = {
   }[]
 }
 
-const { index, sectionId, tags, status, heading, paragraph, ctas, showRating, googleData, pages } = Astro.props
+const {
+  index,
+  sectionId,
+  tags,
+  status,
+  heading,
+  paragraph,
+  ctas,
+  showRating,
+  scrollToSectionId: _scrollToSectionId,
+  googleData,
+  pages,
+} = Astro.props
+
+const reviewUrl = _scrollToSectionId ?? googleData.url
 
 const generateTagsAnimation = (elements: number) => {
   let keyframesCSS = `@keyframes NetworkedShowcase_Tags {`
@@ -88,7 +104,14 @@ const generateTagsAnimation = (elements: number) => {
       {ctas?.map((cta) => <Button {...cta} />)}
       {
         showRating && (
-          <a class="rating" href={googleData.url} target="_blank" rel="noopener" aria-label="Sprawdź opinie w Google">
+          <a
+            class="rating"
+            href={reviewUrl}
+            {...(!_scrollToSectionId && {
+              target: '_blank',
+              rel: 'noopener',
+              ariaLabel: 'Sprawdź opinie w Google',
+            })}>
             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="none" viewBox="0 0 17 17">
               <path
                 fill="#4280EF"
@@ -249,6 +272,7 @@ const generateTagsAnimation = (elements: number) => {
         min-height: 2.75rem;
         margin: -0.84375rem 0;
         justify-content: center;
+        justify-self: center;
         display: inline-flex;
         align-items: center;
         font-size: var(--typography-body-s, 0.75rem);
