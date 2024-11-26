@@ -270,6 +270,138 @@ export default defineField({
           },
         }),
       ],
+      initialValue: {
+        "error": {
+          "heading": [
+            {
+              "_key": "8a0d68722eaf",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "b0c030ee3f460",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "Jeden z serwerów ma czkawkę"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            }
+          ],
+          "paragraph": [
+            {
+              "_key": "ebb0292e568a",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "640c8ab70cba0",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "Przed nami "
+                },
+                {
+                  "_key": "4ca42746bcfd",
+                  "_type": "span",
+                  "marks": [
+                    "strong"
+                  ],
+                  "text": "akcja ratunkowa"
+                },
+                {
+                  "_key": "92907358ee5d",
+                  "_type": "span",
+                  "marks": [],
+                  "text": ", a przed Tobą 2 opcje: spróbuj wysłać formularz ponownie lub napisz bezpośrednio na adres e-mail."
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            }
+          ]
+        },
+        "success": {
+          "heading": [
+            {
+              "_key": "4b59f811d0a8",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "539e16d1343b0",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "Mamy to! Twój formularz właśnie do nas "
+                },
+                {
+                  "_key": "6521ab7a4b15",
+                  "_type": "span",
+                  "marks": [
+                    "strong"
+                  ],
+                  "text": "trafił"
+                },
+                {
+                  "_key": "67a84f3d88ed",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "!"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            }
+          ],
+          "link": {
+            "heading": "A w międzyczasie…",
+            "icon": {
+              "_type": "image",
+              "asset": {
+                "_ref": "image-bd39fb7c435c3124f2f31c7abe7a4c0ae1b38fda-17x16-svg",
+                "_type": "reference"
+              }
+            },
+            "img": {
+              "_type": "image",
+              "asset": {
+                "_ref": "image-7368db51b5b1ab9b9b9cc5c11b660ca4927bbf92-161x202-webp",
+                "_type": "reference"
+              }
+            },
+            "paragraph": "Sprawdź co się dzieje na naszych socialach",
+            "url": "https://www.linkedin.com/company/kryptonum"
+          },
+          "paragraph": [
+            {
+              "_key": "ab95362f4845",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "b1c1d6105cb50",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "Daj nam "
+                },
+                {
+                  "_key": "259738a349a5",
+                  "_type": "span",
+                  "marks": [
+                    "strong"
+                  ],
+                  "text": "max 24 h"
+                },
+                {
+                  "_key": "8f80001bbf8f",
+                  "_type": "span",
+                  "marks": [],
+                  "text": " – odpowiemy na Twojego maila."
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            }
+          ]
+        }
+      },
+      validation: Rule => Rule.required(),
     }),
     ...sectionId,
   ],
