@@ -272,7 +272,7 @@ const uniqueId = `DecryptTabs-${Math.random().toString(36).substring(2, 9)}`
       this.encryptedText = element.textContent || ''
       this.currentAnimation = null
     }
-    animate(isActive: boolean) {
+    animate() {
       if (this.currentAnimation) {
         clearInterval(this.currentAnimation)
       }
@@ -283,7 +283,7 @@ const uniqueId = `DecryptTabs-${Math.random().toString(36).substring(2, 9)}`
         const chars = [...this.element.textContent!]
         positions.forEach((pos) => {
           if (step === STEPS - 1) {
-            chars[pos] = isActive ? this.originalText[pos] : '_'
+            chars[pos] = this.originalText[pos]
           } else {
             chars[pos] = CHARS[Math.floor(Math.random() * CHARS.length)]
           }
@@ -305,13 +305,13 @@ const uniqueId = `DecryptTabs-${Math.random().toString(36).substring(2, 9)}`
     tabs.forEach((tab, tabIndex) => {
       tab.addEventListener('click', () => {
         tabs.forEach((otherTab, otherIndex) => {
-          if (otherTab !== tab && otherTab.getAttribute('aria-selected') === 'true') {
-            effects[otherIndex].animate(false)
+          if (otherTab !== tab) {
+            otherTab.removeAttribute('aria-selected')
+            otherTab.textContent = effects[otherIndex].encryptedText
           }
-          otherTab.removeAttribute('aria-selected')
         })
         tab.setAttribute('aria-selected', 'true')
-        effects[tabIndex].animate(true)
+        effects[tabIndex].animate()
         tabContents.forEach((content, contentIndex) => {
           content.setAttribute('aria-hidden', contentIndex === tabIndex ? 'false' : 'true')
         })
