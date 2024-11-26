@@ -41,6 +41,7 @@ import Newsletter from "./components/Newsletter";
 import ChartWithSimpleText from "./components/ChartWithSimpleText";
 import TabsText from "./components/TabsText";
 import DecryptTabs from "./components/DecryptTabs";
+import TagsLine from "./components/TagsLine";
 
 export default defineType({
   name: 'components',
@@ -89,6 +90,7 @@ export default defineType({
     ChartWithSimpleText,
     TabsText,
     DecryptTabs,
+    TagsLine,
   ],
   options: {
     insertMenu: {

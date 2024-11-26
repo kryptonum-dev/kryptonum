@@ -1,0 +1,61 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+
+export const TagsLine_Query = `
+  _type == "TagsLine" => {
+    ${PortableTextQuery('heading')}
+    tags[],
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  tags: string[]
+}
+
+const { index, sectionId, heading, tags } = Astro.props
+---
+
+<section class="TagsLine" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+  </header>
+  <ul>
+    {tags.map((tag) => <li>{tag}</li>)}
+  </ul>
+</section>
+
+<style lang="scss">
+  .TagsLine {
+    padding: clamp(3rem, calc(5vw / 0.48), 6rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 2.66fr;
+    gap: clamp(2rem, calc(3vw / 0.48), 5rem);
+    ul {
+      margin-left: auto;
+      max-width: 46rem;
+      display: flex;
+      flex-wrap: wrap;
+      row-gap: clamp(0.5rem, calc(0.75vw / 0.48), 0.75rem);
+      li {
+        padding: 1rem;
+        border-top: 1px solid var(--primary-500, #064040);
+        border-bottom: 1px solid var(--primary-500, #064040);
+      }
+    }
+    @media (max-width: 62rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      grid-template-columns: 1fr;
+      ul {
+        max-width: unset;
+        margin-left: 0;
+        li {
+          flex-grow: 1;
+        }
+      }
+    }
+  }
+</style>
