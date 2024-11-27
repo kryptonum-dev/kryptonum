@@ -112,10 +112,14 @@ const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
                 </div>
                 <div class="content">
                   <Subheading class="name">{name}</Subheading>
-                  <p class="headline formalHeadline">{formalHeadline}</p>
-                  <p class="headline" aria-hidden="true">
-                    {headline}
-                  </p>
+                  {(withTabs && tabs) ? (
+                    <p class="headline">{formalHeadline}</p>
+                    <p class="headline" aria-hidden="true">
+                      {headline}
+                    </p>
+                  ) : (
+                    <p class="headline">{headline}</p>
+                  )}
                 </div>
               </a>
             </li>
