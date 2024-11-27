@@ -64,7 +64,12 @@ const { index, sectionId, heading, img, items, annotation } = Astro.props
         )
       }
     </div>
-    <Image {...img} sizes="(max-width: 48rem) 100vw, (max-width: 69rem) 38rem, 60vw" priority={index === 0} />
+    <Image
+      {...img}
+      sizes="(max-width: 48rem) 100vw, (max-width: 69rem) 38rem, 60vw"
+      priority={index === 0}
+      class="img"
+    />
   </div>
 </section>
 
@@ -106,7 +111,7 @@ const { index, sectionId, heading, img, items, annotation } = Astro.props
           margin-top: clamp(1rem, calc(2vw / 0.48), 2rem);
         }
       }
-      img {
+      .img {
         position: sticky;
         top: 3rem;
         border-radius: 0.25rem;
@@ -130,7 +135,7 @@ const { index, sectionId, heading, img, items, annotation } = Astro.props
       margin: 0 auto;
       .column {
         grid-template-columns: 1fr;
-        img {
+        .img {
           position: static;
           order: -1;
         }
