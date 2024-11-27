@@ -59,6 +59,8 @@ type Props = {
 const { index, sectionId, heading, paragraph, cta, withTabs, tabs, people } = Astro.props
 
 const Subheading = index === 0 ? 'h2' : 'h3'
+
+const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
 ---
 
 <section class="TeamIntroduction" id={sectionId} data-with-tabs={withTabs.toString()}>
@@ -71,12 +73,29 @@ const Subheading = index === 0 ? 'h2' : 'h3'
     {
       withTabs && tabs && (
         <div class="tab-section">
-          <div class="tabs">
-            <CategoryTab isActive={true}>{tabs.tab1.tab}</CategoryTab>
-            <CategoryTab>{tabs.tab2.tab}</CategoryTab>
+          <div class="tabs" role="tablist">
+            <CategoryTab role="tab" isActive={true} id={`${uniqueId}-tab1`} aria-controls={`${uniqueId}-tab1-content`}>
+              {tabs.tab1.tab}
+            </CategoryTab>
+            <CategoryTab role="tab" id={`${uniqueId}-tab2`} aria-controls={`${uniqueId}-tab2-content`}>
+              {tabs.tab2.tab}
+            </CategoryTab>
           </div>
-          <PortableText value={tabs.tab1.paragraph} class="tab-content tab1" />
-          <PortableText value={tabs.tab2.paragraph} class="tab-content tab2" aria-hidden="true" />
+          <PortableText
+            value={tabs.tab1.paragraph}
+            class="tab-content tab1"
+            role="tabpanel"
+            id={`${uniqueId}-tab1-content`}
+            aria-labelledby={`${uniqueId}-tab1`}
+          />
+          <PortableText
+            value={tabs.tab2.paragraph}
+            class="tab-content tab2"
+            role="tabpanel"
+            id={`${uniqueId}-tab2-content`}
+            aria-labelledby={`${uniqueId}-tab2`}
+            aria-hidden="true"
+          />
         </div>
       )
     }
