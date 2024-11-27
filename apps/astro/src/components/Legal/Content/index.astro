@@ -26,6 +26,9 @@ const { headings, content } = Astro.props as ContentProps
 </article>
 
 <style lang="scss">
+  :global(html) {
+    scroll-padding-top: 123px;
+  }
   .content {
     display: grid;
     grid-template-columns: 1fr 2.66fr;
