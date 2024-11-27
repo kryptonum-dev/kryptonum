@@ -105,15 +105,8 @@ const listItems = list?.length || 0
         :global(summary) {
           grid-template-columns: clamp(1.5rem, calc(2vw / 0.48), 3rem) 1fr auto;
           &::before {
-            content: counter(item);
+            content: counter(item, decimal-leading-zero);
             color: var(--neutral-400, #c6cdcc);
-          }
-        }
-        &:nth-child(-n + 9) {
-          :global(summary) {
-            &::before {
-              content: '0' counter(item);
-            }
           }
         }
         :global(.content) {

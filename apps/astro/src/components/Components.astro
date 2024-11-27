@@ -51,6 +51,7 @@ import ChartWithSimpleText, { ChartWithSimpleText_Query } from '@/components/glo
 import TabsText, { TabsText_Query } from '@/components/global/TabsText.astro'
 import DecryptTabs, { DecryptTabs_Query } from '@/components/global/DecryptTabs.astro'
 import TagsLine, { TagsLine_Query } from '@/components/global/TagsLine.astro'
+import StagesAccordion, { StagesAccordion_Query } from '@/components/global/StagesAccordion.astro'
 
 const components = {
   SimpleCtaSection,
@@ -96,6 +97,7 @@ const components = {
   TabsText,
   DecryptTabs,
   TagsLine,
+  StagesAccordion,
 }
 
 type ComponentsMap = {
@@ -160,6 +162,7 @@ export const Components_Query = /* groq */ `
     ${TabsText_Query}
     ${DecryptTabs_Query}
     ${TagsLine_Query}
+    ${StagesAccordion_Query}
   },
 `
 ---

@@ -108,10 +108,12 @@ const { summary, ...props } = Astro.props
     }
   }
   @media (max-width: 31rem) {
-    summary,
-    .content {
+    summary {
       padding-left: 0;
       padding-right: 0;
+    }
+    .content {
+      margin: 0;
     }
   }
 </style>

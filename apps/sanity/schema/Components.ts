@@ -42,6 +42,7 @@ import ChartWithSimpleText from "./components/ChartWithSimpleText";
 import TabsText from "./components/TabsText";
 import DecryptTabs from "./components/DecryptTabs";
 import TagsLine from "./components/TagsLine";
+import StagesAccordion from "./components/StagesAccordion";
 
 export default defineType({
   name: 'components',
@@ -91,6 +92,7 @@ export default defineType({
     TabsText,
     DecryptTabs,
     TagsLine,
+    StagesAccordion,
   ],
   options: {
     insertMenu: {
