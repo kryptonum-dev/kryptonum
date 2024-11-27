@@ -33,10 +33,10 @@ const listItems = list?.length || 0
   <header>
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
   </header>
-  <div class="list">
+  <div class="list" role="feed" aria-busy="false">
     {
       list?.map(({ question, answer }, index) => (
-        <Accordion summary={question} style={index >= visibleItems ? 'display: none;' : ''} class="item">
+        <Accordion summary={question} class="item" hidden={index >= visibleItems}>
           <PortableText value={answer} />
         </Accordion>
       ))
@@ -53,9 +53,9 @@ const listItems = list?.length || 0
             <div style={`transform: scaleX(${visibleItems / listItems})`} class="progress-bar" />
           </div>
         </div>
-        <button>
+        <button aria-label={`Wczytaj więcej. Pokazano ${visibleItems} z ${listItems} elementów`}>
           Wczytaj więcej
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none">
             <path
               stroke="url(#faq-load)"
               stroke-linecap="round"
@@ -199,6 +199,7 @@ const listItems = list?.length || 0
 </style>
 
 <script>
+  const ITEMS_PER_LOAD = 10
   document.querySelectorAll('.Faq').forEach((section) => {
     const loadMoreContainer = section.querySelector('.load-more')!
     if (!loadMoreContainer) return
@@ -212,12 +213,14 @@ const listItems = list?.length || 0
 
     loadMoreBtn.addEventListener('click', () => {
       if (visibleItems < totalItems) {
-        for (let i = visibleItems; i < Math.min(visibleItems + 2, totalItems); i++) {
-          items[i].style.display = ''
+        for (let i = visibleItems; i < Math.min(visibleItems + ITEMS_PER_LOAD, totalItems); i++) {
+          items[i].hidden = false
         }
-        visibleItems = Math.min(visibleItems + 2, totalItems)
+        visibleItems = Math.min(visibleItems + ITEMS_PER_LOAD, totalItems)
         progressBar.style.transform = `scaleX(${visibleItems / totalItems})`
         tooltip.style.transform = `translateX(${(visibleItems / totalItems) * 130}px)`
+
+        loadMoreBtn.setAttribute('aria-label', `Wczytaj więcej. Pokazano ${visibleItems} z ${totalItems} elementów`)
         if (visibleItems >= totalItems) {
           loadMoreContainer.remove()
         }
