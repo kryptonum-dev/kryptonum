@@ -103,7 +103,7 @@ const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
   <div class="people">
     {
       Array.from({ length: 2 }).map((_, index) => (
-        <ul aria-hidden={index === 1} inert={index === 1} style={`animation-duration: ${people?.length * 3}s;`}>
+        <ul aria-hidden={index === 1} style={`animation-duration: ${people?.length * 3}s;`}>
           {people?.map(({ slug, img, name, headline, formalHeadline }) => (
             <li class="person">
               <a href={slug}>
