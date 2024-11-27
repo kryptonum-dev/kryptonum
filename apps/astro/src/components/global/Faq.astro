@@ -201,6 +201,23 @@ const listItems = list?.length || 0
 <script>
   const ITEMS_PER_LOAD = 10
   document.querySelectorAll('.Faq').forEach((section) => {
+    let currentlyOpened: HTMLDetailsElement | null = null
+    const accordions = section.querySelectorAll('details')
+    accordions.forEach((details) => {
+      details.addEventListener('toggle', () => {
+        if (details.open) {
+          currentlyOpened = details
+          accordions.forEach((otherDetails) => {
+            if (currentlyOpened !== otherDetails && otherDetails.open) {
+              otherDetails.querySelector('summary')?.click()
+            }
+          })
+        } else {
+          currentlyOpened = null
+        }
+      })
+    })
+
     const loadMoreContainer = section.querySelector('.load-more')!
     if (!loadMoreContainer) return
     let visibleItems = 10
