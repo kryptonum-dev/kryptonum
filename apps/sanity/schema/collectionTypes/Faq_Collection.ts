@@ -13,7 +13,8 @@ export default defineType({
   fields: [
     defineField({
       name: 'question',
-      type: 'Heading',
+      type: 'text',
+      rows: 2,
       title: 'Pytanie',
       validation: Rule => Rule.required(),
     }),

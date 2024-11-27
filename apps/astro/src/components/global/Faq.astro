@@ -6,7 +6,7 @@ export const Faq_Query = `
   _type == "Faq" => {
     ${PortableTextQuery('heading')}
     list[] -> {
-      ${PortableTextQuery('question')}
+      question,
       ${PortableTextQuery('answer')}
     }
   },
@@ -17,7 +17,7 @@ type Props = {
   sectionId?: string
   heading: PortableTextValue
   list: {
-    question: PortableTextValue
+    question: string
     answer: PortableTextValue
   }[]
   hasLargeText?: boolean
