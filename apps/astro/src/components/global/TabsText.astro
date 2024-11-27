@@ -28,7 +28,7 @@ type Props = {
 
 const { index, sectionId, heading, paragraph, tabsHeading, tabs } = Astro.props
 
-const uniqueId = `tabs-${Math.random().toString(36).substring(2, 9)}`
+const uniqueId = `TabsText-${crypto.randomUUID().slice(0, 5)}`
 ---
 
 <section class="TabsText" id={sectionId}>
