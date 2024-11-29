@@ -106,7 +106,7 @@ const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
         <ul aria-hidden={index === 1} style={`animation-duration: ${people?.length * 3}s;`}>
           {people?.map(({ slug, img, name, headline, formalHeadline }) => (
             <li class="person">
-              <a href={slug}>
+              <a href={slug} tabindex={index === 1 ? '-1' : '0'}>
                 <div class="img">
                   <Image {...img} sizes="186px" />
                 </div>
