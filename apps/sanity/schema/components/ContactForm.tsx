@@ -83,14 +83,19 @@ export default defineField({
       name: 'emailText',
       type: 'string',
       title: 'Text',
-      validation: Rule => Rule.required(),
+      hidden: ({ parent }) => parent?.variant === 'form-with-list',
+      validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
+        if (variant === 'form-with-person' && !value) return 'Email text is required';
+        return true;
+      }),
       fieldset: 'email',
     }),
     defineField({
       name: 'email',
       type: 'string',
       title: 'Email Adress',
-      hidden: ({ parent }) => parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
         const isReference = (context.parent as { isReference: boolean })?.isReference;
         if (isReference) return true;
@@ -103,14 +108,19 @@ export default defineField({
       name: 'telText',
       type: 'string',
       title: 'Text',
-      validation: Rule => Rule.required(),
+      hidden: ({ parent }) => parent?.variant === 'form-with-list',
+      validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
+        if (variant === 'form-with-person' && !value) return 'Tel text is required';
+        return true;
+      }),
       fieldset: 'tel',
     }),
     defineField({
       name: 'tel',
       type: 'string',
       title: 'Phone number',
-      hidden: ({ parent }) => parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
       fieldset: 'tel',
     }),
     defineField({
