@@ -1,6 +1,7 @@
 ---
 import { PortableText } from 'astro-portabletext'
 import type { PortableTextProps } from 'astro-portabletext/types'
+import Mark from '@/components/ui/portable-text/Mark.astro'
 import Normal from './Normal.astro'
 import Block from './Block.astro'
 import BulletList from './BulletList.astro'
@@ -20,6 +21,15 @@ import Faq, { Faq_Query } from './Faq.astro'
 export const ContentPT_Query = `
   content[] {
     ...,
+    "markDefs": coalesce(markDefs[] {
+      ...,
+      _type == "link" => {
+        _type,
+        _key,
+        linkType,
+        "href": select(linkType == "internal" => internal -> slug.current, linkType == "external" => external, "#"),
+      },
+    }, []),
     ${Image_Query}
     ${Video_Query}
     ${Author_Query}
@@ -46,6 +56,7 @@ const { value } = Astro.props
 <PortableText
   value={value}
   components={{
+    mark: Mark,
     block: {
       normal: Normal,
       h2: Block,

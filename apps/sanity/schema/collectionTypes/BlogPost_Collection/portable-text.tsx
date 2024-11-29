@@ -66,7 +66,8 @@ export default defineField({
                   layout: 'radio',
                   direction: 'horizontal',
                 },
-                initialValue: 'external',
+                initialValue: 'internal',
+                validation: Rule => Rule.required(),
               }),
               defineField({
                 name: 'external',
