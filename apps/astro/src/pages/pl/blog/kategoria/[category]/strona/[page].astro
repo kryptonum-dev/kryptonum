@@ -70,7 +70,7 @@ const metadata = await metadataFetch(category.slug)
 ---
 
 <Layout
-  title={`${metadata.title} | Strona ${page}`}
+  title={`${metadata.title} | Strona ${currentPage}`}
   description={metadata.description}
   openGraphImage={metadata.openGraphImage}
   path={Astro.url.pathname}>
