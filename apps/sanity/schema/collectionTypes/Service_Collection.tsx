@@ -83,6 +83,18 @@ export default defineType({
       }),
     }),
     defineField({
+      name: 'icon',
+      type: 'image',
+      title: 'Icon',
+      description: 'Icon is used to identify the service. It will be used in Footer. It have to be an SVG.',
+      hidden: ({ parent }) => parent?.hasMainPage,
+      validation: Rule => Rule.custom((value, context) => {
+        const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
+        if (!hasMainPage && !value) return 'Icon is required.';
+        return true;
+      }),
+    }),
+    defineField({
       name: 'img',
       type: 'image',
       title: 'Featured Image',
