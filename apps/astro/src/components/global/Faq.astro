@@ -33,7 +33,7 @@ const listItems = list?.length || 0
   <header>
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
   </header>
-  <div class="list" role="feed" aria-busy="false">
+  <div class="list">
     {
       list?.map(({ question, answer }, index) => (
         <Accordion summary={question} class="item" hidden={index >= visibleItems}>
