@@ -6,6 +6,8 @@ import sanityFetch from '@/utils/sanity.fetch'
 import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import ScrollToNextPage from '@/src/components/ui/ScrollToNextPage.astro'
 
 export async function getStaticPaths() {
   const pages = await sanityFetch<{ slug: string }[]>({
@@ -24,11 +26,31 @@ const slug = `${slugPrefix}${_slug}`
 const page = await sanityFetch<{
   name: string
   components: ComponentsProps
+  ScrollToNextPage: {
+    name: string
+    slug: string
+    img: ImageDataProps
+    headline: string
+  }
 }>({
   query: `
     *[_type == 'TeamMember_Collection' && slug.current == $slug][0] {
       name,
       ${Components_Query}
+      "ScrollToNextPage": coalesce(
+        *[_type == 'TeamMember_Collection' && _createdAt > ^._createdAt] | order(_createdAt)[0] {
+          name,
+          "slug": slug.current,
+          ${ImageDataQuery('img')}
+          headline,
+        },
+        *[_type == 'TeamMember_Collection'] | order(_createdAt)[0] {
+          name,
+          "slug": slug.current,
+          ${ImageDataQuery('img')}
+          headline,
+        }
+      )
     }
   `,
   params: { slug: slug },
@@ -46,4 +68,38 @@ const metadata = await metadataFetch(slug)
     ]}
   />
   <Components data={page.components} />
+  <ScrollToNextPage slot="ScrollToNextPage" path={page.ScrollToNextPage.slug} data-element="ScrollToNextPage">
+    <h2>❧ Scrolluj, by przejść do <strong>następnej osoby</strong></h2>
+    <div class="person">
+      <Image {...page.ScrollToNextPage.img} sizes="64px" class="gradient-thumbnail" />
+      <div>
+        <p class="name">{page.ScrollToNextPage.name}</p>
+        <p class="headline">{page.ScrollToNextPage.headline}</p>
+      </div>
+    </div>
+  </ScrollToNextPage>
 </Layout>
+
+<style lang="scss">
+  [data-element='ScrollToNextPage'] {
+    h2 {
+      margin: 0 auto 1rem;
+      text-align: center;
+    }
+    .person {
+      margin: 0 auto;
+      width: fit-content;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+      align-items: center;
+      img {
+        width: 64px;
+        height: 64px;
+      }
+      .headline {
+        font-size: var(--typography-body-m, 0.875rem);
+      }
+    }
+  }
+</style>

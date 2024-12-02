@@ -285,6 +285,7 @@ const cities = [
     </div>
     <Socials class="socials" />
     <p class="copyright">&copy; {new Date().getFullYear()} Kryptonum</p>
+    <div class="blur"></div>
   </div>
 </footer>
 
@@ -503,14 +504,37 @@ const cities = [
         linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
         linear-gradient(266deg, rgba(5, 67, 45, 0.4), rgba(5, 80, 53, 0.4), #1f6644, rgba(17, 53, 49, 0.2)) border-box;
       border-top: 1px solid rgba(0, 0, 0, 0);
-      z-index: 1;
-      position: relative;
-      overflow: hidden;
       display: grid;
       gap: 1.5rem;
       align-items: center;
       grid-template-columns: 1fr 1fr 1fr;
       color: var(--neutral-400, #c6cdcc);
+      position: relative;
+      z-index: 1;
+      .blur {
+        overflow: hidden;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        height: 200%;
+        z-index: -1;
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translate3d(-50%, -50%, 0);
+          width: 80%;
+          max-width: 23.5rem;
+          aspect-ratio: 1/1;
+          border-radius: 50%;
+          border-radius: 23.5rem;
+          background: var(--primary-gradient-900);
+          mix-blend-mode: plus-lighter;
+          filter: blur(64px);
+        }
+      }
       a {
         transition: color 500ms var(--easing);
         &:hover {
@@ -544,22 +568,6 @@ const cities = [
         .legal {
           margin-top: 1rem;
         }
-      }
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translate3d(-50%, -50%, 0);
-        width: 80%;
-        max-width: 23.5rem;
-        aspect-ratio: 1/1;
-        border-radius: 50%;
-        border-radius: 23.5rem;
-        background: var(--primary-gradient-900);
-        mix-blend-mode: plus-lighter;
-        filter: blur(64px);
-        z-index: -1;
       }
     }
     @media (max-width: 72rem) {

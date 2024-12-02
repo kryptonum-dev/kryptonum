@@ -157,6 +157,9 @@ html {
   @media (prefers-reduced-motion) {
     scroll-behavior: none;
   }
+  &.no-scroll {
+    overflow: hidden;
+  }
 }
 body {
   min-width: 320px;
