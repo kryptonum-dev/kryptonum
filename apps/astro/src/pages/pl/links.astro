@@ -63,12 +63,6 @@ const page = await sanityFetch<{
     socials: {
       socialTitle: string
       socialText: string
-      links: {
-        instagram: string
-        facebook: string
-        tiktok: string
-        linkedin: string
-      }
     }
   }
 }>({
@@ -130,12 +124,6 @@ const page = await sanityFetch<{
         "socials": {
           socialTitle,
           socialText,
-          "links": *[_type == "global"][0].socials {
-            instagram,
-            facebook,
-            tiktok,
-            linkedin,
-          },
         },
       },
     }
@@ -331,7 +319,7 @@ const page = await sanityFetch<{
       <div class="social">
         <p class="label-text">{page.contact.socials.socialTitle}</p>
         <p>{page.contact.socials.socialText}</p>
-        <Socials socials={page.contact.socials.links} class="links" />
+        <Socials class="links" />
       </div>
     </div>
   </div>
