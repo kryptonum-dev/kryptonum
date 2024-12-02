@@ -2,6 +2,7 @@
 import '@/global/global.scss'
 import { LOCALE } from '../global/constants'
 import Head, { type HeadProps } from './Head.astro'
+import Footer from '@/components/Layout/Footer.astro'
 import Toast from '@/components/ui/Toast/index.astro'
 
 type Props = HeadProps
@@ -20,6 +21,7 @@ const { ...props } = Astro.props
     <main id="main">
       <slot />
     </main>
+    <Footer />
     <Toast />
   </body>
 </html>

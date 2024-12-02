@@ -1,6 +1,5 @@
 import { defineField, defineType } from "sanity";
 import { defineSlugForDocument } from "../../utils/define-slug-for-document";
-import { TextInput } from "sanity";
 
 const name = 'CaseStudy_Collection';
 const title = 'Case Study Collection';

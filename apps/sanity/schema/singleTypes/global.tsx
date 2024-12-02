@@ -105,6 +105,40 @@ export default defineType({
       ],
     }),
     defineField({
+      name: 'footer',
+      type: 'object',
+      title: 'Footer',
+      fields: [
+        defineField({
+          name: 'caseStudies',
+          type: 'array',
+          title: 'Case Studies',
+          description: 'If you will leave this empty, we will display 4 last case studies from portfolio.',
+          of: [{
+            type: 'reference',
+            to: [{ type: 'CaseStudy_Collection' }],
+            options: {
+              disableNew: true,
+              filter: ({ parent }) => {
+                const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
+                if (selectedIds.length > 0) {
+                  return {
+                    filter: '!(_id in $selectedIds) && !(_id in path("drafts.**"))',
+                    params: { selectedIds }
+                  }
+                }
+                return {}
+              }
+            }
+          }],
+          validation: Rule => [
+            Rule.max(4).warning('We recommend to have max 4 case studies in footer.'),
+            Rule.unique(),
+          ]
+        }),
+      ],
+    }),
+    defineField({
       name: 'seo',
       type: 'object',
       title: 'Global SEO',
