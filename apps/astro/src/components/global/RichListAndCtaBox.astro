@@ -28,11 +28,11 @@ type Props = {
     heading: PortableTextValue
     paragraph: PortableTextValue
   }>
-  ctaBox: Array<{
+  ctaBox?: Array<{
     heading: PortableTextValue
     paragraph: PortableTextValue
   }>
-  cta: ButtonDataProps
+  cta?: ButtonDataProps
 }
 
 const { index, sectionId, heading, list, ctaBox, cta } = Astro.props
@@ -56,20 +56,22 @@ const { index, sectionId, heading, list, ctaBox, cta } = Astro.props
         ))
       }
     </ul>
-    <div class="ctaBox">
-      <div class="background"></div>
-      <ul class="ctaBox-list">
-        {
-          ctaBox?.map(({ heading, paragraph }) => (
-            <li class="item">
-              <PortableText value={heading} class="heading" />
-              <PortableText value={paragraph} class="paragraph" />
-            </li>
-          ))
-        }
-      </ul>
-      <Button {...cta} className="cta" />
-    </div>
+    {
+      ctaBox && (
+        <div class="ctaBox">
+          <div class="background" />
+          <ul class="ctaBox-list">
+            {ctaBox?.map(({ heading, paragraph }) => (
+              <li class="item">
+                <PortableText value={heading} class="heading" />
+                <PortableText value={paragraph} class="paragraph" />
+              </li>
+            ))}
+          </ul>
+          {cta && <Button {...cta} className="cta" />}
+        </div>
+      )
+    }
   </div>
 </section>
 
@@ -91,6 +93,7 @@ const { index, sectionId, heading, list, ctaBox, cta } = Astro.props
         img {
           width: 20px;
           height: 20px;
+          object-fit: contain;
         }
         .heading {
           margin-bottom: 1.25rem;
