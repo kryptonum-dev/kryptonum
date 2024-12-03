@@ -10,7 +10,7 @@ import Team_Page from '../schema/singleTypes/Team_Page';
 import PrivacyPolicy_Page from '../schema/singleTypes/Legal/PrivacyPolicy_Page';
 import TermsAndConditions_Page from '../schema/singleTypes/Legal/TermsAndConditions_Page';
 import NotFound_Page from '../schema/singleTypes/NotFound_Page';
-
+import Shop_Page from '../schema/singleTypes/Shop_Page';
 const singleTypes = [
   global,
   redirects,
@@ -23,6 +23,7 @@ const singleTypes = [
   PrivacyPolicy_Page,
   TermsAndConditions_Page,
   NotFound_Page,
+  Shop_Page,
 ];
 
 // Collections Types
@@ -35,6 +36,7 @@ import Review_Collection from '../schema/collectionTypes/Review_Collection';
 import CaseStudy_Collection from '../schema/collectionTypes/CaseStudy_Collection';
 import CaseStudyCategory_Collection from '../schema/collectionTypes/CaseStudyCategory_Collection';
 import Faq_Collection from '../schema/collectionTypes/Faq_Collection';
+import ShopProduct_Collection from '../schema/collectionTypes/ShopProduct_Collection';
 
 const collectionTypes = [
   Service_Collection,
@@ -46,6 +48,7 @@ const collectionTypes = [
   CaseStudy_Collection,
   CaseStudyCategory_Collection,
   Faq_Collection,
+  ShopProduct_Collection,
 ];
 
 // Components
