@@ -1,0 +1,205 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import Button from '@/components/ui/Button'
+
+export const Listing_Query = `
+  ${PortableTextQuery('heading')}
+  "listing": *[_type == 'ShopProduct_Collection'] | order(_createdAt desc) {
+    name,
+    description,
+    ${ImageDataQuery('img')}
+    url,
+    badge,
+    rating,
+  },
+`
+
+export type ListingProps = {
+  heading: PortableTextValue
+  listing: Array<{
+    name: string
+    description: string
+    img: ImageDataProps
+    url: string
+    badge: string
+    rating: number
+  }>
+}
+
+const { heading, listing } = Astro.props as ListingProps
+---
+
+<section class="Listing">
+  <header>
+    <PortableText value={heading} heading="h1" class="h2 heading" />
+  </header>
+  <div class="listing">
+    {
+      listing?.map(({ name, description, img, url, badge, rating }, listingIndex) => (
+        <article>
+          <div class="img">
+            <Image
+              {...img}
+              sizes="(max-width: 47rem) 100vw, (max-width: 63rem) 50vw, 34vw"
+              loading={listingIndex === 0 ? 'eager' : 'lazy'}
+            />
+            {badge && (
+              <p class="badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" fill="none" viewBox="0 0 12 13">
+                  <path
+                    stroke="url(#paint0_linear_6841_29596)"
+                    d="M4.89 2.445c.283-.24.424-.36.571-.43a1.25 1.25 0 0 1 1.078 0c.147.07.288.19.57.43.113.096.169.144.229.184.137.092.291.156.453.188.071.014.145.02.292.031.369.03.554.044.708.099.356.126.636.406.762.762.054.154.069.339.098.708.012.147.018.22.032.291.032.163.096.317.188.454.04.06.088.116.184.228.24.282.36.423.43.57.163.342.163.738 0 1.079-.07.147-.19.288-.43.57-.096.112-.144.168-.184.228a1.25 1.25 0 0 0-.188.454c-.014.07-.02.144-.032.291-.029.37-.044.554-.098.708a1.25 1.25 0 0 1-.762.763c-.154.054-.34.069-.708.098-.147.012-.22.018-.292.032a1.249 1.249 0 0 0-.453.188c-.06.04-.116.088-.229.183-.282.24-.423.36-.57.431a1.25 1.25 0 0 1-1.078 0c-.147-.07-.288-.19-.57-.43-.113-.096-.169-.144-.229-.184a1.249 1.249 0 0 0-.453-.188c-.071-.014-.145-.02-.292-.032-.369-.03-.553-.044-.708-.098a1.25 1.25 0 0 1-.762-.763c-.054-.154-.069-.338-.098-.708-.012-.147-.018-.22-.032-.29a1.25 1.25 0 0 0-.188-.455 2.638 2.638 0 0 0-.184-.228c-.24-.282-.36-.423-.43-.57a1.25 1.25 0 0 1 0-1.078c.07-.148.19-.289.43-.57.096-.113.144-.169.184-.229a1.25 1.25 0 0 0 .188-.454c.014-.07.02-.144.032-.29.029-.37.044-.555.098-.709a1.25 1.25 0 0 1 .762-.762c.155-.055.34-.07.708-.099a2.64 2.64 0 0 0 .292-.031 1.25 1.25 0 0 0 .453-.188c.06-.04.116-.088.229-.184Z"
+                  />
+                  <path stroke="url(#paint1_linear_6841_29596)" d="m4.25 6.75 1 1 2.5-2.5" />
+                  <defs>
+                    <linearGradient
+                      id="paint0_linear_6841_29596"
+                      x1="10.435"
+                      x2=".844"
+                      y1="1.892"
+                      y2="2.503"
+                      gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#2DD282" />
+                      <stop offset="1" stop-color="#90F4E8" />
+                    </linearGradient>
+                    <linearGradient
+                      id="paint1_linear_6841_29596"
+                      x1="7.684"
+                      x2="4.056"
+                      y1="5.25"
+                      y2="5.574"
+                      gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#2DD282" />
+                      <stop offset="1" stop-color="#90F4E8" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {badge}
+              </p>
+            )}
+            {rating && (
+              <p class="rating" aria-label={`Ocenione na ${rating} w skali od 1 do 5`}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="13"
+                  fill="none"
+                  viewBox="0 0 12 13"
+                  aria-hidden="true">
+                  <path
+                    fill="url(#paint0_linear_6841_17586)"
+                    d="M4.577 3.204C5.21 2.068 5.527 1.5 6 1.5c.473 0 .79.568 1.423 1.704l.164.294c.18.323.27.484.41.59.14.107.316.147.665.226l.318.072c1.23.278 1.845.417 1.991.888.147.47-.273.96-1.111 1.941l-.217.254c-.238.278-.357.418-.41.59-.055.172-.037.358 0 .73l.032.338c.127 1.308.19 1.962-.193 2.253-.383.29-.958.026-2.11-.504l-.298-.138c-.327-.15-.49-.226-.664-.226-.173 0-.337.076-.664.226l-.298.138c-1.152.53-1.727.795-2.11.504-.383-.29-.32-.945-.193-2.253l.032-.338c.037-.372.055-.558 0-.73-.053-.172-.172-.312-.41-.59l-.217-.254c-.838-.98-1.258-1.47-1.111-1.941.146-.47.76-.61 1.99-.888l.319-.072c.35-.079.524-.119.664-.225.14-.107.23-.268.41-.59l.165-.295Z"
+                  />
+                  <defs>
+                    <linearGradient
+                      id="paint0_linear_6841_17586"
+                      x1="10.813"
+                      x2=".405"
+                      y1="1.5"
+                      y2="2.163"
+                      gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#EBB523" />
+                      <stop offset="1" stop-color="#FFCE48" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {rating}/5
+              </p>
+            )}
+          </div>
+          <div class="wrapper">
+            <p class="name">{name}</p>
+            <p class="description">{description}</p>
+            <Button href={url} linkType="external" className="cta">
+              Zgarnij ebooka
+            </Button>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style lang="scss">
+  .Listing {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    header {
+      max-width: 34rem;
+      margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+    }
+    .listing {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.25rem;
+      article {
+        border-radius: 0.25rem;
+        border: 1px solid var(--primary-500, #064040);
+        .img {
+          position: relative;
+          .badge {
+            position: absolute;
+            left: 0.75rem;
+            top: 0.75rem;
+            display: inline-grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.38rem;
+            align-items: center;
+            padding: 0.12rem 0.5rem 0.12rem 0.38rem;
+            font-size: var(--typography-body-s, 0.75rem);
+            border-radius: 2rem;
+            border: 1px solid var(--primary-gradient-400, #2dd282);
+            background:
+              linear-gradient(var(--primary-700), var(--primary-700)) padding-box,
+              var(--primary-gradient-400) border-box;
+            border: 1px solid rgba(0, 0, 0, 0);
+          }
+          .rating {
+            position: absolute;
+            left: 0.75rem;
+            bottom: 0.75rem;
+            display: inline-grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.38rem;
+            align-items: center;
+            padding: 0.12rem 0.5rem 0.12rem 0.38rem;
+            font-size: var(--typography-body-s, 0.75rem);
+            border-radius: 2rem;
+            background-color: rgba(0, 1, 3, 0.6);
+            backdrop-filter: blur(4px);
+          }
+        }
+        .wrapper {
+          margin-top: 0.5rem;
+          padding: clamp(1rem, calc(1.25vw / 0.48), 1.25rem);
+          .name {
+            font-size: var(--typography-body-2xl, 1.25rem);
+          }
+          .description {
+            font-size: var(--typography-body-m, 0.875rem);
+            color: var(--neutral-400, #c6cdcc);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            margin: 0.5rem 0 1.75rem;
+          }
+          .cta {
+            width: 100%;
+          }
+        }
+      }
+    }
+    @media (max-width: 62rem) {
+      .listing {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 43rem) {
+      .listing {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+</style>

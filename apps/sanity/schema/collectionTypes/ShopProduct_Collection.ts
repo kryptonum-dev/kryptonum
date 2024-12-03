@@ -35,6 +35,17 @@ export default defineType({
       title: 'URL',
       validation: Rule => Rule.required().uri({ scheme: ['https'] }),
     }),
+    defineField({
+      name: 'badge',
+      type: 'string',
+      title: 'Badge (optional)',
+    }),
+    defineField({
+      name: 'rating',
+      type: 'number',
+      title: 'Rating (optional)',
+      validation: Rule => Rule.min(1).max(5),
+    }),
   ],
   preview: {
     select: {

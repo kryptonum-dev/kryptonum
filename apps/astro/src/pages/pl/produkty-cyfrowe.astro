@@ -1,0 +1,34 @@
+---
+import Layout from '@/src/layouts/Layout.astro'
+import sanityFetch from '@/utils/sanity.fetch'
+import metadataFetch from '@/utils/metadata.fetch'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
+import Listing, { Listing_Query, type ListingProps } from '@/components/Shop/Listing.astro'
+import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+
+const page = await sanityFetch<{
+  name: string
+  slug: string
+  Listing: ListingProps
+  components: ComponentsProps
+}>({
+  query: `
+    *[_type == "Shop_Page"][0] {
+      name,
+      "slug": slug.current,
+      "Listing": {
+        ${Listing_Query}
+      },
+      ${Components_Query}
+    }
+  `,
+})
+
+const metadata = await metadataFetch(page.slug)
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={[{ name: page.name, path: page.slug }]} />
+  <Listing {...page.Listing} />
+  <Components data={page.components} hasPreviousSections={true} />
+</Layout>
