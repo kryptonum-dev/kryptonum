@@ -22,8 +22,8 @@ export const MediaShowcase_Query = `
 type Props = {
   index: number
   sectionId?: string
-  heading: PortableTextValue
-  paragraph: PortableTextValue
+  heading?: PortableTextValue
+  paragraph?: PortableTextValue
   layout: '50/50' | '30/70' | '70/30'
   media: Array<
     | {
@@ -75,16 +75,21 @@ const { index, sectionId, heading, paragraph, layout, media } = Astro.props as P
       </div>
     )
   }
-  <header>
-    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
-    <PortableText value={paragraph} class="paragraph" />
-  </header>
+  {
+    heading && (
+      <header>
+        <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+        {paragraph && <PortableText value={paragraph} class="paragraph" />}
+      </header>
+    )
+  }
 </section>
 
 <style lang="scss">
   .MediaShowcase {
     padding: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
     header {
+      margin-top: clamp(1.5rem, calc(2vw / 0.48), 2rem);
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: clamp(1.5rem, calc(3vw / 0.48), 3rem) 1.5rem;
@@ -94,7 +99,7 @@ const { index, sectionId, heading, paragraph, layout, media } = Astro.props as P
       }
     }
     .media-wrapper {
-      margin: 0 calc(var(--page-margin) * -1) clamp(1.5rem, calc(2vw / 0.48), 2rem);
+      margin: 0 calc(var(--page-margin) * -1);
       display: grid;
       .media {
         height: 100%;

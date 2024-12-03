@@ -16,14 +16,18 @@ export default defineField({
     defineField({
       name: 'heading',
       type: 'Heading',
-      title: 'Heading',
-      validation: Rule => Rule.required(),
+      title: 'Heading (optional)',
     }),
     defineField({
       name: 'paragraph',
       type: 'PortableText',
       title: 'Paragraph',
-      validation: Rule => Rule.required(),
+      hidden: ({ parent }) => !parent?.heading,
+      validation: Rule => Rule.custom((value, context) => {
+        const isHeading = !!(context.parent as { heading: string }).heading
+        if (isHeading && !value) return 'Paragraph is required'
+        return true
+      })
     }),
     defineField({
       name: 'layout',
