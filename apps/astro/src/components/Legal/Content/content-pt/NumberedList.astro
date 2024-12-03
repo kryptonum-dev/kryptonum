@@ -20,6 +20,7 @@ const { node, index, ...attrs } = Astro.props
     }
     &::before {
       content: counter(counter, decimal-leading-zero);
+      font-size: var(--typography-body-m, 0.875rem);
       width: 2.5rem;
       height: 2.5rem;
       margin-top: calc($alignMargin * -1);
@@ -27,6 +28,11 @@ const { node, index, ...attrs } = Astro.props
       border: 1px solid var(--neutral-600, #4a4a57);
       display: grid;
       place-items: center;
+    }
+    :global(ol) {
+      counter-reset: counter;
+      grid-column: 1 / -1;
+      padding-left: 2.5rem;
     }
   }
 </style>
