@@ -253,17 +253,17 @@ li {
   background-image: linear-gradient(currentColor, currentColor);
   background-position: 100% 100%;
   background-repeat: no-repeat;
-  background-size: 100% 1px;
+  background-size: 100% 0.5px;
   transition: background-size 500ms var(--easing);
   padding-bottom: 1px;
   margin-bottom: -1px;
   @keyframes link {
     0%,
     100% {
-      background-size: 100% 1px;
+      background-size: 100% 0.5px;
     }
     50% {
-      background-size: 0% 1px;
+      background-size: 0% 0.5px;
     }
     0%,
     50% {
@@ -289,7 +289,7 @@ li {
       mask-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgdmlld0JveD0iMCAwIDE3IDE3IiBmaWxsPSJub25lIj48cGF0aCBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBkPSJtNC41IDEyLjUgOC04bTAgMGgtNm02IDB2NiIvPjwvc3ZnPg==');
       background-color: currentColor;
       margin: -0.1em 0 -0.1em 0.1em;
-      transition: transform 300ms var(--easing);
+      transition: transform 500ms var(--easing);
     }
   }
 }
