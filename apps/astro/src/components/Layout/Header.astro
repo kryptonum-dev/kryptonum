@@ -112,7 +112,7 @@ const pathname = Astro.url.pathname
 
 <a class="skip-link" href="#main">Przejdź do treści głównej</a>
 {
-  data.annotation && (
+  data?.annotation && (
     <aside class="annotation-banner" id="annotation-banner" aria-labelledby="annotation-text">
       <div class="max-width">
         <div class="content">
