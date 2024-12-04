@@ -25,6 +25,13 @@ export default defineConfig({
     ssr: {
       noExternal: ['react-hook-form']
     },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: "modern",
+        }
+      }
+    }
   },
   redirects: redirects,
   output: isPreviewDeployment ? "server" : 'hybrid',
