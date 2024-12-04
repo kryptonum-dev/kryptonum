@@ -15,7 +15,7 @@ export async function POST({ request }: { request: Request }) {
   //   return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
   // }
 
-  const { tag, id } = (await request.json()) as RequestType;
+  // const { tag, id } = (await request.json()) as RequestType;
 
 
   // const query = async (tag: string, id?: string) => {
