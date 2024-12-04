@@ -34,7 +34,7 @@ export default defineConfig({
     }
   },
   redirects: redirects,
-  output: isPreviewDeployment ? "server" : "static",
+  output: 'server',
   adapter: vercel({
     isr: {
       bypassToken: process.env.VERCEL_DEPLOYMENT_ID,
