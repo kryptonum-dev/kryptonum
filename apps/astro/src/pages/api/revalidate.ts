@@ -12,9 +12,9 @@ type RequestType = {
 export async function POST({ request }: { request: Request }) {
   const authorizationHeader = request.headers.get('Authorization');
 
-  if (authorizationHeader !== `Bearer ${SANITY_REVALIDATE_BEARER}`) {
-    return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
-  }
+  // if (authorizationHeader !== `Bearer ${SANITY_REVALIDATE_BEARER}`) {
+  //   return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
+  // }
 
   const { tag, id } = (await request.json()) as RequestType;
 
