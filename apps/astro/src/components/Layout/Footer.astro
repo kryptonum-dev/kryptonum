@@ -60,7 +60,7 @@ const data = await sanityFetch<{
         }
       },
       "caseStudies": *[_type == "Portfolio_Page"][0] {
-        "name": name,
+        name,
         "slug": slug.current,
         "list": coalesce(
           *[_type == "global"][0].footer.caseStudies[] -> {
@@ -74,11 +74,11 @@ const data = await sanityFetch<{
         ),
       },
       "blog": *[_type == "Blog_Page"][0] {
-        "name": name,
+        name,
         "slug": slug.current,
       },
       "team": *[_type == "Team_Page"][0] {
-        "name": name,
+        name,
         "link": slug.current,
         "members": *[_type == "TeamMember_Collection"][] | order(_createdAt asc) {
           name,

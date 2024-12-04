@@ -21,7 +21,7 @@ $opacity-transition: 800ms var(--easing);
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate3d(-50%, -50%, 0);
     z-index: -1;
     background-image: conic-gradient(
       var(--primary-500, #064040) 79%,
@@ -34,10 +34,10 @@ $opacity-transition: 800ms var(--easing);
     transition: $opacity-transition;
     @keyframes rotate {
       from {
-        transform: translate(-50%, -50%) rotate(0deg);
+        transform: translate3d(-50%, -50%, 0) rotate(0deg);
       }
       to {
-        transform: translate(-50%, -50%) rotate(360deg);
+        transform: translate3d(-50%, -50%, 0) rotate(360deg);
       }
     }
   }

@@ -105,6 +105,87 @@ export default defineType({
       ],
     }),
     defineField({
+      name: 'nav',
+      type: 'object',
+      title: 'Navigation',
+      fields: [
+        defineField({
+          name: 'annotation',
+          type: 'object',
+          title: 'Annotation',
+          fields: [
+            defineField({
+              name: 'icon',
+              type: 'image',
+              title: 'Icon (optional)',
+              description: 'Only SVG files are supported.',
+              options: {
+                accept: '.svg'
+              },
+            }),
+            defineField({
+              name: 'text',
+              type: 'string',
+              title: 'Text',
+              validation: Rule => Rule.required(),
+            }),
+            defineField({
+              name: 'link',
+              type: 'object',
+              title: 'Link (optional)',
+              fields: [
+                defineField({
+                  name: 'text',
+                  type: 'string',
+                  title: 'Text',
+                  validation: Rule => Rule.required(),
+                }),
+                defineField({
+                  name: 'url',
+                  type: 'url',
+                  title: 'URL',
+                  validation: Rule => Rule.required().uri({ scheme: ['https'] }),
+                })
+              ]
+            })
+          ]
+        }),
+        defineField({
+          name: 'cta',
+          type: 'cta',
+          title: 'Call to Action',
+          validation: Rule => Rule.required(),
+        }),
+        defineField({
+          name: 'caseStudies',
+          type: 'array',
+          title: 'Case Studies',
+          description: 'If you will leave this empty, we will display 8 last case studies from portfolio.',
+          of: [{
+            type: 'reference',
+            to: [{ type: 'CaseStudy_Collection' }],
+            options: {
+              disableNew: true,
+              filter: ({ parent }) => {
+                const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
+                if (selectedIds.length > 0) {
+                  return {
+                    filter: '!(_id in $selectedIds) && !(_id in path("drafts.**"))',
+                    params: { selectedIds }
+                  }
+                }
+                return {}
+              }
+            }
+          }],
+          validation: Rule => [
+            Rule.max(8).warning('We recommend to have max 8 case studies in navigation.'),
+            Rule.unique(),
+          ]
+        }),
+      ]
+    }),
+    defineField({
       name: 'footer',
       type: 'object',
       title: 'Footer',
