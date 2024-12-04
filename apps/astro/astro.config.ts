@@ -34,6 +34,6 @@ export default defineConfig({
     }
   },
   redirects: redirects,
-  output: isPreviewDeployment ? "server" : 'hybrid',
-  adapter: vercel(),
+  output: isPreviewDeployment ? "server" : "static",
+  adapter: vercel({}),
 });
