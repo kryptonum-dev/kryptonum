@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 import preact from '@astrojs/preact';
 import sitemap from "@astrojs/sitemap";
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel";
 import { DOMAIN } from "./src/global/constants";
 import { isPreviewDeployment } from "./src/utils/is-preview-deployment";
 import redirects from "./redirects";
@@ -37,7 +37,7 @@ export default defineConfig({
   output: isPreviewDeployment ? "server" : "static",
   adapter: vercel({
     isr: {
-      bypassToken: "00568f45-96ad-490a-8f92-493a7318d477",
+      bypassToken: process.env.VERCEL_DEPLOYMENT_ID,
     }
   }),
 });
