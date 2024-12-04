@@ -35,5 +35,9 @@ export default defineConfig({
   },
   redirects: redirects,
   output: isPreviewDeployment ? "server" : "static",
-  adapter: vercel({}),
+  adapter: vercel({
+    isr: {
+      bypassToken: "00568f45-96ad-490a-8f92-493a7318d477",
+    }
+  }),
 });
