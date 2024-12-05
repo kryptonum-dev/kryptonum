@@ -3,7 +3,6 @@ import preact from '@astrojs/preact';
 import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel";
 import { DOMAIN } from "./src/global/constants";
-import { isPreviewDeployment } from "./src/utils/is-preview-deployment";
 import redirects from "./redirects";
 
 export default defineConfig({
