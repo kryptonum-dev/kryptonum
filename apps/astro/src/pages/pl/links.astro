@@ -1,4 +1,6 @@
 ---
+export const prerender = false
+
 import { DOMAIN } from '@/src/global/constants'
 import sanityFetch from '@/utils/sanity.fetch'
 import Layout from '@/src/layouts/Layout.astro'
@@ -9,6 +11,11 @@ import Copy from '@/src/components/ui/Copy.astro'
 import Socials from '@/components/ui/Socials.astro'
 
 const URL = 'https://l.kryptonum.eu'
+
+const host = Astro.request.headers.get('host')
+if (!host?.includes(URL.replace('https://', ''))) {
+  return new Response(null, { status: 404 })
+}
 
 const page = await sanityFetch<{
   seo: Omit<HeadProps, 'path'>
