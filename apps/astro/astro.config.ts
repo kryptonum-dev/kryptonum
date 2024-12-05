@@ -34,9 +34,5 @@ export default defineConfig({
   },
   redirects: redirects,
   output: "server",
-  adapter: vercel({
-    isr: {
-      bypassToken: process.env.VERCEL_DEPLOYMENT_ID,
-    }
-  }),
+  adapter: vercel(),
 });
