@@ -8,6 +8,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
 import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Post/Hero.astro'
 import Content, { Content_Query, type ContentProps } from '@/components/Blog/Post/Content/index.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+import ScrollToNextPage from '@/components/ui/ScrollToNextPage.astro'
 
 export const blogPosts = await sanityFetch<{ slug: string }[]>({
   query: `
@@ -30,6 +31,10 @@ const page = await sanityFetch<{
   hero: HeroProps
   content: ContentProps
   components: ComponentsProps
+  ScrollToNextPage: {
+    name: string
+    slug: string
+  }
 }>({
   query: `
     *[_type == 'BlogPost_Collection' && slug.current == $slug][0] {
@@ -37,6 +42,16 @@ const page = await sanityFetch<{
       ${Hero_Query}
       ${Content_Query}
       ${Components_Query}
+      "ScrollToNextPage": coalesce(
+        *[_type == 'BlogPost_Collection' && _createdAt < ^._createdAt] | order(_createdAt desc)[0] {
+          name,
+          "slug": slug.current,
+        },
+        *[_type == 'BlogPost_Collection'] | order(_createdAt desc)[0] {
+          name,
+          "slug": slug.current,
+        }
+      )
     }
   `,
   params: { slug: slug },
@@ -56,4 +71,20 @@ const metadata = await metadataFetch(slug)
   <Hero {...page.hero} />
   <Content {...page.content} />
   <Components data={page.components} hasPreviousSections={true} />
+  <ScrollToNextPage slot="ScrollToNextPage" path={page.ScrollToNextPage.slug} data-element="ScrollToNextPage">
+    <h2>
+      ❧ Scrolluj, scrolluj, to <strong>jeszcze nie koniec!</strong>
+    </h2>
+    <p>{page.ScrollToNextPage.name}</p>
+  </ScrollToNextPage>
 </Layout>
+
+<style lang="scss">
+  [data-element='ScrollToNextPage'] {
+    text-align: center;
+    h2 {
+      max-width: 17rem;
+      margin: 0 auto 1rem;
+    }
+  }
+</style>
