@@ -7,7 +7,7 @@ import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
-import ScrollToNextPage from '@/src/components/ui/ScrollToNextPage.astro'
+import ScrollToNextPage from '@/components/ui/ScrollToNextPage.astro'
 
 export async function getStaticPaths() {
   const pages = await sanityFetch<{ slug: string }[]>({
@@ -38,13 +38,13 @@ const page = await sanityFetch<{
       name,
       ${Components_Query}
       "ScrollToNextPage": coalesce(
-        *[_type == 'TeamMember_Collection' && _createdAt > ^._createdAt] | order(_createdAt)[0] {
+        *[_type == 'TeamMember_Collection' && _createdAt > ^._createdAt] | order(_createdAt asc)[0] {
           name,
           "slug": slug.current,
           ${ImageDataQuery('img')}
           headline,
         },
-        *[_type == 'TeamMember_Collection'] | order(_createdAt)[0] {
+        *[_type == 'TeamMember_Collection'] | order(_createdAt asc)[0] {
           name,
           "slug": slug.current,
           ${ImageDataQuery('img')}
@@ -83,7 +83,7 @@ const metadata = await metadataFetch(slug)
 <style lang="scss">
   [data-element='ScrollToNextPage'] {
     h2 {
-      margin: 0 auto 1rem;
+      margin-bottom: 1rem;
       text-align: center;
     }
     .person {

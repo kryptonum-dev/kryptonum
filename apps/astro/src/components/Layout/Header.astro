@@ -60,11 +60,11 @@ const data = await sanityFetch<{
         },
       },
       ${ButtonDataQuery('cta')}
-      "services": *[_type == "Service_Collection" && !defined(mainPage)] | order(name asc) {
+      "services": *[_type == "Service_Collection" && !defined(mainPage)] | order(_createdAt asc) {
         name,
         "slug": slug.current,
         ${ImageDataQuery('icon')}
-        "list": *[_type == "Service_Collection" && mainPage._ref == ^._id] {
+        "list": *[_type == "Service_Collection" && mainPage._ref == ^._id] | order(_createdAt asc) {
           name,
           "slug": slug.current,
         }
