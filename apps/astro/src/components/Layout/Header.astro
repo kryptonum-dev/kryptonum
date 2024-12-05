@@ -254,7 +254,7 @@ const pathname = Astro.url.pathname
                   ))
                 }
               </ul>
-              <Button href={data.caseStudies.slug} theme="secondary" className="cta">Zobacz wszystkie projekty</Button>
+              <Button href={data.caseStudies.slug} theme="secondary" className="cta">Zobacz projekty</Button>
             </div>
           </div>
         </div>
@@ -288,6 +288,7 @@ const pathname = Astro.url.pathname
       <a href={data.shop.slug} class="item-button" aria-current={pathname === data.shop.slug ? 'page' : undefined}>
         <span>{data.shop.name}</span>
       </a>
+      <Button {...data.cta} className="nav-cta" />
     </nav>
     <button type="button" class="menu-button">
       <span>Menu</span>
@@ -495,6 +496,9 @@ const pathname = Astro.url.pathname
           visibility: hidden;
           transform: translateY(-0.25rem);
           filter: blur(4px);
+          .cta {
+            width: fit-content;
+          }
         }
         &[data-tab][data-active='true'] {
           .item-expand {
@@ -685,6 +689,11 @@ const pathname = Astro.url.pathname
           }
         }
       }
+      .nav-cta {
+        display: none;
+        margin-top: 2.5rem;
+        width: fit-content;
+      }
     }
     .menu-button {
       display: none;
@@ -847,6 +856,9 @@ const pathname = Astro.url.pathname
               }
             }
           }
+        }
+        .nav-cta {
+          display: inline-flex;
         }
       }
       .item[data-tab][data-active='true'] {
