@@ -50,7 +50,7 @@ const data = await sanityFetch<{
 }>({
   query: `
     {
-      "services": *[_type == "Service_Collection" && !defined(mainPage)] | order(name asc) {
+      "services": *[_type == "Service_Collection" && !defined(mainPage)] | order(_createdAt asc) {
         name,
         "slug": slug.current,
         ${ImageDataQuery('icon')}
@@ -234,8 +234,9 @@ const cities = [
               class="city"
               data-city={name}
               style={`left: ${left}; top: ${top};`}
-              aria-controls={`location-link-${name}`}
-              aria-expanded={initial}>
+              aria-expanded={initial}
+              aria-controls={`footer-cities-${name.toLowerCase()}`}
+              aria-label={`Pokaż strony dla miasta ${name}`}>
               {name}
             </button>
           ))
@@ -263,18 +264,19 @@ const cities = [
         </svg>Kliknij na mapie, by zobaczyć…
       </p>
       {
-        cities.flatMap(({ pages, name: cityName, initial }) =>
-          pages.map(({ name, slug }) => (
-            <a
-              href={slug}
-              class="location-link"
-              data-city={cityName}
-              hidden={!initial}
-              id={`location-link-${cityName}`}>
-              {name}
-            </a>
-          ))
-        )
+        cities.flatMap(({ pages, name, initial }) => (
+          <div
+            class="footer-cities"
+            data-city={name}
+            id={`footer-cities-${name.toLowerCase()}`}
+            role="region"
+            aria-label={`Strony dla miasta ${name}`}
+            hidden={!initial}>
+            {pages.map(({ name, slug }) => (
+              <a href={slug}>{name}</a>
+            ))}
+          </div>
+        ))
       }
     </div>
   </div>
@@ -477,21 +479,23 @@ const cities = [
           gap: 0.5rem;
           margin-bottom: clamp(0.5rem, calc(1.5vw / 0.48), 1.5rem);
         }
-        a {
-          display: grid;
-          align-items: center;
-          min-height: 2.75rem;
-          transition:
-            filter 500ms var(--easing),
-            color 500ms var(--easing);
+        .footer-cities {
+          transition: filter 500ms var(--easing);
           will-change: filter;
           &[hidden] {
+            display: block;
             filter: blur(8px);
             visibility: hidden;
             position: absolute;
           }
-          &:hover {
-            color: var(--neutral-400, #c6cdcc);
+          a {
+            display: grid;
+            align-items: center;
+            min-height: 2.75rem;
+            transition: color 500ms var(--easing);
+            &:hover {
+              color: var(--neutral-400, #c6cdcc);
+            }
           }
         }
       }
@@ -594,6 +598,9 @@ const cities = [
       }
       .locationPages {
         grid-template-columns: 1fr;
+        .map {
+          margin-left: 1rem;
+        }
       }
     }
   }
@@ -607,7 +614,7 @@ const cities = [
 <script>
   const footer = document.querySelector('footer.footer')!
   const cities = footer.querySelectorAll<HTMLButtonElement>('button[data-city]')!
-  const locationLinks = footer.querySelectorAll<HTMLAnchorElement>('.locationPages .location-link')!
+  const locationLinks = footer.querySelectorAll<HTMLAnchorElement>('.locationPages .footer-cities')!
   cities.forEach((city) => {
     city.addEventListener('click', () => {
       cities.forEach((c) => {
