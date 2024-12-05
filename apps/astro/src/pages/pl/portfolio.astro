@@ -6,7 +6,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
 import Listing, { Listing_Query, type ListingProps } from '@/components/Portfolio/Listing.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
 
-export const ITEMS_PER_PAGE = 12
+export const ITEMS_PER_PAGE = 8
 const currentPage = 1
 
 const page = await sanityFetch<{
