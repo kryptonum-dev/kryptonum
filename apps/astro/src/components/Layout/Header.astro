@@ -411,14 +411,25 @@ const pathname = Astro.url.pathname
         gap: 0.25rem;
         padding: 0 1rem;
         align-items: center;
-        perspective: 50px;
+        perspective: 80px;
         position: relative;
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 1px;
+          background-color: var(--neutral-600, #4a4a57);
+          transition: transform 500ms var(--easing);
+          transform: scaleY(0);
+        }
         &[aria-current='page'] {
-          &::before {
+          &::after {
             animation-play-state: running;
           }
         }
-        &::before {
+        &::after {
           content: '';
           position: absolute;
           left: 0;
@@ -474,7 +485,7 @@ const pathname = Astro.url.pathname
         .item-expand {
           position: absolute;
           z-index: 1;
-          top: 100%;
+          top: calc(100% - 2px);
           left: 0;
           width: 100%;
           background-color: rgba(0, 0, 0, 0.86);
@@ -497,6 +508,9 @@ const pathname = Astro.url.pathname
           .item-button {
             svg {
               transform: rotateX(180deg);
+            }
+            &::before {
+              transform: scaleY(1);
             }
           }
         }
@@ -752,7 +766,7 @@ const pathname = Astro.url.pathname
           svg {
             margin-right: 0.71875rem;
           }
-          &::before {
+          &::after {
             left: -1rem;
             right: unset;
             bottom: calc(50% - 0.0625rem);
