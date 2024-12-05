@@ -20,9 +20,6 @@ export default defineConfig({
   prefetch: {
     prefetchAll: true
   },
-  build: {
-    inlineStylesheets: 'never',
-  },
   vite: {
     ssr: {
       noExternal: ['react-hook-form']
