@@ -1,6 +1,5 @@
 import { defineConfig } from "astro/config";
 import preact from '@astrojs/preact';
-import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel";
 import { DOMAIN } from "./src/global/constants";
 import redirects from "./redirects";
@@ -9,7 +8,6 @@ export default defineConfig({
   site: DOMAIN,
   integrations: [
     preact({ compat: true }),
-    sitemap(),
   ],
   image: {
     remotePatterns: [{

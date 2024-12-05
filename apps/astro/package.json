@@ -13,20 +13,19 @@
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@astrojs/preact": "^4.0.0",
-    "@astrojs/sitemap": "^3.2.1",
     "@astrojs/vercel": "^8.0.0",
     "@mux/mux-video": "^0.22.0",
     "@sanity/client": "^6.24.1",
     "astro": "^5.0.2",
     "astro-portabletext": "^0.10.1",
-    "react-hook-form": "^7.53.2",
-    "sharp-ico": "^0.1.5",
-    "typescript": "^5.7.2",
     "autoprefixer": "^10.4.20",
     "cssnano": "^7.0.6",
     "postcss-combine-media-query": "^1.0.1",
     "postcss-import": "^16.1.0",
-    "postcss-mixins": "^11.0.3"
+    "postcss-mixins": "^11.0.3",
+    "react-hook-form": "^7.53.2",
+    "sharp-ico": "^0.1.5",
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.17.0",
