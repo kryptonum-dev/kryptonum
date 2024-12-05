@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useClient, defineField, defineType, type SlugRule } from 'sanity';
-import { Box, Text, Tooltip, Button, Stack, useToast, Card } from '@sanity/ui';
+import { Box, Text, Tooltip, Button, Stack, useToast, Card, Dialog, Flex } from '@sanity/ui';
 
 type RedirectTypes = {
   _key: string;
@@ -12,6 +12,7 @@ type RedirectTypes = {
 const SlugValidation = (Rule: SlugRule) => Rule.custom((value) => {
   if (!value || !value.current) return "The value can't be blank";
   if (!value.current.startsWith("/")) return "The path must be a relative path (starts with /)";
+  if (value.current !== '/' && value.current.endsWith('/')) return 'Source paths must not end with a trailing slash (/)';
   return true;
 });
 
@@ -20,6 +21,7 @@ const ProcessJsonButton = (props: { value: any; renderDefault: any; }) => {
   const client = useClient({ apiVersion: '2024-11-29' });
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const processJson = useCallback(async () => {
     if (!value) return;
@@ -46,6 +48,7 @@ const ProcessJsonButton = (props: { value: any; renderDefault: any; }) => {
       });
     } finally {
       setIsLoading(false);
+      setShowConfirmDialog(false);
     }
   }, [value, client, toast]);
 
@@ -53,15 +56,48 @@ const ProcessJsonButton = (props: { value: any; renderDefault: any; }) => {
     <Stack space={3}>
       {renderDefault(props)}
       <Button
-        tone="primary"
-        onClick={processJson}
+        tone="caution"
+        onClick={() => setShowConfirmDialog(true)}
         disabled={!value || isLoading}
         loading={isLoading}
         style={{ textAlign: 'center' }}
       >
         Process JSON and Update Redirects
       </Button>
-    </Stack>
+      {showConfirmDialog && (
+        <Dialog
+          header="Confirm Update"
+          id="confirm-dialog"
+          onClose={() => setShowConfirmDialog(false)}
+          zOffset={1000}
+        >
+          <Box padding={4}>
+            <Stack space={5}>
+              <Text>Are you sure you want to process this JSON? This will override all existing redirects.</Text>
+              <Stack space={3}>
+                <Button
+                  tone="caution"
+                  onClick={processJson}
+                  loading={isLoading}
+                  style={{ textAlign: 'center' }}
+                >
+                  Yes, process and update
+                </Button>
+                <Button
+                  mode="ghost"
+                  onClick={() => setShowConfirmDialog(false)}
+                  disabled={isLoading}
+                  style={{ textAlign: 'center' }}
+                >
+                  Cancel
+                </Button>
+              </Stack>
+            </Stack>
+          </Box>
+        </Dialog>
+      )
+      }
+    </Stack >
   );
 };
 
@@ -69,7 +105,6 @@ export default defineType({
   name: 'redirects',
   type: 'document',
   title: 'Redirects',
-  description: 'Redirects are used to redirect users to a different page. This is useful for SEO purposes.',
   icon: () => '🔀',
   fields: [
     defineField({
@@ -143,7 +178,16 @@ export default defineType({
       name: 'jsonEditor',
       type: 'text',
       title: 'JSON Editor',
-      description: 'Paste JSON array of redirects. Format: [{"source": "/old-path", "destination": "/new-path", "isPermanent": true}]',
+      description: (
+        <>
+          Paste a JSON array of redirect objects. Required Properties:
+          <ul>
+            <li>Source must start with "/" (e.g., "/old-path")</li>
+            <li>Destination must start with "/" (e.g., "/new-path")</li>
+            <li>isPermanent is optional boolean (defaults to true for 301 permanent redirect)</li>
+          </ul>
+        </>
+      ),
       components: {
         input: (props) => (
           <Stack space={3}>
@@ -177,6 +221,8 @@ export default defineType({
               return 'Each redirect must have a "source" property with a string value';
             if (!redirect.source.startsWith('/'))
               return 'Source paths must start with a forward slash (/)';
+            if (redirect.source !== '/' && redirect.source.endsWith('/'))
+              return 'Source paths must not end with a trailing slash (/)';
             if (!redirect.destination || typeof redirect.destination !== 'string')
               return 'Each redirect must have a "destination" property with a string value';
             if (!redirect.destination.startsWith('/'))
