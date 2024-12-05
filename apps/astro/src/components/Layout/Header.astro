@@ -554,11 +554,14 @@ const pathname = Astro.url.pathname
               align-items: flex-start;
             }
             .img {
+              aspect-ratio: 32.75 / 18.4375;
               position: relative;
               img {
                 position: absolute;
                 left: 0;
                 top: 0;
+                right: 0;
+                bottom: 0;
                 opacity: 0;
                 filter: blur(4px);
                 transform: scale(1.03);
