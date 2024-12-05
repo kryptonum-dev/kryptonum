@@ -6,6 +6,7 @@ import sanityFetch from '@/utils/sanity.fetch'
 import metadataFetch from '@/utils/metadata.fetch'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
 import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+import ScrollToNextPage from '@/components/ui/ScrollToNextPage.astro'
 
 export async function getStaticPaths() {
   const pages = await sanityFetch<{ slug: string }[]>({
@@ -24,11 +25,25 @@ const slug = `${slugPrefix}${_slug}`
 const page = await sanityFetch<{
   name: string
   components: ComponentsProps
+  ScrollToNextPage: {
+    name: string
+    slug: string
+  }
 }>({
   query: `
     *[_type == 'CaseStudy_Collection' && slug.current == $slug][0] {
       name,
       ${Components_Query}
+      "ScrollToNextPage": coalesce(
+        *[_type == 'CaseStudy_Collection' && _createdAt < ^._createdAt] | order(_createdAt desc)[0] {
+          name,
+          "slug": slug.current,
+        },
+        *[_type == 'CaseStudy_Collection'] | order(_createdAt desc)[0] {
+          name,
+          "slug": slug.current,
+        }
+      )
     }
   `,
   params: { slug: slug },
@@ -47,4 +62,20 @@ const metadata = await metadataFetch(slug)
     ]}
   />
   <Components data={page.components} />
+  <ScrollToNextPage slot="ScrollToNextPage" path={page.ScrollToNextPage.slug} data-element="ScrollToNextPage">
+    <h2>
+      ❧ Scrolluj, by przejść do <strong>następnego projektu</strong>
+    </h2>
+    <p>{page.ScrollToNextPage.name}</p>
+  </ScrollToNextPage>
 </Layout>
+
+<style lang="scss">
+  [data-element='ScrollToNextPage'] {
+    text-align: center;
+    h2 {
+      max-width: 17rem;
+      margin: 0 auto 1rem;
+    }
+  }
+</style>
