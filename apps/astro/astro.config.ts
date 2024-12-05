@@ -21,7 +21,7 @@ export default defineConfig({
     prefetchAll: true
   },
   build: {
-    inlineStylesheets: 'always',
+    inlineStylesheets: 'never',
   },
   vite: {
     ssr: {
