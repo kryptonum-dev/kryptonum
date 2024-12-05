@@ -1,3 +1,5 @@
+export const prerender = true;
+
 import type { APIRoute } from "astro";
 import { getImage } from "astro:assets";
 import icon from "@/assets/icon.png";
