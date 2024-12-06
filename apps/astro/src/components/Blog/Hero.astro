@@ -114,7 +114,7 @@ const { name, slug, heading, category, author, img, content } = Astro.props as H
         }
       }
       header {
-        :global(.category-tab) {
+        :global([data-category-tab]) {
           z-index: 2;
         }
         .heading {
