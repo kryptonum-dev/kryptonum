@@ -1,6 +1,7 @@
 import { defineField, defineType } from "sanity";
 import { defineSlugForDocument } from "../../../utils/define-slug-for-document";
 import PortableText from "./portable-text";
+import { Stack, Card, Text } from "@sanity/ui";
 
 const name = 'BlogPost_Collection';
 const title = 'Blog Post Collection';
@@ -78,6 +79,23 @@ export default defineType({
       type: 'seo',
       title: 'SEO',
       group: 'seo',
+    }),
+    defineField({
+      name: 'publishedDate',
+      type: 'datetime',
+      title: 'Publication Date (optional)',
+      description: (
+        <Stack space={3}>
+          <Card tone="caution" padding={4} border radius={2}>
+            <Stack space={3}>
+              <Text weight="semibold">ℹ️ Publication Date Override</Text>
+              <Text size={1}>
+                This field allows you to override the default publication date (_createdAt). Only use this for migrated or historical content where you need to preserve the original publication date.
+              </Text>
+            </Stack>
+          </Card>
+        </Stack>
+      ),
     }),
   ],
   groups: [

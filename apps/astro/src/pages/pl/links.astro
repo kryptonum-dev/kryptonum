@@ -109,7 +109,7 @@ const page = await sanityFetch<{
         "blog": {
           "title": blogTitle,
           "slug": *[_type == "Blog_Page"][0].slug.current,
-          "thumbnails": *[_type == "BlogPost_Collection"][] | order(_createdAt desc) [0...3] {
+          "thumbnails": *[_type == "BlogPost_Collection"][] | order(coalesce(publishedDate, _createdAt) desc) [0...3] {
             ${ImageDataQuery('img')}
           },
           "leftCount": count(*[_type == "BlogPost_Collection"]) - 3,

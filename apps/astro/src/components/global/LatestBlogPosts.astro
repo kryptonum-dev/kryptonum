@@ -11,7 +11,7 @@ export const LatestBlogPosts_Query = `
       posts[] -> {
         ${BlogCard_Query}
       },
-      *[_type == "BlogPost_Collection"][] | order(_createdAt desc)[0...2] {
+      *[_type == "BlogPost_Collection"][] | order(coalesce(publishedDate, _createdAt) desc)[0...2] {
         ${BlogCard_Query}
       },
     ),

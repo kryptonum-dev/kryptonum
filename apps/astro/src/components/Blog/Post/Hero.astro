@@ -18,7 +18,7 @@ export type HeroProps = {
 
 export const Hero_Query = `
   "hero": {
-    _createdAt,
+    "_createdAt": coalesce(publishedDate, _createdAt),
     _updatedAt,
     ${PortableTextQuery('heading')}
     ${ImageDataQuery('img')}

@@ -27,7 +27,7 @@ export const Listing_Query = ({
       },
       "listing": *[_type == 'BlogPost_Collection'
         ${currentCategorySlug ? `&& category -> slug.current == "${currentCategorySlug}"` : ''}
-      ] | order(_createdAt desc) [${PAGINATION_BEFORE}...${PAGINATION_AFTER}] {
+      ] | order(coalesce(publishedDate, _createdAt) desc) [${PAGINATION_BEFORE}...${PAGINATION_AFTER}] {
         ${BlogCard_Query}
       },
     },

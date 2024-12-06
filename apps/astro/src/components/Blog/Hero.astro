@@ -6,7 +6,7 @@ import { ContentPT_Query } from '@/components/Blog/Post/Content/content-pt/index
 import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@/components/ui/EstimatedReadingTime.astro'
 
 export const Hero_Query = `
-  "hero": *[_type == 'BlogPost_Collection'] | order(_createdAt desc)[0] {
+  "hero": *[_type == 'BlogPost_Collection'] | order(coalesce(publishedDate, _createdAt) desc)[0] {
     name,
     "slug": slug.current,
     ${PortableTextQuery('heading')}
