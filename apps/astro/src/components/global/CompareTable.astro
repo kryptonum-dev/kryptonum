@@ -217,7 +217,7 @@ const { index, sectionId, heading, paragraph, compare } = Astro.props
       .table {
         thead {
           position: sticky;
-          top: 0;
+          top: clamp(3.875rem, calc(4.75vw / 0.48), 4.75rem);
           z-index: 5;
           background-color: var(--neutral-900, #000103);
           tr {
