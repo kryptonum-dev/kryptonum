@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useClient, defineField, defineType, type SlugRule } from 'sanity';
-import { Box, Text, Tooltip, Button, Stack, useToast, Card, Dialog, Flex } from '@sanity/ui';
+import { Box, Text, Tooltip, Button, Stack, useToast, Card, Dialog } from '@sanity/ui';
 
 type RedirectTypes = {
   _key: string;
