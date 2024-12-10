@@ -5,7 +5,7 @@ import { createCollection } from '../utils/create-collection';
 export const structure: StructureResolver = (S) =>
   S.list()
     .id('root')
-    .title('Zawartość')
+    .title('Content')
     .items([
       createSingleton(S, "global"),
       createSingleton(S, "redirects"),
