@@ -1,0 +1,384 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@/src/components/ui/Button'
+
+export const Pricing_Query = `
+  _type == "Pricing" => {
+    ${PortableTextQuery('heading')}
+    features[],
+    plans[] {
+      name,
+      description,
+      isHighlighted,
+      featureValues[] {
+        type,
+        text,
+      },
+    },
+    ${ButtonDataQuery('cta')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  features: string[]
+  plans: {
+    name: string
+    description: string
+    isHighlighted: boolean
+    featureValues: {
+      type: 'yes' | 'no' | 'text'
+      text: string
+    }[]
+  }[]
+  cta: ButtonDataProps
+}
+
+const { index, sectionId, heading, features, plans, cta } = Astro.props
+
+const Subheading = index === 0 ? 'h2' : 'h3'
+---
+
+<section class="Pricing" id={sectionId}>
+  <svg class="svg-defs" aria-hidden="true">
+    <defs>
+      <symbol id="Pricing-checkmarkColor" viewBox="0 0 21 20">
+        <circle cx="10.603" cy="10" r="8.333" stroke="url(#paint0_linear_7024_34173)"></circle>
+        <path
+          stroke="url(#paint1_linear_7024_34173)"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="m7.684 10.416 1.666 1.667 4.167-4.167">
+        </path>
+        <defs>
+          <linearGradient
+            id="paint0_linear_7024_34173"
+            x1="18.624"
+            x2="1.278"
+            y1="1.667"
+            y2="2.771"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop>
+            <stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient>
+          <linearGradient
+            id="paint1_linear_7024_34173"
+            x1="13.408"
+            x2="7.36"
+            y1="7.917"
+            y2="8.456"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop>
+            <stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient>
+        </defs>
+      </symbol>
+      <symbol id="Pricing-checkmark" viewBox="0 0 21 20">
+        <circle cx="10.603" cy="10" r="8.333" stroke="#F0F7F7" stroke-linecap="round"></circle>
+        <path stroke="#F0F7F7" stroke-linecap="round" stroke-linejoin="round" d="m7.684 10.416 1.666 1.667 4.167-4.167">
+        </path>
+      </symbol>
+      <symbol id="Pricing-cross" viewBox="0 0 21 20">
+        <path stroke="#F0F7F7" stroke-linecap="round" d="M16.233 4.167 4.566 15.833m0-11.666 11.667 11.666"></path>
+      </symbol>
+      <symbol id="Pricing-badge" viewBox="0 0 12 13">
+        <path
+          stroke="url(#paint0_linear_7033_44108)"
+          d="m10.805 7.28.114-1.217c.09-.956.135-1.434-.029-1.632a.496.496 0 0 0-.337-.184c-.238-.02-.537.32-1.134 1-.309.351-.463.527-.636.554a.462.462 0 0 1-.28-.044c-.16-.08-.266-.298-.478-.733L6.907 2.732C6.506 1.911 6.305 1.5 6 1.5c-.305 0-.506.41-.907 1.232L3.975 5.024c-.212.435-.318.652-.477.733a.462.462 0 0 1-.281.044c-.173-.027-.327-.203-.636-.554-.597-.68-.896-1.02-1.134-1a.496.496 0 0 0-.338.184c-.163.198-.118.676-.028 1.632l.115 1.218c.188 2.006.283 3.01.874 3.614.591.605 1.478.605 3.25.605h1.36c1.772 0 2.659 0 3.25-.605.591-.605.686-1.608.875-3.614Z"
+        />
+        <path
+          stroke="url(#paint1_linear_7033_44108)"
+          d="M5.573 6.761c.19-.34.285-.511.427-.511.142 0 .237.17.427.511l.05.088c.053.097.08.146.122.178.042.032.095.043.2.067l.095.022c.369.083.553.125.597.266.044.141-.081.288-.333.582l-.065.077c-.072.083-.107.125-.123.177-.016.051-.011.107 0 .219l.01.101c.038.393.057.589-.058.676-.115.087-.288.008-.633-.151l-.09-.041c-.098-.046-.147-.068-.199-.068-.052 0-.101.022-.2.068l-.089.04c-.345.16-.518.24-.633.152-.115-.087-.096-.283-.058-.676l.01-.101c.011-.112.016-.168 0-.22-.016-.051-.051-.093-.123-.176l-.065-.077c-.252-.294-.377-.44-.333-.582.043-.141.228-.183.597-.266l.095-.022c.105-.024.158-.035.2-.067.042-.032.069-.08.123-.178l.049-.088Z"
+        />
+        <defs>
+          <linearGradient
+            id="paint0_linear_7033_44108"
+            x1="10.813"
+            x2=".405"
+            y1="1.5"
+            y2="2.163"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282" />
+            <stop offset="1" stop-color="#90F4E8" />
+          </linearGradient>
+          <linearGradient
+            id="paint1_linear_7033_44108"
+            x1="7.444"
+            x2="4.322"
+            y1="6.25"
+            y2="6.449"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282" />
+            <stop offset="1" stop-color="#90F4E8" />
+          </linearGradient>
+        </defs>
+      </symbol>
+    </defs>
+  </svg>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <Button {...cta} />
+  </header>
+  <div class="pricing-table">
+    <table class="desktop-view">
+      <thead>
+        <tr>
+          <th></th>
+          {
+            plans.map(({ isHighlighted, name, description }) => (
+              <th data-highlighted={isHighlighted}>
+                {isHighlighted && (
+                  <p class="badge">
+                    <svg width="12" height="13">
+                      <use href="#Pricing-badge" />
+                    </svg>
+                    Najpopularniejsze
+                  </p>
+                )}
+                <Subheading class="name">{name}</Subheading>
+                <p class="description">{description}</p>
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          features.map((feature, index) => (
+            <tr>
+              <td class="feature-name">{feature}</td>
+              {plans.map(({ isHighlighted, featureValues }) => (
+                <td data-highlighted={isHighlighted}>
+                  {featureValues[index].type === 'text' ? (
+                    <span>{featureValues[index].text}</span>
+                  ) : (
+                    <svg width="21" height="20" aria-label={featureValues[index].type === 'yes' ? 'Tak' : 'Nie'}>
+                      <use
+                        href={`#${featureValues[index].type === 'yes' ? (isHighlighted ? 'Pricing-checkmarkColor' : 'Pricing-checkmark') : 'Pricing-cross'}`}
+                      />
+                    </svg>
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <div class="mobile-view" aria-hidden="true">
+      {
+        plans.map(({ isHighlighted, name, description, featureValues }) => (
+          <div data-highlighted={isHighlighted} class="item">
+            {isHighlighted && (
+              <div class="glow"></div>
+              <p class="badge">
+                <svg width="12" height="13">
+                  <use href="#Pricing-badge" />
+                </svg>
+                Najpopularniejsze
+              </p>
+            )}
+            <Subheading class="name">{name}</Subheading>
+            <p class="description">{description}</p>
+            <ul class="features">
+              {features.map((feature, index) => (
+                <li>
+                  {featureValues[index].type === 'text' ? (
+                    <>
+                      <span>{feature}</span>
+                      <p>{featureValues[index].text}</p>
+                    </>
+                  ) : (
+                    <>
+                      <svg width="21" height="20" aria-label={featureValues[index].type === 'yes' ? 'Tak' : 'Nie'}>
+                        <use
+                          href={`#${featureValues[index].type === 'yes' ? (isHighlighted ? 'Pricing-checkmarkColor' : 'Pricing-checkmark') : 'Pricing-cross'}`}
+                        />
+                      </svg>
+                      <p>{feature}</p>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+  <div class="cta">
+    <Button {...cta} />
+  </div>
+</section>
+
+<style lang="scss">
+  .Pricing {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    header {
+      text-align: center;
+      max-width: 38rem;
+      margin: 0 auto clamp(2rem, calc(3vw / 0.48), 3rem);
+      .heading {
+        margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+      }
+    }
+    .cta {
+      text-align: center;
+      margin-top: clamp(2rem, calc(3vw / 0.48), 4.5rem);
+    }
+  }
+  .svg-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+  .pricing-table {
+    font-size: var(--typography-body-m, 0.875rem);
+  }
+  .badge {
+    position: absolute;
+    font-size: var(--typography-body-s, 0.75rem);
+    padding: 0.25rem 0.5rem;
+    border-radius: 2rem;
+    background-color: var(--primary-700, #021d1d);
+    display: inline-grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .desktop-view {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    th {
+      position: relative;
+      font: inherit;
+      .badge {
+        left: 0;
+        top: 0;
+        transform: translateY(-25%);
+      }
+      .name {
+        font-size: var(--typography-body-xl, 1rem);
+        margin-bottom: 0.25rem;
+      }
+      &[data-highlighted='true'] {
+        .name {
+          background: var(--primary-gradient-400);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      }
+    }
+    tr {
+      vertical-align: top;
+    }
+    tbody {
+      tr {
+        &:not(:last-child) {
+          td {
+            border-bottom: 1px solid var(--primary-500, #064040);
+          }
+        }
+      }
+    }
+    th,
+    td {
+      padding: 1.75rem 1.25rem 1.25rem 0;
+      text-align: left;
+    }
+  }
+  .mobile-view {
+    max-width: 38rem;
+    margin: 0 auto;
+    display: none;
+    gap: 0.5rem;
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+    .item {
+      padding: clamp(1rem, calc(1.75vw / 0.48), 1.75rem);
+      border-radius: 0.25rem;
+      background:
+        linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+        var(--primary-gradient-400) border-box;
+      border: 1px solid var(--neutral-500, #75758a);
+      position: relative;
+      .name {
+        font-size: var(--typography-body-xl, 1rem);
+        margin-bottom: 0.25rem;
+      }
+      .features {
+        margin-top: 1rem;
+        display: grid;
+        gap: 0.75rem;
+        li {
+          display: grid;
+          grid-template-columns: fit-content(25%) 1fr;
+          gap: 0.75rem;
+          svg {
+            margin-top: 0.25rem;
+          }
+          span {
+            color: var(--neutral-400, #c6cdcc);
+          }
+          &:has(span) {
+            border-top: 1px solid var(--primary-500, #064040);
+            padding-top: 1rem;
+            ~ li {
+              border: none;
+              padding-top: 0;
+            }
+          }
+        }
+      }
+      &[data-highlighted='true'] {
+        border-color: rgba(0, 0, 0, 0);
+        margin-top: 1.12rem;
+        .name {
+          background: var(--primary-gradient-400);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .badge {
+          left: 0.5rem;
+          top: 0;
+          transform: translateY(-75%);
+        }
+        .glow {
+          overflow: hidden;
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          &::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            transform: translate3d(10%, -25%, 0);
+            width: 12rem;
+            height: 12rem;
+            background-color: var(--primary-500, #064040);
+            filter: blur(64px);
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 59rem) {
+    .desktop-view {
+      display: none;
+    }
+    .mobile-view {
+      display: grid;
+    }
+  }
+</style>

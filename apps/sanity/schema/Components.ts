@@ -43,6 +43,8 @@ import TabsText from "./components/TabsText";
 import DecryptTabs from "./components/DecryptTabs";
 import TagsLine from "./components/TagsLine";
 import StagesAccordion from "./components/StagesAccordion";
+import Pricing from "./components/Pricing";
+import PricingRange from "./components/PricingRange";
 
 export default defineType({
   name: 'components',
@@ -93,6 +95,8 @@ export default defineType({
     DecryptTabs,
     TagsLine,
     StagesAccordion,
+    Pricing,
+    PricingRange,
   ],
   options: {
     insertMenu: {

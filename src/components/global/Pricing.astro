@@ -1,0 +1,126 @@
+---
+interface Props {
+  plans: {
+    name: string;
+    price: string;
+    features: Record<string, string | boolean>;
+  }[];
+  features: string[]; // List of feature names that will be shown in the same order
+}
+
+const { plans, features } = Astro.props;
+---
+
+<div class="pricing-table">
+  <!-- Desktop Table View -->
+  <table class="desktop-view">
+    <thead>
+      <tr>
+        <th></th> <!-- Empty cell for feature names column -->
+        {plans.map(plan => (
+          <th>
+            <h3>{plan.name}</h3>
+            <div class="price">{plan.price}</div>
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {features.map(feature => (
+        <tr>
+          <td class="feature-name">{feature}</td>
+          {plans.map(plan => (
+            <td>
+              {typeof plan.features[feature] === 'boolean'
+                ? (plan.features[feature] ? '✓' : '✗')
+                : plan.features[feature]}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <!-- Mobile Cards View -->
+  <div class="mobile-view">
+    {plans.map(plan => (
+      <div class="plan-card">
+        <h3>{plan.name}</h3>
+        <div class="price">{plan.price}</div>
+        <ul class="features-list">
+          {features.map(feature => (
+            <li>
+              <span class="feature-name">{feature}</span>
+              <span class="feature-value">
+                {typeof plan.features[feature] === 'boolean'
+                  ? (plan.features[feature] ? '✓' : '✗')
+                  : plan.features[feature]}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .pricing-table {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Desktop Styles */
+  .desktop-view {
+    width: 100%;
+    border-collapse: collapse;
+    display: table;
+  }
+
+  .mobile-view {
+    display: none;
+  }
+
+  th, td {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+
+  .feature-name {
+    text-align: left;
+    font-weight: 500;
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .desktop-view {
+      display: none;
+    }
+
+    .mobile-view {
+      display: block;
+    }
+
+    .plan-card {
+      margin: 1rem 0;
+      padding: 1.5rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+    }
+
+    .features-list {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0 0 0;
+    }
+
+    .features-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #eee;
+    }
+  }
+</style> 
