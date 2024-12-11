@@ -119,9 +119,6 @@ type Props = {
 
 const { data, hasPreviousSections = false } = Astro.props
 
-console.log('Available component types:', Object.keys(components))
-console.log('Incoming data:', data)
-
 export const Components_Query = /* groq */ `
   components[] {
     _type,
@@ -178,9 +175,9 @@ export const Components_Query = /* groq */ `
 
 {
   data?.map((item, i) => {
-    console.log('Processing item:', item._type)
+    // NOTE: Using 'as any' is not ideal for type safety, but it's used here to simplify
+    // the implementation and avoid creating separate typed interfaces for each component.
     const DynamicComponent = components[item._type] as any
-    console.log('Found component:', !!DynamicComponent)
     if (!DynamicComponent) return null
     return <DynamicComponent {...item} index={hasPreviousSections ? ++i : i} />
   })
