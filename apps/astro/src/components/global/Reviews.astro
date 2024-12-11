@@ -7,7 +7,7 @@ export const Review_Query = `
   ${ImageDataQuery('img')}
   name,
   headline,
-  scope[],
+  "scope": scope[] -> name,
   ${PortableTextQuery('review')}
   "caseStudyLink": caseStudy -> slug.current
 `

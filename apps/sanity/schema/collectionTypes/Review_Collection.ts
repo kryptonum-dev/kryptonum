@@ -39,8 +39,28 @@ export default defineType({
       name: 'scope',
       type: 'array',
       title: 'Scope',
-      of: [{ type: 'string' }],
-      validation: Rule => Rule.required(),
+      of: [
+        defineField({
+          name: 'item',
+          type: 'reference',
+          to: [{ type: 'CaseStudyCategory_Collection' }],
+          options: {
+            disableNew: true,
+            filter: ({ parent }) => {
+              const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
+              if (selectedIds.length > 0) {
+                return {
+                  filter: '!(_id in $selectedIds) && !(_id in path("drafts.**"))',
+                  params: { selectedIds }
+                }
+              }
+              return {}
+            }
+          },
+          validation: Rule => Rule.required(),
+        })
+      ],
+      validation: Rule => Rule.required().unique(),
     }),
     defineField({
       name: 'review',
