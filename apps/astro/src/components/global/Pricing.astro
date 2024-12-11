@@ -2,7 +2,7 @@
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/Button'
 
-export const PricingSection_Query = `
+export const Pricing_Query = `
   _type == "Pricing" => {
     ${PortableTextQuery('heading')}
     features[],
@@ -41,7 +41,7 @@ const { index, sectionId, heading, features, plans, cta } = Astro.props
 const Subheading = index === 0 ? 'h2' : 'h3'
 ---
 
-<section class="PricingSection" id={sectionId}>
+<section class="Pricing" id={sectionId}>
   <svg class="svg-defs" aria-hidden="true">
     <defs>
       <symbol id="Pricing-checkmarkColor" viewBox="0 0 21 20">
@@ -214,7 +214,7 @@ const Subheading = index === 0 ? 'h2' : 'h3'
 </section>
 
 <style lang="scss">
-  .PricingSection {
+  .Pricing {
     padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
     header {
       text-align: center;
