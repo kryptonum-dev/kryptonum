@@ -25,6 +25,7 @@ export default defineField({
         defineField({
           name: 'item',
           type: 'reference',
+          weak: true,
           to: [{ type: 'Faq_Collection' }],
           options: {
             filter: ({ parent }) => {
@@ -48,9 +49,10 @@ export default defineField({
   preview: {
     select: {
       heading: 'heading',
+      list: 'list',
     },
-    prepare: ({ heading }) => ({
-      title: title,
+    prepare: ({ heading, list }) => ({
+      title: `${title} (${list.length} references)`,
       subtitle: toPlainText(heading),
       ...sectionPreview({ imgUrl: `/static/components/${name}.webp`, icon: icon() }),
     }),
