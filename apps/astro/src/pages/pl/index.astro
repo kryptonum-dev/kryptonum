@@ -20,6 +20,8 @@ const page = await sanityFetch<QueryProps>({
 })
 
 const metadata = await metadataFetch(page.slug)
+
+console.log(page.components)
 ---
 
 <Layout {...metadata}>
