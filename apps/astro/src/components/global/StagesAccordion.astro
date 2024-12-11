@@ -151,7 +151,6 @@ const { index, sectionId, heading, img, items, annotation } = Astro.props
     accordions.forEach((details) => {
       details.addEventListener('toggle', () => {
         if (details.open) {
-          console.log(details)
           currentlyOpened = details
           accordions.forEach((otherDetails) => {
             if (currentlyOpened !== otherDetails && otherDetails.open) {
