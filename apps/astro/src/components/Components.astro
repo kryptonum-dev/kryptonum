@@ -52,7 +52,7 @@ import TabsText, { TabsText_Query } from '@/components/global/TabsText.astro'
 import DecryptTabs, { DecryptTabs_Query } from '@/components/global/DecryptTabs.astro'
 import TagsLine, { TagsLine_Query } from '@/components/global/TagsLine.astro'
 import StagesAccordion, { StagesAccordion_Query } from '@/components/global/StagesAccordion.astro'
-import Pricing, { Pricing_Query } from '@/components/global/Pricing.astro'
+import PricingSection, { PricingSection_Query } from '@/components/global/PricingSection.astro'
 import PricingRange, { PricingRange_Query } from '@/components/global/PricingRange.astro'
 
 const components = {
@@ -100,7 +100,7 @@ const components = {
   DecryptTabs,
   TagsLine,
   StagesAccordion,
-  Pricing,
+  PricingSection,
   PricingRange,
 }
 
@@ -167,7 +167,7 @@ export const Components_Query = /* groq */ `
     ${DecryptTabs_Query}
     ${TagsLine_Query}
     ${StagesAccordion_Query}
-    ${Pricing_Query}
+    ${PricingSection_Query}
     ${PricingRange_Query}
   },
 `
