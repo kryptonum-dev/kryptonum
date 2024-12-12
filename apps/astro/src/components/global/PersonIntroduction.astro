@@ -27,7 +27,7 @@ const { index, sectionId, heading, headline, img, signature, paragraph } = Astro
 
 <section class="PersonIntroduction" id={sectionId}>
   <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="h1">{heading}</PortableText>
-  <div class="img">
+  <div class="wrapper">
     <p class="headline">{headline}</p>
     <Image
       {...img}
@@ -47,11 +47,10 @@ const { index, sectionId, heading, headline, img, signature, paragraph } = Astro
     grid-template-columns: 3fr 4fr 5fr;
     gap: clamp(2rem, calc(4vw / 0.48), 4rem) 1rem;
     align-items: center;
-    .img {
+    .wrapper {
       $headlineSize: clamp(7.5rem, calc(8.5vw / 0.48), 9rem);
       position: relative;
-      width: fit-content;
-      margin: 0 auto 0 calc($headlineSize / 2);
+      padding-left: calc($headlineSize / 2);
       .headline {
         width: $headlineSize;
         height: $headlineSize;
@@ -63,12 +62,13 @@ const { index, sectionId, heading, headline, img, signature, paragraph } = Astro
         display: grid;
         place-items: center;
         text-align: center;
-      }
-      .headline {
         position: absolute;
         left: 0;
         top: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(0, -50%);
+      }
+      .avatar {
+        width: 100%;
       }
       .signature {
         position: absolute;
@@ -92,7 +92,7 @@ const { index, sectionId, heading, headline, img, signature, paragraph } = Astro
     }
     @media (max-width: 37rem) {
       grid-template-columns: 1fr;
-      .img {
+      .wrapper {
         margin-right: 3rem;
       }
       .paragraph {
