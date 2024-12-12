@@ -25,7 +25,7 @@ export default defineField({
       title: 'Reviews (optional)',
       description: (
         <>
-          If you will not add any reviews there, then all reviews from the <a href="/structure/Review_Collection" target='_blank' rel='noopener'>Review Collection</a> will be displayed.
+          If this field is left empty, 8 most recently updated reviews from the <a href="/structure/Review_Collection" target='_blank' rel='noopener'>Review Collection</a> will be displayed automatically.
         </>
       ),
       of: [

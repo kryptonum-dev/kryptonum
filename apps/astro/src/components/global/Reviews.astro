@@ -19,7 +19,7 @@ export const Reviews_Query = `
       reviews[] -> {
         ${Review_Query}
       },
-      *[_type == "Review_Collection"][] | order(_updatedAt desc) {
+      *[_type == "Review_Collection"][0...8] | order(_updatedAt desc) {
         ${Review_Query}
       }
     ),
