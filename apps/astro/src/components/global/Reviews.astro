@@ -39,7 +39,7 @@ type Props = {
     img: ImageDataProps
     name: string
     headline: string
-    scope: string[]
+    scope?: string[]
     review: PortableTextValue
     caseStudyLink?: string
   }>
@@ -127,14 +127,16 @@ const renderStars = (rating: number) => {
         <article class="item">
           <header>
             <Subheading class="name">{name}</Subheading>
-            <p class="headline">{headline}</p>
+            {headline && <p class="headline">{headline}</p>}
             <Image {...img} sizes="54px" />
           </header>
-          <ul class="scope">
-            {scope.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
+          {scope && (
+            <ul class="scope">
+              {scope.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          )}
           <PortableText value={review} class="review" />
           {caseStudyLink && (
             <Button theme="secondary" href={caseStudyLink} className="cta">
@@ -207,6 +209,7 @@ const renderStars = (rating: number) => {
           grid-template-columns: 1fr auto;
           align-items: center;
           column-gap: 1rem;
+          margin-bottom: 1rem;
           .name {
             font-size: var(--typography-body-xl, 1rem);
           }
@@ -230,9 +233,9 @@ const renderStars = (rating: number) => {
           gap: 0.38rem 0.75rem;
           font-size: var(--typography-body-m, 0.875rem);
           color: var(--neutral-400, #c6cdc4);
-          margin: 1rem 0 clamp(1.25rem, calc(1.5vw / 0.48), 1.75rem);
         }
         .review {
+          margin-top: clamp(1.25rem, calc(1.5vw / 0.48), 1.75rem);
           font-size: var(--typography-body-m, 0.875rem);
         }
         .cta {

@@ -43,7 +43,7 @@ const ProcessJsonButton = (props: { value: any; renderDefault: any; }) => {
       toast.push({
         status: 'error',
         title: 'Error',
-        description: 'Failed to process and update redirects'
+        description: 'Failed to process and update redirects. Check if there are any changes in the JSON.'
       });
     } finally {
       setIsLoading(false);
@@ -94,9 +94,8 @@ const ProcessJsonButton = (props: { value: any; renderDefault: any; }) => {
             </Stack>
           </Box>
         </Dialog>
-      )
-      }
-    </Stack >
+      )}
+    </Stack>
   );
 };
 

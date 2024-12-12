@@ -32,13 +32,12 @@ export default defineType({
     defineField({
       name: 'headline',
       type: 'string',
-      title: 'Headline',
-      validation: Rule => Rule.required(),
+      title: 'Headline (optional)',
     }),
     defineField({
       name: 'scope',
       type: 'array',
-      title: 'Scope',
+      title: 'Scope (optional)',
       of: [
         defineField({
           name: 'item',
@@ -60,7 +59,7 @@ export default defineType({
           validation: Rule => Rule.required(),
         })
       ],
-      validation: Rule => Rule.required().unique(),
+      validation: Rule => Rule.unique(),
     }),
     defineField({
       name: 'review',
