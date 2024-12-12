@@ -57,6 +57,8 @@ const { path, ...props } = Astro.props
   const easeOut = (t: number) => 1 - Math.pow(1 - t, 2)
   const scrollHeight = 810
 
+  if (history.scrollRestoration) history.scrollRestoration = 'manual'
+
   function initScrollToNext() {
     const ScrollToNextPage = document.querySelector<HTMLDivElement>('[data-element="ScrollToNextPage"]')!
     const progressBar = ScrollToNextPage.querySelector<HTMLDivElement>('.progress-bar')!
