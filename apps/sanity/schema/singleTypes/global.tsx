@@ -120,7 +120,7 @@ export default defineType({
               title: 'Icon (optional)',
               description: 'Only SVG files are supported.',
               options: {
-                accept: '.svg'
+                accept: '.svg',
               },
             }),
             defineField({
