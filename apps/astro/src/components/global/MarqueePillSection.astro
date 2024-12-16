@@ -48,7 +48,6 @@ const { index, sectionId, heading, list } = Astro.props
 </section>
 
 <style lang="scss">
-  $gap: 0.5rem;
   .MarqueePillSection {
     padding: clamp(2rem, calc(4vw / 0.48), 5rem) 0;
     display: grid;
@@ -72,7 +71,7 @@ const { index, sectionId, heading, list } = Astro.props
         z-index: 1;
         pointer-events: none;
         background: linear-gradient(90deg, #010104 25%, rgba(0, 0, 0, 0));
-        transition: opacity 500ms var(--easing);
+        transition: opacity 500ms ease-out;
       }
       &::before {
         left: -1px;
@@ -96,7 +95,7 @@ const { index, sectionId, heading, list } = Astro.props
       ul {
         flex-shrink: 0;
         display: flex;
-        gap: $gap;
+        gap: 0.5rem;
         transition: transform 500ms ease-out;
         li {
           flex-shrink: 0;
