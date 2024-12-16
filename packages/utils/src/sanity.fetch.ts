@@ -1,7 +1,10 @@
 import { createClient, type QueryParams } from '@sanity/client'
-import { isPreviewDeployment } from './is-preview-deployment';
+import { isPreviewDeployment } from '@repo/utils/is-preview-deployment';
+import 'dotenv/config'
 
-const SANITY_API_TOKEN = import.meta.env.SANITY_API_TOKEN || process.env.SANITY_API_TOKEN;
+const SANITY_API_TOKEN = process.env.SANITY_API_TOKEN;
+
+console.log(process.env)
 
 if (!SANITY_API_TOKEN) console.warn('\x1b[33m%s\x1b[0m', "The `SANITY_API_TOKEN` environment variable is required.");
 

@@ -1,0 +1,17 @@
+{
+  "name": "@repo/utils",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./sanity.fetch": "./src/sanity.fetch.ts",
+    "./is-preview-deployment": "./src/is-preview-deployment.ts",
+    "./metadata.fetch": "./src/metadata.fetch.ts",
+    "./format-date": "./src/format-date.ts",
+    "./hash": "./src/hash.ts",
+    "./html-to-string": "./src/html-to-string.ts",
+    "./slugify": "./src/slugify.ts"
+  }
+}

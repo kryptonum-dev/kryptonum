@@ -12,22 +12,27 @@
   },
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "dotenv -- turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "dependencies": {
+    "@sanity/client": "^6.24.1"
   },
   "devDependencies": {
     "turbo": "^2.3.3",
     "eslint": "^9.17.0",
     "prettier": "^3.4.2",
     "typescript": "^5.7.2",
-    "@typescript-eslint/parser": "^8.18.0"
+    "@typescript-eslint/parser": "^8.18.0",
+    "dotenv": "^16.4.7"
   },
   "engines": {
     "node": ">=18"
   },
   "packageManager": "bun@1.1.26",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ]
 }

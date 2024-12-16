@@ -1,5 +1,5 @@
 ---
-import sanityFetch from '@/utils/sanity.fetch'
+import sanityFetch from '@repo/utils/sanity.fetch'
 import imageToInlineSvg from '@/components/ui/image/image-to-inline-svg'
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@/components/ui/Button'
 import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
@@ -889,7 +889,7 @@ const pathname = Astro.url.pathname
 </style>
 
 <script>
-  import { hash } from '@/utils/hash'
+  import { hash } from '@repo/utils/hash'
 
   interface StoredAnnotation {
     hash: string

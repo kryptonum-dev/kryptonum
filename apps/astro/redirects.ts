@@ -1,5 +1,5 @@
 import type { ValidRedirectStatus } from 'astro';
-import sanityFetch from './src/utils/sanity.fetch'
+import sanityFetch from '@repo/utils/sanity.fetch'
 
 type RedirectData = {
   source: string;

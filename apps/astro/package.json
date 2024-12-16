@@ -11,11 +11,11 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@repo/utils": "workspace:*",
     "@astrojs/check": "^0.9.4",
     "@astrojs/preact": "^4.0.0",
     "@astrojs/vercel": "^8.0.1",
     "@mux/mux-video": "^0.23.0",
-    "@sanity/client": "^6.24.1",
     "astro": "^5.0.5",
     "astro-portabletext": "^0.10.1",
     "autoprefixer": "^10.4.20",
