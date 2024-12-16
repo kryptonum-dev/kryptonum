@@ -52,8 +52,6 @@ type Props = {
 
 const { index, sectionId, heading, reviews, googleData } = Astro.props as Props
 
-console.log(reviews);
-
 const Subheading = index === 0 ? 'h2' : 'h3'
 
 const countReviews = (number: number = 0) => {
@@ -134,9 +132,10 @@ const renderStars = (rating: number) => {
           </header>
           {scope && (
             <ul class="scope">
-              {scope.map((item) => (
-                <li>{item}</li>
-              ))}
+              {scope.map((item) => {
+                console.log(item)
+                return <li>{item}</li>
+              })}
             </ul>
           )}
           <PortableText value={review} class="review" />
