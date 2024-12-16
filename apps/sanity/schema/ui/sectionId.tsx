@@ -1,5 +1,5 @@
 import { defineField } from "sanity";
-import { slugify } from "../../utils/slugify";
+import { slugify } from "@repo/utils/slugify";
 
 type Props = {
   _key: string;

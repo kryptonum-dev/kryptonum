@@ -1,6 +1,5 @@
 import { createClient, type QueryParams } from '@sanity/client'
 import { isPreviewDeployment } from '@repo/utils/is-preview-deployment';
-import 'dotenv/config'
 
 const SANITY_API_TOKEN = process.env.SANITY_API_TOKEN;
 

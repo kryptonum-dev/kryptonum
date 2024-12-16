@@ -1,6 +1,6 @@
 import { defineField, defineType } from "sanity";
 import { isUniqueSlug } from "../../utils/is-unique-slug";
-import { slugify } from "../../utils/slugify";
+import { slugify } from "@repo/utils/slugify";
 
 const name = 'Location_Collection';
 const title = 'Location Collection';

@@ -15,6 +15,7 @@
     "sanity"
   ],
   "dependencies": {
+    "@repo/utils": "workspace:*",
     "sanity": "^3.67.1",
     "@sanity/vision": "^3.67.1",
     "react": "^18.3.1",
