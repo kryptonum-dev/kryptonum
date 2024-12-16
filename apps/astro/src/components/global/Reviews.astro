@@ -132,10 +132,9 @@ const renderStars = (rating: number) => {
           </header>
           {scope && (
             <ul class="scope">
-              {scope.map((item) => {
-                console.log(item)
-                return <li>{item}</li>
-              })}
+              {scope.map((item) => (
+                <li>{item}</li>
+              ))}
             </ul>
           )}
           <PortableText value={review} class="review" />
