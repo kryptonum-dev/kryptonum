@@ -52,6 +52,8 @@ type Props = {
 
 const { index, sectionId, heading, reviews, googleData } = Astro.props as Props
 
+console.log(reviews);
+
 const Subheading = index === 0 ? 'h2' : 'h3'
 
 const countReviews = (number: number = 0) => {
