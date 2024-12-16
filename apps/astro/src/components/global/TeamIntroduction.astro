@@ -100,35 +100,35 @@ const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
       )
     }
   </header>
-  <div class="people">
-    {
-      Array.from({ length: 2 }).map((_, index) => (
-        <ul aria-hidden={index === 1} style={`animation-duration: ${people?.length * 3}s;`}>
-          {people?.map(({ slug, img, name, headline, formalHeadline }) => (
-            <li class="person">
-              <a href={slug} tabindex={index === 1 ? '-1' : '0'}>
-                <div class="img">
-                  <Image {...img} sizes="186px" />
-                </div>
-                <div class="content">
-                  <Subheading class="name">{name}</Subheading>
-                  {(withTabs && tabs) ? (
-                    <p class="headline">{formalHeadline}</p>
-                    <p class="headline" aria-hidden="true">
-                      {headline}
-                    </p>
-                  ) : (
-                    <p class="headline">{headline}</p>
-                  )}
-                </div>
-              </a>
-            </li>
-          ))}
+  {people?.length > 0 && (
+    <div class="people">
+      <div class="marquee" style={`animation-duration: ${people.length * 3}s;`}>
+        <ul>
+        {[...people, ...people].map(({ slug, img, name, headline, formalHeadline }) => (
+          <li class="person">
+            <a href={slug}>
+              <div class="img">
+                <Image {...img} sizes="186px" />
+              </div>
+              <div class="content">
+                <Subheading class="name">{name}</Subheading>
+                {(withTabs && tabs) ? (
+                  <p class="headline">{formalHeadline}</p>
+                  <p class="headline" aria-hidden="true">
+                    {headline}
+                  </p>
+                ) : (
+                  <p class="headline">{headline}</p>
+                )}
+              </div>
+            </a>
+          </li>
+        ))}
         </ul>
-      ))
-    }
-    <div class="glow"></div>
-  </div>
+      </div>
+      <div class="glow"></div>
+    </div>
+  )}
 </section>
 
 <style lang="scss">
@@ -205,9 +205,6 @@ const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
       }
     }
     .people {
-      display: flex;
-      gap: clamp(0.25rem, calc(0.38vw / 0.48), 0.38rem);
-      $gap: clamp(0.25rem, calc(0.38vw / 0.48), 0.38rem);
       position: relative;
       overflow: hidden;
       padding: 0 var(--page-margin);
@@ -231,23 +228,30 @@ const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
       }
       &:hover,
       &:has(a:focus-visible) {
-        ul {
+        .marquee {
           animation-play-state: paused;
+          ul {
+            transform: translateX(-1rem);
+          }
+        }
+      }
+      .marquee {
+        width: fit-content;
+        animation: MarqueePillSection-marquee 10s linear infinite;
+        @keyframes MarqueePillSection-marquee {
+          0% {
+            transform: translate3d(0px, 0px, 0px);
+          }
+          100% {
+            transform: translate3d(-50%, 0px, 0px);
+          }
         }
       }
       ul {
         flex-shrink: 0;
         display: flex;
-        gap: $gap;
-        animation: marquee 10s linear infinite;
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(calc(-100% - $gap));
-          }
-        }
+        gap: clamp(0.25rem, calc(0.38vw / 0.48), 0.38rem);
+        transition: transform 500ms ease-out;
         .person {
           width: calc(clamp(170px, calc(186px / 7.68), 186px) + clamp(0.25rem, calc(0.5vw / 0.48), 0.5rem) * 2);
           flex-shrink: 0;
@@ -267,8 +271,8 @@ const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
           }
           .content {
             text-align: center;
-            margin-top: $gap;
-            padding: $gap;
+            margin-top: clamp(0.25rem, calc(0.38vw / 0.48), 0.38rem);
+            padding: clamp(0.25rem, calc(0.38vw / 0.48), 0.38rem);
             border-radius: 0.25rem;
             background: var(--primary-700, #021d1d);
             .name {

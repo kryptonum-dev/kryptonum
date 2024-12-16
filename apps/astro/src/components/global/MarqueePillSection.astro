@@ -30,20 +30,20 @@ const { index, sectionId, heading, list } = Astro.props
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
   </header>
   <div class="list">
-    {
-      Array.from({ length: 2 }).map((_, index) => (
-        <ul aria-hidden={index === 1} style={`animation-duration: ${list.length * 2}s;`}>
-          {list.map(({ icon, label }) => (
+    <div class="marquee" style={`animation-duration: ${list.length * 2}s;`}>
+      <ul>
+        {
+          [...list, ...list].map(({ icon, label }) => (
             <li>
               <div class="icon">
                 <Image {...icon} sizes="24px" />
               </div>
               <span>{label}</span>
             </li>
-          ))}
-        </ul>
-      ))
-    }
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -60,8 +60,6 @@ const { index, sectionId, heading, list } = Astro.props
     .list {
       margin: 0 calc(var(--page-margin) * -1);
       overflow: hidden;
-      display: flex;
-      gap: $gap;
       position: relative;
       padding-top: 3px;
       &::before,
@@ -83,19 +81,23 @@ const { index, sectionId, heading, list } = Astro.props
         right: -1px;
         transform: rotate(180deg);
       }
+      .marquee {
+        width: fit-content;
+        animation: MarqueePillSection-marquee 10s linear infinite;
+        @keyframes MarqueePillSection-marquee {
+          0% {
+            transform: translate3d(0px, 0px, 0px);
+          }
+          100% {
+            transform: translate3d(-50%, 0px, 0px);
+          }
+        }
+      }
       ul {
         flex-shrink: 0;
         display: flex;
         gap: $gap;
-        animation: marquee 10s linear infinite;
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(calc(-100% - $gap));
-          }
-        }
+        transition: transform 500ms ease-out;
         li {
           flex-shrink: 0;
           width: 7rem;
@@ -129,8 +131,11 @@ const { index, sectionId, heading, list } = Astro.props
         &::after {
           opacity: 0.62;
         }
-        ul {
+        .marquee {
           animation-play-state: paused;
+          ul {
+            transform: translateX(-1rem);
+          }
         }
       }
     }
