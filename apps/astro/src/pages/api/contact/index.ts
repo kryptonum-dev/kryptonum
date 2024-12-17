@@ -36,6 +36,7 @@ export const POST: APIRoute = async ({ request }) => {
       body: JSON.stringify({
         from: 'Formularz kontaktowy | Kryptonum <formularz@send.kryptonum.eu>',
         to: 'michal@kryptonum.eu',
+        bcc: ['ola@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@kryptonum.eu'],
         reply_to: email,
         subject: `Wiadomość z formularza kontaktowego | Kryptonum`,
         html: htmlTemplate,
