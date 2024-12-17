@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro sync && tsc --watch",
-    "build": "tsc"
+    "build": "astro sync && tsc"
   },
   "exports": {
     "./Error": "./src/Error/index.tsx",
