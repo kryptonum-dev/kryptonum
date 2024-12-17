@@ -226,7 +226,7 @@ const page = await sanityFetch<{
       {
         page.services.items.map(({ name, slug }) => (
           <li class="item">
-            <a href={slug} class="group-link">
+            <a href={`${DOMAIN}${slug}`} class="group-link">
               <div class="blur" />
               {name}
             </a>

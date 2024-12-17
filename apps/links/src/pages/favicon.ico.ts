@@ -10,7 +10,7 @@ export const GET: APIRoute = async () => {
     .resize(32, 32)
     .toBuffer();
   const icoBuffer = ico.encode([processedFavicon]);
-  
+
   return new Response(icoBuffer, {
     headers: { "Content-Type": "image/x-icon" },
   });
