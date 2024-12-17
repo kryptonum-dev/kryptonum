@@ -4,11 +4,8 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".vercel/**"]
-    },
-    "astro-www#build": {
       "outputs": ["dist/**", ".vercel/**"],
-      "env": ["MAILERLITE_API_KEY", "RESEND_API_KEY"]
+      "env": ["SANITY_API_TOKEN", "MAILERLITE_API_KEY", "RESEND_API_KEY"]
     },
     "@repo/shared#build": {
       "outputs": []
@@ -17,8 +14,7 @@
       "outputs": []
     },
     "@repo/utils#build": {
-      "outputs": [],
-      "env": ["SANITY_API_TOKEN"]
+      "outputs": []
     },
     "lint": {
       "dependsOn": ["^lint"]
