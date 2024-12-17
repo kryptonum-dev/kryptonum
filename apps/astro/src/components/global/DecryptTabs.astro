@@ -1,8 +1,8 @@
 ---
 import { toPlainText } from 'astro-portabletext/utils'
 import type { PortableTextBlock, PortableTextSpan } from '@portabletext/types'
-import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
-import CategoryTab from '@/components/ui/CategoryTab.astro'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import CategoryTab from '@repo/ui/CategoryTab'
 
 export const DecryptTabs_Query = `
   _type == "DecryptTabs" => {

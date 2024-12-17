@@ -1,0 +1,22 @@
+{
+  "name": "@repo/shared",
+  "type": "module",
+  "scripts": {
+    "dev": "astro sync && tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./global.scss": "./src/global.scss",
+    "./constants": "./src/constants.ts",
+    "./assets/icon.png": "./src/assets/icon.png",
+    "./assets/favicon.svg": "./src/assets/favicon.svg",
+    "./Layout": "./src/layout/Layout.astro",
+    "./Head": "./src/layout/Head.astro",
+    "./Header": "./src/layout/Header.astro",
+    "./Footer": "./src/layout/Footer.astro"
+  },
+  "dependencies": {
+    "@repo/utils": "workspace:*",
+    "@repo/ui": "workspace:*"
+  }
+}

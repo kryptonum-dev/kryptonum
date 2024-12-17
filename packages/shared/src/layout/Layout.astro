@@ -1,0 +1,32 @@
+---
+import '@repo/shared/global.scss'
+import { LOCALE } from '../constants'
+import Head, { type HeadProps } from './Head.astro'
+import Header from './Header.astro'
+import Footer from './Footer.astro'
+import Toast from '@repo/ui/Toast/Toast.astro'
+
+type Props = HeadProps & {
+  clearLayout?: boolean
+}
+
+const { clearLayout = false, ...props } = Astro.props
+---
+
+<!doctype html>
+<html lang={LOCALE}>
+  <head>
+    <Head {...props} />
+    <slot name="Head" />
+    <script is:inline src="https://cdn.usefathom.com/script.js" data-site="PUUZZITA" defer></script>
+  </head>
+  <body>
+    {!clearLayout && <Header />}
+    <main id="main">
+      <slot />
+    </main>
+    {!clearLayout && <Footer />}
+    <slot name="ScrollToNextPage" />
+    <Toast />
+  </body>
+</html>

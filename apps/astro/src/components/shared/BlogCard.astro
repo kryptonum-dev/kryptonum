@@ -1,0 +1,67 @@
+---
+import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@repo/ui/EstimatedReadingTime'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import { ContentPT_Query } from '@components/Blog/Post/Content/content-pt/index.astro'
+
+export const BlogCard_Query = `
+  ${ImageDataQuery('img')}
+  name,
+  "slug": slug.current,
+  ${ContentPT_Query}
+`
+
+export type Props = {
+  img: ImageDataProps
+  name: string
+  slug: string
+  content: EstimatedReadingTimeProps['content']
+  imgProps: {
+    sizes: string
+    priority?: boolean
+    loading?: 'eager' | 'lazy'
+  }
+}
+
+const { img, name, slug, content, imgProps } = Astro.props
+---
+
+<article class="BlogCard">
+  <a href={slug}>
+    <Image {...img} {...imgProps} sizes={imgProps.sizes} />
+    <header>
+      <EstimatedReadingTime content={content} />
+      <h2>{name}</h2>
+    </header>
+  </a>
+</article>
+
+<style lang="scss">
+  .BlogCard {
+    a {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border-radius: 0.25rem;
+      border: 1px solid var(--neutral-600, #4a4a57);
+      overflow: hidden;
+      transition: border-color 500ms var(--easing);
+      &:hover {
+        border-color: var(--neutral-500, #75758a);
+      }
+    }
+    header {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(0.75rem, calc(1vw / 0.48), 1.5rem) clamp(1rem, calc(1vw / 0.48), 1.5rem)
+        clamp(1rem, calc(1vw / 0.48), 1.5rem);
+      :global(.estimated-reading-time) {
+        margin-bottom: clamp(1rem, calc(1.25vw / 0.48), 3rem);
+      }
+      h2 {
+        margin-top: auto;
+        font-size: var(--typography-body-xl, 1rem);
+      }
+    }
+  }
+</style>

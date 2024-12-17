@@ -17,7 +17,11 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "dependencies": {
-    "@sanity/client": "^6.24.1"
+    "@sanity/client": "^6.24.1",
+    "astro": "^5.0.5",
+    "@astrojs/check": "^0.9.4",
+    "astro-portabletext": "^0.10.1",
+    "react-hook-form": "^7.54.1"
   },
   "devDependencies": {
     "turbo": "^2.3.3",
@@ -25,7 +29,8 @@
     "prettier": "^3.4.2",
     "typescript": "^5.7.2",
     "@typescript-eslint/parser": "^8.18.0",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "sass": "^1.83.0"
   },
   "engines": {
     "node": ">=18"

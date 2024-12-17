@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'preact/hooks';
 import { useForm, type FieldValues } from 'react-hook-form';
-import Input from '@/components/ui/Input/Input'
-import Checkbox from '@/components/ui/Checkbox'
-import { REGEX } from '@/global/constants';
-import { subscribeToNewsletter, type Props as subscribeToNewsletterProps } from '@/src/pages/api/newsletter/subscribeToNewsletter';
+import Input from '@repo/ui/Input'
+import Checkbox from '@repo/ui/Checkbox'
+import { REGEX } from '@repo/shared/constants';
+import { subscribeToNewsletter, type Props as subscribeToNewsletterProps } from '@pages/api/newsletter/subscribeToNewsletter';
 
 export default function Form({ children, groupId, ...props }: { children: React.ReactNode, groupId: string } & React.FormHTMLAttributes<HTMLFormElement>) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');

@@ -1,12 +1,12 @@
 ---
 export const slugPrefix = '/pl/portfolio/'
 
-import Layout from '@/src/layouts/Layout.astro'
+import Layout from '@repo/shared/Layout'
 import sanityFetch from '@repo/utils/sanity.fetch'
 import metadataFetch from '@repo/utils/metadata.fetch'
-import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
-import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
-import ScrollToNextPage from '@/components/ui/ScrollToNextPage.astro'
+import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
+import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
+import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
 
 export async function getStaticPaths() {
   const pages = await sanityFetch<{ slug: string }[]>({

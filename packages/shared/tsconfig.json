@@ -1,0 +1,12 @@
+{
+  "extends": "astro/tsconfigs/base",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "module": "ES2015",
+    "moduleResolution": "bundler"
+  },
+  "include": ["src", "declaration.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

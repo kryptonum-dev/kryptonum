@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'preact/hooks';
 import { useForm, type FieldValues } from 'react-hook-form';
 import type { Props as ContactFormProps } from '../ContactForm.astro';
-import Input from '@/components/ui/Input/Input'
-import Checkbox from '@/components/ui/Checkbox'
-import { REGEX } from '@/global/constants';
-import { sendContactEmail, type Props as sendContactEmailProps } from '@/src/pages/api/contact/sendContactEmail';
+import Input from '@repo/ui/Input'
+import Checkbox from '@repo/ui/Checkbox'
+import { REGEX } from '@repo/shared/constants';
+import { sendContactEmail, type Props as sendContactEmailProps } from '@pages/api/contact/sendContactEmail';
 
 export default function Form({ children, variant, ...props }: { children: React.ReactNode, variant: ContactFormProps['variant'] } & React.FormHTMLAttributes<HTMLFormElement>) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');

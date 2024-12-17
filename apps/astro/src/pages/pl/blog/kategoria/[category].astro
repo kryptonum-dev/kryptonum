@@ -1,14 +1,14 @@
 ---
 export const slugPrefix = '/pl/blog/kategoria/'
 
-import Layout from '@/src/layouts/Layout.astro'
+import Layout from '@repo/shared/Layout'
 import sanityFetch from '@repo/utils/sanity.fetch'
 import metadataFetch from '@repo/utils/metadata.fetch'
-import Breadcrumbs from '@/components/ui/Breadcrumbs.astro'
-import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
-import Hero, { Hero_Query, type HeroProps } from '@/components/Blog/Hero.astro'
-import Listing, { Listing_Query, type ListingProps } from '@/components/Blog/Listing.astro'
-import Components, { Components_Query, type ComponentsProps } from '@/components/Components.astro'
+import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Hero, { Hero_Query, type HeroProps } from '@components/Blog/Hero.astro'
+import Listing, { Listing_Query, type ListingProps } from '@components/Blog/Listing.astro'
+import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
 
 export const categories = await sanityFetch<{ slug: string }[]>({
   query: `

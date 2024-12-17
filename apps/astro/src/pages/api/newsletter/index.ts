@@ -2,9 +2,9 @@ export const prerender = false
 
 import type { APIRoute } from "astro";
 import type { Props } from "./subscribeToNewsletter";
-import { REGEX } from "@/src/global/constants";
+import { REGEX } from "@repo/shared/constants";
 
-const MAILERLITE_API_KEY = import.meta.env.MAILERLITE_API_KEY || process.env.MAILERLITE_API_KEY;
+const MAILERLITE_API_KEY = process.env.MAILERLITE_API_KEY;
 
 export const POST: APIRoute = async ({ request }) => {
   const { email, name, groupId, legal } = await request.json() as Props;

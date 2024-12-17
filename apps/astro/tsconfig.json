@@ -4,12 +4,8 @@
     "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "paths": {
-      "@/src/*": ["./src/*"],
-      "@/global/*": ["./src/global/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/assets/*": ["./src/assets/*"],
-      "@/public/*": ["./public/*"]
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"]
     }
   }
 }

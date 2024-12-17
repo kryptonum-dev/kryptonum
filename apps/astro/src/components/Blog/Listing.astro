@@ -1,9 +1,9 @@
 ---
-import BlogCard, { BlogCard_Query, type Props as BlogCardProps } from '@/components/ui/BlogCard.astro'
-import CategoryTab from '@/components/ui/CategoryTab.astro'
-import PortableText, { PortableTextQuery, type PortableTextValue } from '@/components/ui/portable-text'
-import Pagination from '@/components/ui/Pagination.astro'
-import { ITEMS_PER_PAGE } from '@/src/pages/pl/blog.astro'
+import BlogCard, { BlogCard_Query, type Props as BlogCardProps } from '@components/shared/BlogCard.astro'
+import CategoryTab from '@repo/ui/CategoryTab'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Pagination from '@repo/ui/Pagination'
+import { ITEMS_PER_PAGE } from '@pages/pl/blog.astro'
 
 export const Listing_Query = ({
   currentPage = 1,

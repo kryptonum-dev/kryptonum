@@ -1,6 +1,6 @@
 ---
-import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@/components/ui/EstimatedReadingTime.astro'
-import Image, { ImageDataQuery, type ImageDataProps } from '@/components/ui/image'
+import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@repo/ui/EstimatedReadingTime'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 
 export const Metadata_Query = `
   "author": author[0] -> {
@@ -126,7 +126,7 @@ const { content, author } = Astro.props as MetadataProps
 </style>
 
 <script>
-  import { showToast } from '@/components/ui/Toast/index.ts'
+  import { showToast } from '@repo/ui/Toast/index.ts'
 
   document.querySelector('.share')?.addEventListener('click', () => {
     const url = new URL(window.location.href)

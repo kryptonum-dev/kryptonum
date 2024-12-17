@@ -2,7 +2,7 @@ export const prerender = true;
 
 import type { APIRoute } from "astro";
 import sanityFetch from "@repo/utils/sanity.fetch";
-import { DOMAIN } from "@/global/constants";
+import { DOMAIN } from "@repo/shared/constants";
 
 const slugs = [
   ...await sanityFetch<string[]>({
@@ -11,22 +11,22 @@ const slugs = [
     `,
   }),
   ...await Promise.all([
-    import("@/src/pages/pl/blog/strona/[page].astro")
+    import("./pl/blog/strona/[page].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/blog/strona/${path.params.page}`)),
-    import("@/src/pages/pl/blog/kategoria/[category].astro")
+    import("./pl/blog/kategoria/[category].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/blog/kategoria/${path.params.category}`)),
-    import("@/src/pages/pl/blog/kategoria/[category]/strona/[page].astro")
+    import("./pl/blog/kategoria/[category]/strona/[page].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/blog/kategoria/${path.params.category}/strona/${path.params.page}`)),
-    import("@/src/pages/pl/portfolio/strona/[page].astro")
+    import("./pl/portfolio/strona/[page].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/portfolio/strona/${path.params.page}`)),
-    import("@/src/pages/pl/portfolio/kategoria/[category].astro")
+    import("./pl/portfolio/kategoria/[category].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/portfolio/kategoria/${path.params.category}`)),
-    import("@/src/pages/pl/portfolio/kategoria/[category]/strona/[page].astro")
+    import("./pl/portfolio/kategoria/[category]/strona/[page].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/portfolio/kategoria/${path.params.category}/strona/${path.params.page}`)),
   ]).then(paths => paths.flat())

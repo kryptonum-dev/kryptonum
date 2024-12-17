@@ -1,7 +1,7 @@
 export const prerender = true;
 
 import type { APIRoute } from "astro";
-import { DOMAIN } from "@/global/constants";
+import { DOMAIN } from "@repo/shared/constants";
 
 const content = [
   "User-Agent: *",

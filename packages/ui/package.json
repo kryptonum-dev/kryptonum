@@ -1,0 +1,30 @@
+{
+  "name": "@repo/ui",
+  "type": "module",
+  "scripts": {
+    "dev": "astro sync && tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./Error": "./src/Error/index.tsx",
+    "./Image": "./src/image/index.ts",
+    "./Image/image-to-inline-svg": "./src/image/image-to-inline-svg.ts",
+    "./Input": "./src/input/index.ts",
+    "./portable-text": "./src/portable-text/index.ts",
+    "./Button": "./src/button/index.ts",
+    "./Checkbox": "./src/checkbox/index.tsx",
+    "./Loader": "./src/Loader.astro",
+    "./Copy": "./src/Copy.astro",
+    "./EstimatedReadingTime": "./src/EstimatedReadingTime.astro",
+    "./Toast/*": "./src/Toast/*",
+    "./Socials": "./src/Socials.astro",
+    "./Accordion": "./src/Accordion.astro",
+    "./Video": "./src/Video.astro",
+    "./CountUp": "./src/CountUp.astro",
+    "./CategoryTab": "./src/CategoryTab.astro",
+    "./Pagination": "./src/Pagination.astro"
+  },
+  "dependencies": {
+    "@repo/utils": "workspace:*"
+  }
+}
