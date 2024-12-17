@@ -1,8 +1,8 @@
 export const prerender = false
 
 import type { APIRoute } from "astro";
+import type { Props } from "./sendContactEmail";
 import { REGEX } from "@repo/shared/constants";
-import { type Props } from "./sendContactEmail";
 import { htmlToString } from "@repo/utils/html-to-string";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
