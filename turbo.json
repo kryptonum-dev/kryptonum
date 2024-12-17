@@ -7,13 +7,21 @@
       "outputs": ["dist/**", ".vercel/**"],
       "env": ["VERCEL_ENV", "VERCEL_DEPLOYMENT_ID", "SANITY_API_TOKEN", "MAILERLITE_API_KEY", "RESEND_API_KEY"]
     },
+    "@repo/shared#build": {
+      "outputs": []
+    },
+    "@repo/ui#build": {
+      "outputs": []
+    },
+    "@repo/utils#build": {
+      "outputs": []
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },
     "dev": {
       "cache": false,
-      "persistent": true,
-      "env": ["SANITY_API_TOKEN"]
+      "persistent": true
     }
   }
 }
