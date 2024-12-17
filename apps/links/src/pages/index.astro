@@ -1,6 +1,5 @@
 ---
 export const prerender = false
-const DOMAIN = 'https://l.kryptonum.eu'
 
 import sanityFetch from '@repo/utils/sanity.fetch'
 import Layout from '@repo/shared/Layout'
@@ -9,6 +8,9 @@ import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
 import Copy from '@repo/ui/Copy'
 import Socials from '@repo/ui/Socials'
+import { DOMAIN } from '@repo/shared/constants'
+
+const URL = Astro.site?.origin!
 
 const page = await sanityFetch<{
   seo: Omit<HeadProps, 'path'>
@@ -131,7 +133,7 @@ const page = await sanityFetch<{
 })
 ---
 
-<Layout url={DOMAIN} {...page.seo} clearLayout={true}>
+<Layout url={URL} {...page.seo} clearLayout={true}>
   <svg xmlns="http://www.w3.org/2000/svg" width="149" height="32" fill="none" viewBox="0 0 149 32">
     <title>Kryptonum</title>
     <path

@@ -1,4 +1,6 @@
-export { default, type PortableTextValue } from './index.astro';
+export { default } from './index.astro';
+import type { PortableTextProps } from 'astro-portabletext/types'
+export type PortableTextValue = PortableTextProps['value']
 export { default as Mark } from './Mark.astro';
 export { default as Block } from './Block.astro';
 

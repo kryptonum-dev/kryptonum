@@ -1,21 +1,7 @@
 ---
 import type { ComponentProps } from 'astro/types'
 import { Image as AstroImage } from 'astro:assets'
-
-export type ImageDataProps = {
-  asset: {
-    url: string
-    altText: string
-    extension: string
-    metadata: {
-      dimensions: {
-        width: number
-        height: number
-      }
-      lqip: string
-    }
-  }
-}
+import type { ImageDataProps } from './index'
 
 type Props = ImageDataProps & {
   sizes: string

@@ -1,7 +1,7 @@
 ---
 import ContentNav, { ContentNav_Query, type ContentNavProps } from '@components/shared/ContentNav.astro'
 import ContentPT, { ContentPT_Query, type Props as ContentPTProps } from './content-pt/index.astro'
-import EstimatedReadingTime from '../../ui/EstimatedReadingTime.astro'
+import EstimatedReadingTime from '@repo/ui/EstimatedReadingTime'
 
 export type ContentProps = ContentNavProps & {
   content: ContentPTProps['value']

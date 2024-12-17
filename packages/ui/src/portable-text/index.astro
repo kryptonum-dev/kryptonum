@@ -1,11 +1,9 @@
 ---
 import type { HTMLAttributes } from 'astro/types'
 import { PortableText } from 'astro-portabletext'
-import type { PortableTextProps } from 'astro-portabletext/types'
+import type { PortableTextValue } from './index'
 import Mark from './Mark.astro'
 import Block from './Block.astro'
-
-export type PortableTextValue = PortableTextProps['value']
 
 type Props = {
   value: PortableTextValue
