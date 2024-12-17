@@ -5,26 +5,25 @@ import { REGEX } from "@repo/shared/constants";
 import { type Props } from "./sendContactEmail";
 import { htmlToString } from "@repo/utils/html-to-string";
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
 
-const template = ({ email, phone, message }: Omit<Props, 'legal'>) => `
+const template = ({ email, message }: Omit<Props, 'legal'>) => `
   <p>Adres email: <b>${email}</b></p>
-  <p>Telefon: <b>${phone || 'Nie podano'}</b></p>
   <br />
   <p>${message.trim().replace(/\n/g, '<br />')}</p>
 `;
 
 export const POST: APIRoute = async ({ request }) => {
-  const { email, phone, message, legal } = await request.json() as Props;
+  const { email, message, legal } = await request.json() as Props;
 
-  if (!REGEX.email.test(email) || (phone && !REGEX.phone.test(phone)) || !message || !legal) {
+  if (!REGEX.email.test(email) || !message || !legal) {
     return new Response(JSON.stringify({
       message: "Missing required fields",
       success: false
     }), { status: 400 });
   }
 
-  const htmlTemplate = template({ email, phone, message });
+  const htmlTemplate = template({ email, message });
   const textTemplate = htmlToString(htmlTemplate);
 
   try {
