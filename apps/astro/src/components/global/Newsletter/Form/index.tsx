@@ -89,7 +89,7 @@ export default function Form({ children, groupId, ...props }: { children: React.
         })}
         errors={errors}
       >
-        Akceptuję <a href="/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">
+        Akceptuję <a href="/pl/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">
           politykę prywatności
         </a>
       </Checkbox>
