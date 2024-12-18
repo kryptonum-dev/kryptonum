@@ -8,7 +8,7 @@ import { muxInput } from 'sanity-plugin-mux-input'
 
 export default defineConfig({
   name: 'default',
-  title: 'kryptonum-eu',
+  title: 'Kryptonum',
 
   projectId: 'k3p1raj0',
   dataset: 'production',
