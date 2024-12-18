@@ -21,7 +21,7 @@ const svgId = Math.random().toString(36).slice(2)
 <Form className="Form" variant={variant} client:load>
   <div class="submit-wrapper">
     <div class="wrapper">
-      {variant === 'form-with-list' && <Button type="submit" className="submit-button">Pogadajmy o moim biznesie</Button>}
+      {variant === 'form-with-list' && <Button type="submit" className="submit-button">Porozmawiajmy o biznesie</Button>}
       {
         variant === 'form-with-person' && (
           <button class="prev-step" type="button">
@@ -33,7 +33,7 @@ const svgId = Math.random().toString(36).slice(2)
           <Button type="button" className="next-step">
             Przejdź dalej
           </Button>
-          <Button type="submit" className="submit-button">Wyślij pytanie</Button>
+          <Button type="submit" className="submit-button">Porozmawiajmy o biznesie</Button>
         )
       }
     </div>
