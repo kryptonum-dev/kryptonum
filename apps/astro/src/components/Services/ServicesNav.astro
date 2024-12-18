@@ -36,14 +36,17 @@ const { servicesNav, links, currentSlug } = Astro.props as ServicesNavProps['Ser
   <PortableText value={servicesNav.heading} heading="h2" class="heading" />
   <ul class="list">
     {
-      links?.map(({ name, slug, img }) => (
-        <li class="item">
-          <a href={slug} aria-current={currentSlug === slug}>
-            <Image {...img} sizes="128px" />
-            <p>{name}</p>
-          </a>
-        </li>
-      ))
+      links?.map(({ name, slug, img }) => {
+        const Element = currentSlug === slug ? 'div' : 'a'
+        return (
+          <li>
+            <Element {...(Element === 'a' ? { href: slug } : {})} class="item">
+              <Image {...img} sizes="128px" />
+              <p>{name}</p>
+            </Element>
+          </li>
+        )
+      })
     }
   </ul>
 </nav>
@@ -66,12 +69,12 @@ const { servicesNav, links, currentSlug } = Astro.props as ServicesNavProps['Ser
       justify-content: center;
       $gap: clamp(0.5rem, calc(1vw / 0.48), 1.25rem);
       gap: $gap;
-      .item {
+      li {
         @include flex-item(2, $gap);
         @media (max-width: 47rem) {
           @include flex-item(1, $gap);
         }
-        a {
+        .item {
           font-size: var(--typography-body-m, 0.875rem);
           display: grid;
           grid-template-columns: auto 1fr;
@@ -95,6 +98,11 @@ const { servicesNav, links, currentSlug } = Astro.props as ServicesNavProps['Ser
           p {
             padding: 0.5rem clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
           }
+        }
+        div.item {
+          filter: grayscale(1);
+        }
+        a.item {
           &::before {
             content: '';
             height: 100%;
@@ -122,9 +130,6 @@ const { servicesNav, links, currentSlug } = Astro.props as ServicesNavProps['Ser
             &::before {
               transform: translate3d(-50%, -50%, 0) scale(2);
             }
-          }
-          &[aria-current='true'] {
-            filter: grayscale(1);
           }
         }
       }
