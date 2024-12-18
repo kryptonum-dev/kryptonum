@@ -27,7 +27,6 @@ The official website for Kryptonum - a digital agency crafting high-performance,
 
 ### 🎯 Performance Focused
 Optimized assets, lazy loading, and minimal JavaScript ensure exceptional loading times and high Core Web Vitals scores.
-*A 
 
 ### ♿ Accessibility First
 Built with ARIA compliance, semantic HTML, and thoughtful keyboard navigation to ensure a great experience for all users.
