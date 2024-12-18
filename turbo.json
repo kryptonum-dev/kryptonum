@@ -21,7 +21,8 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["SANITY_API_TOKEN", "MAILERLITE_API_KEY", "RESEND_API_KEY"]
     }
   }
 }
