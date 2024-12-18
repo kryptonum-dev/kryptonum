@@ -25,7 +25,6 @@ export default defineField({
         defineField({
           name: 'item',
           type: 'reference',
-          weak: true,
           to: [{ type: 'Faq_Collection' }],
           options: {
             filter: ({ parent }) => {

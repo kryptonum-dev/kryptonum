@@ -76,7 +76,7 @@ export default function Form({ children, variant, ...props }: { children: React.
             })}
             isTextarea={true}
             errors={errors}
-            placeholder='Daj znać, o czym chcesz pogadać :)'
+            placeholder='Daj znać, o czym porozmawiamy'
           />
           <Checkbox
             register={register('legal', {
@@ -99,7 +99,7 @@ export default function Form({ children, variant, ...props }: { children: React.
             })}
             isTextarea={true}
             errors={errors}
-            placeholder='Daj znać, o czym chcesz pogadać :)'
+            placeholder='Daj znać, o czym porozmawiamy'
           />
           <Input
             label='Email'
