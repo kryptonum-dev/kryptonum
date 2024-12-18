@@ -22,6 +22,7 @@ The official website for Kryptonum - a digital agency crafting high-performance,
 ## Features
 ### 🎨 Rich Component Library
 45+ custom-built sections with multiple variants, easily managed through Sanity Studio. Drag-and-drop functionality allows quick reorganization of content without touching code.
+<video src="https://github.com/user-attachments/assets/49f1cbd0-7380-4d7a-a092-86850a5bc907"></video>
 
 ### 🎯 Performance Focused
 Optimized assets, lazy loading, and minimal JavaScript ensure exceptional loading times and high Core Web Vitals scores.
