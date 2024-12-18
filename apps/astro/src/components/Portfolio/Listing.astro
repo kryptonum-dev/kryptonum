@@ -82,12 +82,12 @@ const {
 const categories = _categories?.filter(({ count }) => count > 0)
 ---
 
-<section class="Listing">
+<section class="Listing" id="strona">
   <header>
     <PortableText value={heading} heading="h1" class="h1 heading" />
     <PortableText value={paragraph} />
   </header>
-  <div class="Listing-categories" id="strona">
+  <div class="Listing-categories">
     <p>Kategorie</p>
     <ul>
       <li>
