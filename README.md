@@ -17,7 +17,9 @@ The official website for Kryptonum - a digital agency crafting high-performance,
 - `apps/astro`: Main website application
 - `apps/sanity`: Content management system
 - `apps/links`: Simple, custom-built website for sharing all our important links in one place
-- `packages/shared`: Reusable components and utilities
+- `packages/ui`: UI reusable elements, like buttons
+- `packages/shared`: Shared elements, like constants, layouts etc.
+- `packages/utils`: Utility functions and helpers
 
 ## Features
 ### 🎨 Rich Component Library
