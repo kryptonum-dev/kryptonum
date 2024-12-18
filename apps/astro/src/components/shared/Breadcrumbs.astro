@@ -18,7 +18,7 @@ const breadcrumbsData = [
 const schema = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
-  itemListElement: data?.map(({ name, path }, i) => ({
+  itemListElement: breadcrumbsData.map(({ name, path }, i) => ({
     '@type': 'ListItem',
     position: i + 1,
     name: name,
