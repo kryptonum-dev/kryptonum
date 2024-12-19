@@ -23,7 +23,8 @@ export default defineType({
       rows: 4,
       description: 'Description is visible in search engines and when sharing the page on social media.',
       validation: Rule => [
-        Rule.max(165).warning('The field should not be longer than 165 characters.'),
+        Rule.min(110).warning('We recommend using at least 110 characters.'),
+        Rule.max(160).warning('We recommend using at most 160 characters.'),
         Rule.required()
       ],
     }),
