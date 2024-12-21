@@ -14,18 +14,12 @@ const slugs = [
     import("./pl/blog/strona/[page].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/blog/strona/${path.params.page}`)),
-    import("./pl/blog/kategoria/[category].astro")
-      .then(res => res.getStaticPaths())
-      .then(paths => paths.map(path => `/pl/blog/kategoria/${path.params.category}`)),
     import("./pl/blog/kategoria/[category]/strona/[page].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/blog/kategoria/${path.params.category}/strona/${path.params.page}`)),
     import("./pl/portfolio/strona/[page].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/portfolio/strona/${path.params.page}`)),
-    import("./pl/portfolio/kategoria/[category].astro")
-      .then(res => res.getStaticPaths())
-      .then(paths => paths.map(path => `/pl/portfolio/kategoria/${path.params.category}`)),
     import("./pl/portfolio/kategoria/[category]/strona/[page].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(path => `/pl/portfolio/kategoria/${path.params.category}/strona/${path.params.page}`)),
