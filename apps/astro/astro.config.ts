@@ -35,6 +35,7 @@ export default defineConfig({
   adapter: vercel({
     isr: {
       bypassToken: process.env.VERCEL_DEPLOYMENT_ID,
+      exclude: ['/api/*']
     }
   }),
 });
