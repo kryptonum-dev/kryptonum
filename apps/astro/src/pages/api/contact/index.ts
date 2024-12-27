@@ -41,6 +41,9 @@ export const POST: APIRoute = async ({ request }) => {
         subject: `Wiadomość z formularza kontaktowego | Kryptonum`,
         html: htmlTemplate,
         text: textTemplate,
+        headers: {
+          'X-Entity-Ref-ID': crypto.randomUUID(),
+        },
       }),
     });
 
