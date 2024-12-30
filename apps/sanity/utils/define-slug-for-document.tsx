@@ -2,7 +2,9 @@ import { defineField } from "sanity";
 import { slugify } from "@repo/utils/slugify";
 import { isUniqueSlug } from "./is-unique-slug";
 
-export const defineSlugForDocument = ({ source, prefix = '', slug }: { source?: string, prefix?: string, slug?: string }) => [
+const isProduction = process.env.NODE_ENV === 'production' ?? true;
+
+export const defineSlugForDocument = ({ source, prefix = '' }: { source?: string, prefix?: string }) => [
   ...(source ? [] : [
     defineField({
       name: 'name',
@@ -19,14 +21,11 @@ export const defineSlugForDocument = ({ source, prefix = '', slug }: { source?: 
     description: (
       <>
         Slug is a unique identifier for the document, used for SEO and links.
-        {slug && <> <strong><em>That slug can&apos;t be changed.</em></strong></>}
+        {isProduction && <> <strong><em>That slug can&apos;t be changed.</em></strong></>}
         {prefix && <> The slug should start with a prefix: <strong>{prefix}</strong></>}
       </>
     ),
-    ...!!slug && {
-      initialValue: { current: slug },
-      readOnly: true,
-    },
+    readOnly: isProduction,
     options: {
       source: source || 'title',
       slugify: (slug: string) => `${prefix || '/'}${slugify(slug)}`,
@@ -36,7 +35,8 @@ export const defineSlugForDocument = ({ source, prefix = '', slug }: { source?: 
       if (prefix && value?.current && !value.current.startsWith(prefix)) {
         return `Slug should start with ${prefix}`;
       }
-      if (!slug && value?.current && value.current.replace(prefix, '') !== slugify(value.current.replace(prefix, ''))) {
+      const currentPrefix = prefix || (value?.current?.startsWith('/pl/') ? '/pl/' : '/en/');
+      if (value?.current && value.current.replace(currentPrefix, '') !== slugify(value.current.replace(currentPrefix, ''))) {
         return 'There is a typo in the slug. Remember that slug can contain only lowercase letters, numbers and dashes.';
       }
       return true;
