@@ -11,6 +11,7 @@ import PrivacyPolicy_Page from '../schema/singleTypes/Legal/PrivacyPolicy_Page';
 import TermsAndConditions_Page from '../schema/singleTypes/Legal/TermsAndConditions_Page';
 import NotFound_Page from '../schema/singleTypes/NotFound_Page';
 import Shop_Page from '../schema/singleTypes/Shop_Page';
+
 const singleTypes = [
   global,
   redirects,
@@ -72,6 +73,10 @@ const ui = [
 ];
 
 export const schemaTypes = [...singleTypes, ...collectionTypes, ...components, ...ui];
+
+export const i18nTypes = [...singleTypes, ...collectionTypes]
+  .map(type => type.name)
+  .filter(name => !['redirects', 'Links_Page'].includes(name))
 
 export const singletonActions = new Set(["publish", "discardChanges", "restore"]);
 export const singletonTypes = new Set(singleTypes.map(type => type.name as string));
