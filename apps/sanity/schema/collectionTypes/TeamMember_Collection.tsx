@@ -9,6 +9,7 @@ const icon = () => <img src="https://emoji.slack-edge.com/T02CFF835B5/krypto-dzi
   margin: '10%',
 }} />
 
+
 export default defineType({
   name: name,
   type: 'document',
@@ -17,12 +18,24 @@ export default defineType({
   options: { documentPreview: true },
   fields: [
     defineField({
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
+    }),
+    defineField({
       name: 'name',
       type: 'string',
       title: 'Name',
       validation: Rule => Rule.required(),
     }),
-    ...defineSlugForDocument({ source: 'name', prefix: '/pl/zespol/' }),
+    ...defineSlugForDocument({
+      source: 'name',
+      prefixes: {
+        "pl": "/pl/zespol/",
+        "en": "/en/team/"
+      }
+    }),
     defineField({
       name: 'img',
       type: 'image',

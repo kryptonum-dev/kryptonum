@@ -1,9 +1,9 @@
 import { defineField, defineType } from "sanity"
 import { defineSlugForDocument } from "../../utils/define-slug-for-document";
+import { languageLabel } from "../../utils/language-label";
 
 const name = 'Blog_Page';
 const title = 'Blog';
-const slug = '/pl/blog';
 const icon = () => '📰'
 
 export default defineType({
@@ -13,7 +13,18 @@ export default defineType({
   icon: icon,
   options: { documentPreview: true },
   fields: [
-    ...defineSlugForDocument({ slug: slug }),
+    defineField({
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
+    }),
+    ...defineSlugForDocument({
+      slugs: {
+        pl: '/pl/blog',
+        en: '/en/blog'
+      }
+    }),
     defineField({
       name: 'heading',
       type: 'Heading',
@@ -54,9 +65,12 @@ export default defineType({
     },
   ],
   preview: {
-    prepare: () => ({
+    select: {
+      language: 'language',
+    },
+    prepare: ({ language }) => ({
       title: title,
-      subtitle: slug
+      subtitle: languageLabel(language),
     })
   }
 });

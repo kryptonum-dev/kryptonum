@@ -15,13 +15,25 @@ export default defineType({
   options: { documentPreview: true },
   fields: [
     defineField({
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
+    }),
+    defineField({
       name: 'name',
       type: 'string',
       title: 'Name',
       description: 'Name will be displayed in breadcrumb and in schemas for Google',
       validation: Rule => Rule.required(),
     }),
-    ...defineSlugForDocument({ source: 'name', prefix: '/pl/blog/' }),
+    ...defineSlugForDocument({
+      source: 'name',
+      prefixes: {
+        pl: '/pl/blog/',
+        en: '/en/blog/'
+      }
+    }),
     defineField({
       name: 'heading',
       type: 'Heading',

@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { languageLabel } from '../../utils/language-label';
 
 export default defineType({
   name: 'global',
@@ -6,6 +7,12 @@ export default defineType({
   title: 'Global',
   icon: () => '🌍',
   fields: [
+    defineField({
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
+    }),
     defineField({
       name: 'email',
       type: 'string',
@@ -271,8 +278,12 @@ export default defineType({
     }),
   ],
   preview: {
-    prepare: () => ({
+    select: {
+      language: 'language',
+    },
+    prepare: ({ language }) => ({
       title: 'Global settings',
+      subtitle: languageLabel(language),
     })
   }
 })

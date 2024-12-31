@@ -3,10 +3,10 @@ import { defineSlugForDocument } from "../../../utils/define-slug-for-document";
 import SimpleHeaderWithImage from "../../components/SimpleHeaderWithImage";
 import HeaderGridIcons from "../../components/HeaderGridIcons";
 import PortableText from "./portable-text";
+import { languageLabel } from "../../../utils/language-label";
 
 const name = 'TermsAndConditions_Page';
 const title = 'Terms and Conditions';
-const slug = '/pl/regulamin';
 const icon = () => '📑'
 
 export default defineType({
@@ -16,7 +16,18 @@ export default defineType({
   icon: icon,
   options: { documentPreview: true },
   fields: [
-    ...defineSlugForDocument({ slug: slug }),
+    defineField({
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
+    }),
+    ...defineSlugForDocument({
+      slugs: {
+        pl: '/pl/regulamin',
+        en: '/en/terms'
+      }
+    }),
     SimpleHeaderWithImage,
     HeaderGridIcons,
     PortableText,
@@ -39,9 +50,12 @@ export default defineType({
     },
   ],
   preview: {
-    prepare: () => ({
+    select: {
+      language: 'language',
+    },
+    prepare: ({ language }) => ({
       title: title,
-      subtitle: slug
+      subtitle: languageLabel(language),
     })
   }
 });

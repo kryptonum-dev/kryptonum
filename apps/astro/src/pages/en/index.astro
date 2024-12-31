@@ -1,0 +1,29 @@
+---
+import Layout from '@repo/shared/Layout'
+import sanityFetch from '@repo/utils/sanity.fetch'
+import metadataFetch from '@repo/utils/metadata.fetch'
+import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
+import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
+
+type QueryProps = {
+  slug: string
+  components: ComponentsProps
+}
+
+const page = await sanityFetch<QueryProps>({
+  query: `
+    *[_type == "Index_Page" && language == $language][0] {
+      "slug": slug.current,
+      ${Components_Query}
+    }
+  `,
+  params: { language: 'en' },
+})
+
+const metadata = await metadataFetch(page.slug)
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs />
+  <Components data={page.components} />
+</Layout>

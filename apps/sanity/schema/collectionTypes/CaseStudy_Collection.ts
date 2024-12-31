@@ -13,12 +13,24 @@ export default defineType({
   options: { documentPreview: true },
   fields: [
     defineField({
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
+    }),
+    defineField({
       name: 'name',
       type: 'string',
       title: 'Name',
       validation: Rule => Rule.required(),
     }),
-    ...defineSlugForDocument({ source: 'name', prefix: '/pl/portfolio/' }),
+    ...defineSlugForDocument({
+      source: 'name',
+      prefixes: {
+        "pl": "/pl/portfolio/",
+        "en": "/en/portfolio/"
+      }
+    }),
     defineField({
       name: 'description',
       type: 'text',
