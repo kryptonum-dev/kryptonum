@@ -28,7 +28,8 @@ export const createSingleton = (S: StructureBuilder, name: string) => {
     .icon(icon)
     .child(
       isInternationalized
-        ? S.documentList()
+        ? S.documentTypeList(name)
+          .defaultLayout('detail')
           .id(name)
           .title(title)
           .filter('_type == $type')
