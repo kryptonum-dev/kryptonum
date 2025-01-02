@@ -27,7 +27,13 @@ export default defineConfig({
       supportedLanguages: LANGUAGES,
       schemaTypes: i18nTypes,
     }),
-    assist(),
+    assist({
+      translate: {
+        document: {
+          languageField: 'language',
+        }
+      }
+    }),
   ],
 
   schema: {
