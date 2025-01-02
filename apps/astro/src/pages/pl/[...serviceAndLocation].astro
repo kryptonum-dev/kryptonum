@@ -47,7 +47,7 @@ const page = await sanityFetch<
   } & ServicesNavProps
 >({
   query: `
-    *[(_type == 'Service_Collection' || _type == 'Location_Collection') && slug.current == $slug][0] {
+    *[(_type == 'Service_Collection' || _type == 'Location_Collection') && slug.current == $slug && language == $language][0] {
       _type,
       name,
       mainPage -> {
@@ -82,6 +82,7 @@ const page = await sanityFetch<
   params: {
     slug: slug,
     baseServicePath: serviceAndLocation.split('/')[0],
+    language: 'pl',
   },
 })
 

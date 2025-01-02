@@ -13,7 +13,7 @@ const page = await sanityFetch<{
   components: ComponentsProps
 }>({
   query: `
-    *[_type == "Shop_Page"][0] {
+    *[_type == "Shop_Page" && language == $language][0] {
       name,
       "slug": slug.current,
       "Listing": {
@@ -22,6 +22,7 @@ const page = await sanityFetch<{
       ${Components_Query}
     }
   `,
+  params: { language: 'pl' },
 })
 
 const metadata = await metadataFetch(page.slug)

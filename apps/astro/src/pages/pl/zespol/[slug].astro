@@ -34,7 +34,7 @@ const page = await sanityFetch<{
   }
 }>({
   query: `
-    *[_type == 'TeamMember_Collection' && slug.current == $slug][0] {
+    *[_type == 'TeamMember_Collection' && slug.current == $slug && language == $language][0] {
       name,
       ${Components_Query}
       "ScrollToNextPage": coalesce(
@@ -53,7 +53,10 @@ const page = await sanityFetch<{
       )
     }
   `,
-  params: { slug: slug },
+  params: {
+    slug: slug,
+    language: 'pl',
+  },
 })
 if (!page) return Astro.rewrite('/404')
 

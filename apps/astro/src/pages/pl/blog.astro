@@ -22,7 +22,7 @@ type QueryProps = {
 
 const page = await sanityFetch<QueryProps>({
   query: `
-    *[_type == "Blog_Page"][0] {
+    *[_type == "Blog_Page" && language == $language][0] {
       name,
       "slug": slug.current,
       ${PortableTextQuery('heading')}
@@ -31,6 +31,7 @@ const page = await sanityFetch<QueryProps>({
       ${Components_Query}
     }
   `,
+  params: { language: 'pl' },
 })
 
 const metadata = await metadataFetch(page.slug)

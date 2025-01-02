@@ -69,7 +69,7 @@ const page = await sanityFetch<{
   }
 }>({
   query: `
-    *[_type == "Links_Page"][0] {
+    *[_type == "Links_Page" && language == $language][0] {
       "seo": {
         "title": seo.title,
         "description": seo.description,
@@ -88,26 +88,26 @@ const page = await sanityFetch<{
         title,
         "portfolio": {
           "title": portfolioTitle,
-          "slug": *[_type == "Portfolio_Page"][0].slug.current,
-          "thumbnails": *[_type == "CaseStudy_Collection"][] | order(date desc) [0...3] {
+          "slug": *[_type == "Portfolio_Page" && language == $language][0].slug.current,
+          "thumbnails": *[_type == "CaseStudy_Collection" && language == $language][] | order(date desc) [0...3] {
             ${ImageDataQuery('img')}
           },
-          "leftCount": count(*[_type == "CaseStudy_Collection"]) - 3,
+          "leftCount": count(*[_type == "CaseStudy_Collection" && language == $language]) - 3,
         },
         "team": {
           "title": teamTitle,
-          "slug": *[_type == "Team_Page"][0].slug.current,
-          "avatars": *[_type == "TeamMember_Collection"][] | order(_createdAt asc) {
+          "slug": *[_type == "Team_Page" && language == $language][0].slug.current,
+          "avatars": *[_type == "TeamMember_Collection" && language == $language][] | order(_createdAt asc) {
             ${ImageDataQuery('img')}
           },
         },
         "blog": {
           "title": blogTitle,
-          "slug": *[_type == "Blog_Page"][0].slug.current,
-          "thumbnails": *[_type == "BlogPost_Collection"][] | order(coalesce(publishedDate, _createdAt) desc) [0...3] {
+          "slug": *[_type == "Blog_Page" && language == $language][0].slug.current,
+          "thumbnails": *[_type == "BlogPost_Collection" && language == $language][] | order(coalesce(publishedDate, _createdAt) desc) [0...3] {
             ${ImageDataQuery('img')}
           },
-          "leftCount": count(*[_type == "BlogPost_Collection"]) - 3,
+          "leftCount": count(*[_type == "BlogPost_Collection" && language == $language]) - 3,
         },
       },
       contact {
@@ -120,8 +120,8 @@ const page = await sanityFetch<{
         address {
           ${ImageDataQuery('img')}
           text,
-          "addressText": coalesce(addressText, *[_type == "global"][0].address.addressText),
-          "mapLink": coalesce(mapLink, *[_type == "global"][0].address.mapLink),
+          "addressText": coalesce(addressText, *[_type == "global" && language == $language][0].address.addressText),
+          "mapLink": coalesce(mapLink, *[_type == "global" && language == $language][0].address.mapLink),
         },
         "socials": {
           socialTitle,
@@ -130,6 +130,7 @@ const page = await sanityFetch<{
       },
     }
   `,
+  params: { language: 'pl' },
 })
 ---
 
