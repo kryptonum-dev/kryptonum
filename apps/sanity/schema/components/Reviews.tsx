@@ -34,15 +34,13 @@ export default defineField({
           type: 'reference',
           to: [{ type: 'Review_Collection' }],
           options: {
-            filter: ({ parent }) => {
+            filter: ({ parent, document }) => {
+              const language = (document as { language?: string })?.language;
               const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
-              if (selectedIds.length > 0) {
-                return {
-                  filter: '!(_id in $selectedIds) && !(_id in path("drafts.**"))',
-                  params: { selectedIds }
-                }
+              return {
+                filter: '!(_id in $selectedIds) && !(_id in path("drafts.**")) && language == $lang',
+                params: { selectedIds, lang: language }
               }
-              return {}
             }
           }
         }),

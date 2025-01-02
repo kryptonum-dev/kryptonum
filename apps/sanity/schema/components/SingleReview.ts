@@ -24,7 +24,14 @@ export default defineField({
       type: 'reference',
       to: [{ type: 'Review_Collection' }],
       options: {
-        disableNew: true
+        disableNew: true,
+        filter: ({ document }) => {
+          const language = (document as { language?: string })?.language;
+          return {
+            filter: 'language == $lang',
+            params: { lang: language }
+          }
+        }
       },
       validation: Rule => Rule.required(),
     }),

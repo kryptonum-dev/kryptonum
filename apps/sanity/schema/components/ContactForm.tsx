@@ -58,6 +58,13 @@ export default defineField({
       to: [{ type: 'TeamMember_Collection' }],
       options: {
         disableNew: true,
+        filter: ({ document }) => {
+          const language = (document as { language?: string })?.language;
+          return {
+            filter: 'language == $lang',
+            params: { lang: language }
+          }
+        }
       },
       hidden: ({ parent }) => parent?.variant === 'form-with-list' || !parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {

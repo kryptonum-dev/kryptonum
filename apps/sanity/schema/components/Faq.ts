@@ -29,10 +29,9 @@ export default defineField({
           options: {
             filter: ({ parent, document }) => {
               const language = (document as { language?: string })?.language;
-              console.log(language)
               const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
               return {
-                filter: '!(_id in $selectedIds) && !(_id in path("drafts.**")) && (language == $lang)',
+                filter: '!(_id in $selectedIds) && !(_id in path("drafts.**")) && language == $lang',
                 params: { selectedIds, lang: language }
               }
             }

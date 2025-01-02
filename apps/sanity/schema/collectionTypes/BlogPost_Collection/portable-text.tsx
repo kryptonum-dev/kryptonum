@@ -97,7 +97,13 @@ export default defineField({
                 to: InternalLinkableTypes,
                 options: {
                   disableNew: true,
-                  filter: 'defined(slug.current)',
+                  filter: ({ document }) => {
+                    const language = (document as { language?: string })?.language;
+                    return {
+                      filter: 'defined(slug.current) && language == $lang',
+                      params: { lang: language }
+                    }
+                  }
                 },
                 hidden: ({ parent }) => parent?.linkType !== 'internal',
                 validation: (rule) => [

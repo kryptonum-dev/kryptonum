@@ -1,4 +1,4 @@
-import { defineField } from "sanity";
+import { defineField, type SlugDefinition, type SlugOptions } from "sanity";
 import { slugify } from "@repo/utils/slugify";
 import { isUniqueSlug } from "./is-unique-slug";
 import { LANGUAGES } from "../structure/languages";
@@ -12,40 +12,22 @@ type LanguageValues = {
 type DefineSlugConfig = {
   source?: string;
 } & (
-    | { prefixes: LanguageValues; slugs?: never }
-    | { slugs: LanguageValues; prefixes?: never }
+    | { prefixes: LanguageValues; slugs?: never; slugify?: never; validate?: never }
+    | { slugs: LanguageValues; prefixes?: never; slugify?: never; validate?: never }
+    | {
+      slugify: SlugOptions['slugify'];
+      validate?: SlugDefinition['validation'];
+      prefixes?: never;
+      slugs?: never
+    }
   )
 
-/**
- * Creates a slug field configuration for Sanity documents with language-aware prefixes or predefined slugs
- *
- * @param {Object} options - Configuration options
- * @param {string} [options.source] - Source field for the slug (defaults to 'name' if not provided)
- * @param {LanguageValues} [options.prefixes] - Object containing language prefixes for dynamic slugs
- * @param {LanguageValues} [options.slugs] - Object containing predefined slugs for each language
- *
- * @example
- * // Usage with language-based prefix for collections
- * defineSlugForDocument({
- *   source: 'name',
- *   prefixes: {
- *     pl: '/pl/blog/',
- *     en: '/en/blog/'
- *   }
- * })
- *
- * // Usage with predefined slugs for single pages
- * defineSlugForDocument({
- *   slugs: {
- *     pl: '/pl',
- *     en: '/en'
- *   }
- * })
- */
 export const defineSlugForDocument = ({
   source,
   prefixes,
-  slugs
+  slugs,
+  slugify: customSlugify,
+  validate: customValidate
 }: DefineSlugConfig) => [
     ...(source ? [] : [
       defineField({
@@ -69,32 +51,34 @@ export const defineSlugForDocument = ({
       readOnly: (isProduction && !!slugs),
       options: {
         source: source || 'name',
-        slugify: (slug, _, context) => {
+        slugify: customSlugify || ((slug, _, context) => {
           const language = (context.parent as { language: typeof LANGUAGES[number]['id'] })?.language ?? 'pl';
           if (slugs) return slugs[language];
           const currentPrefix = prefixes?.[language] ?? '';
           return `${currentPrefix}${slugify(slug)}`;
-        },
+        }),
         isUnique: isUniqueSlug,
       },
-      validation: Rule => Rule.custom((value, context) => {
-        const language = (context.parent as { language: typeof LANGUAGES[number]['id'] })?.language ?? 'pl';
+      validation: customValidate || (Rule =>
+        Rule.custom(async (value, context) => {
+          const language = (context.parent as { language: typeof LANGUAGES[number]['id'] })?.language ?? 'pl';
 
-        if (slugs) {
-          if (value?.current !== slugs[language]) {
-            return `Slug must be exactly "${slugs[language]}"`;
+          if (slugs) {
+            if (value?.current !== slugs[language]) {
+              return `Slug must be exactly "${slugs[language]}"`;
+            }
+            return true;
+          }
+
+          const currentPrefix = prefixes?.[language] ?? '';
+          if (currentPrefix && value?.current && !value.current.startsWith(currentPrefix)) {
+            return `Slug should start with ${currentPrefix}`;
+          }
+          if (value?.current && value.current.replace(currentPrefix, '') !== slugify(value.current.replace(currentPrefix, ''))) {
+            return 'There is a typo in the slug. Remember that slug can contain only lowercase letters, numbers and dashes.';
           }
           return true;
-        }
-
-        const currentPrefix = prefixes?.[language] ?? '';
-        if (currentPrefix && value?.current && !value.current.startsWith(currentPrefix)) {
-          return `Slug should start with ${currentPrefix}`;
-        }
-        if (value?.current && value.current.replace(currentPrefix, '') !== slugify(value.current.replace(currentPrefix, ''))) {
-          return 'There is a typo in the slug. Remember that slug can contain only lowercase letters, numbers and dashes.';
-        }
-        return true;
-      }).required()
+        }).required()
+      )
     }),
   ]

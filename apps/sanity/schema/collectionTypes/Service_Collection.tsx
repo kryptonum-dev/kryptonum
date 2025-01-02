@@ -1,6 +1,6 @@
 import { defineField, defineType } from "sanity";
-import { isUniqueSlug } from "../../utils/is-unique-slug";
 import { slugify } from "@repo/utils/slugify";
+import { defineSlugForDocument } from "../../utils/define-slug-for-document";
 
 const name = 'Service_Collection';
 const title = 'Service Collection';
@@ -19,50 +19,41 @@ export default defineType({
       readOnly: true,
       hidden: true,
     }),
-    defineField({
-      name: 'name',
-      type: 'string',
-      title: 'Name',
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'slug',
-      type: 'slug',
-      title: `Slug`,
-      description: 'Slug is a unique identifier for the document, used for SEO and links.',
-      options: {
-        source: 'name',
-        slugify: async (slug: string, _, context) => {
-          const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
-          const mainPageRef = (context.parent as { mainPage: { _ref: string } })?.mainPage?._ref;
-          if (hasMainPage && mainPageRef) {
-            const client = context.getClient({ apiVersion: '2024-11-12' })
-            const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef })
-            return `${mainPageSlug}/${slugify(slug)}`
-          }
-          return `/pl/${slugify(slug)}`
-        },
-        isUnique: isUniqueSlug,
+    ...defineSlugForDocument({
+      slugify: async (slug, _, context) => {
+        const language = (context.parent as { language: string })?.language ?? 'pl';
+        const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
+        const mainPageRef = (context.parent as { mainPage: { _ref: string } })?.mainPage?._ref;
+
+        if (hasMainPage && mainPageRef) {
+          const client = context.getClient({ apiVersion: '2024-11-12' })
+          const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef })
+          return `${mainPageSlug}/${slugify(slug)}`
+        }
+        return `/${language}/${slugify(slug)}`
       },
-      validation: Rule => [
-        Rule.custom(async (value, context) => {
-          const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
-          const mainPageRef = (context.parent as { mainPage: { _ref: string } })?.mainPage?._ref;
-          if (hasMainPage && mainPageRef) {
-            const client = context.getClient({ apiVersion: '2024-11-12' })
-            const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef })
-            if (!value?.current?.startsWith(mainPageSlug)) return 'Slug should start with the slug of the main page.';
-            return true;
+      validate: Rule => Rule.custom(async (value, context) => {
+        const language = (context.parent as { language: string })?.language ?? 'pl';
+        const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
+        const mainPageRef = (context.parent as { mainPage: { _ref: string } })?.mainPage?._ref;
+
+        if (hasMainPage && mainPageRef) {
+          const client = context.getClient({ apiVersion: '2024-11-12' })
+          const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef })
+          if (!value?.current?.startsWith(mainPageSlug)) {
+            return 'Slug should start with the slug of the main page.';
           }
-          if (!value?.current?.startsWith('/pl/')) return 'The slug should start with /pl/';
-          return true;
-        }).required(),
-        Rule.custom((value, context) => {
-          const name = (context.parent as { name: string })?.name;
-          if (!value?.current?.includes(slugify(name))) return 'That slug doesn\'t match the name. Verify if it\'s correct.';
-          return true;
-        }).warning(),
-      ]
+        } else if (!value?.current?.startsWith(`/${language}/`)) {
+          return `The slug should start with /${language}/`;
+        }
+
+        const name = (context.parent as { name: string })?.name;
+        if (!value?.current?.includes(slugify(name))) {
+          return 'That slug doesn\'t match the name. Verify if it\'s correct.';
+        }
+
+        return true;
+      }).required()
     }),
     defineField({
       name: 'hasMainPage',
@@ -80,6 +71,13 @@ export default defineType({
       to: [{ type: 'Service_Collection' }],
       options: {
         disableNew: true,
+        filter: ({ document }) => {
+          const language = (document as { language?: string })?.language;
+          return {
+            filter: 'language == $lang',
+            params: { lang: language }
+          }
+        }
       },
       hidden: ({ parent }) => !parent?.hasMainPage,
       validation: Rule => Rule.custom((value, context) => {
