@@ -2,7 +2,7 @@ import { defineConfig } from 'sanity'
 import { structure } from './structure'
 import { i18nTypes, schemaTypes, singletonActions, singletonTypes } from './structure/schema-types'
 import { structureTool } from 'sanity/structure'
-import { media } from 'sanity-plugin-media'
+import { media } from 'sanity-plugin-media-i18n'
 import { visionTool } from '@sanity/vision'
 import { muxInput } from 'sanity-plugin-mux-input'
 import { documentInternationalization } from '@sanity/document-internationalization'
@@ -17,7 +17,9 @@ export default defineConfig({
 
   plugins: [
     structureTool({ structure }),
-    media(),
+    media({
+      locales: LANGUAGES.map(({ id, title }) => ({ id: id, name: title })),
+    }),
     visionTool(),
     muxInput(),
     documentInternationalization({
