@@ -12,10 +12,21 @@ import { DOMAIN } from '@repo/shared/constants'
 
 const URL = Astro.site?.origin!
 
+type Props = { lang: 'pl' | 'en' }
+
+const { lang = 'en' } = Astro.params
+
+if (!['en', 'pl'].includes(lang)) {
+  return Astro.redirect('/pl')
+}
+
 const page = await sanityFetch<{
   seo: Omit<HeadProps, 'path'>
   heading: PortableTextValue
-  homepageTitle: string
+  homepage: {
+    title: string
+    slug: string
+  }
   services: {
     title: string
     items: {
@@ -76,7 +87,10 @@ const page = await sanityFetch<{
         "openGraphImage": seo.img.asset -> url + "?w=1200",
       },
       ${PortableTextQuery('heading')}
-      homepageTitle,
+      "homepage": {
+        "title": homepageTitle,
+        "slug": *[_type == "Index_Page" && language == $language][0].slug.current,
+      },
       services {
         title,
         items[] -> {
@@ -114,9 +128,9 @@ const page = await sanityFetch<{
         title,
         "img": select(isReference => personReference -> ${ImageDataQuery('img')} ${ImageDataQuery('img')}),
         emailText,
-        "email": coalesce(email, personReference -> email),
+        "email": select(isReference => personReference -> email, email),
         telText,
-        "tel": coalesce(tel, personReference -> tel),
+        "tel": select(isReference => personReference -> tel, tel),
         address {
           ${ImageDataQuery('img')}
           text,
@@ -130,7 +144,7 @@ const page = await sanityFetch<{
       },
     }
   `,
-  params: { language: 'pl' },
+  params: { language: lang },
 })
 ---
 
@@ -167,9 +181,9 @@ const page = await sanityFetch<{
   </svg>
   <PortableText value={page.heading} heading="h1" class="h2 heading" />
   <div class="group">
-    <a href={`${DOMAIN}/pl`} class="group-link">
+    <a href={`${DOMAIN}${page.homepage.slug}`} class="group-link">
       <div class="blur"></div>
-      {page.homepageTitle}
+      {page.homepage.title}
       <div class="overflowing-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
           <path
