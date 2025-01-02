@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity"
+import { languageLabel } from "../../utils/language-label";
 
 const name = 'Links_Page';
 const title = 'Links Page';
@@ -254,8 +255,12 @@ export default defineType({
     },
   ],
   preview: {
-    prepare: () => ({
+    select: {
+      language: 'language',
+    },
+    prepare: ({ language }) => ({
       title: title,
+      subtitle: languageLabel(language),
     })
   }
 });
