@@ -35,7 +35,7 @@ const page = await sanityFetch<{
   components: ComponentsProps
 }>({
   query: `
-    *[_type == "Blog_Page"][0] {
+    *[_type == "Blog_Page" && language == $language][0] {
       name,
       "slug": slug.current,
       ${PortableTextQuery('heading')}
@@ -44,6 +44,7 @@ const page = await sanityFetch<{
       ${Components_Query}
     }
   `,
+  params: { language: 'pl' },
 })
 
 const metadata = await metadataFetch(page.slug)

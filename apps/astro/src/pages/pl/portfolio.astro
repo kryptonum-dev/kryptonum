@@ -16,13 +16,14 @@ const page = await sanityFetch<{
   components: ComponentsProps
 }>({
   query: `
-    *[_type == "Portfolio_Page"][0] {
+    *[_type == "Portfolio_Page" && language == $language][0] {
       name,
       "slug": slug.current,
       ${Listing_Query({ currentPage: currentPage })}
       ${Components_Query}
     }
   `,
+  params: { language: 'pl' },
 })
 
 const metadata = await metadataFetch(page.slug)

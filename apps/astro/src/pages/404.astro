@@ -13,12 +13,13 @@ type QueryProps = {
 
 const page = await sanityFetch<QueryProps>({
   query: `
-    *[_type == "NotFound_Page"][0] {
+    *[_type == "NotFound_Page" && language == $language][0] {
       name,
       "slug": slug.current,
       ${Components_Query}
     }
   `,
+  params: { language: 'pl' },
 })
 
 const metadata = await metadataFetch(page.slug)

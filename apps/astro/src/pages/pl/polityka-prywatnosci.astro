@@ -18,7 +18,7 @@ const page = await sanityFetch<{
   components: ComponentsProps
 }>({
   query: `
-    *[_type == "PrivacyPolicy_Page"][0] {
+    *[_type == "PrivacyPolicy_Page" && language == $language][0] {
       name,
       "slug": slug.current,
       ${SimpleHeaderWithImage_Query(false)}
@@ -27,6 +27,7 @@ const page = await sanityFetch<{
       ${Components_Query}
     }
   `,
+  params: { language: 'pl' },
 })
 
 const metadata = await metadataFetch(page.slug)
