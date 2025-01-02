@@ -14,7 +14,7 @@ const URL = Astro.site?.origin!
 
 type Props = { lang: 'pl' | 'en' }
 
-const { lang = 'en' } = Astro.params
+const { lang = '' } = Astro.params
 
 if (!['en', 'pl'].includes(lang)) {
   return Astro.redirect('/pl')
