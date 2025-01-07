@@ -3,7 +3,7 @@ import { slugify } from "@repo/utils/slugify";
 import { isUniqueSlug } from "./is-unique-slug";
 import { LANGUAGES } from "../structure/languages";
 
-const isProduction = process.env.NODE_ENV === 'production' ?? true;
+const isProduction = process.env.NODE_ENV === 'production';
 
 type LanguageValues = {
   [key in typeof LANGUAGES[number]['id']]: string

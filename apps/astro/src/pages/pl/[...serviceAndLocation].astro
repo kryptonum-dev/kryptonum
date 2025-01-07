@@ -12,10 +12,11 @@ import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
 export async function getStaticPaths() {
   const pages = await sanityFetch<{ slug: string }[]>({
     query: `
-      *[_type == 'Service_Collection' || _type == 'Location_Collection'][] {
+      *[_type == 'Service_Collection' || _type == 'Location_Collection' && language == $language][] {
         "slug": slug.current,
       }
     `,
+    params: { language: 'pl' },
   })
   return pages?.map(({ slug }) => ({ params: { serviceAndLocation: slug.replace(slugPrefix, '') } }))
 }
@@ -65,14 +66,16 @@ const page = await sanityFetch<
       ${ServicesNav_Query}
       ${Components_Query}
       "ScrollToNextPage": coalesce(
-        *[_type == 'Service_Collection'
+        *[_type == 'Service_Collection' && language == $language
           && slug.current match '/pl/' + $baseServicePath + '*'
           && _createdAt > ^._createdAt
         ] | order(_createdAt asc)[0] {
           name,
           "slug": slug.current,
         },
-        *[_type == 'Service_Collection' && slug.current match '/pl/' + $baseServicePath + '*'] | order(_createdAt asc)[0] {
+        *[_type == 'Service_Collection' && language == $language
+          && slug.current match '/pl/' + $baseServicePath + '*'
+        ] | order(_createdAt asc)[0] {
           name,
           "slug": slug.current,
         }

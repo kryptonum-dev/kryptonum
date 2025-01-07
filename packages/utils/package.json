@@ -12,6 +12,7 @@
     "./format-date": "./src/format-date.ts",
     "./hash": "./src/hash.ts",
     "./html-to-string": "./src/html-to-string.ts",
-    "./slugify": "./src/slugify.ts"
+    "./slugify": "./src/slugify.ts",
+    "./get-locale-from-path": "./src/get-locale-from-path.ts"
   }
 }

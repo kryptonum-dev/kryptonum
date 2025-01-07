@@ -19,14 +19,18 @@ export const ImageDataQuery = (name: string) => `
   ${name} {
     asset -> {
       url,
-      altText,
+      "altText": select(
+        $language == "pl" => altTexts.pl,
+        $language == "en" => altTexts.en,
+        altTexts.pl
+      ),
       extension,
       metadata {
+        lqip,
         dimensions {
           width,
           height,
         },
-        lqip,
       },
     },
   },

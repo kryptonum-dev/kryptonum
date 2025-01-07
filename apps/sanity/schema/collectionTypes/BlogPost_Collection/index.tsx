@@ -44,6 +44,16 @@ export default defineType({
       name: 'category',
       type: 'reference',
       to: [{ type: 'BlogCategory_Collection' }],
+      options: {
+        filter: ({ document }) => {
+          const language = (document as { language?: string })?.language;
+          console.log(language)
+          return {
+            filter: 'language == $language',
+            params: { language: language }
+          }
+        }
+      },
       validation: Rule => Rule.required(),
     }),
     defineField({

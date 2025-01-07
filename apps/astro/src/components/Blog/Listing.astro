@@ -18,14 +18,14 @@ export const Listing_Query = ({
   return `
     listing {
       ${PortableTextQuery('heading')}
-      "totalBlogPosts": count(*[_type == 'BlogPost_Collection']),
-      "totalPostsByCategory": count(*[_type == 'BlogPost_Collection' ${currentCategorySlug ? `&& category -> slug.current == "${currentCategorySlug}"` : ''}]),
-      "categories": *[_type == 'BlogCategory_Collection'] {
+      "totalBlogPosts": count(*[_type == 'BlogPost_Collection' && language == $language]),
+      "totalPostsByCategory": count(*[_type == 'BlogPost_Collection' ${currentCategorySlug ? `&& category -> slug.current == "${currentCategorySlug}"` : ''} && language == $language]),
+      "categories": *[_type == 'BlogCategory_Collection' && language == $language] {
         name,
         "slug": slug.current,
         "count": count(*[_type == 'BlogPost_Collection' && references(^._id) && defined(category)])
       },
-      "listing": *[_type == 'BlogPost_Collection'
+      "listing": *[_type == 'BlogPost_Collection' && language == $language
         ${currentCategorySlug ? `&& category -> slug.current == "${currentCategorySlug}"` : ''}
       ] | order(coalesce(publishedDate, _createdAt) desc) [${PAGINATION_BEFORE}...${PAGINATION_AFTER}] {
         ${BlogCard_Query}

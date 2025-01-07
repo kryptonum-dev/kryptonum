@@ -13,12 +13,13 @@ import Components, { Components_Query, type ComponentsProps } from '@components/
 export async function getCategoryData() {
   return await sanityFetch<{ name: string; slug: string; caseStudyCount: number }[]>({
     query: `
-      *[_type == 'CaseStudyCategory_Collection'][] {
+      *[_type == 'CaseStudyCategory_Collection' && language == $language][] {
         name,
         "slug": slug.current,
         "caseStudyCount": count(*[_type == "CaseStudy_Collection" && references(^._id) && defined(categories)]),
       }
     `,
+    params: { language: 'pl' },
   })
 }
 

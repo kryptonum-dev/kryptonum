@@ -11,7 +11,8 @@ import Listing, { Listing_Query, type ListingProps } from '@components/Blog/List
 import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
 
 export const totalPosts = await sanityFetch<number>({
-  query: `count(*[_type == "BlogPost_Collection"])`,
+  query: `count(*[_type == "BlogPost_Collection" && language == $language])`,
+  params: { language: 'pl' },
 })
 export const totalPages = Math.ceil(totalPosts / ITEMS_PER_PAGE)
 

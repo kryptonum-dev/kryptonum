@@ -3,6 +3,9 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import imageToInlineSvg from '@repo/ui/Image/image-to-inline-svg'
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import { getLocaleFromPath } from '@repo/utils/get-locale-from-path'
+
+const language = getLocaleFromPath(Astro.url.pathname)
 
 const data = await sanityFetch<{
   annotation?: {
@@ -50,7 +53,7 @@ const data = await sanityFetch<{
   }
 }>({
   query: `
-    *[_type == "global"][0].nav {
+    *[_type == "global" && language == $language][0].nav {
       annotation {
         "icon": icon.asset -> url,
         text,
@@ -60,50 +63,53 @@ const data = await sanityFetch<{
         },
       },
       ${ButtonDataQuery('cta')}
-      "services": *[_type == "Service_Collection" && !defined(mainPage)] | order(_createdAt asc) {
+      "services": *[_type == "Service_Collection" && !defined(mainPage) && language == $language] | order(_createdAt asc) {
         name,
         "slug": slug.current,
         ${ImageDataQuery('icon')}
-        "list": *[_type == "Service_Collection" && mainPage._ref == ^._id] | order(_createdAt asc) {
+        "list": *[_type == "Service_Collection" && mainPage._ref == ^._id && language == $language] | order(_createdAt asc) {
           name,
           "slug": slug.current,
         }
       },
-      "caseStudies": *[_type == "Portfolio_Page"][0] {
+      "caseStudies": *[_type == "Portfolio_Page" && language == $language][0] {
         name,
         "slug": slug.current,
         "list": coalesce(
-          *[_type == "global"][0].nav.caseStudies[] -> {
+          *[_type == "global" && language == $language][0].nav.caseStudies[] -> {
             name,
             "slug": slug.current,
             ${ImageDataQuery('img')}
           },
-          *[_type == "CaseStudy_Collection"][] | order(_createdAt desc)[0...8] {
+          *[_type == "CaseStudy_Collection" && language == $language][] | order(_createdAt desc)[0...8] {
             name,
             "slug": slug.current,
             ${ImageDataQuery('img')}
           },
         ),
       },
-      "team": *[_type == "Team_Page"][0] {
+      "team": *[_type == "Team_Page" && language == $language][0] {
         "slug": slug.current,
-        "members": *[_type == "TeamMember_Collection"][] | order(_createdAt asc) {
+        "members": *[_type == "TeamMember_Collection" && language == $language][] | order(_createdAt asc) {
           name,
           "slug": slug.current,
           ${ImageDataQuery('img')}
         }
       },
-      "blog": *[_type == "Blog_Page"][0] {
+      "blog": *[_type == "Blog_Page" && language == $language][0] {
         name,
         "slug": slug.current,
       },
-      "shop": *[_type == "Shop_Page"][0] {
+      "shop": *[_type == "Shop_Page" && language == $language][0] {
         name,
         "slug": slug.current,
       }
     }
   `,
+  params: { language: language },
 })
+
+console.log(language)
 
 const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotation.icon) : null
 

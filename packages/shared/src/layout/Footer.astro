@@ -3,6 +3,9 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import Socials from '@repo/ui/Socials'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Copy from '@repo/ui/Copy'
+import { getLocaleFromPath } from '@repo/utils/get-locale-from-path'
+
+const language = getLocaleFromPath(Astro.url.pathname)
 
 const data = await sanityFetch<{
   services: {
@@ -50,43 +53,43 @@ const data = await sanityFetch<{
 }>({
   query: `
     {
-      "services": *[_type == "Service_Collection" && !defined(mainPage)] | order(_createdAt asc) {
+      "services": *[_type == "Service_Collection" && !defined(mainPage) && language == $language] | order(_createdAt asc) {
         name,
         "slug": slug.current,
         ${ImageDataQuery('icon')}
-        "list": *[_type == "Service_Collection" && mainPage._ref == ^._id] | order(_createdAt asc) {
+        "list": *[_type == "Service_Collection" && mainPage._ref == ^._id && language == $language] | order(_createdAt asc) {
           name,
           "slug": slug.current,
         }
       },
-      "caseStudies": *[_type == "Portfolio_Page"][0] {
+      "caseStudies": *[_type == "Portfolio_Page" && language == $language][0] {
         name,
         "slug": slug.current,
         "list": coalesce(
-          *[_type == "global"][0].footer.caseStudies[] -> {
+          *[_type == "global" && language == $language][0].footer.caseStudies[] -> {
             name,
             "slug": slug.current,
           },
-          *[_type == "CaseStudy_Collection"][] | order(_createdAt desc)[0...4] {
+          *[_type == "CaseStudy_Collection" && language == $language][] | order(_createdAt desc)[0...4] {
             name,
             "slug": slug.current,
           },
         ),
       },
-      "blog": *[_type == "Blog_Page"][0] {
+      "blog": *[_type == "Blog_Page" && language == $language][0] {
         name,
         "slug": slug.current,
       },
-      "team": *[_type == "Team_Page"][0] {
+      "team": *[_type == "Team_Page" && language == $language][0] {
         name,
         "link": slug.current,
-        "members": *[_type == "TeamMember_Collection"][] | order(_createdAt asc) {
+        "members": *[_type == "TeamMember_Collection" && language == $language][] | order(_createdAt asc) {
           name,
           "slug": slug.current,
           ${ImageDataQuery('img')}
         }
       },
-      "contact": *[_type == "global"][0] {
+      "contact": *[_type == "global" && language == $language][0] {
         address {
           addressText,
           mapLink,
@@ -94,12 +97,13 @@ const data = await sanityFetch<{
         email,
         tel,
       },
-      "locationPages": *[_type == "Location_Collection"][] | order(name asc) {
+      "locationPages": *[_type == "Location_Collection" && language == $language][] | order(name asc) {
         name,
         "slug": slug.current,
       }
     }
   `,
+  params: { language: language },
 })
 
 const cities = [

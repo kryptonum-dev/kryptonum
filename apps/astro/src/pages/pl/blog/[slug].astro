@@ -12,10 +12,11 @@ import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
 
 export const blogPosts = await sanityFetch<{ slug: string }[]>({
   query: `
-    *[_type == 'BlogPost_Collection'][] {
+    *[_type == 'BlogPost_Collection' && language == $language][] {
       "slug": slug.current,
     }
   `,
+  params: { language: 'pl' },
 })
 export async function getStaticPaths() {
   return blogPosts?.map(({ slug }) => ({ params: { slug: slug.replace(slugPrefix, '') } }))
@@ -43,11 +44,11 @@ const page = await sanityFetch<{
       ${Content_Query}
       ${Components_Query}
       "ScrollToNextPage": coalesce(
-        *[_type == 'BlogPost_Collection' && coalesce(publishedDate, _createdAt) < coalesce(^.publishedDate, ^._createdAt)] | order(coalesce(publishedDate, _createdAt) desc)[0] {
+        *[_type == 'BlogPost_Collection' && coalesce(publishedDate, _createdAt) < coalesce(^.publishedDate, ^._createdAt) && language == $language] | order(coalesce(publishedDate, _createdAt) desc)[0] {
           name,
           "slug": slug.current,
         },
-        *[_type == 'BlogPost_Collection'] | order(coalesce(publishedDate, _createdAt) desc)[0] {
+        *[_type == 'BlogPost_Collection' && language == $language] | order(coalesce(publishedDate, _createdAt) desc)[0] {
           name,
           "slug": slug.current,
         }

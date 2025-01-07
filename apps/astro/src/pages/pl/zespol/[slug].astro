@@ -12,10 +12,11 @@ import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
 export async function getStaticPaths() {
   const pages = await sanityFetch<{ slug: string }[]>({
     query: `
-      *[_type == 'TeamMember_Collection'][] {
+      *[_type == 'TeamMember_Collection' && language == $language][] {
         "slug": slug.current,
       }
     `,
+    params: { language: 'pl' },
   })
   return pages?.map(({ slug }) => ({ params: { slug: slug.replace(slugPrefix, '') } }))
 }
@@ -38,13 +39,13 @@ const page = await sanityFetch<{
       name,
       ${Components_Query}
       "ScrollToNextPage": coalesce(
-        *[_type == 'TeamMember_Collection' && _createdAt > ^._createdAt] | order(_createdAt asc)[0] {
+        *[_type == 'TeamMember_Collection' && _createdAt > ^._createdAt && language == $language] | order(_createdAt asc)[0] {
           name,
           "slug": slug.current,
           ${ImageDataQuery('img')}
           headline,
         },
-        *[_type == 'TeamMember_Collection'] | order(_createdAt asc)[0] {
+        *[_type == 'TeamMember_Collection' && language == $language] | order(_createdAt asc)[0] {
           name,
           "slug": slug.current,
           ${ImageDataQuery('img')}

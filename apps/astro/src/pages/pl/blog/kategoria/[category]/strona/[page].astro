@@ -15,13 +15,14 @@ import Components, { Components_Query, type ComponentsProps } from '@components/
 export async function getCategoryData() {
   return await sanityFetch<{ name: string; slug: string; postCount: number; heading: PortableTextValue }[]>({
     query: `
-      *[_type == 'BlogCategory_Collection'][] {
+      *[_type == 'BlogCategory_Collection' && language == $language][] {
         name,
         "slug": slug.current,
         "postCount": count(*[_type == "BlogPost_Collection" && references(^._id) && defined(category)]),
         ${PortableTextQuery('heading')}
       }
     `,
+    params: { language: 'pl' },
   })
 }
 

@@ -12,10 +12,11 @@ import Components, { Components_Query, type ComponentsProps } from '@components/
 
 export const categories = await sanityFetch<{ slug: string }[]>({
   query: `
-    *[_type == "BlogCategory_Collection"][] {
+    *[_type == "BlogCategory_Collection" && language == $language][] {
       "slug": slug.current,
     }
   `,
+  params: { language: 'pl' },
 })
 
 export async function getStaticPaths() {

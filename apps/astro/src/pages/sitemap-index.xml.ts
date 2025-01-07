@@ -7,8 +7,9 @@ import { DOMAIN } from "@repo/shared/constants";
 const slugs = [
   ...await sanityFetch<string[]>({
     query: `
-      *[defined(slug.current) && _type != "NotFound_Page"].slug.current
+      *[defined(slug.current) && _type != "NotFound_Page" && language == $language].slug.current
     `,
+    params: { language: 'pl' },
   }),
   ...await Promise.all([
     import("./pl/blog/strona/[page].astro")
