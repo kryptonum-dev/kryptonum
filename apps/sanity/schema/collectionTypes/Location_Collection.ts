@@ -30,25 +30,29 @@ export default defineType({
         const language = (context.parent as { language: string })?.language ?? 'pl';
         return `/${language}/${slugify(slug)}`
       },
-      validate: Rule => Rule.custom(async (value, context) => {
-        const servicePageRef = (context.parent as { servicePage: { _ref: string } })?.servicePage?._ref;
-        if (!servicePageRef) {
-          return 'The service page is required for Location Page.';
-        }
+      validate: Rule => [
+        Rule.custom(async (value, context) => {
+          const servicePageRef = (context.parent as { servicePage: { _ref: string } })?.servicePage?._ref;
+          if (!servicePageRef) {
+            return 'The service page is required for Location Page.';
+          }
 
-        const client = context.getClient({ apiVersion: '2024-11-12' })
-        const servicePageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: servicePageRef })
-        if (!value?.current?.startsWith(servicePageSlug)) {
-          return 'Slug should start with the slug of the service page.';
-        }
+          const client = context.getClient({ apiVersion: '2024-11-12' })
+          const servicePageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: servicePageRef })
+          if (!value?.current?.startsWith(servicePageSlug)) {
+            return 'Slug should start with the slug of the service page.';
+          }
 
-        const name = (context.parent as { name: string })?.name;
-        if (!value?.current?.includes(slugify(name))) {
-          return 'That slug doesn\'t match the name. Verify if it\'s correct.';
-        }
-
-        return true;
-      }).required()
+          return true;
+        }).required(),
+        Rule.custom((value, context) => {
+          const name = (context.parent as { name: string })?.name;
+          if (!value?.current?.includes(slugify(name))) {
+            return 'That slug doesn\'t match the name. Verify if it\'s correct.';
+          }
+          return true;
+        }).warning()
+      ],
     }),
     defineField({
       name: 'servicePage',

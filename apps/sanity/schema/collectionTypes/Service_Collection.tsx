@@ -32,28 +32,31 @@ export default defineType({
         }
         return `/${language}/${slugify(slug)}`
       },
-      validate: Rule => Rule.custom(async (value, context) => {
-        const language = (context.parent as { language: string })?.language ?? 'pl';
-        const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
-        const mainPageRef = (context.parent as { mainPage: { _ref: string } })?.mainPage?._ref;
+      validate: Rule => [
+        Rule.custom(async (value, context) => {
+          const language = (context.parent as { language: string })?.language ?? 'pl';
+          const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
+          const mainPageRef = (context.parent as { mainPage: { _ref: string } })?.mainPage?._ref;
 
-        if (hasMainPage && mainPageRef) {
-          const client = context.getClient({ apiVersion: '2024-11-12' })
-          const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef })
-          if (!value?.current?.startsWith(mainPageSlug)) {
-            return 'Slug should start with the slug of the main page.';
+          if (hasMainPage && mainPageRef) {
+            const client = context.getClient({ apiVersion: '2024-11-12' })
+            const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef })
+            if (!value?.current?.startsWith(mainPageSlug)) {
+              return 'Slug should start with the slug of the main page.';
+            }
+          } else if (!value?.current?.startsWith(`/${language}/`)) {
+            return `The slug should start with /${language}/`;
           }
-        } else if (!value?.current?.startsWith(`/${language}/`)) {
-          return `The slug should start with /${language}/`;
-        }
-
-        const name = (context.parent as { name: string })?.name;
-        if (!value?.current?.includes(slugify(name))) {
-          return 'That slug doesn\'t match the name. Verify if it\'s correct.';
-        }
-
-        return true;
-      }).required()
+          return true;
+        }).required(),
+        Rule.custom((value, context) => {
+          const name = (context.parent as { name: string })?.name;
+          if (!value?.current?.includes(slugify(name))) {
+            return 'That slug doesn\'t match the name. Verify if it\'s correct.';
+          }
+          return true;
+        }).warning(),
+      ]
     }),
     defineField({
       name: 'hasMainPage',
