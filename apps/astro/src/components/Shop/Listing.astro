@@ -5,7 +5,7 @@ import Button from '@repo/ui/Button'
 
 export const Listing_Query = `
   ${PortableTextQuery('heading')}
-  "listing": *[_type == 'ShopProduct_Collection'] | order(_createdAt desc) {
+  "listing": *[_type == 'ShopProduct_Collection' && language == $language] | order(_createdAt desc) {
     name,
     description,
     ${ImageDataQuery('img')}
