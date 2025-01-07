@@ -3,9 +3,9 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import Socials from '@repo/ui/Socials'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Copy from '@repo/ui/Copy'
-import { getLocaleFromPath } from '@repo/utils/get-locale-from-path'
 
-const language = getLocaleFromPath(Astro.url.pathname)
+// const language = getLocaleFromPath(pathname) // TODO: uncomment after adding EN version
+const language = 'pl'
 
 const data = await sanityFetch<{
   services: {
