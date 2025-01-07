@@ -5,7 +5,9 @@ import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import { getLocaleFromPath } from '@repo/utils/get-locale-from-path'
 
-const language = getLocaleFromPath(Astro.url.pathname)
+const pathname = Astro.url.pathname
+
+const language = getLocaleFromPath(pathname)
 
 const data = await sanityFetch<{
   annotation?: {
@@ -109,11 +111,7 @@ const data = await sanityFetch<{
   params: { language: language },
 })
 
-console.log(language)
-
 const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotation.icon) : null
-
-const pathname = Astro.url.pathname
 ---
 
 <a class="skip-link" href="#main">Przejdź do treści głównej</a>
