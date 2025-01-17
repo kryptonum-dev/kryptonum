@@ -1,15 +1,35 @@
 ---
-import { toPlainText } from 'astro-portabletext/utils'
+import type { BlockProps } from 'astro-portabletext/types'
 import { slugify } from '@repo/utils/slugify'
+
+type Props = BlockProps
 
 // eslint-disable-next-line no-unused-vars
 const { node, index, isInline, ...attrs } = Astro.props
-
 const styleIs = (style: string) => style === node.style
 
+// Recursive function to get text from nested children
+const getTextFromNode = (node: any): string => {
+  if (typeof node === 'string') return node
+  if (!node) return ''
+  if (node.text) return node.text
+  if (node.children) return node.children.map((child: any) => getTextFromNode(child)).join('')
+  return ''
+}
+
+const rawText =
+  node.children
+    ?.map((child) => {
+      if (child._type === '@text') return child.text
+      if (child._type === '@span') return getTextFromNode(child)
+      return ''
+    })
+    .join('') || ''
+
+const text = rawText.replace('❧ ', '')
 const props = {
   ...attrs,
-  id: slugify(toPlainText(node)),
+  ...(text && { id: slugify(text) }),
 }
 ---
 

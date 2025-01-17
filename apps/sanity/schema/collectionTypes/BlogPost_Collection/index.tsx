@@ -47,7 +47,6 @@ export default defineType({
       options: {
         filter: ({ document }) => {
           const language = (document as { language?: string })?.language;
-          console.log(language)
           return {
             filter: 'language == $language',
             params: { language: language }
