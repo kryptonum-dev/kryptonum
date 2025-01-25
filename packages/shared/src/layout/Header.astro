@@ -873,9 +873,6 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
           max-height: unset;
         }
       }
-      & + .overlay {
-        display: block;
-      }
     }
   }
   .overlay {
@@ -890,7 +887,6 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
     opacity: 0;
     pointer-events: none;
     transition: opacity 800ms var(--easing);
-    display: none;
     &[data-active='true'] {
       opacity: 1;
       pointer-events: auto;
