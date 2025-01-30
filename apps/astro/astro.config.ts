@@ -3,6 +3,7 @@ import preact from '@astrojs/preact';
 import vercel from "@astrojs/vercel";
 import { DOMAIN } from "@repo/shared/constants";
 import redirects from "./redirects";
+import { isPreviewDeployment } from "@repo/utils/is-preview-deployment";
 
 export default defineConfig({
   site: DOMAIN,
@@ -33,9 +34,11 @@ export default defineConfig({
   redirects: redirects,
   output: "server",
   adapter: vercel({
-    isr: {
-      bypassToken: process.env.VERCEL_DEPLOYMENT_ID,
-      exclude: ['/api/contact', '/api/newsletter']
-    }
+    ...(isPreviewDeployment && {
+      isr: {
+        bypassToken: process.env.VERCEL_DEPLOYMENT_ID,
+        exclude: ['/api/contact', '/api/newsletter']
+      }
+    })
   }),
 });
