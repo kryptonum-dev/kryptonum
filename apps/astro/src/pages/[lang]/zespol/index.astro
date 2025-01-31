@@ -1,0 +1,9 @@
+---
+import { type Language } from '@repo/shared/languages'
+import TeamPage from '@templates/team/index.astro'
+
+const lang = Astro.params.lang as Language
+if (lang !== 'pl') return Astro.rewrite('/404')
+---
+
+<TeamPage lang={lang} />

@@ -1,0 +1,13 @@
+---
+import TeamMemberPage, { fetchData, staticPaths } from '@templates/team/[slug].astro'
+import { type Language } from '@repo/shared/languages'
+
+const lang = Astro.params.lang as Language
+const slug = `/pl/zespol/${Astro.params.slug}`
+const data = await fetchData(lang, slug)
+if (lang !== 'pl' || !data) return Astro.rewrite('/404')
+
+export const getStaticPaths = () => staticPaths('pl')
+---
+
+<TeamMemberPage {...data} lang={lang} slug={slug} />
