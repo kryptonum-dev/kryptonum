@@ -1,0 +1,10 @@
+---
+import { type Language } from '@repo/shared/languages'
+import ShopPage, { fetchData } from '@templates/shop.astro'
+
+const lang = Astro.params.lang as Language
+const data = await fetchData(lang)
+if (lang !== 'en' || !data) return Astro.rewrite('/404')
+---
+
+<ShopPage {...data} />
