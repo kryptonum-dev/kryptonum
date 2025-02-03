@@ -7,6 +7,8 @@ import Listing, { Listing_Query, type ListingProps } from '@components/Shop/List
 import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
 import { type Language } from '@repo/shared/languages'
 
+type Props = NonNullable<Awaited<ReturnType<typeof fetchData>>>
+
 export async function fetchData(lang: Language) {
   const page = await sanityFetch<{
     name: string
