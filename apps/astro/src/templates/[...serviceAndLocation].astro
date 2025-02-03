@@ -1,0 +1,138 @@
+---
+import Layout from '@repo/shared/Layout'
+import sanityFetch from '@repo/utils/sanity.fetch'
+import metadataFetch from '@repo/utils/metadata.fetch'
+import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
+import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
+import ServicesNav, { ServicesNav_Query, type ServicesNavProps } from '@components/Services/ServicesNav.astro'
+import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
+import type { Language } from '@repo/shared/languages'
+
+export type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
+
+interface Props extends FetchDataReturn {
+  lang: Language
+  slug: string
+}
+
+const { page, metadata, lang, slug } = Astro.props
+
+export async function fetchData(lang: Language, slug: string) {
+  const page = await sanityFetch<
+    ServicesNavProps & {
+      _type: 'Service_Collection' | 'Location_Collection'
+      name: string
+      mainPage: {
+        name: string
+        slug: string
+      }
+      servicePage: {
+        name: string
+        slug: string
+        mainPage?: {
+          name: string
+          slug: string
+        }
+      }
+      components: ComponentsProps
+      ScrollToNextPage: {
+        name: string
+        slug: string
+      }
+    }
+  >({
+    query: `
+      *[(_type == 'Service_Collection' || _type == 'Location_Collection') && slug.current == $slug && language == $language][0] {
+        _type,
+        name,
+        mainPage -> {
+          name,
+          "slug": slug.current,
+        },
+        servicePage -> {
+          name,
+          "slug": slug.current,
+          mainPage -> {
+            name,
+            "slug": slug.current,
+          },
+        },
+        ${ServicesNav_Query}
+        ${Components_Query}
+        "ScrollToNextPage": coalesce(
+          *[_type == 'Service_Collection' && language == $language
+            && slug.current match $baseServicePath + '*'
+            && _createdAt > ^._createdAt
+          ] | order(_createdAt asc)[0] {
+            name,
+            "slug": slug.current,
+          },
+          *[_type == 'Service_Collection' && language == $language
+            && slug.current match $baseServicePath + '*'
+          ] | order(_createdAt asc)[0] {
+            name,
+            "slug": slug.current,
+          }
+        )
+      }
+    `,
+    params: { language: lang, slug: slug, baseServicePath: slug.split('/', 3).join('/') },
+  })
+  if (!page) return null
+  const metadata = await metadataFetch(slug)
+  return { page, metadata }
+}
+
+export async function staticPaths() {
+  const pages = await sanityFetch<{ slug: string; language: Language }[]>({
+    query: `
+      *[_type == 'Service_Collection' || _type == 'Location_Collection'][] {
+        "slug": slug.current,
+        language,
+      }
+    `,
+  })
+  return pages?.map(({ slug, language }) => ({
+    params: { lang: language, serviceAndLocation: slug.replace(`/${language}/`, '') },
+  }))
+}
+
+const breadcrumbs = [
+  ...(page?.mainPage ? [{ name: page.mainPage.name, path: page.mainPage.slug }] : []),
+  ...(page?.servicePage?.mainPage
+    ? [{ name: page.servicePage.mainPage.name, path: page.servicePage.mainPage.slug }]
+    : []),
+  ...(page?.servicePage ? [{ name: page.servicePage.name, path: page.servicePage.slug }] : []),
+  { name: page.name, path: slug },
+]
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={breadcrumbs} />
+  <Components data={page.components} />
+  {page._type === 'Service_Collection' && <ServicesNav {...page.ServicesNav} currentSlug={slug} />}
+  {
+    page._type === 'Service_Collection' && page.ScrollToNextPage && (
+      <ScrollToNextPage slot="ScrollToNextPage" path={page.ScrollToNextPage.slug} data-element="ScrollToNextPage">
+        <h2
+          set:html={
+            lang === 'pl'
+              ? '❧ Scrolluj, scrolluj, to <strong>jeszcze nie koniec</strong>!'
+              : "❧ Scroll, scroll, it's <strong>not over yet</strong>!"
+          }
+        />
+        <p>{page.ScrollToNextPage.name}</p>
+      </ScrollToNextPage>
+    )
+  }
+</Layout>
+
+<style lang="scss">
+  [data-element='ScrollToNextPage'] {
+    text-align: center;
+    h2 {
+      max-width: 17rem;
+      margin: 0 auto 1rem;
+    }
+  }
+</style>
