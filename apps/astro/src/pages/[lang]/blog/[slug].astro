@@ -1,0 +1,13 @@
+---
+import BlogPostPage, { fetchData, staticPaths } from '@templates/blog/[slug].astro'
+import { LANGUAGES, type Language } from '@repo/shared/languages'
+
+const lang = Astro.params.lang as Language
+const slug = { pl: '/pl/blog/', en: '/en/blog/' }[lang] + Astro.params.slug
+const data = await fetchData(lang, slug)
+if (!LANGUAGES.includes(lang) || !data) return Astro.rewrite('/404')
+
+export const getStaticPaths = () => staticPaths()
+---
+
+<BlogPostPage {...data} lang={lang} slug={slug} />
