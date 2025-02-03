@@ -1,0 +1,10 @@
+---
+import { LANGUAGES, type Language } from '@repo/shared/languages'
+import IndexPage, { fetchData } from '@templates/index.astro'
+
+const lang = Astro.params.lang as Language
+const data = await fetchData(lang)
+if (!LANGUAGES.includes(lang) || !data) return Astro.rewrite('/404')
+---
+
+<IndexPage {...data} />
