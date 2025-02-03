@@ -1,29 +1,34 @@
 ---
-import { type Language } from '@repo/shared/languages'
-const lang = Astro.props.lang as Language
-
 import Layout from '@repo/shared/Layout'
 import sanityFetch from '@repo/utils/sanity.fetch'
 import metadataFetch from '@repo/utils/metadata.fetch'
 import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
 import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
+import { type Language } from '@repo/shared/languages'
 
-const page = await sanityFetch<{
-  name: string
-  slug: string
-  components: ComponentsProps
-}>({
-  query: `
-    *[_type == "Team_Page" && language == $language][0] {
-      name,
-      "slug": slug.current,
-      ${Components_Query}
-    }
-  `,
-  params: { language: lang },
-})
+type Props = NonNullable<Awaited<ReturnType<typeof fetchData>>>
 
-const metadata = await metadataFetch(page.slug)
+export async function fetchData(lang: Language) {
+  const page = await sanityFetch<{
+    name: string
+    slug: string
+    components: ComponentsProps
+  }>({
+    query: `
+      *[_type == "Team_Page" && language == $language][0] {
+        name,
+        "slug": slug.current,
+        ${Components_Query}
+      }
+    `,
+    params: { language: lang },
+  })
+  if (!page) return null
+  const metadata = await metadataFetch(page.slug)
+  return { page, metadata }
+}
+
+const { page, metadata } = Astro.props
 ---
 
 <Layout {...metadata}>

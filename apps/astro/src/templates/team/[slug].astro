@@ -1,16 +1,4 @@
 ---
-import { type Language } from '@repo/shared/languages'
-const lang = Astro.props.lang as Language
-
-export type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
-
-interface Props extends FetchDataReturn {
-  lang: Language
-  slug: string
-}
-
-const { slug, page, metadata } = Astro.props
-
 import Layout from '@repo/shared/Layout'
 import sanityFetch from '@repo/utils/sanity.fetch'
 import metadataFetch from '@repo/utils/metadata.fetch'
@@ -18,6 +6,16 @@ import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
 import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
+import { type Language } from '@repo/shared/languages'
+
+type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
+
+interface Props extends FetchDataReturn {
+  lang: Language
+  slug: string
+}
+
+const { page, metadata, lang, slug } = Astro.props
 
 export async function staticPaths(lang: Language) {
   const prefix = { pl: '/pl/zespol/', en: '/en/team/' }[lang]
@@ -37,6 +35,10 @@ export async function staticPaths(lang: Language) {
 export async function fetchData(lang: Language, slug: string) {
   const page = await sanityFetch<{
     name: string
+    teamPage: {
+      name: string
+      slug: string
+    }
     components: ComponentsProps
     ScrollToNextPage: {
       name: string
@@ -48,6 +50,10 @@ export async function fetchData(lang: Language, slug: string) {
     query: `
       *[_type == 'TeamMember_Collection' && slug.current == $slug && language == $language][0] {
         name,
+        "teamPage": *[_type == "Team_Page" && language == $language][0] {
+          name,
+          "slug": slug.current
+        },
         ${Components_Query}
         "ScrollToNextPage": coalesce(
           *[_type == 'TeamMember_Collection' && _createdAt > ^._createdAt && language == $language] | order(_createdAt asc)[0] {
@@ -67,15 +73,13 @@ export async function fetchData(lang: Language, slug: string) {
     `,
     params: { slug: slug, language: lang },
   })
+  if (!page) return null
   const metadata = await metadataFetch(slug)
   return { page, metadata }
 }
 
 const breadcrumbs = [
-  {
-    pl: { name: 'Zespół', path: '/pl/zespol' },
-    en: { name: 'Team', path: '/en/team' },
-  }[lang],
+  { name: page.teamPage.name, path: page.teamPage.slug },
   { name: page.name, path: slug },
 ]
 ---
