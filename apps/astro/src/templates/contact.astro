@@ -10,11 +10,13 @@ type Props = NonNullable<Awaited<ReturnType<typeof fetchData>>>
 
 export async function fetchData(lang: Language) {
   const page = await sanityFetch<{
+    name: string
     slug: string
     components: ComponentsProps
   }>({
     query: `
-      *[_type == "Index_Page" && language == $language][0] {
+      *[_type == "Contact_Page" && language == $language][0] {
+        name,
         "slug": slug.current,
         ${Components_Query}
       }
@@ -30,6 +32,6 @@ const { page, metadata } = Astro.props
 ---
 
 <Layout {...metadata}>
-  <Breadcrumbs />
+  <Breadcrumbs data={[{ name: page.name, path: page.slug }]} />
   <Components data={page.components} />
 </Layout>
