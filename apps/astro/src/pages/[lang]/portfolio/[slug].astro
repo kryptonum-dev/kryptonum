@@ -1,0 +1,21 @@
+---
+import PortfolioProjectPage, { fetchData } from '@templates/portfolio/[slug].astro'
+import { type Language, LANGUAGES } from '@repo/shared/languages'
+
+const lang = Astro.params.lang as Language
+const slugParam = Astro.params.slug as string
+
+const prefix = (
+  {
+    pl: '/pl/portfolio/',
+    en: '/en/portfolio/',
+  } as const
+)[lang]
+
+const slug = `${prefix}${slugParam}`
+const data = await fetchData(slug, lang)
+
+if (!LANGUAGES.includes(lang) || !data) return Astro.rewrite('/404')
+---
+
+<PortfolioProjectPage lang={lang} slug={Astro.params.slug} data={data} prefix={prefix} />

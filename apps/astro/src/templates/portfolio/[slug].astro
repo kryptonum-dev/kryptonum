@@ -1,0 +1,95 @@
+---
+import { type Language } from '@repo/shared/languages'
+
+interface Props {
+  lang: Language
+  prefix: '/pl/portfolio/' | '/en/portfolio/'
+  slug: string | undefined
+  data: Awaited<ReturnType<typeof fetchData>>
+}
+
+const lang = Astro.props.lang as Language
+const prefix = Astro.props.prefix as Props['prefix']
+
+const { slug: _slug, data } = Astro.props
+const slug = `${prefix}${_slug}`
+
+import Layout from '@repo/shared/Layout'
+import sanityFetch from '@repo/utils/sanity.fetch'
+import metadataFetch from '@repo/utils/metadata.fetch'
+import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
+import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
+import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
+
+// export async function getStaticPaths() {
+//   const pages = await sanityFetch<{ slug: string }[]>({
+//     query: `
+//       *[_type == 'CaseStudy_Collection' && language == $language][] {
+//         "slug": slug.current,
+//       }
+//     `,
+//     params: { language: lang },
+//   })
+//   return pages?.map(({ slug }) => ({ params: { slug: slug.replace(prefix, '') } }))
+// }
+
+export async function fetchData(slug: string, lang: Language) {
+  return await sanityFetch<{
+    name: string
+    components: ComponentsProps
+    ScrollToNextPage: {
+      name: string
+      slug: string
+    }
+  }>({
+    query: `
+      *[_type == 'CaseStudy_Collection' && slug.current == $slug && language == $language][0] {
+        name,
+        ${Components_Query}
+        "ScrollToNextPage": coalesce(
+          *[_type == 'CaseStudy_Collection' && _createdAt < ^._createdAt && language == $language] | order(_createdAt desc)[0] {
+            name,
+            "slug": slug.current,
+          },
+          *[_type == 'CaseStudy_Collection' && language == $language] | order(_createdAt desc)[0] {
+            name,
+            "slug": slug.current,
+          }
+        )
+      }
+    `,
+    params: { slug: slug, language: lang },
+  })
+}
+
+const metadata = await metadataFetch(slug)
+
+const breadcrumbs = [
+  {
+    pl: { name: 'Zespół', path: '/pl/zespol' },
+    en: { name: 'Team', path: '/en/team' },
+  }[lang],
+  { name: data.name, path: slug },
+]
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={breadcrumbs} />
+  <Components data={data.components} />
+  <ScrollToNextPage slot="ScrollToNextPage" path={data.ScrollToNextPage.slug} data-element="ScrollToNextPage">
+    <h2>
+      ❧ Scrolluj, by przejść do <strong>następnego projektu</strong>
+    </h2>
+    <p>{data.ScrollToNextPage.name}</p>
+  </ScrollToNextPage>
+</Layout>
+
+<style lang="scss">
+  [data-element='ScrollToNextPage'] {
+    text-align: center;
+    h2 {
+      max-width: 17rem;
+      margin: 0 auto 1rem;
+    }
+  }
+</style>
