@@ -48,12 +48,13 @@ export default defineType({
             to: [{ type: 'Service_Collection' }],
             options: {
               disableNew: true,
-              filter: ({ parent }) => {
+              filter: ({ parent, document }) => {
+                const language = (document as { language?: string })?.language;
                 const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
                 if (selectedIds.length > 0) {
                   return {
-                    filter: '!(_id in $selectedIds) && !(_id in path("drafts.**"))',
-                    params: { selectedIds }
+                    filter: '!(_id in $selectedIds) && !(_id in path("drafts.**")) && language == $lang',
+                    params: { selectedIds, lang: language }
                   }
                 }
                 return {}
@@ -126,6 +127,13 @@ export default defineType({
           to: [{ type: 'TeamMember_Collection' }],
           options: {
             disableNew: true,
+            filter: ({ document }) => {
+              const language = (document as { language?: string })?.language;
+              return {
+                filter: 'language == $lang',
+                params: { lang: language }
+              }
+            }
           },
           hidden: ({ parent }) => !parent?.isReference,
           validation: Rule => Rule.custom((value, context) => {

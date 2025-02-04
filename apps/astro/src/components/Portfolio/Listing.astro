@@ -1,59 +1,24 @@
 ---
-import { ITEMS_PER_PAGE } from '@pages/pl/portfolio.astro'
+import { ITEMS_PER_PAGE } from '@templates/portfolio/index.astro'
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
 import CategoryTab from '@repo/ui/CategoryTab'
 import Pagination from '@repo/ui/Pagination'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import { PAGE_LABEL } from '@repo/ui/Pagination'
+import { type Language } from '@repo/shared/languages'
 
-export const Listing_Query = ({
-  currentPage = 1,
-  currentCategorySlug = '',
-}: {
-  currentPage?: number
-  currentCategorySlug?: string
-}) => {
-  const OFFSET = ITEMS_PER_PAGE * (currentPage - 1)
-  const PAGINATION_BEFORE = OFFSET
-  const PAGINATION_AFTER = OFFSET + ITEMS_PER_PAGE
-  return `
-    "listing": {
-      ${!currentCategorySlug ? `hero` : `"hero": *[_type == 'CaseStudyCategory_Collection' && slug.current == "${currentCategorySlug}"][0].hero`} {
-        ${PortableTextQuery('heading')}
-        ${PortableTextQuery('paragraph')}
-      },
-      "totalCaseStudies": count(*[_type == 'CaseStudy_Collection']),
-      "totalCaseStudiesByCategory": count(*[_type == 'CaseStudy_Collection' ${currentCategorySlug ? `&& "${currentCategorySlug}" in categories[] -> slug.current` : ''}]),
-      "categories": *[_type == 'CaseStudyCategory_Collection'] {
-        name,
-        "slug": slug.current,
-        "count": count(*[_type == 'CaseStudy_Collection' && references(^._id)])
-      },
-      "listing": *[_type == 'CaseStudy_Collection'
-        ${currentCategorySlug ? `&& "${currentCategorySlug}" in categories[] -> slug.current` : ''}
-      ] | order(_createdAt desc) [${PAGINATION_BEFORE}...${PAGINATION_AFTER}] {
-        "slug": slug.current,
-        ${ImageDataQuery('img')}
-        name,
-        description,
-        "categories": categories[] -> name,
-        date
-      },
-    },
-  `
-}
-
-export type ListingProps = {
+type Props = {
   hero: {
     heading: PortableTextValue
     paragraph: PortableTextValue
   }
   totalCaseStudies: number
-  totalCaseStudiesByCategory: number
   categories: Array<{
     name: string
     slug: string
     count: number
   }>
+  totalCaseStudiesByCategory: number
   listing: Array<{
     slug: string
     img: ImageDataProps
@@ -62,45 +27,86 @@ export type ListingProps = {
     categories: Array<string>
     date: Date
   }>
-  currentCategorySlug?: string
   currentPage: number
-  totalItems: number
-  slugBase: string
+  currentCategory: string | null
 }
+export type ListingProps = Props
 
-const {
-  hero: { heading, paragraph },
-  totalCaseStudies,
-  categories: _categories,
-  listing,
-  currentCategorySlug,
-  currentPage,
-  totalItems,
-  slugBase,
-} = Astro.props as ListingProps
+const lang = Astro.params.lang as Language
+const translations = {
+  pl: {
+    categories: 'Kategorie',
+    all: 'Wszystkie',
+  },
+  en: {
+    categories: 'Categories',
+    all: 'All',
+  },
+} as const
 
-const categories = _categories?.filter(({ count }) => count > 0)
+export const Listing_Query = `
+  "listing": {
+    "hero": select(defined($category) => *[_type == 'CaseStudyCategory_Collection' && slug.current match "*" + $category][0].hero, hero) {
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+    },
+    "totalCaseStudies": count(*[_type == 'CaseStudy_Collection' && language == $language]),
+    "categories": *[_type == 'CaseStudyCategory_Collection'
+      && language == $language
+      && count(*[_type == 'CaseStudy_Collection' && ^._id in categories[]._ref]) > 0
+    ] {
+      name,
+      "slug": slug.current,
+      "count": count(*[_type == 'CaseStudy_Collection' && ^._id in categories[]._ref])
+    },
+    "totalCaseStudiesByCategory": count(*[_type == 'CaseStudy_Collection' && language == $language && select(defined($category) => categories[] -> slug.current match "*" + $category, true)]),
+    "listing": *[_type == 'CaseStudy_Collection'
+      && language == $language
+      && select(
+        defined($category) => count(categories[]->{
+          "matches": slug.current match ($category + "$")
+        }) > 0,
+        true
+      )
+    ] | order(_createdAt desc) [$PAGINATION_BEFORE...$PAGINATION_AFTER] {
+      "slug": slug.current,
+      ${ImageDataQuery('img')}
+      name,
+      description,
+      "categories": categories[] -> name,
+      date
+    },
+  },
+`
+
+const { hero, totalCaseStudies, categories, totalCaseStudiesByCategory, listing, currentPage, currentCategory } =
+  Astro.props
+
+const slugBase = (() => {
+  const categoryPath = currentCategory ? `/${lang === 'pl' ? 'kategoria' : 'category'}/${currentCategory}` : ''
+  return `${lang === 'pl' ? '/pl' : '/en'}/portfolio${categoryPath}`
+})()
 ---
 
 <section class="Listing" id="strona">
   <header>
-    <PortableText value={heading} heading="h1" class="h1 heading" />
-    <PortableText value={paragraph} />
+    <PortableText value={hero.heading} heading="h1" class="h1 heading" />
+    <PortableText value={hero.paragraph} />
   </header>
-  <div class="Listing-categories">
-    <p>Kategorie</p>
+  <div class="listing-categories">
+    <p>{translations[lang].categories}</p>
     <ul>
       <li>
-        <CategoryTab slug="/pl/portfolio#strona" isActive={!currentCategorySlug}>
-          Wszystko ({totalCaseStudies})
+        <CategoryTab slug={`/${lang}/portfolio#${PAGE_LABEL[lang]}`} isActive={!currentCategory}>
+          {translations[lang].all} ({totalCaseStudies})
         </CategoryTab>
       </li>
       {
         categories.map((category) => {
-          const isActive = currentCategorySlug === category.slug
+          const isActive = currentCategory ? category.slug.endsWith(currentCategory) : false
           return (
             <li>
-              <CategoryTab slug={isActive ? '/pl/portfolio#strona' : `${category.slug}#strona`} isActive={isActive}>
+              <CategoryTab slug={`${category.slug}#${PAGE_LABEL[lang]}`} isActive={isActive}>
                 {category.name} ({category.count})
               </CategoryTab>
             </li>
@@ -109,7 +115,7 @@ const categories = _categories?.filter(({ count }) => count > 0)
       }
     </ul>
   </div>
-  <div class="listing">
+  <div class="items">
     {
       listing?.map(({ slug, img, name, description, categories, date }, listingIndex) => (
         <article>
@@ -136,7 +142,12 @@ const categories = _categories?.filter(({ count }) => count > 0)
       ))
     }
   </div>
-  <Pagination currentPage={currentPage} totalItems={totalItems} itemsPerPage={ITEMS_PER_PAGE} slugBase={slugBase} />
+  <Pagination
+    slugBase={slugBase}
+    totalItems={totalCaseStudiesByCategory}
+    itemsPerPage={ITEMS_PER_PAGE}
+    currentPage={currentPage}
+  />
 </section>
 
 <style lang="scss">
@@ -153,7 +164,7 @@ const categories = _categories?.filter(({ count }) => count > 0)
         margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
       }
     }
-    .Listing-categories {
+    .listing-categories {
       padding-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
       margin: clamp(1.5rem, calc(2vw / 0.48), 4rem) 0;
       border-bottom: 1px solid var(--neutral-600, #4a4a57);
@@ -170,7 +181,7 @@ const categories = _categories?.filter(({ count }) => count > 0)
         gap: 0.5rem;
       }
     }
-    .listing {
+    .items {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: clamp(1.5rem, calc(3vw / 0.48), 3rem) 0.75rem;

@@ -5,12 +5,15 @@ import Head, { type HeadProps } from './Head.astro'
 import Header from './Header.astro'
 import Footer from './Footer.astro'
 import Toast from '@repo/ui/Toast/Toast.astro'
+import type { Language } from '@repo/shared/languages'
 
 type Props = HeadProps & {
   clearLayout?: boolean
 }
 
 const { clearLayout = false, ...props } = Astro.props
+
+const lang = (Astro.params.lang as Language) || 'en'
 ---
 
 <!doctype html>
@@ -21,11 +24,11 @@ const { clearLayout = false, ...props } = Astro.props
     <script is:inline src="https://cdn.usefathom.com/script.js" data-site="PUUZZITA" defer></script>
   </head>
   <body>
-    {!clearLayout && <Header />}
+    {!clearLayout && <Header lang={lang} />}
     <main id="main">
       <slot />
     </main>
-    {!clearLayout && <Footer />}
+    {!clearLayout && <Footer lang={lang} alternates={props.alternates} />}
     <slot name="ScrollToNextPage" />
     <Toast />
   </body>

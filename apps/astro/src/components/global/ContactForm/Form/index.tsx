@@ -5,8 +5,36 @@ import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
 import { REGEX } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@pages/api/contact/sendContactEmail';
+import { type Language } from '@repo/shared/languages';
 
-export default function Form({ children, variant, ...props }: { children: React.ReactNode, variant: ContactFormProps['variant'] } & React.FormHTMLAttributes<HTMLFormElement>) {
+type Props = {
+  children: React.ReactNode,
+  variant: ContactFormProps['variant']
+  lang: Language
+} & React.FormHTMLAttributes<HTMLFormElement>
+
+const translations = {
+  pl: {
+    emailRequired: 'Email jest wymagany',
+    emailInvalid: 'Niepoprawny adres e-mail',
+    messageLabel: 'Temat rozmowy',
+    messagePlaceholder: 'Daj znać, o czym porozmawiamy',
+    messageRequired: 'Temat jest wymagany',
+    legal: <>Akceptuję <a href="/pl/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">politykę prywatności</a></>,
+    legalRequired: 'Zgoda jest wymagana',
+  },
+  en: {
+    emailRequired: 'Email is required',
+    emailInvalid: 'Invalid email address',
+    messageLabel: 'Subject',
+    messagePlaceholder: 'Let us know what we will talk about',
+    messageRequired: 'Message is required',
+    legal: <>I accept <a href="/en/privacy-policy" target="_blank" rel="noopener noreferrer" className="link">privacy policy</a></>,
+    legalRequired: 'Consent is required',
+  },
+}
+
+export default function Form({ children, variant, lang, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [step, setStep] = useState<1 | 2>(1);
   const {
@@ -63,62 +91,58 @@ export default function Form({ children, variant, ...props }: { children: React.
           <Input
             label='Email'
             register={register('email', {
-              required: { value: true, message: 'Email jest wymagany' },
-              pattern: { value: REGEX.email, message: 'Niepoprawny adres e-mail' },
+              required: { value: true, message: translations[lang].emailRequired },
+              pattern: { value: REGEX.email, message: translations[lang].emailInvalid },
             })}
             errors={errors}
             type='email'
           />
           <Input
-            label='Temat rozmowy'
+            label={translations[lang].messageLabel}
             register={register('message', {
-              required: { value: true, message: 'Temat jest wymagany' },
+              required: { value: true, message: translations[lang].messageRequired },
             })}
             isTextarea={true}
             errors={errors}
-            placeholder='Daj znać, o czym porozmawiamy'
+            placeholder={translations[lang].messagePlaceholder}
           />
           <Checkbox
             register={register('legal', {
-              required: { value: true, message: 'Zgoda jest wymagana' },
+              required: { value: true, message: translations[lang].legalRequired },
             })}
             errors={errors}
           >
-            Akceptuję <a href="/pl/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">
-              politykę prywatności
-            </a>
+            {translations[lang].legal}
           </Checkbox>
         </>
       )}
       {variant === 'form-with-person' && (
         <>
           <Input
-            label='Temat rozmowy'
+            label={translations[lang].messageLabel}
             register={register('message', {
-              required: { value: true, message: 'Temat jest wymagany' },
+              required: { value: true, message: translations[lang].messageRequired },
             })}
             isTextarea={true}
             errors={errors}
-            placeholder='Daj znać, o czym porozmawiamy'
+            placeholder={translations[lang].messagePlaceholder}
           />
           <Input
             label='Email'
             register={register('email', {
-              required: { value: true, message: 'Email jest wymagany' },
-              pattern: { value: REGEX.email, message: 'Niepoprawny adres e-mail' },
+              required: { value: true, message: translations[lang].emailRequired },
+              pattern: { value: REGEX.email, message: translations[lang].emailInvalid },
             })}
             errors={errors}
             type='email'
           />
           <Checkbox
             register={register('legal', {
-              required: { value: true, message: 'Zgoda jest wymagana' },
+              required: { value: true, message: translations[lang].legalRequired },
             })}
             errors={errors}
           >
-            Akceptuję <a href="/pl/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">
-              politykę prywatności
-            </a>
+            {translations[lang].legal}
           </Checkbox>
         </>
       )}

@@ -15,23 +15,6 @@ interface Props extends FetchDataReturn {
   slug: string
 }
 
-const { page, metadata, lang, slug } = Astro.props
-
-export async function staticPaths(lang: Language) {
-  const prefix = { pl: '/pl/zespol/', en: '/en/team/' }[lang]
-  const pages = await sanityFetch<{ slug: string }[]>({
-    query: `
-      *[_type == 'TeamMember_Collection' && language == $language][] {
-        "slug": slug.current,
-      }
-    `,
-    params: { language: lang },
-  })
-  return pages?.map(({ slug }) => ({
-    params: { lang: lang, slug: slug.replace(prefix, '') },
-  }))
-}
-
 export async function fetchData(lang: Language, slug: string) {
   const page = await sanityFetch<{
     name: string
@@ -77,6 +60,23 @@ export async function fetchData(lang: Language, slug: string) {
   const metadata = await metadataFetch(slug)
   return { page, metadata }
 }
+
+export async function staticPaths(lang: Language) {
+  const prefix = { pl: '/pl/zespol/', en: '/en/team/' }[lang]
+  const pages = await sanityFetch<{ slug: string }[]>({
+    query: `
+      *[_type == 'TeamMember_Collection' && language == $language][] {
+        "slug": slug.current,
+      }
+    `,
+    params: { language: lang },
+  })
+  return pages?.map(({ slug }) => ({
+    params: { lang: lang, slug: slug.replace(prefix, '') },
+  }))
+}
+
+const { page, metadata, lang, slug } = Astro.props
 
 const breadcrumbs = [
   { name: page.teamPage.name, path: page.teamPage.slug },

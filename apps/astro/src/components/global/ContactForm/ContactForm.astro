@@ -3,6 +3,41 @@ import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/u
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Copy from '@repo/ui/Copy'
 import FormWrapper from './Form/FormWrapper.astro'
+import { type Language } from '@repo/shared/languages'
+
+export type Props = {
+  index: number
+  sectionId?: string
+  variant: 'form-with-list' | 'form-with-person'
+  img: ImageDataProps
+  emailText: string
+  email: string
+  telText: string
+  tel?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  list: Array<{
+    icon: ImageDataProps
+    label: PortableTextValue
+  }>
+  state: {
+    success: {
+      heading: PortableTextValue
+      paragraph: PortableTextValue
+      link: {
+        url: string
+        icon: ImageDataProps
+        heading: string
+        paragraph: string
+        img: ImageDataProps
+      }
+    }
+    error: {
+      heading: PortableTextValue
+      paragraph: PortableTextValue
+    }
+  }
+}
 
 export const ContactForm_Query = `
   _type == "ContactForm" => {
@@ -38,39 +73,18 @@ export const ContactForm_Query = `
   },
 `
 
-export type Props = {
-  index: number
-  sectionId?: string
-  variant: 'form-with-list' | 'form-with-person'
-  img: ImageDataProps
-  emailText: string
-  email: string
-  telText: string
-  tel?: string
-  heading: PortableTextValue
-  paragraph: PortableTextValue
-  list: Array<{
-    icon: ImageDataProps
-    label: PortableTextValue
-  }>
-  state: {
-    success: {
-      heading: PortableTextValue
-      paragraph: PortableTextValue
-      link: {
-        url: string
-        icon: ImageDataProps
-        heading: string
-        paragraph: string
-        img: ImageDataProps
-      }
-    }
-    error: {
-      heading: PortableTextValue
-      paragraph: PortableTextValue
-    }
-  }
-}
+const lang = Astro.params.lang as Language
+const translations = {
+  pl: {
+    copyTelSuccess: 'Pomyślnie skopiowano numer telefonu',
+    copyEmailSuccess: 'Pomyślnie skopiowano adres e-mail',
+  },
+  en: {
+    copyTelSuccess: 'Successfully copied phone number',
+    copyEmailSuccess: 'Successfully copied email address',
+  },
+} as const
+const t = translations[lang]
 
 const { index, sectionId, variant, img, emailText, email, telText, tel, heading, paragraph, list, state } = Astro.props
 ---
@@ -107,13 +121,13 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             <div class="email">
               <p class="label-text">{emailText}</p>
               <a href={`mailto:${email}`}>{email}</a>
-              <Copy data={email} successMessage="Pomyślnie skopiowano adres e-mail" />
+              <Copy data={email} successMessage={t.copyEmailSuccess} />
             </div>
             {tel && (
               <div class="tel">
                 <p class="label-text">{telText}</p>
                 <a href={`tel:${tel}`}>{tel}</a>
-                <Copy data={tel} successMessage="Pomyślnie skopiowano numer telefonu" />
+                <Copy data={tel} successMessage={t.copyTelSuccess} />
               </div>
             )}
           </div>

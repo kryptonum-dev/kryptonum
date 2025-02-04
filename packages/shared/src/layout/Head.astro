@@ -4,6 +4,7 @@ import { DOMAIN, LOCALE, THEME_COLOR } from '../constants'
 import sanityFetch from '@repo/utils/sanity.fetch'
 import icon from '../assets/icon.png'
 import faviconSvg from '../assets/favicon.svg'
+import { type Language } from '@repo/shared/languages'
 
 const icons = {
   favicon: await getImage({ src: faviconSvg, format: 'svg' }),
@@ -22,9 +23,10 @@ export type HeadProps = ({ path: string; url?: never } | { url: string; path?: n
   title: string
   description: string
   openGraphImage?: string
+  alternates?: Array<{ lang: Language; url: string }>
 }
 
-const { path, url: _url, title, description, openGraphImage } = Astro.props as HeadProps
+const { path, url: _url, title, description, openGraphImage, alternates } = Astro.props as HeadProps
 
 const getOgImage = async () => {
   const asset = await getImage({
@@ -55,6 +57,7 @@ const url = _url || `${DOMAIN}${path}`
 <meta name="theme-color" content={THEME_COLOR} />
 <link rel="manifest" href="/manifest.webmanifest" />
 <link rel="canonical" href={url} />
+{alternates && alternates.map(({ lang, url }) => <link rel="alternate" hreflang={lang} href={`${DOMAIN}${url}`} />)}
 <meta property="og:url" content={url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />

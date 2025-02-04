@@ -27,7 +27,7 @@ export default defineType({
 
         if (hasMainPage && mainPageRef) {
           const client = context.getClient({ apiVersion: '2024-11-12' })
-          const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef })
+          const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef }, { perspective: 'previewDrafts' })
           return `${mainPageSlug}/${slugify(slug)}`
         }
         return `/${language}/${slugify(slug)}`
@@ -40,7 +40,7 @@ export default defineType({
 
           if (hasMainPage && mainPageRef) {
             const client = context.getClient({ apiVersion: '2024-11-12' })
-            const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef })
+            const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef }, { perspective: 'previewDrafts' })
             if (!value?.current?.startsWith(mainPageSlug)) {
               return 'Slug should start with the slug of the main page.';
             }

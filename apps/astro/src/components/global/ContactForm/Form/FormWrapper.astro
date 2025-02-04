@@ -6,6 +6,7 @@ import Button from '@repo/ui/Button'
 import Copy from '@repo/ui/Copy'
 import Loader from '@repo/ui/Loader'
 import PortableText from '@repo/ui/portable-text'
+import { type Language } from '@repo/shared/languages'
 
 type Props = {
   state: ContactFormProps['state']
@@ -13,27 +14,50 @@ type Props = {
   email: ContactFormProps['email']
 }
 
-const { state, variant, email } = Astro.props as Props
+const lang = Astro.params.lang as Language
+const translations = {
+  pl: {
+    copyEmailSuccess: 'Pomyślnie skopiowano adres e-mail',
+    copyTelSuccess: 'Pomyślnie skopiowano numer telefonu',
+    submit: 'Porozmawiajmy o biznesie',
+    tryAgain: 'Spróbuj ponownie',
+    secureData: 'Twoje dane są bezpieczne',
+    nextStep: 'Przejdź dalej',
+    prevStep: 'Wróć',
+  },
+  en: {
+    copyEmailSuccess: 'Successfully copied email address',
+    copyTelSuccess: 'Successfully copied phone number',
+    submit: 'Let\'s talk about business',
+    tryAgain: 'Try again',
+    secureData: 'Your data is secure',
+    nextStep: 'Next step',
+    prevStep: 'Back',
+  },
+}
+const t = translations[lang]
+
+const { state, variant, email } = Astro.props
 
 const svgId = Math.random().toString(36).slice(2)
 ---
 
-<Form className="Form" variant={variant} client:load>
+<Form className="Form" variant={variant} lang={lang} client:load>
   <div class="submit-wrapper">
     <div class="wrapper">
-      {variant === 'form-with-list' && <Button type="submit" className="submit-button">Porozmawiajmy o biznesie</Button>}
+      {variant === 'form-with-list' && <Button type="submit" className="submit-button">{t.submit}</Button>}
       {
         variant === 'form-with-person' && (
           <button class="prev-step" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" fill="none" viewBox="0 0 13 10">
               <path stroke="#F0F7F7" stroke-linecap="round" stroke-linejoin="round" d="M11.835 5H1.168m0 0 4-4m-4 4 4 4"/>
             </svg>
-            Wróć
+            {t.prevStep}
           </button>
           <Button type="button" className="next-step">
-            Przejdź dalej
+            {t.nextStep}
           </Button>
-          <Button type="submit" className="submit-button">Porozmawiajmy o biznesie</Button>
+          <Button type="submit" className="submit-button">{t.submit}</Button>
         )
       }
     </div>
@@ -46,7 +70,7 @@ const svgId = Math.random().toString(36).slice(2)
         <circle cx="8.501" cy="10.665" r="1.333" stroke="#C6CDCC"></circle>
         <path stroke="#C6CDCC" stroke-linecap="round" d="M4.5 6.665V5.332a4 4 0 1 1 8 0v1.333"></path>
       </svg>
-      Twoje dane są bezpieczne
+      {t.secureData}
     </p>
   </div>
   <Loader class="Loader" />
@@ -139,9 +163,9 @@ const svgId = Math.random().toString(36).slice(2)
     <PortableText value={state.error.heading} class="h2 heading" />
     <PortableText value={state.error.paragraph} class="paragraph" />
     <div class="actions">
-      <Button type="button" className="cta tryAgain">Spróbuj ponownie</Button>
+      <Button type="button" className="cta tryAgain">{t.tryAgain}</Button>
       <a href={`mailto:${email}`} class="email">{email}</a>
-      <Copy data={email} successMessage="Pomyślnie skopiowano adres e-mail" />
+      <Copy data={email} successMessage={t.copyEmailSuccess} />
     </div>
   </div>
 </Form>

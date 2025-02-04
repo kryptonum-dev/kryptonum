@@ -16,11 +16,11 @@ export const CaseStudyShowcase_Query = `
       caseStudies[] -> {
         ${CaseStudy_Query}
       },
-      *[_type == "CaseStudy_Collection"][] | order(_createdAt desc)[0...7] {
+      *[_type == "CaseStudy_Collection" && language == $language][] | order(_createdAt desc)[0...7] {
         ${CaseStudy_Query}
       },
     ),
-    "caseStudiesLink": *[_type == "Portfolio_Page"][0].slug.current,
+    "caseStudiesLink": *[_type == "Portfolio_Page" && language == $language][0].slug.current,
   },
 `
 

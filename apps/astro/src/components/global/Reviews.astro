@@ -19,11 +19,11 @@ export const Reviews_Query = `
       reviews[] -> {
         ${Review_Query}
       },
-      *[_type == "Review_Collection"][0...8] | order(_updatedAt desc) {
+      *[_type == "Review_Collection" && language == $language][0...8] | order(_updatedAt desc) {
         ${Review_Query}
       }
     ),
-    "googleData": *[_type == "global"][0].googleData {
+    "googleData": *[_type == "global" && language == $language][0].googleData {
       rating,
       user_ratings_total,
       url,
@@ -51,6 +51,8 @@ type Props = {
 }
 
 const { index, sectionId, heading, reviews, googleData } = Astro.props as Props
+
+if (reviews.length === 0) return null
 
 const Subheading = index === 0 ? 'h2' : 'h3'
 

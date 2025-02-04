@@ -1,19 +1,30 @@
 import sanityFetch from "@repo/utils/sanity.fetch";
+import type { Language } from "@repo/shared/languages";
 
-type HeadProps = ({ path: string; url?: never } | { url: string; path?: never }) & {
+type MetadataProps = ({ path: string; url?: never } | { url: string; path?: never }) & {
   title: string
   description: string
   openGraphImage?: string
+  alternates?: Array<{ lang: Language; url: string }>
 }
 
-export default async function metadataFetch(slug: string): Promise<HeadProps> {
-  const seo = await sanityFetch<HeadProps>({
+export default async function metadataFetch(slug: string) {
+  const seo = await sanityFetch<MetadataProps>({
     query: /* groq */ `
       *[slug.current == $slug][0] {
         "path": slug.current,
         "title": seo.title,
         "description": seo.description,
         "openGraphImage": seo.img.asset -> url + "?w=1200",
+        "alternates": coalesce(
+          *[_type == 'translation.metadata' && references(^._id)][0] {
+            "urls": translations[] {
+              "lang": _key,
+              "url": *[_id == ^.value._ref][0].slug.current
+            }
+          }.urls,
+          []
+        ),
       }
     `,
     params: { slug: slug }

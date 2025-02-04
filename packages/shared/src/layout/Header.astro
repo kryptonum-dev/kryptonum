@@ -3,11 +3,12 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import imageToInlineSvg from '@repo/ui/Image/image-to-inline-svg'
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import { useTranslations } from '@repo/shared/languages'
+import type { Language } from '@repo/shared/languages'
 
 const pathname = Astro.url.pathname
-
-// const language = getLocaleFromPath(pathname) // TODO: uncomment after adding EN version
-const language = 'pl'
+const language = Astro.props.lang as Language
+const t = useTranslations(language)
 
 const data = await sanityFetch<{
   annotation?: {
@@ -38,8 +39,9 @@ const data = await sanityFetch<{
     }>
   }
   team: {
+    name: string
     slug: string
-    members: Array<{
+    list: Array<{
       name: string
       slug: string
       img: ImageDataProps
@@ -72,7 +74,7 @@ const data = await sanityFetch<{
         "list": *[_type == "Service_Collection" && mainPage._ref == ^._id && language == $language] | order(_createdAt asc) {
           name,
           "slug": slug.current,
-        }
+        },
       },
       "caseStudies": *[_type == "Portfolio_Page" && language == $language][0] {
         name,
@@ -91,8 +93,9 @@ const data = await sanityFetch<{
         ),
       },
       "team": *[_type == "Team_Page" && language == $language][0] {
+        name,
         "slug": slug.current,
-        "members": *[_type == "TeamMember_Collection" && language == $language][] | order(_createdAt asc) {
+        "list": *[_type == "TeamMember_Collection" && language == $language][] | order(_createdAt asc) {
           name,
           "slug": slug.current,
           ${ImageDataQuery('img')}
@@ -114,7 +117,7 @@ const data = await sanityFetch<{
 const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotation.icon) : null
 ---
 
-<a class="skip-link" href="#main">Przejdź do treści głównej</a>
+<a class="skip-link" href="#main">{t('skipLink')}</a>
 {
   data?.annotation && (
     <aside class="annotation-banner" id="annotation-banner" aria-labelledby="annotation-text">
@@ -148,7 +151,7 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
 
 <header class="header" data-element="LayoutHeader">
   <div class="max-width">
-    <a href="/pl" aria-label="Strona główna" class="logo">
+    <a href={`/${language}`} aria-label="Strona główna" class="logo">
       <svg xmlns="http://www.w3.org/2000/svg" width="112" height="24" fill="none" viewBox="0 0 112 24">
         <title>Kryptonum</title>
         <path
@@ -204,7 +207,7 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
           type="button"
           class="item-button"
           aria-current={data.services.some(({ slug }) => pathname.includes(slug)) ? 'page' : undefined}>
-          <span>Usługi</span>
+          <span>{t('header.services')}</span>
           <svg width="17" height="16"><use href="#chevron-down"></use></svg>
         </button>
         <div class="item-expand">
@@ -238,7 +241,7 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
           type="button"
           class="item-button"
           aria-current={pathname.includes(data.caseStudies.slug) ? 'page' : undefined}>
-          <span>Projekty</span>
+          <span>{data.caseStudies.name}</span>
           <svg width="17" height="16"><use href="#chevron-down"></use></svg>
         </button>
         <div class="item-expand">
@@ -258,21 +261,21 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
                   ))
                 }
               </ul>
-              <Button href={data.caseStudies.slug} theme="secondary" className="cta">Zobacz projekty</Button>
+              <Button href={data.caseStudies.slug} theme="secondary" className="cta">{t('header.caseStudies')}</Button>
             </div>
           </div>
         </div>
       </div>
       <div class="item" data-tab="about">
         <button type="button" class="item-button" aria-current={pathname.includes(data.team.slug) ? 'page' : undefined}>
-          <span>O nas</span>
+          <span>{data.team.name}</span>
           <svg width="17" height="16"><use href="#chevron-down"></use></svg>
         </button>
         <div class="item-expand">
           <div class="max-width">
             <ul>
               {
-                data.team.members.map(({ name, slug, img }) => (
+                data.team.list.map(({ name, slug, img }) => (
                   <li>
                     <a href={slug}>
                       <Image {...img} sizes="78px" class="gradient-thumbnail" />
@@ -282,7 +285,7 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
                 ))
               }
             </ul>
-            <Button href={data.team.slug} theme="secondary" className="cta">Dowiedz się o nas więcej</Button>
+            <Button href={data.team.slug} theme="secondary" className="cta">{t('header.about')}</Button>
           </div>
         </div>
       </div>

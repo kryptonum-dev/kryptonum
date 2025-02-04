@@ -4,14 +4,15 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import metadataFetch from '@repo/utils/metadata.fetch'
 import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
 import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
+import type { Language } from '@repo/shared/languages'
 
-type QueryProps = {
+const lang = (Astro.params.lang as Language) || 'en'
+
+const page = await sanityFetch<{
   name: string
   slug: string
   components: ComponentsProps
-}
-
-const page = await sanityFetch<QueryProps>({
+}>({
   query: `
     *[_type == "NotFound_Page" && language == $language][0] {
       name,
@@ -19,7 +20,7 @@ const page = await sanityFetch<QueryProps>({
       ${Components_Query}
     }
   `,
-  params: { language: 'pl' },
+  params: { language: lang },
 })
 
 const metadata = await metadataFetch(page.slug)

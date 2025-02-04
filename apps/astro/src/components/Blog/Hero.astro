@@ -4,9 +4,43 @@ import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import CategoryTab from '@repo/ui/CategoryTab'
 import { ContentPT_Query } from '@components/Blog/Post/Content/content-pt/index.astro'
 import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@repo/ui/EstimatedReadingTime'
+import { type Language } from '@repo/shared/languages'
+
+const lang = Astro.params.lang as Language
+
+const translations = {
+  pl: {
+    tag: '👉 Sprawdź najnowszy artykuł',
+    author: 'Autor',
+  },
+  en: {
+    tag: '👉 Check out the latest article',
+    author: 'Author',
+  },
+} as const
+
+type Props = {
+  name: string
+  slug: string
+  heading: PortableTextValue
+  category: {
+    name: string
+    slug: string
+    postCount: number
+  }
+  author: {
+    img: ImageDataProps
+    name: string
+    slug: string
+  }
+  img: ImageDataProps
+  content: EstimatedReadingTimeProps['content']
+}
+
+export type HeroProps = Props
 
 export const Hero_Query = `
-  "hero": *[_type == 'BlogPost_Collection'] | order(coalesce(publishedDate, _createdAt) desc)[0] {
+  "hero": *[_type == 'BlogPost_Collection' && language == $language] | order(coalesce(publishedDate, _createdAt) desc)[0] {
     name,
     "slug": slug.current,
     ${PortableTextQuery('heading')}
@@ -25,25 +59,7 @@ export const Hero_Query = `
   },
 `
 
-export type HeroProps = {
-  name: string
-  slug: string
-  heading: PortableTextValue
-  category: {
-    name: string
-    slug: string
-    postCount: number
-  }
-  author: {
-    img: ImageDataProps
-    name: string
-    slug: string
-  }
-  img: ImageDataProps
-  content: EstimatedReadingTimeProps['content']
-}
-
-const { name, slug, heading, category, author, img, content } = Astro.props as HeroProps
+const { name, slug, heading, category, author, img, content } = Astro.props
 ---
 
 <section class="Hero">
@@ -51,7 +67,7 @@ const { name, slug, heading, category, author, img, content } = Astro.props as H
     <a href={slug} class="hero-link" aria-label={`Przejdź do artykułu: ${name}`}></a>
     <div class="img">
       <Image {...img} sizes="(max-width: 66rem) 100vw, 50vw" priority={true} />
-      <div class="tag">👉 Sprawdź najnowszy artykuł</div>
+      <div class="tag">{translations[lang].tag}</div>
     </div>
     <header>
       <CategoryTab slug={category.slug}>{category.name} ({category.postCount})</CategoryTab>
@@ -61,7 +77,7 @@ const { name, slug, heading, category, author, img, content } = Astro.props as H
         <a href={author.slug} class="author">
           <Image {...author.img} sizes="32px" class="gradient-thumbnail" loading="eager" />
           <p>
-            Autor: <span>{author.name}</span>
+            {translations[lang].author}: <span>{author.name}</span>
           </p>
         </a>
       </div>

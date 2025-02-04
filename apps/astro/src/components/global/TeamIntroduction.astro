@@ -20,7 +20,7 @@ export const TeamIntroduction_Query = `
         ${PortableTextQuery('paragraph')}
       },
     },
-    "people": *[_type == "TeamMember_Collection"][] | order(_createdAt asc) {
+    "people": *[_type == "TeamMember_Collection" && language == $language][] | order(_createdAt asc) {
       "slug": slug.current,
       ${ImageDataQuery('img')}
       name,

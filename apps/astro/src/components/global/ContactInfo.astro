@@ -1,22 +1,7 @@
 ---
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Copy from '@repo/ui/Copy'
-
-export const ContactInfo_Query = `
-  _type == "ContactInfo" => {
-    "img": select(isReference => personReference -> ${ImageDataQuery('img')} ${ImageDataQuery('img')}),
-    emailText,
-    "email": coalesce(email, personReference -> email),
-    telText,
-    "tel": coalesce(tel, personReference -> tel),
-    address {
-      ${ImageDataQuery('img')}
-      text,
-      "addressText": coalesce(addressText, *[_type == "global"][0].address.addressText),
-      "mapLink": coalesce(mapLink, *[_type == "global"][0].address.mapLink),
-    },
-  },
-`
+import { type Language } from '@repo/shared/languages'
 
 type Props = {
   index: number
@@ -34,6 +19,37 @@ type Props = {
   }
 }
 
+export const ContactInfo_Query = `
+  _type == "ContactInfo" => {
+    "img": select(isReference => personReference -> ${ImageDataQuery('img')} ${ImageDataQuery('img')}),
+    emailText,
+    "email": coalesce(email, personReference -> email),
+    telText,
+    "tel": coalesce(tel, personReference -> tel),
+    address {
+      ${ImageDataQuery('img')}
+      text,
+      "addressText": coalesce(addressText, *[_type == "global"][0].address.addressText),
+      "mapLink": coalesce(mapLink, *[_type == "global"][0].address.mapLink),
+    },
+  },
+`
+
+const lang = Astro.params.lang as Language
+const translations = {
+  pl: {
+    copyEmailSuccess: 'Pomyślnie skopiowano adres e-mail',
+    copyTelSuccess: 'Pomyślnie skopiowano numer telefonu',
+    checkMap: 'Zobacz na mapie',
+  },
+  en: {
+    copyEmailSuccess: 'Successfully copied email address',
+    copyTelSuccess: 'Successfully copied phone number',
+    checkMap: 'Check on map',
+  },
+} as const
+const t = translations[lang]
+
 const { sectionId, img, emailText, email, telText, tel, address } = Astro.props
 ---
 
@@ -45,7 +61,7 @@ const { sectionId, img, emailText, email, telText, tel, address } = Astro.props
         <p class="label-text">{emailText}</p>
         <div class="copy-wrapper">
           <a href={`mailto:${email}`}>{email}</a>
-          <Copy data={email} successMessage="Pomyślnie skopiowano adres e-mail" />
+          <Copy data={email} successMessage={t.copyEmailSuccess} />
         </div>
       </div>
       {
@@ -54,7 +70,7 @@ const { sectionId, img, emailText, email, telText, tel, address } = Astro.props
             <p class="label-text">{telText}</p>
             <div class="copy-wrapper">
               <a href={`tel:${tel}`}>{tel}</a>
-              <Copy data={tel} successMessage="Pomyślnie skopiowano numer telefonu" />
+              <Copy data={tel} successMessage={t.copyTelSuccess} />
             </div>
           </div>
         )
@@ -88,7 +104,7 @@ const { sectionId, img, emailText, email, telText, tel, address } = Astro.props
                 d="M7.647 13.207c1.863-2.915 4.027-4.233 4.027-7.62 0-.93-.23-1.801-.629-2.575l-7.45 8.84c.315.411.642.883.956 1.367 1.137 1.753.822 2.793 1.548 2.793.726 0 .411-1.052 1.548-2.805Z">
               </path>
             </svg>
-            Zobacz na mapie
+            {t.checkMap}
           </span>
         </a>
       </div>

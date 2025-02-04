@@ -13,7 +13,8 @@
     "./Layout": "./src/layout/Layout.astro",
     "./Head": "./src/layout/Head.astro",
     "./Header": "./src/layout/Header.astro",
-    "./Footer": "./src/layout/Footer.astro"
+    "./Footer": "./src/layout/Footer.astro",
+    "./languages": "./src/languages.ts"
   },
   "dependencies": {
     "@repo/utils": "workspace:*",

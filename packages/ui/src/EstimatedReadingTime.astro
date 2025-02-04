@@ -1,5 +1,19 @@
 ---
 import type { PortableTextProps } from 'astro-portabletext/types'
+import { type Language } from '@repo/shared/languages'
+
+type Props = { content: PortableTextProps['value'] }
+export type EstimatedReadingTimeProps = Props
+
+const lang = Astro.params.lang as Language
+const translations = {
+  pl: {
+    readingTime: 'min. czytania',
+  },
+  en: {
+    readingTime: 'min. reading',
+  },
+} as const
 
 // Note: Calculating words from custom Portable Text is documented, but there is limited information available online.
 // As a result, I have implemented my own script to handle word count and estimated reading time for custom blocks (sections).
@@ -50,19 +64,15 @@ const readingTime = (text: string) => {
   return readingTime
 }
 
-export type EstimatedReadingTimeProps = {
-  content: PortableTextProps['value']
-}
-
-const { content } = Astro.props as EstimatedReadingTimeProps
+const { content } = Astro.props
 ---
 
 <p class="estimated-reading-time">
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20" aria-hidden="true">
     <circle cx="10" cy="10" r="8.333" stroke="#C6CDCC"></circle>
     <path stroke="#C6CDCC" stroke-linecap="round" stroke-linejoin="round" d="M10 6.667V10l2.083 2.083"></path>
   </svg>
-  {readingTime(toPlainText(content))} min. czytania
+  {readingTime(toPlainText(content))} {translations[lang].readingTime}
 </p>
 
 <style>

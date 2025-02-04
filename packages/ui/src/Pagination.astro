@@ -1,28 +1,32 @@
 ---
+import { type Language } from '@repo/shared/languages'
+
 interface Props {
-  currentPage: number
-  totalItems: number
   slugBase: string
-  itemsPerPage?: number
+  totalItems: number
+  itemsPerPage: number
+  currentPage: number
 }
 
-const ITEMS_PER_PAGE = 1
+const { slugBase, totalItems, itemsPerPage, currentPage } = Astro.props
+const lang = Astro.params.lang as Language
 
-const { currentPage = 1, totalItems, slugBase = '', itemsPerPage = ITEMS_PER_PAGE } = Astro.props
-
+export const PAGE_LABEL = { en: 'page', pl: 'strona' } as const
 const totalPages = Math.ceil(totalItems / itemsPerPage)
 
-const slugPrefix = (number?: number) =>
-  number && number > 1 ? `${slugBase}/strona/${number}#strona` : `${slugBase}#strona`
+const getPagePath = (pageNum?: number) => {
+  if (!pageNum || pageNum < 1) return ''
+  const pagePath = pageNum > 1 ? `${slugBase}/${PAGE_LABEL[lang]}/${pageNum}` : slugBase
+  return `${pagePath}#${PAGE_LABEL[lang]}`
+}
 
 const renderPagination = () => {
   const pagination = []
-
   if (totalPages <= 5) {
     // Show all pages if total pages is 5 or less
     for (let i = 1; i <= totalPages; i++) {
       pagination.push(
-        `<a href="${slugPrefix(i)}" ${currentPage === i ? 'aria-current="page"' : ''}>
+        `<a href="${getPagePath(i)}" ${currentPage === i ? 'aria-current="page"' : ''}>
           ${i}
         </a>`
       )
@@ -33,47 +37,47 @@ const renderPagination = () => {
       // Near the start
       for (let i = 1; i <= 3; i++) {
         pagination.push(
-          `<a href="${slugPrefix(i)}" ${currentPage === i ? 'aria-current="page"' : ''}>
+          `<a href="${getPagePath(i)}" ${currentPage === i ? 'aria-current="page"' : ''}>
             ${i}
           </a>`
         )
       }
       pagination.push('<div>...</div>')
       pagination.push(
-        `<a href="${slugPrefix(totalPages)}" ${currentPage === totalPages ? 'aria-current="page"' : ''}>
+        `<a href="${getPagePath(totalPages)}" ${currentPage === totalPages ? 'aria-current="page"' : ''}>
           ${totalPages}
         </a>`
       )
     } else if (currentPage >= 3 && totalPages - currentPage >= 3) {
       // In the middle
       pagination.push(
-        `<a href="${slugPrefix(1)}" ${currentPage === 1 ? 'aria-current="page"' : ''}>
+        `<a href="${getPagePath(1)}" ${currentPage === 1 ? 'aria-current="page"' : ''}>
           ${1}
         </a>`
       )
       pagination.push('<div>...</div>')
       pagination.push(
-        `<a href="${slugPrefix(currentPage)}" aria-current="page">
+        `<a href="${getPagePath(currentPage)}" aria-current="page">
           ${currentPage}
         </a>`
       )
       pagination.push('<div>...</div>')
       pagination.push(
-        `<a href="${slugPrefix(totalPages)}" ${currentPage === totalPages ? 'aria-current="page"' : ''}>
+        `<a href="${getPagePath(totalPages)}" ${currentPage === totalPages ? 'aria-current="page"' : ''}>
           ${totalPages}
         </a>`
       )
     } else {
       // Near the end
       pagination.push(
-        `<a href="${slugPrefix(1)}" ${currentPage === 1 ? 'aria-current="page"' : ''}>
+        `<a href="${getPagePath(1)}" ${currentPage === 1 ? 'aria-current="page"' : ''}>
           ${1}
         </a>`
       )
       pagination.push('<div>...</div>')
       for (let i = totalPages - 2; i <= totalPages; i++) {
         pagination.push(
-          `<a href="${slugPrefix(i)}" ${currentPage === i ? 'aria-current="page"' : ''}>
+          `<a href="${getPagePath(i)}" ${currentPage === i ? 'aria-current="page"' : ''}>
             ${i}
           </a>`
         )
@@ -91,13 +95,13 @@ const ArrowRight = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="1
   totalPages > 1 && (
     <nav class="Pagination">
       {currentPage > 1 ? (
-        <a href={slugPrefix(currentPage - 1)} aria-label="Go to previous page" class="arrow" set:html={ArrowLeft} />
+        <a href={getPagePath(currentPage - 1)} aria-label="Go to previous page" class="arrow" set:html={ArrowLeft} />
       ) : (
         <div class="arrow" set:html={ArrowLeft} />
       )}
       <Fragment set:html={renderPagination()} />
       {currentPage < totalPages ? (
-        <a href={slugPrefix(currentPage + 1)} aria-label="Go to next page" class="arrow" set:html={ArrowRight} />
+        <a href={getPagePath(currentPage + 1)} aria-label="Go to next page" class="arrow" set:html={ArrowRight} />
       ) : (
         <div class="arrow" set:html={ArrowRight} />
       )}

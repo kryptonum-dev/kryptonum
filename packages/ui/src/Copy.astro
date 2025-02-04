@@ -1,19 +1,32 @@
 ---
+import { type Language } from '@repo/shared/languages'
+
 type Props = {
   data: string
   successMessage?: string
 }
-
+const translations = {
+  pl: {
+    copy: 'Skopiuj',
+    copySuccess: 'Pomyślnie skopiowano',
+  },
+  en: {
+    copy: 'Copy',
+    copySuccess: 'Successfully copied',
+  },
+}
+const lang = Astro.params.lang as Language
 const { data, successMessage } = Astro.props
+const t = translations[lang]
 ---
 
 <button
   class="CopyToClipboard"
   data-copy-text={data}
-  aria-label="Skopiuj"
+  aria-label={t.copy}
   type="button"
-  data-success-message={successMessage}>
-  <span>Skopiuj</span>
+  data-success-message={successMessage || t.copySuccess}>
+  <span>{t.copy}</span>
 </button>
 
 <style is:global lang="scss">
@@ -88,7 +101,7 @@ const { data, successMessage } = Astro.props
   import { showToast } from '@repo/ui/Toast/index.ts'
 
   document.querySelectorAll('.CopyToClipboard').forEach((element) => {
-    const successMessage = element.getAttribute('data-success-message') || 'Pomyślnie skopiowano'
+    const successMessage = element.getAttribute('data-success-message')
     element.addEventListener('click', () => {
       const copyText = element.getAttribute('data-copy-text')
       if (copyText) {

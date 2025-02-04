@@ -9,7 +9,7 @@ import Listing, { Listing_Query, type ListingProps } from '@components/Blog/List
 import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
 import { type Language } from '@repo/shared/languages'
 
-export const ITEMS_PER_PAGE = 2
+export const ITEMS_PER_PAGE = 12
 
 type Props = NonNullable<Awaited<ReturnType<typeof fetchData>>> & {
   currentPage: number
