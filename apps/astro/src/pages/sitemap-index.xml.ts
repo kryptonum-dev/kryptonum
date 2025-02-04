@@ -7,23 +7,34 @@ import { DOMAIN } from "@repo/shared/constants";
 const slugs = [
   ...await sanityFetch<string[]>({
     query: `
-      *[defined(slug.current) && _type != "NotFound_Page" && language == $language].slug.current
+      *[defined(slug.current) && _type != "NotFound_Page"].slug.current
     `,
-    params: { language: 'pl' },
   }),
   ...await Promise.all([
-    import("./pl/blog/strona/[page].astro")
+    import("./[lang]/blog/strona/[page].astro")
       .then(res => res.getStaticPaths())
-      .then(paths => paths.map(path => `/pl/blog/strona/${path.params.page}`)),
-    import("./pl/blog/kategoria/[category]/strona/[page].astro")
+      .then(paths => paths.map(({ params: { lang, page } }) => `/${lang}/blog/strona/${page}`)),
+    import("./[lang]/blog/page/[page].astro")
       .then(res => res.getStaticPaths())
-      .then(paths => paths.map(path => `/pl/blog/kategoria/${path.params.category}/strona/${path.params.page}`)),
-    import("./pl/portfolio/strona/[page].astro")
+      .then(paths => paths.map(({ params: { lang, page } }) => `/${lang}/blog/page/${page}`)),
+    import("./[lang]/blog/kategoria/[category]/strona/[page].astro")
       .then(res => res.getStaticPaths())
-      .then(paths => paths.map(path => `/pl/portfolio/strona/${path.params.page}`)),
-    import("./pl/portfolio/kategoria/[category]/strona/[page].astro")
+      .then(paths => paths.map(({ params: { lang, category, page } }) => `/${lang}/blog/kategoria/${category}/strona/${page}`)),
+    import("./[lang]/blog/category/[category]/page/[page].astro")
       .then(res => res.getStaticPaths())
-      .then(paths => paths.map(path => `/pl/portfolio/kategoria/${path.params.category}/strona/${path.params.page}`)),
+      .then(paths => paths.map(({ params: { lang, category, page } }) => `/${lang}/blog/category/${category}/page/${page}`)),
+    import("./[lang]/portfolio/strona/[page].astro")
+      .then(res => res.getStaticPaths())
+      .then(paths => paths.map(({ params: { lang, page } }) => `/${lang}/portfolio/strona/${page}`)),
+    import("./[lang]/portfolio/page/[page].astro")
+      .then(res => res.getStaticPaths())
+      .then(paths => paths.map(({ params: { lang, page } }) => `/${lang}/portfolio/page/${page}`)),
+    import("./[lang]/portfolio/kategoria/[category]/strona/[page].astro")
+      .then(res => res.getStaticPaths())
+      .then(paths => paths.map(({ params: { lang, category, page } }) => `/${lang}/portfolio/kategoria/${category}/strona/${page}`)),
+    import("./[lang]/portfolio/category/[category]/page/[page].astro")
+      .then(res => res.getStaticPaths())
+      .then(paths => paths.map(({ params: { lang, category, page } }) => `/${lang}/portfolio/category/${category}/page/${page}`)),
   ]).then(paths => paths.flat())
 ]
 
