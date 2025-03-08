@@ -7,7 +7,7 @@
   },
   "exports": {
     "./sanity.fetch": "./src/sanity.fetch.ts",
-    "./is-preview-deployment": "./src/is-preview-deployment.ts",
+    "./is-production-deployment": "./src/is-production-deployment.ts",
     "./metadata.fetch": "./src/metadata.fetch.ts",
     "./format-date": "./src/format-date.ts",
     "./hash": "./src/hash.ts",
