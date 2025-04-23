@@ -4,7 +4,9 @@ const { node, index, ...attrs } = Astro.props
 ---
 
 <li {...attrs}>
-  <slot />
+  <span>
+    <slot />
+  </span>
 </li>
 
 <style lang="scss">
