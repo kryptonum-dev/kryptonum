@@ -66,8 +66,8 @@ const metadata = await metadataFetch(slug)
 
 const breadcrumbs = [
   {
-    pl: { name: 'Zespół', path: '/pl/zespol' },
-    en: { name: 'Team', path: '/en/team' },
+    pl: { name: 'Portfolio', path: '/pl/portfolio' },
+    en: { name: 'Portfolio', path: '/en/portfolio' },
   }[lang],
   { name: data.name, path: slug },
 ]
@@ -77,9 +77,11 @@ const breadcrumbs = [
   <Breadcrumbs data={breadcrumbs} />
   <Components data={data.components} />
   <ScrollToNextPage slot="ScrollToNextPage" path={data.ScrollToNextPage.slug} data-element="ScrollToNextPage">
-    <h2>
-      ❧ Scrolluj, by przejść do <strong>następnego projektu</strong>
-    </h2>
+    <h2
+      set:html={lang === 'pl'
+        ? `❧ Scrolluj, by przejść do <strong>następnego projektu</strong>`
+        : `❧ Scroll to, <strong>next project</strong>`}
+    />
     <p>{data.ScrollToNextPage.name}</p>
   </ScrollToNextPage>
 </Layout>
