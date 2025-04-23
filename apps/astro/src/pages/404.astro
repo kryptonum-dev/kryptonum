@@ -1,32 +1,10 @@
 ---
-import Layout from '@repo/shared/Layout'
-import sanityFetch from '@repo/utils/sanity.fetch'
-import metadataFetch from '@repo/utils/metadata.fetch'
-import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
-import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
-import type { Language } from '@repo/shared/languages'
+import NotFoundPage, { fetchData } from '@templates/404.astro'
+import { LANGUAGES } from '@repo/shared/languages'
 
-const lang = (Astro.params.lang as Language) || 'en'
-
-const page = await sanityFetch<{
-  name: string
-  slug: string
-  components: ComponentsProps
-}>({
-  query: `
-    *[_type == "NotFound_Page" && language == $language][0] {
-      name,
-      "slug": slug.current,
-      ${Components_Query}
-    }
-  `,
-  params: { language: lang },
-})
-
-const metadata = await metadataFetch(page.slug)
+const lang = 'pl'
+const data = await fetchData(lang)
+if (!LANGUAGES.includes(lang) || !data) return Astro.rewrite('/404')
 ---
 
-<Layout {...metadata}>
-  <Breadcrumbs data={[{ name: page.name, path: page.slug }]} />
-  <Components data={page.components} />
-</Layout>
+<NotFoundPage {...data} />

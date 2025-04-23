@@ -3,6 +3,9 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import CountUp from '@repo/ui/CountUp'
+import { type Language } from '@repo/shared/languages'
+
+const lang = (Astro.params.lang as Language) || 'pl'
 
 export const DetailedInfoAndStats_Query = `
   _type == "DetailedInfoAndStats" => {
@@ -60,6 +63,24 @@ const data = await sanityFetch<{
   `,
   params: { slug: Astro.url.pathname },
 })
+
+const translations = {
+  pl: {
+    showMore: 'Dowiedz się więcej',
+    sector: 'Sektor',
+    client: 'Klient',
+    year: 'Rok',
+    services: 'Usługi',
+  },
+  en: {
+    showMore: 'Learn more',
+    sector: 'Sector',
+    client: 'Client',
+    year: 'Year',
+    services: 'Services',
+  },
+}
+const t = translations[lang]
 ---
 
 <section class="DetailedInfoAndStats" id={sectionId}>
@@ -71,7 +92,7 @@ const data = await sanityFetch<{
       list && (
         <div class="show-more">
           <button aria-expanded="false" aria-controls="expandable-list">
-            Dowiedz się więcej
+            {t.showMore}
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none">
               <path
                 stroke="url(#DetailedInfoAndStats)"
@@ -122,22 +143,22 @@ const data = await sanityFetch<{
       <ul class="info">
         {data.sector && (
           <li class="info-item">
-            <p>Sektor</p>
+            <p>{t.sector}</p>
             <p>{data.sector}</p>
           </li>
         )}
         {data.client && (
           <li class="info-item">
-            <p>Klient</p>
+            <p>{t.client}</p>
             <p>{data.client}</p>
           </li>
         )}
         <li class="info-item">
-          <p>Rok</p>
+          <p>{t.year}</p>
           <p>{new Date(data.date).getFullYear()}</p>
         </li>
         <li class="info-item">
-          <p>Usługi</p>
+          <p>{t.services}</p>
           <ul class="categories">
             {data.categories.map(({ name, slug }) => (
               <li class="category">

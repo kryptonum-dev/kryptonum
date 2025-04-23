@@ -2,6 +2,7 @@
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Button from '@repo/ui/Button'
+import { type Language } from '@repo/shared/languages'
 
 export const CaseStudy_Query = `
   ${ImageDataQuery('img')}
@@ -36,7 +37,18 @@ type Props = {
   caseStudiesLink: string
 }
 
-const { index, sectionId, heading, caseStudies, caseStudiesLink } = Astro.props
+const { index, sectionId, heading, caseStudies, caseStudiesLink } = Astro.props as Props
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    cta: 'Przejdź do projektów',
+  },
+  en: {
+    cta: 'Go to projects',
+  },
+}
+const t = translations[lang]
 ---
 
 <section class="CaseStudyShowcase" id={sectionId}>
@@ -54,7 +66,7 @@ const { index, sectionId, heading, caseStudies, caseStudiesLink } = Astro.props
         </article>
       ))
     }
-    <Button theme="primary" href={caseStudiesLink} className="cta">Przejdź do projektów</Button>
+    <Button theme="primary" href={caseStudiesLink} className="cta">{t.cta}</Button>
   </section>
 </section>
 

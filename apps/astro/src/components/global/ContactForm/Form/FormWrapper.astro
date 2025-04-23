@@ -14,7 +14,7 @@ type Props = {
   email: ContactFormProps['email']
 }
 
-const lang = Astro.params.lang as Language
+const lang = (Astro.params.lang as Language) || 'pl'
 const translations = {
   pl: {
     copyEmailSuccess: 'Pomyślnie skopiowano adres e-mail',

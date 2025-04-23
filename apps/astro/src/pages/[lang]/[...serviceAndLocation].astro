@@ -1,13 +1,15 @@
 ---
+import NotFoundPage, { fetchData as fetchNotFoundData } from '@templates/404.astro'
 import ServiceAndLocationPage, { fetchData, staticPaths } from '@templates/[...serviceAndLocation].astro'
 import { type Language } from '@repo/shared/languages'
 
 const lang = Astro.params.lang as Language
 const slug = `/${lang}/${Astro.params.serviceAndLocation}`
 const data = await fetchData(lang, slug)
-if (!data) return Astro.rewrite('/404')
+const notFoundData = await fetchNotFoundData(lang)
+if (!notFoundData) return Astro.rewrite('/404')
 
 export const getStaticPaths = () => staticPaths()
 ---
 
-<ServiceAndLocationPage {...data} lang={lang} slug={slug} />
+{!data ? <NotFoundPage {...notFoundData} /> : <ServiceAndLocationPage {...data} lang={lang} slug={slug} />}
