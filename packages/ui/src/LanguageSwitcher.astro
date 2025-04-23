@@ -1,0 +1,171 @@
+---
+import { LANGUAGES, type Language } from '@repo/shared/languages'
+import type { HTMLAttributes } from 'astro/types'
+
+interface Props extends HTMLAttributes<'div'> {
+  lang: Language
+  alternates?: { lang: string; url: string }[]
+}
+
+const id = `language-switcher-${Math.random().toString(36).substring(2, 15)}`
+
+const { lang, alternates = [], ...props } = Astro.props
+---
+
+<div data-component="LanguageSwitcher" {...props}>
+  <button
+    class="language-expander"
+    aria-expanded="false"
+    aria-controls={id}
+    aria-label={lang === 'pl' ? 'Zmień język' : 'Change language'}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 16 17" aria-hidden="true">
+      <path
+        fill="#F0F7F7"
+        d="M10 1.25H.5v9.5H6V16h9.5V6.5H10V1.25ZM4.635 3.5l-1.57 4.478h1.06l.255-.728H6v2.5H1.5v-7.5H9V6.5H6.917l-1.051-3H4.635Zm1.134 2.75H4.731l.519-1.482.52 1.482ZM14.5 7.5V15H7V7.5h7.5Z">
+      </path>
+      <path
+        fill="#F0F7F7"
+        d="M9.92 12.015c.095.154.2.301.315.441A2.564 2.564 0 0 1 9 12.75v1c.754 0 1.428-.2 2-.588.572.388 1.246.588 2 .588v-1a2.56 2.56 0 0 1-1.235-.294c.114-.14.22-.287.315-.441.288-.469.5-.98.628-1.515h.542v-1H11.5v-.75h-1v.75H8.75v1h.542c.128.535.34 1.046.628 1.515Zm1.753-1.515a4.156 4.156 0 0 1-.44.985 3.26 3.26 0 0 1-.233.327 3.243 3.243 0 0 1-.217-.302 4.135 4.135 0 0 1-.456-1.01h1.346Z">
+      </path>
+    </svg>
+    <span class="current-lang">
+      {lang === 'pl' ? 'Polski' : 'English'}
+    </span>
+    <svg
+      class="chevron"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      width="12"
+      height="12"
+      fill="none"
+      viewBox="0 0 12 12">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m2 4 4 4 4-4"></path>
+    </svg>
+  </button>
+  <div id={id} class="language-dropdown" hidden>
+    {
+      LANGUAGES.map((locale) => (
+        <a
+          class="language-option"
+          href={alternates?.find((alt) => alt.lang === locale)?.url || `/${locale}`}
+          aria-current={lang === locale ? 'true' : undefined}
+          lang={locale}>
+          {locale === 'pl' ? 'Polski (Polish)' : 'English (Angielski)'}
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<style lang="scss">
+  [data-component='LanguageSwitcher'] {
+    grid-area: language;
+    grid-column: 1 / -1;
+    position: relative;
+    font-size: var(--typography-body-s, 0.75rem);
+    .language-expander {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--neutral-700, #383842);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 300ms;
+      perspective: 80px;
+      &:hover {
+        background-color: var(--neutral-800, #202025);
+      }
+      .chevron {
+        transition: transform 500ms var(--easing);
+      }
+      &[aria-expanded='true'] {
+        .chevron {
+          transform: rotateX(180deg);
+        }
+      }
+    }
+    .language-dropdown {
+      position: absolute;
+      font-size: var(--typography-body-m, 0.875rem);
+      top: calc(100% + 0.25rem);
+      left: 0;
+      min-width: 8rem;
+      width: max-content;
+      padding: 0.25rem;
+      background: var(--primary-600, #042b2b);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      transition: transform 500ms var(--easing);
+      &[hidden] {
+        display: block;
+        visibility: hidden;
+        transform: translateY(-0.125rem);
+      }
+      .language-option {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        color: white;
+        text-decoration: none;
+        border-radius: 0.25rem;
+        transition: background-color 300ms;
+        &:not(:last-child) {
+          margin-bottom: 0.125rem;
+        }
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.08);
+        }
+        &[aria-current='true'] {
+          background-color: rgba(255, 255, 255, 0.16);
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  const languageSwitchers = document.querySelectorAll<HTMLButtonElement>('[data-component="LanguageSwitcher"]')
+  languageSwitchers.forEach((languageSwitcher) => {
+    const languageDropdown = languageSwitcher.querySelector<HTMLDivElement>('.language-dropdown')
+    languageSwitcher.addEventListener('click', () => {
+      const isExpanded = languageSwitcher.getAttribute('aria-expanded') === 'true'
+      toggleDropdown(!isExpanded)
+    })
+    document.addEventListener('click', (e) => {
+      if (!languageSwitcher.contains(e.target as Node)) {
+        toggleDropdown(false)
+      }
+    })
+    document.addEventListener('keydown', (e) => {
+      const options = languageDropdown.querySelectorAll<HTMLAnchorElement>('.language-option')
+      const currentIndex = Array.from(options).findIndex((option) => option === document.activeElement)
+
+      if (e.key === 'Escape') {
+        toggleDropdown(false)
+        languageSwitcher.focus()
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        if (currentIndex === options.length - 1) {
+          options[0].focus()
+        } else {
+          options[currentIndex + 1].focus()
+        }
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        if (currentIndex === 0 || currentIndex === -1) {
+          options[options.length - 1].focus()
+        } else {
+          options[currentIndex - 1].focus()
+        }
+      }
+    })
+    function toggleDropdown(open: boolean) {
+      languageSwitcher.setAttribute('aria-expanded', open.toString())
+      languageDropdown.hidden = !open
+    }
+  })
+</script>

@@ -3,7 +3,8 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import Socials from '@repo/ui/Socials'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Copy from '@repo/ui/Copy'
-import { LANGUAGES, type Language } from '@repo/shared/languages'
+import LanguageSwitcher from '@repo/ui/LanguageSwitcher'
+import type { Language } from '@repo/shared/languages'
 import type { HeadProps } from './Head.astro'
 
 const lang = Astro.props.lang as Language
@@ -157,48 +158,7 @@ const cities = [
 ---
 
 <footer class="footer max-width">
-  <div class="language">
-    <button
-      class="language-switcher"
-      aria-expanded="false"
-      aria-controls="language-dropdown"
-      aria-label={lang === 'pl' ? 'Zmień język' : 'Change language'}>
-      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-        <path
-          stroke="#fff"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M3 12h5m-5 0a9 9 0 0 0 9 9m-9-9a9 9 0 0 1 9-9m-4 9h8m-8 0c0 4.97 1.79 9 4 9m-4-9c0-4.97 1.79-9 4-9m4 9h5m-5 0c0-4.97-1.79-9-4-9m4 9c0 4.97-1.79 9-4 9m9-9a9 9 0 0 0-9-9m9 9a9 9 0 0 1-9 9">
-        </path>
-      </svg>
-      <span class="current-lang">
-        {lang === 'pl' ? 'Polski' : 'English'}
-      </span>
-      <svg
-        class="chevron"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        width="12"
-        height="12"
-        fill="none"
-        viewBox="0 0 12 12">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m2 4 4 4 4-4"></path>
-      </svg>
-    </button>
-    <div id="language-dropdown" class="language-dropdown" hidden>
-      {
-        LANGUAGES.map((locale) => (
-          <a
-            class="language-option"
-            href={alternates?.find((alt) => alt.lang === locale)?.url || `/${locale}`}
-            aria-current={lang === locale ? 'true' : undefined}
-            lang={locale}>
-            {locale === 'pl' ? 'Polski (Polish)' : 'English (Angielski)'}
-          </a>
-        ))
-      }
-    </div>
-  </div>
+  <LanguageSwitcher lang={lang} alternates={alternates} class="language-switcher" />
   <div class="services">
     {
       data.services.map(({ name, slug, icon, list }) => (
@@ -313,10 +273,8 @@ const cities = [
                   y1="1.332"
                   y2="1.752"
                   gradientUnits="userSpaceOnUse">
-                  <>
-                    <stop stop-color="#2DD282" />
-                    <stop offset="1" stop-color="#90F4E8" />
-                  </>
+                  <stop stop-color="#2DD282" />
+                  <stop offset="1" stop-color="#90F4E8" />
                 </linearGradient>
               </defs>
             </svg>
@@ -351,68 +309,9 @@ const cities = [
 </footer>
 
 <style lang="scss">
-  .language {
+  .language-switcher {
     grid-area: language;
     grid-column: 1 / -1;
-    position: relative;
-    font-size: var(--typography-body-m, 0.875rem);
-    .language-switcher {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid var(--neutral-700, #383842);
-      border-radius: 0.5rem;
-      cursor: pointer;
-      transition: background-color 300ms;
-      perspective: 80px;
-      &:hover {
-        background-color: var(--neutral-800, #202025);
-      }
-      .chevron {
-        transition: transform 500ms var(--easing);
-      }
-      &[aria-expanded='true'] {
-        .chevron {
-          transform: rotateX(180deg);
-        }
-      }
-    }
-    .language-dropdown {
-      position: absolute;
-      top: calc(100% + 0.25rem);
-      left: 0;
-      min-width: 8rem;
-      padding: 0.25rem;
-      background: var(--primary-600, #042b2b);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0.5rem;
-      transition: transform 500ms var(--easing);
-      &[hidden] {
-        display: block;
-        visibility: hidden;
-        transform: translateY(-0.125rem);
-      }
-      .language-option {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        padding: 0.5rem 0.75rem;
-        color: white;
-        text-decoration: none;
-        border-radius: 0.25rem;
-        transition: background-color 300ms;
-        &:not(:last-child) {
-          margin-bottom: 0.125rem;
-        }
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.08);
-        }
-        &[aria-current='true'] {
-          background-color: rgba(255, 255, 255, 0.16);
-        }
-      }
-    }
   }
   footer {
     padding-top: clamp(2rem, calc(6vw / 0.48), 6.5rem);
@@ -750,49 +649,4 @@ const cities = [
       })
     })
   })
-
-  const languageSwitcher = footer.querySelector<HTMLButtonElement>('.language-switcher')
-  const languageDropdown = footer.querySelector<HTMLDivElement>('.language-dropdown')
-  if (languageSwitcher && languageDropdown) {
-    languageSwitcher.addEventListener('click', () => {
-      const isExpanded = languageSwitcher.getAttribute('aria-expanded') === 'true'
-      toggleDropdown(!isExpanded)
-    })
-    document.addEventListener('click', (e) => {
-      if (!languageSwitcher.contains(e.target as Node)) {
-        toggleDropdown(false)
-      }
-    })
-    document.addEventListener('keydown', (e) => {
-      const options = languageDropdown.querySelectorAll<HTMLAnchorElement>('.language-option')
-      const currentIndex = Array.from(options).findIndex((option) => option === document.activeElement)
-
-      if (e.key === 'Escape') {
-        toggleDropdown(false)
-        languageSwitcher.focus()
-      }
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        if (currentIndex === options.length - 1) {
-          // Loop to first option
-          options[0].focus()
-        } else {
-          options[currentIndex + 1].focus()
-        }
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        if (currentIndex === 0 || currentIndex === -1) {
-          // Loop to last option
-          options[options.length - 1].focus()
-        } else {
-          options[currentIndex - 1].focus()
-        }
-      }
-    })
-    function toggleDropdown(open: boolean) {
-      languageSwitcher.setAttribute('aria-expanded', open.toString())
-      languageDropdown.hidden = !open
-    }
-  }
 </script>

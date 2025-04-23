@@ -22,7 +22,8 @@
     "./Video": "./src/Video.astro",
     "./CountUp": "./src/CountUp.astro",
     "./CategoryTab": "./src/CategoryTab.astro",
-    "./Pagination": "./src/Pagination.astro"
+    "./Pagination": "./src/Pagination.astro",
+    "./LanguageSwitcher": "./src/LanguageSwitcher.astro"
   },
   "dependencies": {
     "@repo/utils": "workspace:*"
