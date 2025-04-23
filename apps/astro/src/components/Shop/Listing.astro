@@ -2,6 +2,7 @@
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Button from '@repo/ui/Button'
+import { type Language } from '@repo/shared/languages'
 
 export const Listing_Query = `
   ${PortableTextQuery('heading')}
@@ -26,6 +27,17 @@ export type ListingProps = {
     rating: number
   }>
 }
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    cta: 'Zgarnij ebooka',
+  },
+  en: {
+    cta: 'Grab the ebook',
+  },
+}
+const t = translations[lang]
 
 const { heading, listing } = Astro.props as ListingProps
 ---
@@ -112,7 +124,7 @@ const { heading, listing } = Astro.props as ListingProps
             <p class="name">{name}</p>
             <p class="description">{description}</p>
             <Button href={url} linkType="external" className="cta">
-              Zgarnij ebooka
+              {t.cta}
             </Button>
           </div>
         </article>
