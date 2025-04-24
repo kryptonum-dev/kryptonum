@@ -1,0 +1,43 @@
+---
+import Layout from '@repo/shared/layout/Layout.astro'
+import sanityFetch from '@repo/utils/sanity.fetch'
+import metadataFetch from '@repo/utils/metadata.fetch'
+import Breadcrumbs from '@repo/ui/Breadcrumbs.astro'
+import Listing, { Listing_Query, type ListingProps } from '@components/Shop/Listing.astro'
+import Components, { Components_Query, type ComponentsProps } from '@repo/shared/components/index.astro'
+import { type Language } from '@repo/shared/languages'
+
+type Props = NonNullable<Awaited<ReturnType<typeof fetchData>>>
+
+export async function fetchData(lang: Language) {
+  const page = await sanityFetch<{
+    name: string
+    slug: string
+    Listing: ListingProps
+    components: ComponentsProps
+  }>({
+    query: `
+      *[_type == "Shop_Page" && language == $language][0] {
+        name,
+        "slug": slug.current,
+        "Listing": {
+          ${Listing_Query}
+        },
+        ${Components_Query}
+      }
+    `,
+    params: { language: lang },
+  })
+  if (!page) return null
+  const metadata = await metadataFetch(page.slug)
+  return { page, metadata }
+}
+
+const { page, metadata } = Astro.props
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={[{ name: page.name, path: page.slug }]} />
+  <Listing {...page.Listing} />
+  <Components data={page.components} hasPreviousSections={true} />
+</Layout>

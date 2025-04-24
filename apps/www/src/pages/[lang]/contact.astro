@@ -1,0 +1,10 @@
+---
+import ContactPage, { fetchData } from '@templates/contact.astro'
+import { type Language } from '@repo/shared/languages'
+
+const lang = Astro.params.lang as Language
+const data = await fetchData(lang)
+if (lang !== 'en' || !data) return Astro.rewrite('/404')
+---
+
+<ContactPage {...data} />

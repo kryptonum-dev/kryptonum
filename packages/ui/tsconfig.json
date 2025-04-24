@@ -11,7 +11,9 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@repo/shared/*": ["../../packages/shared/src/*"]
+      "@repo/shared/*": ["../../packages/shared/src/*"],
+      "@repo/utils/*": ["../../packages/utils/src/*"],
+      "@repo/ui/*": ["./src/*"]
     }
   },
   "include": ["src"],

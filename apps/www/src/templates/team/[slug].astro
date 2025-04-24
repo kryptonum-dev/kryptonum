@@ -1,0 +1,129 @@
+---
+import Layout from '@repo/shared/layout/Layout.astro'
+import sanityFetch from '@repo/utils/sanity.fetch'
+import metadataFetch from '@repo/utils/metadata.fetch'
+import Breadcrumbs from '@repo/ui/Breadcrumbs.astro'
+import Components, { Components_Query, type ComponentsProps } from '@repo/shared/components/index.astro'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
+import { type Language } from '@repo/shared/languages'
+
+type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
+
+interface Props extends FetchDataReturn {
+  lang: Language
+  slug: string
+}
+
+export async function fetchData(lang: Language, slug: string) {
+  const page = await sanityFetch<{
+    name: string
+    teamPage: {
+      name: string
+      slug: string
+    }
+    components: ComponentsProps
+    ScrollToNextPage: {
+      name: string
+      slug: string
+      img: ImageDataProps
+      headline: string
+    }
+  }>({
+    query: `
+      *[_type == 'TeamMember_Collection' && slug.current == $slug && language == $language][0] {
+        name,
+        "teamPage": *[_type == "Team_Page" && language == $language][0] {
+          name,
+          "slug": slug.current
+        },
+        ${Components_Query}
+        "ScrollToNextPage": coalesce(
+          *[_type == 'TeamMember_Collection' && _createdAt > ^._createdAt && language == $language] | order(_createdAt asc)[0] {
+            name,
+            "slug": slug.current,
+            ${ImageDataQuery('img')}
+            headline,
+          },
+          *[_type == 'TeamMember_Collection' && language == $language] | order(_createdAt asc)[0] {
+            name,
+            "slug": slug.current,
+            ${ImageDataQuery('img')}
+            headline,
+          }
+        )
+      }
+    `,
+    params: { slug: slug, language: lang },
+  })
+  if (!page) return null
+  const metadata = await metadataFetch(slug)
+  return { page, metadata }
+}
+
+export async function staticPaths(lang: Language) {
+  const prefix = { pl: '/pl/zespol/', en: '/en/team/' }[lang]
+  const pages = await sanityFetch<{ slug: string }[]>({
+    query: `
+      *[_type == 'TeamMember_Collection' && language == $language][] {
+        "slug": slug.current,
+      }
+    `,
+    params: { language: lang },
+  })
+  return pages?.map(({ slug }) => ({
+    params: { lang: lang, slug: slug.replace(prefix, '') },
+  }))
+}
+
+const { page, metadata, lang, slug } = Astro.props
+
+const breadcrumbs = [
+  { name: page.teamPage.name, path: page.teamPage.slug },
+  { name: page.name, path: slug },
+]
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={breadcrumbs} />
+  <Components data={page.components} />
+  <ScrollToNextPage slot="ScrollToNextPage" path={page.ScrollToNextPage.slug} data-element="ScrollToNextPage">
+    <h2
+      set:html={lang === 'pl'
+        ? '❧ Scrolluj, by przejść do <strong>następnej osoby</strong>'
+        : '❧ Scroll, to go to the <strong>next person</strong>'}
+    />
+    <div class="person">
+      <Image {...page.ScrollToNextPage.img} sizes="64px" class="gradient-thumbnail" />
+      <div>
+        <p class="name">{page.ScrollToNextPage.name}</p>
+        <p class="headline">{page.ScrollToNextPage.headline}</p>
+      </div>
+    </div>
+  </ScrollToNextPage>
+</Layout>
+
+<style lang="scss">
+  [data-element='ScrollToNextPage'] {
+    h2 {
+      max-width: 17rem;
+      margin: 0 auto 1rem;
+      text-align: center;
+    }
+    .person {
+      margin: 0 auto;
+      width: fit-content;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+      align-items: center;
+      img {
+        width: 64px;
+        height: 64px;
+      }
+      .headline {
+        font-size: var(--typography-body-m, 0.875rem);
+      }
+    }
+  }
+</style>

@@ -1,4 +1,4 @@
-import sanityFetch from "@repo/utils/sanity.fetch";
+import sanityFetch from "./sanity.fetch";
 import type { Language } from "@repo/shared/languages";
 
 type MetadataProps = ({ path: string; url?: never } | { url: string; path?: never }) & {

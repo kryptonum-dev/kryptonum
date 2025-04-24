@@ -1,0 +1,34 @@
+{
+  "name": "@apps/www",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@repo/utils": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@repo/shared": "workspace:*",
+    "@astrojs/preact": "^4.0.10",
+    "@astrojs/vercel": "^8.1.4",
+    "@mux/mux-video": "^0.25.1",
+    "autoprefixer": "^10.4.21",
+    "cssnano": "^7.0.6",
+    "postcss-combine-media-query": "^1.0.1",
+    "postcss-import": "^16.1.0",
+    "postcss-mixins": "^11.0.3"
+  },
+  "devDependencies": {
+    "eslint-plugin-astro": "^1.3.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2"
+  },
+  "overrides": {
+    "react": "bun:@preact/compat@latest",
+    "react-dom": "bun:@preact/compat@latest"
+  }
+}

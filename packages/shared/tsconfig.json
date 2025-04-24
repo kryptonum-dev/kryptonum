@@ -5,8 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "@repo/shared/*": ["./src/*"],
-      "@repo/astro/*": ["../../apps/astro/src/*"],
-      "@apps/astro/*": ["../../apps/astro/*"]
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@apps/www/*": ["../../apps/www/src/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],

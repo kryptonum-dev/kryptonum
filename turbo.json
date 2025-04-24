@@ -1,11 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
+  "globalEnv": ["SANITY_API_TOKEN", "MAILERLITE_API_KEY", "RESEND_API_KEY"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".vercel/**"],
-      "env": ["SANITY_API_TOKEN", "MAILERLITE_API_KEY", "RESEND_API_KEY"]
+      "outputs": ["dist/**", ".vercel/**"]
+    },
+    "@apps/www#build": {
+      "outputs": []
     },
     "@repo/shared#build": {
       "outputs": []
@@ -21,8 +24,7 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true,
-      "env": ["SANITY_API_TOKEN", "MAILERLITE_API_KEY", "RESEND_API_KEY"]
+      "persistent": true
     }
   }
 }

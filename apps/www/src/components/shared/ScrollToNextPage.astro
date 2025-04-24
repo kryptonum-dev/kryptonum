@@ -1,0 +1,107 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import Loader from '@repo/ui/Loader.astro'
+
+type Props = {
+  path: string
+} & HTMLAttributes<'div'>
+
+const { path, ...props } = Astro.props
+---
+
+<div data-next-url={path} {...props} class="ScrollToNextPage max-width">
+  <div class="spacer"></div>
+  <div class="content">
+    <slot />
+    <div class="progress"><div class="progress-bar"></div></div>
+    <Loader class="loader" hidden />
+  </div>
+</div>
+
+<style lang="scss">
+  .ScrollToNextPage {
+    .spacer {
+      height: 810px;
+    }
+    .content {
+      position: sticky;
+      bottom: 0;
+      padding: 2.5rem 0;
+      max-width: 26rem;
+      margin: 0 auto;
+      z-index: 1;
+      .progress {
+        background-color: var(--primary-500, #064040);
+        width: 1px;
+        margin: 3rem auto 0;
+        .progress-bar {
+          height: 5rem;
+          background: var(--primary-gradient-400);
+          transform-origin: bottom;
+          transform: scaleY(0);
+          will-change: transform;
+        }
+      }
+      .loader {
+        &[hidden] {
+          display: none;
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  import { prefetch } from 'astro:prefetch'
+
+  const easeOut = (t: number) => 1 - Math.pow(1 - t, 2)
+  const scrollHeight = 810
+
+  if (history.scrollRestoration) history.scrollRestoration = 'manual'
+
+  function initScrollToNext() {
+    const ScrollToNextPage = document.querySelector<HTMLDivElement>('[data-element="ScrollToNextPage"]')!
+    const progressBar = ScrollToNextPage.querySelector<HTMLDivElement>('.progress-bar')!
+    const loader = ScrollToNextPage.querySelector<HTMLDivElement>('.loader')!
+    const nextUrl = ScrollToNextPage.dataset.nextUrl!
+    let hasPrefetched = false
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY
+      const windowHeight = window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+      const maxScroll = documentHeight - windowHeight
+      const remainingScroll = maxScroll - scrollPosition
+      let progress = Math.max(0, Math.min(1, 1 - remainingScroll / scrollHeight))
+      progress = easeOut(progress)
+      progressBar.style.transform = `scaleY(${progress})`
+      if (progress > 0 && !hasPrefetched) {
+        prefetch(nextUrl)
+        hasPrefetched = true
+      }
+      if (remainingScroll <= 0) {
+        loader.removeAttribute('hidden')
+        document.documentElement.classList.add('no-scroll')
+        window.location.href = nextUrl
+        document.addEventListener(
+          'scroll',
+          (event) => {
+            event.preventDefault()
+          },
+          { passive: false }
+        )
+      }
+    }
+    let ticking = false
+    document.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll()
+          ticking = false
+        })
+        ticking = true
+      }
+    })
+    handleScroll()
+  }
+  initScrollToNext()
+</script>

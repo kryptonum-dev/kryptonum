@@ -3,11 +3,11 @@ export const prerender = false
 
 import sanityFetch from '@repo/utils/sanity.fetch'
 import Layout from '@repo/shared/layout/Layout.astro'
-import type { HeadProps } from '@repo/shared/Head'
+import type { HeadProps } from '@repo/shared/layout/Head.astro'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
-import Copy from '@repo/ui/Copy'
-import Socials from '@repo/ui/Socials'
+import Copy from '@repo/ui/Copy.astro'
+import Socials from '@repo/ui/Socials.astro'
 import { DOMAIN } from '@repo/shared/constants'
 
 const URL = Astro.url.href

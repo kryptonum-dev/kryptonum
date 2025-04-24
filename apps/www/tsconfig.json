@@ -1,0 +1,18 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "verbatimModuleSyntax": true,
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@templates/*": ["./src/templates/*"],
+      "@repo/shared/*": ["../../packages/shared/src/*"],
+      "@repo/utils/*": ["../../packages/utils/src/*"],
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@apps/www/*": ["./src/*"]
+    }
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}
