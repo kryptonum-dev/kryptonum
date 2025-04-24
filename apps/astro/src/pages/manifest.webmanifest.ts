@@ -25,7 +25,7 @@ export const GET: APIRoute = async () => {
   );
 
   const manifest = JSON.stringify({
-    start_url: "/pl",
+    start_url: "/en",
     display: "standalone",
     name: DEFAULT_TITLE,
     short_name: DEFAULT_TITLE,
