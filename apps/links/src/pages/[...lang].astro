@@ -10,7 +10,7 @@ import Copy from '@repo/ui/Copy'
 import Socials from '@repo/ui/Socials'
 import { DOMAIN } from '@repo/shared/constants'
 
-const URL = Astro.site?.pathname!
+const URL = Astro.url.href
 
 type Props = { lang: 'pl' | 'en' }
 
