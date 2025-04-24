@@ -1,11 +1,18 @@
 {
-  "extends": "astro/tsconfigs/base",
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
+    "noEmit": true,
     "outDir": "dist",
-    "rootDir": "src",
-    "jsx": "react-jsx",
     "module": "ES2015",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "target": "ES2015",
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@repo/shared/*": ["../../packages/shared/src/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

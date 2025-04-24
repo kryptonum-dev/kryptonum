@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 import preact from '@astrojs/preact';
 import vercel from "@astrojs/vercel";
-import { DOMAIN } from "@repo/shared/constants";
+import { DOMAIN } from "../../packages/shared/src/constants";
 import redirects from "./redirects";
 import { isProductionDeployment } from "@repo/utils/is-production-deployment";
 

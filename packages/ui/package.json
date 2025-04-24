@@ -23,7 +23,8 @@
     "./CountUp": "./src/CountUp.astro",
     "./CategoryTab": "./src/CategoryTab.astro",
     "./Pagination": "./src/Pagination.astro",
-    "./LanguageSwitcher": "./src/LanguageSwitcher.astro"
+    "./LanguageSwitcher": "./src/LanguageSwitcher.astro",
+    "./Breadcrumbs": "./src/Breadcrumbs.astro"
   },
   "dependencies": {
     "@repo/utils": "workspace:*"

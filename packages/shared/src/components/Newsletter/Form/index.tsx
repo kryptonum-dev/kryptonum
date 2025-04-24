@@ -3,7 +3,7 @@ import { useForm, type FieldValues } from 'react-hook-form';
 import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
 import { REGEX } from '@repo/shared/constants';
-import { subscribeToNewsletter, type Props as subscribeToNewsletterProps } from '@pages/api/newsletter/subscribeToNewsletter';
+import { subscribeToNewsletter, type Props as subscribeToNewsletterProps } from '@apps/astro/src/pages/api/newsletter/subscribeToNewsletter';
 
 export default function Form({ children, groupId, ...props }: { children: React.ReactNode, groupId: string } & React.FormHTMLAttributes<HTMLFormElement>) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');

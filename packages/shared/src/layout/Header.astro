@@ -3,8 +3,7 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import imageToInlineSvg from '@repo/ui/Image/image-to-inline-svg'
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
-import { useTranslations } from '@repo/shared/languages'
-import type { Language } from '@repo/shared/languages'
+import { useTranslations, type Language } from '../languages'
 import LanguageSwitcher from '@repo/ui/LanguageSwitcher'
 
 const pathname = Astro.url.pathname

@@ -7,6 +7,9 @@
       "outputs": ["dist/**", ".vercel/**"],
       "env": ["SANITY_API_TOKEN", "MAILERLITE_API_KEY", "RESEND_API_KEY"]
     },
+    "@repo/astro#build": {
+      "outputs": []
+    },
     "@repo/shared#build": {
       "outputs": []
     },

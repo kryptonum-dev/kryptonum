@@ -4,7 +4,7 @@ import Head, { type HeadProps } from './Head.astro'
 import Header from './Header.astro'
 import Footer from './Footer.astro'
 import Toast from '@repo/ui/Toast/Toast.astro'
-import type { Language } from '@repo/shared/languages'
+import type { Language } from '../languages'
 
 type Props = Omit<HeadProps, 'lang'> & {
   clearLayout?: boolean

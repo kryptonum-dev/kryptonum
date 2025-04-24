@@ -1,13 +1,13 @@
 ---
 import type { ComponentProps } from 'astro/types'
-import Layout from '@repo/shared/Layout'
+import Layout from '@repo/shared/layout/Layout.astro'
 import sanityFetch from '@repo/utils/sanity.fetch'
 import metadataFetch from '@repo/utils/metadata.fetch'
-import Breadcrumbs from '@components/shared/Breadcrumbs.astro'
+import Breadcrumbs from '@repo/ui/Breadcrumbs'
 import HeaderGridIcons, { HeaderGridIcons_Query } from '@components/global/HeaderGridIcons.astro'
 import SimpleHeaderWithImage, { SimpleHeaderWithImage_Query } from '@components/global/SimpleHeaderWithImage.astro'
 import Content, { Content_Query, type ContentProps } from '@components/Legal/Content/index.astro'
-import Components, { Components_Query, type ComponentsProps } from '@components/Components.astro'
+import Components, { Components_Query, type ComponentsProps } from '@repo/shared/components/index.astro'
 import { type Language } from '@repo/shared/languages'
 
 type Props = NonNullable<Awaited<ReturnType<typeof fetchData>>>

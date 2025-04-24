@@ -1,12 +1,14 @@
 {
-  "extends": "astro/tsconfigs/base",
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "jsx": "react-jsx",
-    "module": "ES2015",
-    "moduleResolution": "bundler"
+    "verbatimModuleSyntax": true,
+    "baseUrl": ".",
+    "paths": {
+      "@repo/shared/*": ["./src/*"],
+      "@repo/astro/*": ["../../apps/astro/src/*"],
+      "@apps/astro/*": ["../../apps/astro/*"]
+    }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
 }

@@ -4,7 +4,7 @@ import type { Props as ContactFormProps } from '../ContactForm.astro';
 import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
 import { REGEX } from '@repo/shared/constants';
-import { sendContactEmail, type Props as sendContactEmailProps } from '@pages/api/contact/sendContactEmail';
+import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/astro/src/pages/api/contact/sendContactEmail';
 import { type Language } from '@repo/shared/languages';
 
 type Props = {

@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
+    "noEmit": true,
     "outDir": "dist",
-    "rootDir": "src",
     "module": "ES2015",
     "moduleResolution": "bundler",
     "target": "ES2015",
     "skipLibCheck": true,
     "isolatedModules": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@repo/shared/*": ["../../packages/shared/src/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
