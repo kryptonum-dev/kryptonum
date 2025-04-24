@@ -2,6 +2,7 @@
 import ContentNav, { ContentNav_Query, type ContentNavProps } from '@components/shared/ContentNav.astro'
 import Metadata, { Metadata_Query, type MetadataProps } from './Metadata.astro'
 import ContentPT, { ContentPT_Query, type Props as ContentPTProps } from './content-pt/index.astro'
+import { type Language } from '@repo/shared/languages'
 
 export type ContentProps = ContentNavProps &
   MetadataProps & {
@@ -17,10 +18,21 @@ export const Content_Query = `
 `
 
 const { headings, content, author } = Astro.props as ContentProps
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    title: 'W artykule znajdziesz:',
+  },
+  en: {
+    title: 'In the article you will find:',
+  },
+}
+const t = translations[lang]
 ---
 
 <article class="content">
-  <ContentNav headings={headings} title="W artykule znajdziesz:" />
+  <ContentNav headings={headings} title={t.title} />
   <section class="content-body">
     <Metadata {...{ content, author }} />
     <ContentPT value={content} />

@@ -3,6 +3,7 @@ import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/u
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import CategoryTab from '@repo/ui/CategoryTab'
 import { formatDate } from '@repo/utils/format-date'
+import { type Language } from '@repo/shared/languages'
 
 export type HeroProps = {
   _createdAt: Date
@@ -31,6 +32,17 @@ export const Hero_Query = `
 `
 
 const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroProps
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    updated: 'Zaktualizowano',
+  },
+  en: {
+    updated: 'Updated',
+  },
+}
+const t = translations[lang]
 ---
 
 <section class="Hero">
@@ -38,7 +50,7 @@ const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroPr
     <CategoryTab slug={category.slug}>{category.name} ({category.postCount})</CategoryTab>
     <PortableText value={heading} heading="h1" class="h2 heading" />
     <div class="date">
-      <p>{formatDate(_createdAt)}</p>
+      <p>{formatDate(_createdAt, lang)}</p>
       ·
       <p class="updatedAt">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none" viewBox="0 0 16 17">
@@ -48,8 +60,9 @@ const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroPr
           </path>
         </svg>
         <span>
-          Zaktualizowano <span data-updated-at={new Date(_updatedAt).toISOString()} class="relative-date">
-            {formatDate(_updatedAt)}
+          {t.updated}
+          <span data-updated-at={new Date(_updatedAt).toISOString()} class="relative-date">
+            {formatDate(_updatedAt, lang)}
           </span>
         </span>
       </p>
@@ -100,29 +113,48 @@ const { _createdAt, _updatedAt, heading, img, category } = Astro.props as HeroPr
 </style>
 
 <script>
-  function getRelativeDate(date: Date): string | null {
+  function getRelativeDate(date: Date, lang: string = 'pl'): string | null {
     const now = new Date()
     const dateToCompare = new Date(date)
     now.setHours(0, 0, 0, 0)
     dateToCompare.setHours(0, 0, 0, 0)
     const diffDays = Math.floor((now.getTime() - dateToCompare.getTime()) / (1000 * 60 * 60 * 24))
 
+    const translations = {
+      pl: {
+        today: 'dzisiaj',
+        yesterday: 'wczoraj',
+        twoDaysAgo: 'przedwczoraj',
+        daysAgo: (days: number) => `${days}. dni temu`,
+      },
+      en: {
+        today: 'today',
+        yesterday: 'yesterday',
+        twoDaysAgo: '2 days ago',
+        daysAgo: (days: number) => `${days} days ago`,
+      },
+    }
+
+    const t = translations[lang as 'pl' | 'en'] || translations.pl
+
     if (diffDays === 0) {
-      return 'dzisiaj'
+      return t.today
     } else if (diffDays === 1) {
-      return 'wczoraj'
+      return t.yesterday
     } else if (diffDays === 2) {
-      return 'przedwczoraj'
+      return t.twoDaysAgo
     } else if (diffDays >= 3 && diffDays <= 6) {
-      return `${diffDays}. dni temu`
+      return t.daysAgo(diffDays)
     }
     return null
   }
 
   const dateElements = document.querySelectorAll<HTMLSpanElement>('.Hero .relative-date')
+  const lang = document.documentElement.lang || 'pl'
+
   dateElements.forEach((element) => {
     const updatedAt = new Date(element.dataset.updatedAt as string)
-    const relativeDate = getRelativeDate(updatedAt)
+    const relativeDate = getRelativeDate(updatedAt, lang)
     if (relativeDate) element.textContent = relativeDate
   })
 </script>

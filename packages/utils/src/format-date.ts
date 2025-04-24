@@ -1,5 +1,7 @@
-export const formatDate = (date: Date) =>
-  new Intl.DateTimeFormat('pl-PL', {
+import { type Language } from "@repo/shared/languages";
+
+export const formatDate = (date: Date, lang: Language = 'pl') =>
+  new Intl.DateTimeFormat(lang, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

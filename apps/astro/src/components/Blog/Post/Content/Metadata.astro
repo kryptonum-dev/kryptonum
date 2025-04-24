@@ -1,6 +1,7 @@
 ---
 import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@repo/ui/EstimatedReadingTime'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import { type Language } from '@repo/shared/languages'
 
 export const Metadata_Query = `
   "author": author[0] -> {
@@ -20,6 +21,19 @@ export type MetadataProps = {
 }
 
 const { content, author } = Astro.props as MetadataProps
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    author: 'Autor',
+    share: 'Udostępnij',
+  },
+  en: {
+    author: 'Author',
+    share: 'Share',
+  },
+}
+const t = translations[lang]
 ---
 
 <div class="metadata">
@@ -30,7 +44,7 @@ const { content, author } = Astro.props as MetadataProps
         <a href={author.slug} class="author">
           <Image {...author.img} sizes="32px" class="gradient-thumbnail" loading="eager" />
           <p>
-            Autor: <span>{author.name}</span>
+            {t.author}: <span>{author.name}</span>
           </p>
         </a>
       )
@@ -73,7 +87,7 @@ const { content, author } = Astro.props as MetadataProps
         </linearGradient>
       </defs>
     </svg>
-    Udostępnij
+    {t.share}
   </button>
 </div>
 
