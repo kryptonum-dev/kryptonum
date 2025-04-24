@@ -1,5 +1,5 @@
 ---
-import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import PortableText, { PortableTextQuery, portableTextToHTML, type PortableTextValue } from '@repo/ui/portable-text'
 import Accordion from '@repo/ui/Accordion'
 
 export const Faq_Query = `
@@ -239,3 +239,23 @@ const listItems = list?.length || 0
     })
   })
 </script>
+
+<script
+  is:inline
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${Astro.url.pathname}#faq`,
+    mainEntity: await Promise.all(
+      list.map(async ({ question, answer }) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: await portableTextToHTML(answer),
+        },
+      }))
+    ),
+  })}
+/>
