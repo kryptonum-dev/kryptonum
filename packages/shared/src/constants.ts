@@ -16,14 +16,6 @@ export const THEME_COLOR: string = "#011310";
 export const BACKGROUND_COLOR: string = "#000103";
 
 /**
- * Global declaration of the locale (language) for the application.
- * This constant is used to set the language attribute in the HTML tag.
- * @constant
- * @type {string}
- */
-export const LOCALE: string = "pl";
-
-/**
  * Global declaration of the domain for the application.
  * This constant is used for constructing full URLs and determining external links.
  * @constant

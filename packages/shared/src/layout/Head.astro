@@ -1,6 +1,6 @@
 ---
 import { getImage } from 'astro:assets'
-import { DOMAIN, LOCALE, THEME_COLOR } from '../constants'
+import { DOMAIN, THEME_COLOR } from '../constants'
 import sanityFetch from '@repo/utils/sanity.fetch'
 import icon from '../assets/icon.png'
 import faviconSvg from '../assets/favicon.svg'
@@ -24,9 +24,10 @@ export type HeadProps = ({ path: string; url?: never } | { url: string; path?: n
   description: string
   openGraphImage?: string
   alternates?: Array<{ lang: Language; url: string }>
+  lang: Language
 }
 
-const { path, url: _url, title, description, openGraphImage, alternates } = Astro.props as HeadProps
+const { path, url: _url, title, description, openGraphImage, alternates, lang } = Astro.props as HeadProps
 
 const getOgImage = async () => {
   const asset = await getImage({
@@ -62,7 +63,7 @@ const url = _url || `${DOMAIN}${path}`
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:site_name" content={title} />
-<meta property="og:locale" content={LOCALE} />
+<meta property="og:locale" content={lang} />
 <meta property="og:image" content={ogImage.url} />
 <meta property="og:image:width" content={ogImage.width} />
 <meta property="og:image:height" content={ogImage.height} />

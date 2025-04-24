@@ -1,13 +1,12 @@
 ---
 import '@repo/shared/global.scss'
-import { LOCALE } from '../constants'
 import Head, { type HeadProps } from './Head.astro'
 import Header from './Header.astro'
 import Footer from './Footer.astro'
 import Toast from '@repo/ui/Toast/Toast.astro'
 import type { Language } from '@repo/shared/languages'
 
-type Props = HeadProps & {
+type Props = Omit<HeadProps, 'lang'> & {
   clearLayout?: boolean
 }
 
@@ -17,9 +16,9 @@ const lang = (Astro.params.lang as Language) || 'pl'
 ---
 
 <!doctype html>
-<html lang={LOCALE}>
+<html lang={lang}>
   <head>
-    <Head {...props} />
+    <Head {...props} lang={lang} />
     <slot name="Head" />
     <script is:inline src="https://cdn.usefathom.com/script.js" data-site="PUUZZITA" defer></script>
   </head>
