@@ -5,7 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "@repo/shared/*": ["../../packages/shared/src/*"],
-      "@repo/ui/*": ["../../packages/ui/src/*"]
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@layout/*": ["./src/layout/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],

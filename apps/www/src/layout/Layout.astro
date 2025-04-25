@@ -1,16 +1,14 @@
 ---
 import '@repo/shared/global.scss'
-import Head, { type HeadProps } from './Head.astro'
+import Head, { type HeadProps } from '@repo/shared/layout/Head.astro'
 import Header from './Header.astro'
 import Footer from './Footer.astro'
 import Toast from '@repo/ui/Toast/Toast.astro'
-import type { Language } from '../languages'
+import type { Language } from '@repo/shared/languages'
 
-type Props = Omit<HeadProps, 'lang'> & {
-  clearLayout?: boolean
-}
+type Props = Omit<HeadProps, 'lang'>
 
-const { clearLayout = false, ...props } = Astro.props
+const { ...props } = Astro.props
 
 const lang = (Astro.params.lang as Language) || 'pl'
 ---
@@ -23,11 +21,11 @@ const lang = (Astro.params.lang as Language) || 'pl'
     <script is:inline src="https://cdn.usefathom.com/script.js" data-site="PUUZZITA" defer></script>
   </head>
   <body>
-    {!clearLayout && <Header lang={lang} alternates={props.alternates} />}
+    <Header lang={lang} alternates={props.alternates} />
     <main id="main">
       <slot />
     </main>
-    {!clearLayout && <Footer lang={lang} alternates={props.alternates} />}
+    <Footer lang={lang} alternates={props.alternates} />
     <slot name="ScrollToNextPage" />
     <Toast />
   </body>

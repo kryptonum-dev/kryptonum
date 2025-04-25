@@ -4,13 +4,14 @@
     "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["./src/components/*"],
-      "@pages/*": ["./src/pages/*"],
-      "@templates/*": ["./src/templates/*"],
       "@repo/shared/*": ["../../packages/shared/src/*"],
       "@repo/utils/*": ["../../packages/utils/src/*"],
       "@repo/ui/*": ["../../packages/ui/src/*"],
-      "@apps/www/*": ["./src/*"]
+      "@apps/www/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@templates/*": ["./src/templates/*"],
+      "@layout/*": ["./src/layout/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],

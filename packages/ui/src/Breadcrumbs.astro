@@ -1,6 +1,7 @@
 ---
 import { useTranslations, type Language } from '@repo/shared/languages'
-import { DOMAIN } from '@repo/shared/constants'
+
+const DOMAIN = Astro.url.origin;
 
 type Props = {
   data?: Array<{

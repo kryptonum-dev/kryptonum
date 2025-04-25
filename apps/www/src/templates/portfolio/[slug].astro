@@ -14,7 +14,7 @@ const prefix = Astro.props.prefix as Props['prefix']
 const { slug: _slug, data } = Astro.props
 const slug = `${prefix}${_slug}`
 
-import Layout from '@repo/shared/layout/Layout.astro'
+import Layout from '@layout/Layout.astro'
 import sanityFetch from '@repo/utils/sanity.fetch'
 import metadataFetch from '@repo/utils/metadata.fetch'
 import Breadcrumbs from '@repo/ui/Breadcrumbs.astro'
