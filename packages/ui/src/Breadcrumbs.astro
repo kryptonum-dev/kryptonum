@@ -8,9 +8,10 @@ type Props = {
     name: string
     path: string
   }>
+  isHidden?: boolean
 }
 
-const { data = [] } = Astro.props
+const { data = [], isHidden = false } = Astro.props
 const lang = Astro.params.lang as Language || 'pl'
 const t = useTranslations(lang)
 
@@ -32,7 +33,7 @@ const schema = JSON.stringify({
 ---
 
 <script is:inline type="application/ld+json" set:html={schema} />
-{breadcrumbs.length >= 2 && (
+{(breadcrumbs.length >= 2 && !isHidden) && (
   <style lang="scss" is:global>
     main > section:first-of-type {
       padding-top: clamp(1rem, calc(2vw / 0.48), 2rem) !important;
