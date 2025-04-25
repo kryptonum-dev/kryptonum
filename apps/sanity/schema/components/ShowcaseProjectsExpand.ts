@@ -51,7 +51,7 @@ export default defineField({
           },
         }),
       ],
-      validation: Rule => Rule.required().min(3),
+      validation: Rule => Rule.required().min(3).max(5),
     }),
   ],
   preview: {

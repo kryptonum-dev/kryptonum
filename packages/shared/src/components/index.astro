@@ -54,6 +54,9 @@ import TagsLine, { TagsLine_Query } from '@repo/shared/components/TagsLine.astro
 import StagesAccordion, { StagesAccordion_Query } from '@repo/shared/components/StagesAccordion.astro'
 import Pricing, { Pricing_Query } from '@repo/shared/components/Pricing.astro'
 import PricingRange, { PricingRange_Query } from '@repo/shared/components/PricingRange.astro'
+import ShowcaseProjectsExpand, {
+  ShowcaseProjectsExpand_Query,
+} from '@repo/shared/components/ShowcaseProjectsExpand.astro'
 
 const components = {
   SimpleCtaSection,
@@ -102,6 +105,7 @@ const components = {
   StagesAccordion,
   Pricing,
   PricingRange,
+  ShowcaseProjectsExpand,
 }
 
 type ComponentsMap = {
@@ -169,6 +173,7 @@ export const Components_Query = /* groq */ `
     ${StagesAccordion_Query}
     ${Pricing_Query}
     ${PricingRange_Query}
+    ${ShowcaseProjectsExpand_Query}
   },
 `
 ---
