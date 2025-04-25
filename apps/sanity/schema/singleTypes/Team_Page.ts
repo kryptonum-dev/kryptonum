@@ -20,7 +20,7 @@ export default defineType({
       hidden: true,
     }),
     ...defineSlugForDocument({
-      slugs: {
+      predefinedSlugs: {
         pl: '/pl/zespol',
         en: '/en/team'
       }

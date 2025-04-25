@@ -18,4 +18,5 @@ export const InternalLinkableTypes: { type: string }[] = [
   { type: 'Service_Collection' },
   { type: 'Location_Collection' },
   { type: 'BlogPost_Collection' },
+  { type: 'ShopProduct_Collection' },
 ];

@@ -23,7 +23,7 @@ export default defineType({
       hidden: true,
     }),
     ...defineSlugForDocument({
-      slugs: {
+      predefinedSlugs: {
         pl: '/pl/regulamin',
         en: '/en/terms'
       }
