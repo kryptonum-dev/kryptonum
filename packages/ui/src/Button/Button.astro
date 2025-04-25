@@ -7,9 +7,26 @@ type Props = ButtonDataProps
 const { ...props } = Astro.props
 
 const svgId = `arrow-icon-${Math.random().toString(36).slice(2, 9)}`
+
+let finalHref = props.href
+if (props.linkType === 'internal' && props.href) {
+  const currentDomain = Astro.url.origin
+  if (props.documentType === 'ShopProduct_Collection' && !currentDomain.includes('learn.kryptonum.eu')) {
+    finalHref = `https://learn.kryptonum.eu${props.href}`
+  } else if (props.documentType !== 'ShopProduct_Collection' && currentDomain.includes('learn.kryptonum.eu')) {
+    finalHref = `https://kryptonum.eu${props.href}`
+  }
+}
+
+const modifiedProps = {
+  ...{
+    ...props,
+    href: finalHref,
+  },
+}
 ---
 
-<BaseButton {...props}>
+<BaseButton {...modifiedProps}>
   <span>
     {props.text || <slot />}
   </span>

@@ -7,7 +7,12 @@ export const ButtonDataQuery = (name: string) => `
     text,
     theme,
     linkType,
-    "href": select(linkType == "internal" => internal -> slug.current, linkType == "external" => external, "#"),
+    "documentType": internal -> _type,
+    "href": select(
+      linkType == "internal" => internal -> slug.current,
+      linkType == "external" => external,
+      "#"
+    ),
     ${ImageDataQuery('img')}
   },
 `
