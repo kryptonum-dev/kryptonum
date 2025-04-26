@@ -78,7 +78,23 @@ export default defineType({
           }
         }),
       ],
-      validation: Rule => Rule.required(),
+      validation: Rule => Rule.required().custom(async (categories, context) => {
+        if (!categories || categories.length === 0) return true;
+        const client = context.getClient({ apiVersion: '2025-04-26' })
+        const doc = context.document as { language?: string };
+        const language = doc?.language;
+        const categoryIds = categories.map((cat: any) => cat._ref).filter(Boolean);
+        if (categoryIds.length === 0) return true;
+        const referencedLanguages = await client.fetch(
+          `*[_id in $ids].language`,
+          { ids: categoryIds }
+        );
+        const invalidCategory = referencedLanguages.find((lang: string) => lang !== language);
+        if (invalidCategory) {
+          return `All categories must be in the same language as the case study (${language})`;
+        }
+        return true;
+      }),
     }),
     defineField({
       name: 'date',

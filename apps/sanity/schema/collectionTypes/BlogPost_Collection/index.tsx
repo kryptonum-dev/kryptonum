@@ -53,7 +53,20 @@ export default defineType({
           }
         }
       },
-      validation: Rule => Rule.required(),
+      validation: Rule => Rule.required().custom(async (value, context) => {
+        if (!value?._ref) return true;
+        const client = context.getClient({ apiVersion: '2025-04-26' })
+        const document = context.document as { language?: string };
+        const language = document?.language;
+        const referencedLanguage = await client.fetch(
+          `*[_id == $id][0].language`,
+          { id: value._ref }
+        );
+        if (referencedLanguage !== language) {
+          return `Category must be in the same language as the blog post (${language})`;
+        }
+        return true;
+      }),
     }),
     defineField({
       name: 'author',
