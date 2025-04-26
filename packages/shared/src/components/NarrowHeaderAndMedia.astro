@@ -1,0 +1,136 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
+import Video, { VideoDataQuery, type VideoDataProps } from '@repo/ui/Video.astro'
+
+export const NarrowHeaderAndMedia_Query = `
+  _type == "NarrowHeaderAndMedia" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    ${ButtonDataQuery('ctas[]')}
+    media[] {
+      _type,
+      _type == "image" => ${ImageDataQuery('@')}
+      _type == "video" => {
+        hasUi,
+        ${VideoDataQuery('asset')}
+      }
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  ctas: ButtonDataProps[]
+  media: Array<
+    | {
+        _type: 'image'
+        asset: ImageDataProps
+      }
+    | {
+        _type: 'video'
+        hasUi: boolean
+        asset: VideoDataProps
+      }
+  >
+}
+
+const { index, sectionId, heading, paragraph, ctas, media } = Astro.props
+
+const isSingleMedia = media?.length === 1
+---
+
+<section class="NarrowHeaderAndMedia" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h1" />
+    <PortableText value={paragraph} class="paragraph" />
+    <div class="cta-wrapper">
+      {ctas?.map((cta) => <Button {...cta} />)}
+    </div>
+  </header>
+  {
+    media && (
+      <div class="wrapper" data-is-single-media={isSingleMedia.toString()}>
+        {media?.map((item, i) =>
+          item._type === 'image' ? (
+            <Image
+              asset={item.asset as unknown as ImageDataProps['asset']}
+              sizes={
+                isSingleMedia
+                  ? '100vw'
+                  : i === 0 || i === 2
+                    ? '(max-width: 63rem) 50vw, 20vw'
+                    : '(max-width: 63rem) 100vw, 60vw'
+              }
+              class="item"
+              loading={index === 0 ? 'eager' : 'lazy'}
+              priority={index === 0 && (isSingleMedia || i === 1)}
+            />
+          ) : (
+            <Video {...item.asset} hideControls={!item.hasUi} class="item" />
+          )
+        )}
+      </div>
+    )
+  }
+</section>
+
+<style lang="scss">
+  .NarrowHeaderAndMedia {
+    padding: clamp(4rem, calc(5vw / 0.48), 6rem) 0;
+    header {
+      max-width: 39rem;
+      text-align: center;
+      margin: 0 auto;
+      .paragraph {
+        margin: clamp(1rem, calc(1.5vw / 0.48), 1.5rem) 0 clamp(2rem, calc(3vw / 0.48), 3rem);
+      }
+      .cta-wrapper {
+        justify-content: center;
+      }
+    }
+    .wrapper {
+      margin-top: clamp(3rem, calc(4vw / 0.48), 4rem) !important;
+      &[data-is-single-media='false'] {
+        max-width: 67rem;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 0.2fr 0.6fr 0.2fr;
+        gap: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+        .item {
+          &:nth-child(1) {
+            align-self: start;
+            margin-top: 2rem;
+          }
+          &:nth-child(3) {
+            align-self: end;
+            margin-bottom: 2rem;
+          }
+        }
+      }
+      .item {
+        border-radius: 0.25rem;
+      }
+    }
+    @media (max-width: 63rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      .wrapper {
+        &[data-is-single-media='false'] {
+          grid-template-columns: 1fr 1fr;
+          .item {
+            margin: 0 !important;
+            &:nth-child(2) {
+              grid-column: 3/1;
+              order: -1;
+            }
+          }
+        }
+      }
+    }
+  }
+</style>

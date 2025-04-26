@@ -1,0 +1,182 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import CategoryTab from '@repo/ui/CategoryTab.astro'
+import { ContentPT_Query } from '@components/Blog/Post/Content/content-pt/index.astro'
+import EstimatedReadingTime, { type EstimatedReadingTimeProps } from '@repo/ui/EstimatedReadingTime.astro'
+import { type Language } from '@repo/shared/languages'
+
+const lang = Astro.params.lang as Language
+
+const translations = {
+  pl: {
+    tag: '👉 Sprawdź najnowszy artykuł',
+    author: 'Autor',
+  },
+  en: {
+    tag: '👉 Check out the latest article',
+    author: 'Author',
+  },
+} as const
+
+type Props = {
+  name: string
+  slug: string
+  heading: PortableTextValue
+  category: {
+    name: string
+    slug: string
+    postCount: number
+  }
+  author: {
+    img: ImageDataProps
+    name: string
+    slug: string
+  }
+  img: ImageDataProps
+  content: EstimatedReadingTimeProps['content']
+}
+
+export type HeroProps = Props
+
+export const Hero_Query = `
+  "hero": *[_type == 'BlogPost_Collection' && language == $language] | order(coalesce(publishedDate, _createdAt) desc)[0] {
+    name,
+    "slug": slug.current,
+    ${PortableTextQuery('heading')}
+    category -> {
+      name,
+      "slug": slug.current,
+      "postCount": count(*[_type == 'BlogPost_Collection' && references(^._id)])
+    },
+    "author": author[0] -> {
+      ${ImageDataQuery('img')}
+      name,
+      "slug": slug.current,
+    },
+    ${ImageDataQuery('img')}
+    ${ContentPT_Query}
+  },
+`
+
+const { name, slug, heading, category, author, img, content } = Astro.props
+---
+
+<section class="Hero">
+  <article>
+    <a href={slug} class="hero-link" aria-label={`Przejdź do artykułu: ${name}`}></a>
+    <div class="img">
+      <Image {...img} sizes="(max-width: 66rem) 100vw, 50vw" priority={true} />
+      <div class="tag">{translations[lang].tag}</div>
+    </div>
+    <header>
+      <CategoryTab slug={category.slug}>{category.name} ({category.postCount})</CategoryTab>
+      <PortableText value={heading} heading="h2" class="h2 heading" />
+      <div class="metadata">
+        <EstimatedReadingTime content={content} />
+        <a href={author.slug} class="author">
+          <Image {...author.img} sizes="32px" class="gradient-thumbnail" loading="eager" />
+          <p>
+            {translations[lang].author}: <span>{author.name}</span>
+          </p>
+        </a>
+      </div>
+    </header>
+  </article>
+</section>
+
+<style lang="scss">
+  .Hero {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    article {
+      padding: 1rem;
+      border-radius: 0.25rem;
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: clamp(1.5rem, calc(2vw / 0.48), 3rem);
+      .hero-link {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid var(--neutral-700, #383842);
+        transition: border-color 500ms var(--easing);
+        border-radius: inherit;
+        z-index: 1;
+        &:hover {
+          border-color: var(--neutral-600, #4a4a57);
+        }
+      }
+      .img {
+        position: relative;
+        .tag {
+          position: absolute;
+          z-index: 2;
+          pointer-events: none;
+          width: max-content;
+          bottom: 1.25rem;
+          right: 1.25rem;
+          display: inline-flex;
+          padding: 0.5rem 1rem;
+          border-radius: 2.5rem;
+          font-size: var(--typography-body-s, 0.875rem);
+          background:
+            linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+            var(--primary-gradient-400) border-box;
+          border: 1px solid rgba(255, 255, 255, 0);
+        }
+      }
+      header {
+        :global([data-category-tab]) {
+          z-index: 2;
+        }
+        .heading {
+          margin: clamp(1rem, calc(2vw / 0.48), 2rem) 0;
+        }
+        .metadata {
+          display: flex;
+          flex-wrap: wrap;
+          gap: clamp(1.25rem, calc(2vw / 0.48), 2rem);
+          align-items: center;
+          .author {
+            z-index: 2;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.5rem;
+            align-items: center;
+            img {
+              width: 32px;
+              height: 32px;
+            }
+            p {
+              font-size: var(--typography-body-m, 0.875rem);
+              color: var(--neutral-400, #c6cdcc);
+              span {
+                color: var(--neutral-200, #f0f7f7);
+              }
+            }
+          }
+        }
+      }
+      @media (max-width: 66rem) {
+        grid-template-columns: 1fr;
+        max-width: 38rem;
+        margin: 0 auto;
+      }
+      @media (max-width: 47rem) {
+        .img {
+          position: static;
+          .tag {
+            bottom: unset;
+            top: 0;
+            right: 50%;
+            transform: translate(50%, -50%);
+          }
+        }
+      }
+    }
+  }
+</style>

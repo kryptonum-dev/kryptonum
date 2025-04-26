@@ -2,12 +2,12 @@
 export const prerender = false
 
 import sanityFetch from '@repo/utils/sanity.fetch'
-import Layout from '@repo/shared/Layout'
-import type { HeadProps } from '@repo/shared/Head'
+import Layout from '@layout/Layout.astro'
+import type { HeadProps } from '@repo/shared/layout/Head.astro'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
-import Copy from '@repo/ui/Copy'
-import Socials from '@repo/ui/Socials'
+import Copy from '@repo/ui/Copy.astro'
+import Socials from '@repo/ui/Socials.astro'
 import { DOMAIN } from '@repo/shared/constants'
 
 const URL = Astro.url.href
@@ -148,7 +148,7 @@ const page = await sanityFetch<{
 })
 ---
 
-<Layout url={URL} {...page.seo} clearLayout={true}>
+<Layout url={URL} {...page.seo}>
   <svg xmlns="http://www.w3.org/2000/svg" width="149" height="32" fill="none" viewBox="0 0 149 32">
     <title>Kryptonum</title>
     <path

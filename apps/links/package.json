@@ -1,5 +1,5 @@
 {
-  "name": "astro-links",
+  "name": "@apps/links",
   "type": "module",
   "version": "0.0.1",
   "scripts": {

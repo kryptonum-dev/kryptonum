@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { defineSlugForDocument } from "../../utils/define-slug-for-document";
 
 const name = 'ShopProduct_Collection';
 const title = 'Shop Product Collection';
@@ -16,42 +17,30 @@ export default defineType({
       readOnly: true,
       hidden: true,
     }),
+    ...defineSlugForDocument({ prefixes: { en: '/en/', pl: '/pl/' } }),
     defineField({
-      name: 'name',
-      type: 'string',
-      title: 'Name',
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'description',
-      type: 'text',
-      rows: 5,
-      title: 'Description',
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'img',
-      type: 'image',
-      title: 'Image',
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'url',
+      name: 'purchase_url',
       type: 'url',
-      title: 'URL',
+      title: 'Purchase URL',
       validation: Rule => Rule.required().uri({ scheme: ['https'] }),
     }),
     defineField({
-      name: 'badge',
-      type: 'string',
-      title: 'Badge (optional)',
+      name: 'components',
+      type: 'components',
+      title: 'Page Components',
     }),
     defineField({
-      name: 'rating',
-      type: 'number',
-      title: 'Rating (optional)',
-      validation: Rule => Rule.min(1).max(5),
+      name: 'seo',
+      type: 'seo',
+      title: 'SEO',
+      group: 'seo',
     }),
+  ],
+  groups: [
+    {
+      name: 'seo',
+      title: 'SEO',
+    },
   ],
   preview: {
     select: {

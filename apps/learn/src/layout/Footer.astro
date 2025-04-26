@@ -1,0 +1,86 @@
+---
+import sanityFetch from '@repo/utils/sanity.fetch'
+import { DOMAIN } from '@repo/shared/constants'
+import type { Language } from '@repo/shared/languages'
+
+const lang = Astro.props.lang as Language
+
+const data = await sanityFetch<{
+  privacyPolicy: {
+    name: string
+    slug: string
+  }
+  terms: {
+    name: string
+    slug: string
+  }
+}>({
+  query: `
+    {
+      "privacyPolicy": *[_type == "PrivacyPolicy_Page" && language == $language][0] {
+        name,
+        "slug": slug.current,
+      },
+      "terms": *[_type == "TermsAndConditions_Page" && language == $language][0] {
+        name,
+        "slug": slug.current,
+      },
+    }
+  `,
+  params: { language: lang },
+})
+---
+
+<footer>
+  <div class="max-width">
+    <p>ⓒ {new Date().getFullYear()} Kryptonum</p>
+    <div class="legal">
+      <a href={`${DOMAIN}${data.privacyPolicy.slug}`} target="_blank" rel="noopener">{data.privacyPolicy.name}</a>
+      <a href={`${DOMAIN}${data.terms.slug}`} target="_blank" rel="noopener">{data.terms.name}</a>
+    </div>
+  </div>
+</footer>
+
+<style lang="scss">
+  footer {
+    border-top: 1px solid var(--primary-500, #064040);
+    padding: clamp(2rem, calc(2.5vw / 0.48), 3rem) 0 3rem;
+    font-size: var(--typography-body-m, 0.875rem);
+    color: var(--neutral-400, #c6cdcc);
+    position: relative;
+    overflow: hidden;
+    a {
+      transition: color 300ms;
+      &:hover {
+        color: var(--neutral-300, #f0f7f7);
+      }
+    }
+    .max-width {
+      display: flex;
+      flex-wrap: wrap-reverse;
+      justify-content: space-between;
+      gap: 1.5rem 3rem;
+    }
+    .legal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem clamp(1rem, calc(2vw / 0.48), 2rem);
+    }
+    &::before {
+      content: '';
+      border-radius: 50%;
+      background: var(--primary-gradient-900, linear-gradient(266deg, #0b0f0d 1.76%, #011310 53.44%, #001f1b 100%));
+      mix-blend-mode: plus-lighter;
+      filter: blur(64px);
+      width: 100%;
+      aspect-ratio: 1/1;
+      max-width: 23rem;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+  }
+</style>

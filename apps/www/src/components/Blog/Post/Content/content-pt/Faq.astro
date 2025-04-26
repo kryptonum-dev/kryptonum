@@ -1,0 +1,9 @@
+---
+import GlobalFaq from '@repo/shared/components/Faq.astro'
+
+export { Faq_Query } from '@repo/shared/components/Faq.astro'
+
+const { node } = Astro.props
+---
+
+<GlobalFaq {...node} hasLargeText={true} />

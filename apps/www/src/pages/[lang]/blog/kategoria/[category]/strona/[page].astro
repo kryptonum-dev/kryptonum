@@ -1,0 +1,36 @@
+---
+import sanityFetch from '@repo/utils/sanity.fetch'
+import BlogPage, { fetchData, ITEMS_PER_PAGE } from '@templates/blog/index.astro'
+import { type Language } from '@repo/shared/languages'
+
+const lang = Astro.params.lang as Language
+const category = Astro.params.category || null
+const page = Number(Astro.params.page) || 1
+const data = await fetchData(lang, category, page)
+if (lang !== 'pl' || !data) return Astro.rewrite('/404')
+
+export async function getStaticPaths() {
+  const categories = await sanityFetch<{ lang: Language; slug: string; postCount: number }[]>({
+    query: `
+      *[_type == 'BlogCategory_Collection' && language == $language][] {
+        "lang": language,
+        "slug": slug.current,
+        "postCount": count(*[_type == "BlogPost_Collection" && references(^._id) && defined(category)]),
+      }
+    `,
+    params: { language: 'pl' },
+  })
+  return categories?.flatMap(({ lang, slug, postCount }) => {
+    const totalPages = Math.ceil(postCount / ITEMS_PER_PAGE)
+    return Array.from({ length: totalPages - 1 }, (_, i) => ({
+      params: {
+        lang: lang,
+        category: slug.split('/')[4],
+        page: (i + 2).toString(),
+      },
+    }))
+  })
+}
+---
+
+<BlogPage {...data} currentPage={page} currentCategory={category} />

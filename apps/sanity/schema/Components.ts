@@ -45,6 +45,7 @@ import TagsLine from "./components/TagsLine";
 import StagesAccordion from "./components/StagesAccordion";
 import Pricing from "./components/Pricing";
 import PricingRange from "./components/PricingRange";
+import ShowcaseProjectsExpand from "./components/ShowcaseProjectsExpand";
 
 export default defineType({
   name: 'components',
@@ -97,6 +98,7 @@ export default defineType({
     StagesAccordion,
     Pricing,
     PricingRange,
+    ShowcaseProjectsExpand,
   ],
   options: {
     insertMenu: {

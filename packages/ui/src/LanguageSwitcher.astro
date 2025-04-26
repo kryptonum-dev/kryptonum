@@ -128,7 +128,7 @@ const { lang, alternates = [], ...props } = Astro.props
 <script>
   const languageSwitchers = document.querySelectorAll<HTMLButtonElement>('[data-component="LanguageSwitcher"]')
   languageSwitchers.forEach((languageSwitcher) => {
-    const languageDropdown = languageSwitcher.querySelector<HTMLDivElement>('.language-dropdown')
+    const languageDropdown = languageSwitcher.querySelector<HTMLDivElement>('.language-dropdown')!
     languageSwitcher.addEventListener('click', () => {
       const isExpanded = languageSwitcher.getAttribute('aria-expanded') === 'true'
       toggleDropdown(!isExpanded)

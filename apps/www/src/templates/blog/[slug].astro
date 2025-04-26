@@ -1,0 +1,109 @@
+---
+import Layout from '@layout/Layout.astro'
+import sanityFetch from '@repo/utils/sanity.fetch'
+import metadataFetch from '@repo/utils/metadata.fetch'
+import Breadcrumbs from '@repo/ui/Breadcrumbs.astro'
+import Hero, { Hero_Query, type HeroProps } from '@components/Blog/Post/Hero.astro'
+import Content, { Content_Query, type ContentProps } from '@components/Blog/Post/Content/index.astro'
+import Components, { Components_Query, type ComponentsProps } from '@repo/shared/components/index.astro'
+import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
+import { type Language } from '@repo/shared/languages'
+
+type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
+
+interface Props extends FetchDataReturn {
+  lang: Language
+  slug: string
+}
+
+export async function fetchData(lang: Language, slug: string) {
+  const page = await sanityFetch<{
+    name: string
+    blogPage: {
+      name: string
+      slug: string
+    }
+    hero: HeroProps
+    content: ContentProps
+    components: ComponentsProps
+    ScrollToNextPage: {
+      name: string
+      slug: string
+    }
+  }>({
+    query: `
+      *[_type == 'BlogPost_Collection' && slug.current == $slug && language == $language][0] {
+        name,
+        "blogPage": *[_type == "Blog_Page" && language == $language][0] {
+          name,
+          "slug": slug.current
+        },
+        ${Hero_Query}
+        ${Content_Query}
+        ${Components_Query}
+        "ScrollToNextPage": coalesce(
+          *[_type == 'BlogPost_Collection' && coalesce(publishedDate, _createdAt) < coalesce(^.publishedDate, ^._createdAt) && language == $language] | order(coalesce(publishedDate, _createdAt) desc)[0] {
+            name,
+            "slug": slug.current,
+          },
+          *[_type == 'BlogPost_Collection' && language == $language] | order(coalesce(publishedDate, _createdAt) desc)[0] {
+            name,
+            "slug": slug.current,
+          }
+        )
+      }
+    `,
+    params: { slug: slug, language: lang },
+  })
+  if (!page) return null
+  const metadata = await metadataFetch(slug)
+  return { page, metadata }
+}
+
+export async function staticPaths() {
+  const prefix: Record<Language, string> = { pl: '/pl/blog/', en: '/en/blog/' }
+  const pages = await sanityFetch<{ slug: string; language: Language }[]>({
+    query: `
+      *[_type == 'BlogPost_Collection'][] {
+        "slug": slug.current,
+        "language": language
+      }
+    `,
+  })
+  return pages?.map(({ slug, language }) => ({
+    params: { lang: language, slug: slug.replace(prefix[language], '') },
+  }))
+}
+
+const { page, metadata, lang, slug } = Astro.props
+
+const breadcrumbs = [
+  { name: page.blogPage.name, path: page.blogPage.slug },
+  { name: page.name, path: slug },
+]
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={breadcrumbs} />
+  <Hero {...page.hero} />
+  <Content {...page.content} />
+  <Components data={page.components} hasPreviousSections={true} />
+  <ScrollToNextPage slot="ScrollToNextPage" path={page.ScrollToNextPage.slug} data-element="ScrollToNextPage">
+    <h2
+      set:html={lang === 'pl'
+        ? `❧ Scrolluj, scrolluj, to <strong>jeszcze nie koniec!</strong>`
+        : `❧ Scroll, scroll, it’s <strong>not over yet!</strong>`}
+    />
+    <p>{page.ScrollToNextPage.name}</p>
+  </ScrollToNextPage>
+</Layout>
+
+<style lang="scss">
+  [data-element='ScrollToNextPage'] {
+    text-align: center;
+    h2 {
+      max-width: 17rem;
+      margin: 0 auto 1rem;
+    }
+  }
+</style>

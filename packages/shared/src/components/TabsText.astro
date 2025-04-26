@@ -1,0 +1,133 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import CategoryTab from '@repo/ui/CategoryTab.astro'
+
+export const TabsText_Query = `
+  _type == "TabsText" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    ${PortableTextQuery('tabsHeading')}
+    tabs[] {
+      name,
+      ${PortableTextQuery('paragraph')}
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  tabsHeading: PortableTextValue
+  tabs: {
+    name: string
+    paragraph: PortableTextValue
+  }[]
+}
+
+const { index, sectionId, heading, paragraph, tabsHeading, tabs } = Astro.props
+
+const uniqueId = `TabsText-${crypto.randomUUID().slice(0, 5)}`
+---
+
+<section class="TabsText" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <PortableText value={paragraph} />
+  </header>
+  <div class="tabs-container">
+    <PortableText value={tabsHeading} />
+    <ul class="tabs">
+      {
+        tabs.map(({ name }, index) => (
+          <li>
+            <CategoryTab
+              role="tab"
+              aria-selected={index === 0}
+              aria-controls={`${uniqueId}-panel-${index}`}
+              id={`${uniqueId}-tab-${index}`}
+              isActive={index === 0}>
+              {name}
+            </CategoryTab>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      tabs.map(({ paragraph }, index) => (
+        <PortableText
+          value={paragraph}
+          role="tabpanel"
+          aria-hidden={index !== 0}
+          id={`${uniqueId}-panel-${index}`}
+          aria-labelledby={`${uniqueId}-tab-${index}`}
+          class="tab-content"
+        />
+      ))
+    }
+  </div>
+</section>
+
+<style lang="scss">
+  .TabsText {
+    padding: clamp(2rem, calc(5vw / 0.48), 6rem) 0;
+    header {
+      max-width: 32rem;
+      margin-bottom: 1.5rem;
+      .heading {
+        margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+      }
+    }
+    .tabs-container {
+      max-width: 38rem;
+      margin-left: auto;
+      .tabs {
+        margin-top: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 1rem;
+        margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+        border-bottom: 1px solid var(--primary-500, #064040);
+      }
+      .tab-content {
+        transition: filter 800ms var(--easing);
+        &[aria-hidden='true'] {
+          filter: blur(8px);
+          visibility: hidden;
+          position: absolute;
+        }
+      }
+    }
+    @media (max-width: 68rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      header {
+        max-width: unset;
+        margin-bottom: clamp(3rem, calc(5vw / 0.48), 5rem);
+      }
+      .tabs-container {
+        max-width: unset;
+      }
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLDivElement>('.TabsText').forEach((section) => {
+    const tabs = section.querySelectorAll<HTMLButtonElement>('[data-category-tab]')
+    const tabContents = section.querySelectorAll<HTMLDivElement>('.tab-content')
+
+    tabs.forEach((tab, tabIndex) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((tab) => tab.removeAttribute('aria-selected'))
+        tab.setAttribute('aria-selected', 'true')
+        tabContents.forEach((content, contentIndex) => {
+          content.setAttribute('aria-hidden', contentIndex === tabIndex ? 'false' : 'true')
+        })
+      })
+    })
+  })
+</script>

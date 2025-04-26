@@ -1,0 +1,323 @@
+---
+import { toPlainText } from 'astro-portabletext'
+import type { PortableTextBlock, PortableTextSpan } from '@portabletext/types'
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import CategoryTab from '@repo/ui/CategoryTab.astro'
+
+export const DecryptTabs_Query = `
+  _type == "DecryptTabs" => {
+    ${PortableTextQuery('heading')}
+    tabs[] {
+      ${PortableTextQuery('name')}
+      ${PortableTextQuery('paragraph')}
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  tabs: {
+    name: PortableTextValue
+    paragraph: PortableTextValue
+  }[]
+}
+
+const { index, sectionId, heading, tabs } = Astro.props as Props
+
+function decryptStyleText(blocks: PortableTextBlock[], keepStrong: boolean = false): string {
+  let result = ''
+  blocks.forEach((block: PortableTextBlock) => {
+    ;(block.children as PortableTextSpan[]).forEach((span) => {
+      if (span.marks?.includes('strong')) {
+        result += keepStrong ? `<strong>${'_'.repeat(span.text.length)}</strong>` : '_'.repeat(span.text.length)
+      } else {
+        result += span.text
+      }
+    })
+  })
+  return result
+}
+
+const Heading = index === 0 ? 'h1' : 'h2'
+
+const uniqueId = `DecryptTabs-${crypto.randomUUID().slice(0, 5)}`
+---
+
+<section class="DecryptTabs" id={sectionId}>
+  <header>
+    <Heading
+      aria-label={toPlainText(heading as PortableTextBlock)}
+      class="heading"
+      set:html={decryptStyleText(heading as PortableTextBlock[], true)}
+    />
+  </header>
+  <div class="line" aria-hidden="true"></div>
+  <div class="tabs-container">
+    <div class="tabs" role="tablist">
+      {
+        tabs.map(({ name }, index) => (
+          <div class="tab-wrapper">
+            <CategoryTab
+              role="tab"
+              id={`${uniqueId}-tab-${index}`}
+              aria-label={toPlainText(name as PortableTextBlock)}
+              aria-selected={index === 0}
+              aria-controls={`${uniqueId}-panel-${index}`}>
+              {decryptStyleText(name as PortableTextBlock[], false)}
+            </CategoryTab>
+          </div>
+        ))
+      }
+    </div>
+    <div class="content-container">
+      {
+        tabs.map(({ name, paragraph }, index) => (
+          <div
+            class="content"
+            role="tabpanel"
+            id={`${uniqueId}-panel-${index}`}
+            aria-labelledby={`${uniqueId}-tab-${index}`}
+            aria-hidden={index !== 0}
+            style={{ marginTop: `${(2.4375 + 1) * index}rem` }}>
+            <p class="heading">{toPlainText(name as PortableTextBlock[])}</p>
+            <PortableText value={paragraph} />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  .DecryptTabs {
+    padding: clamp(4rem, calc(5vw / 0.48), 8rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 0.5fr 2fr;
+    header {
+      max-width: 19rem;
+      margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+    }
+    .line {
+      width: 1px;
+      height: calc(100% + 10rem);
+      margin: -5rem 0;
+      background-color: var(--primary-600, #042b2b);
+      position: relative;
+      &::before,
+      &::after {
+        content: '';
+        width: 5px;
+        height: 5px;
+        position: absolute;
+        left: -2px;
+        background-color: inherit;
+      }
+      &::before {
+        top: 0;
+      }
+      &::after {
+        bottom: 0;
+      }
+    }
+    .tabs-container {
+      display: grid;
+      grid-template-columns: 12rem 1fr;
+      gap: 1.25rem;
+      max-width: 39rem;
+      margin-left: auto;
+      .tabs {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        .tab-wrapper {
+          position: relative;
+          display: grid;
+          grid-template-columns: auto 1fr;
+          align-items: center;
+          gap: 0.75rem;
+          button {
+            width: fit-content;
+          }
+          &::after {
+            content: '';
+            width: 100%;
+            height: 1px;
+            background: var(--primary-gradient-400);
+            transition: transform 500ms 0 var(--easing);
+            transform-origin: left;
+            transform: scaleX(0);
+          }
+          &::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            width: 5px;
+            height: 5px;
+            background: var(--primary-gradient-400);
+            transition: transform 500ms 0 var(--easing);
+            transform: scale(0);
+          }
+          &:has(button[aria-selected='true']) {
+            &::before {
+              transform: scale(1);
+              transition: transform 500ms 500ms var(--easing);
+            }
+            &::after {
+              transform: scaleX(1);
+              transition: transform 500ms 300ms var(--easing);
+            }
+          }
+        }
+      }
+      .content-container {
+        position: relative;
+        .content {
+          padding-top: 0.375rem;
+          transition:
+            filter 800ms 300ms var(--easing),
+            visibility 800ms 300ms var(--easing);
+          &[aria-hidden='true'] {
+            transition: none;
+            filter: blur(8px);
+            visibility: hidden;
+            position: absolute;
+            top: 0;
+          }
+          .heading {
+            margin-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+          }
+        }
+      }
+    }
+    @media (max-width: 63rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      grid-template-columns: 1fr;
+      .line {
+        width: 100%;
+        height: 1px;
+        margin: 0 0 clamp(3rem, calc(5vw / 0.48), 5rem) 0;
+        &::before,
+        &::after {
+          left: -2px;
+          background-color: inherit;
+        }
+        &::before {
+          left: 0;
+          top: -2px;
+        }
+        &::after {
+          left: unset;
+          right: 0;
+          bottom: -2px;
+        }
+      }
+    }
+    @media (max-width: 40rem) {
+      .tabs-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        .tabs {
+          margin: 0 calc(var(--page-margin) * -1);
+          padding: 0 var(--page-margin);
+          overflow-x: auto;
+          flex-direction: row;
+          gap: 0.38rem;
+          .tab-wrapper {
+            flex-shrink: 0;
+            grid-template-columns: 1fr;
+            gap: 0.25rem;
+            &::after {
+              width: 1px;
+              height: 1rem;
+              margin: 0 auto;
+              transform-origin: top;
+              transform: scaleY(0);
+            }
+            &::before {
+              bottom: 0;
+              right: calc(50% - 2.5px);
+            }
+            &:has(button[aria-selected='true']) {
+              &::after {
+                transform: scaleY(1);
+              }
+            }
+          }
+        }
+        .content-container {
+          .content {
+            margin-top: 0 !important;
+            padding-top: 0;
+          }
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  const ANIMATION_DURATION = 300
+  const STEPS = 12
+  class DecryptEffect {
+    element: HTMLButtonElement
+    originalText: string
+    encryptedText: string
+    currentAnimation: NodeJS.Timer | null
+    constructor(element: HTMLButtonElement) {
+      this.element = element
+      this.originalText = element.getAttribute('aria-label') || ''
+      this.encryptedText = element.textContent || ''
+      this.currentAnimation = null
+    }
+    animate() {
+      if (this.currentAnimation) {
+        clearInterval(this.currentAnimation)
+      }
+      const positions = [...this.encryptedText].map((char, i) => (char === '_' ? i : -1)).filter((i) => i !== -1)
+      let step = 0
+      const interval = ANIMATION_DURATION / STEPS
+      this.currentAnimation = setInterval(() => {
+        const chars = [...this.element.textContent!]
+        positions.forEach((pos) => {
+          if (step === STEPS - 1) {
+            chars[pos] = this.originalText[pos]
+          } else {
+            chars[pos] = CHARS[Math.floor(Math.random() * CHARS.length)]
+          }
+        })
+        this.element.textContent = chars.join('')
+        step++
+        if (step >= STEPS) {
+          clearInterval(this.currentAnimation!)
+          this.currentAnimation = null
+        }
+      }, interval)
+    }
+  }
+
+  document.querySelectorAll<HTMLDivElement>('.DecryptTabs').forEach((section) => {
+    const tabs = section.querySelectorAll<HTMLButtonElement>('[data-category-tab]')
+    const tabContents = section.querySelectorAll<HTMLDivElement>('.content')
+    const effects = Array.from(tabs).map((tab) => new DecryptEffect(tab))
+    tabs.forEach((tab, tabIndex) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((otherTab, otherIndex) => {
+          if (otherTab !== tab) {
+            otherTab.removeAttribute('aria-selected')
+            otherTab.textContent = effects[otherIndex].encryptedText
+          }
+        })
+        tab.setAttribute('aria-selected', 'true')
+        effects[tabIndex].animate()
+        tabContents.forEach((content, contentIndex) => {
+          content.setAttribute('aria-hidden', contentIndex === tabIndex ? 'false' : 'true')
+        })
+      })
+    })
+    tabs[0].click()
+  })
+</script>

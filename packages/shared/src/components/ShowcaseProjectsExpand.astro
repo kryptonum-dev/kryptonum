@@ -1,0 +1,138 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+
+export const ShowcaseProjectsExpand_Query = `
+  _type == "ShowcaseProjectsExpand" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    ${ButtonDataQuery('cta')}
+    projects[] -> {
+      ${ImageDataQuery('img')}
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  cta: ButtonDataProps
+  projects: Array<{
+    img: ImageDataProps
+  }>
+}
+
+const { index, sectionId, heading, paragraph, cta, projects } = Astro.props
+---
+
+<section class="ShowcaseProjectsExpand" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+    <PortableText value={paragraph} class="paragraph" />
+    <Button {...cta} />
+  </header>
+  <div class="projects">
+    {
+      projects.map(({ img }, projectIndex) => (
+        <Image {...img} sizes="300px" priority={index === 0 && projectIndex === 0} />
+      ))
+    }
+  </div>
+</section>
+
+<style lang="scss">
+  .ShowcaseProjectsExpand {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    header {
+      max-width: 39rem;
+      margin: 0 auto;
+      text-align: center;
+      .heading {
+        font-size: var(--typography-body-xl, 1rem);
+        margin-bottom: 0.75rem;
+      }
+      .paragraph {
+        max-width: 26rem;
+        margin: 0 auto;
+        color: var(--neutral-400, #c6cdcc);
+        font-size: var(--typography-body-m, 0.875rem);
+        margin-bottom: 2rem;
+      }
+    }
+    .projects {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin-top: 3rem;
+      perspective: 1000px;
+      img {
+        width: 306px;
+        border-radius: 6px;
+        position: absolute;
+        transition: transform 1300ms var(--easing);
+        will-change: transform;
+        &:nth-child(odd) {
+          transform: rotate(-4deg);
+        }
+        &:nth-child(even) {
+          transform: rotate(4deg);
+        }
+        &:nth-child(3) {
+          transform: rotate(-12deg);
+          position: static;
+        }
+      }
+      &[data-active='true'] {
+        img {
+          &:nth-child(1) {
+            transform: translateX(-200%) rotate(-4deg);
+            @media (max-width: 62rem) {
+              transform: translateX(-100%) rotate(-4deg);
+            }
+          }
+          &:nth-child(2) {
+            transform: translateX(-100%) rotate(4deg);
+            @media (max-width: 62rem) {
+              transform: translateX(-50%) rotate(4deg);
+            }
+          }
+          &:nth-child(4) {
+            transform: translateX(100%) rotate(4deg);
+            @media (max-width: 62rem) {
+              transform: translateX(50%) rotate(4deg);
+            }
+          }
+          &:nth-child(5) {
+            transform: translateX(200%) rotate(-4deg);
+            @media (max-width: 62rem) {
+              transform: translateX(100%) rotate(-4deg);
+            }
+          }
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.ShowcaseProjectsExpand').forEach((section) => {
+    const projectsElements = section.querySelectorAll('.projects')
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.setAttribute('data-active', 'true')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { rootMargin: `-70% 0% -30% 0%`, threshold: 0 }
+    )
+    projectsElements.forEach((element) => {
+      observer.observe(element)
+    })
+  })
+</script>

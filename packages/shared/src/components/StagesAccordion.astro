@@ -1,0 +1,166 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
+import Accordion from '@repo/ui/Accordion.astro'
+
+export const StagesAccordion_Query = `
+  _type == "StagesAccordion" => {
+    ${PortableTextQuery('heading')}
+    ${ImageDataQuery('img')}
+    items[] {
+      title,
+      ${PortableTextQuery('content')}
+      ${ButtonDataQuery('cta')}
+    },
+    annotation {
+      ${ImageDataQuery('icon')}
+      ${PortableTextQuery('text')}
+    }
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  img: ImageDataProps
+  items: Array<{
+    title: string
+    content: PortableTextValue
+    cta?: ButtonDataProps
+  }>
+  annotation?: {
+    icon: ImageDataProps
+    text: PortableTextValue
+  }
+}
+
+const { index, sectionId, heading, img, items, annotation } = Astro.props
+---
+
+<section class="StagesAccordion" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+  </header>
+  <div class="column">
+    <div>
+      <div class="list">
+        {
+          items.map(({ title, content, cta }) => (
+            <Accordion summary={title}>
+              <PortableText value={content} />
+              {cta && <Button {...cta} className="cta" />}
+            </Accordion>
+          ))
+        }
+      </div>
+      {
+        annotation && (
+          <div class="annotation">
+            <Image {...annotation.icon} sizes="20px" loading={index === 0 ? 'eager' : 'lazy'} />
+            <PortableText value={annotation.text} />
+          </div>
+        )
+      }
+    </div>
+    <Image
+      {...img}
+      sizes="(max-width: 48rem) 100vw, (max-width: 69rem) 38rem, 60vw"
+      priority={index === 0}
+      class="img"
+    />
+  </div>
+</section>
+
+<style lang="scss">
+  .StagesAccordion {
+    padding: clamp(3rem, calc(5vw / 0.48), 6rem) 0;
+    header {
+      max-width: 34rem;
+      margin-bottom: 3rem;
+    }
+    .column {
+      display: grid;
+      grid-template-columns: 1fr 1.75fr;
+      gap: clamp(2rem, calc(3vw / 0.48), 8rem);
+      .list {
+        counter-reset: item;
+        :global(details) {
+          counter-increment: item;
+          :global(summary) {
+            padding-left: 0;
+            padding-right: 0;
+            grid-template-columns: 1fr clamp(1.5rem, calc(2vw / 0.48), 2rem);
+            &::after {
+              content: counter(item, decimal-leading-zero);
+              margin-top: 0.31rem;
+              color: var(--neutral-500, #75758a);
+              font-size: var(--typography-body-s, 0.75rem);
+            }
+          }
+          :global(.content) {
+            color: var(--neutral-400, #c6cdcc);
+            margin: 0;
+          }
+        }
+        :global(.icon) {
+          display: none;
+        }
+        .cta {
+          margin-top: clamp(1rem, calc(2vw / 0.48), 2rem);
+        }
+      }
+      .img {
+        position: sticky;
+        top: 3rem;
+        border-radius: 0.25rem;
+        border: 1px solid var(--neutral-800, #202025);
+      }
+    }
+    .annotation {
+      margin-top: clamp(3rem, calc(4vw / 0.48), 4rem);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+      color: var(--neutral-400, #c6cdcc);
+      font-size: var(--typography-body-m, 0.875rem);
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    @media (max-width: 69rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      .column {
+        grid-template-columns: 1fr;
+        .img {
+          position: static;
+          order: -1;
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.StagesAccordion').forEach((section) => {
+    let currentlyOpened: HTMLDetailsElement | null = null
+    const accordions = section.querySelectorAll('details')
+    accordions.forEach((details) => {
+      details.addEventListener('toggle', () => {
+        if (details.open) {
+          currentlyOpened = details
+          accordions.forEach((otherDetails) => {
+            if (currentlyOpened !== otherDetails && otherDetails.open) {
+              otherDetails.querySelector('summary')?.click()
+            }
+          })
+        } else {
+          currentlyOpened = null
+        }
+      })
+    })
+  })
+</script>

@@ -1,0 +1,14 @@
+---
+import IndexPage, { fetchData, staticPaths } from '@templates/[slug].astro'
+import { type Language } from '@repo/shared/languages'
+
+const lang = Astro.params.lang as Language
+const slug = { pl: '/pl/', en: '/en/' }[lang] + Astro.params.slug
+const data = await fetchData(lang, slug)
+
+if (!data) return Astro.rewrite('/404')
+
+export const getStaticPaths = () => staticPaths()
+---
+
+<IndexPage {...data} />

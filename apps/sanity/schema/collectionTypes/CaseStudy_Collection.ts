@@ -25,7 +25,7 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     ...defineSlugForDocument({
-      source: 'name',
+      sourceField: 'name',
       prefixes: {
         "pl": "/pl/portfolio/",
         "en": "/en/portfolio/"

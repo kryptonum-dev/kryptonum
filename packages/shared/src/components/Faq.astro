@@ -1,0 +1,261 @@
+---
+import PortableText, { PortableTextQuery, portableTextToHTML, type PortableTextValue } from '@repo/ui/portable-text'
+import Accordion from '@repo/ui/Accordion.astro'
+
+export const Faq_Query = `
+  _type == "Faq" => {
+    ${PortableTextQuery('heading')}
+    list[] -> {
+      question,
+      ${PortableTextQuery('answer')}
+    }
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  list: {
+    question: string
+    answer: PortableTextValue
+  }[]
+  hasLargeText?: boolean
+}
+
+const { index, sectionId, heading, list, hasLargeText = false } = Astro.props
+
+const visibleItems = 10
+const listItems = list?.length || 0
+---
+
+<section class="Faq" id={sectionId} data-has-large-text={hasLargeText.toString()}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+  </header>
+  <div class="list">
+    {
+      list?.map(({ question, answer }, index) => (
+        <Accordion summary={question} class="item" hidden={index >= visibleItems}>
+          <PortableText value={answer} />
+        </Accordion>
+      ))
+    }
+  </div>
+  {
+    listItems > visibleItems && (
+      <div class="load-more" data-total-items={listItems}>
+        <div class="tooltip" style={`transform: translateX(${(visibleItems / listItems) * 130}px);`}>
+          <span class="current">{visibleItems}</span>/{listItems}
+        </div>
+        <div class="progress">
+          <div class="container">
+            <div style={`transform: scaleX(${visibleItems / listItems})`} class="progress-bar" />
+          </div>
+        </div>
+        <button aria-label={`Wczytaj więcej. Pokazano ${visibleItems} z ${listItems} elementów`}>
+          Wczytaj więcej
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none">
+            <path
+              stroke="url(#faq-load)"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8 3.152V13.82m0 0 4-4m-4 4-4-4"
+            />
+            <defs>
+              <linearGradient id="faq-load" x1="11.85" x2="3.509" y1="3.152" y2="3.551" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#2DD282" />
+                <stop offset="1" stop-color="#90F4E8" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </button>
+      </div>
+    )
+  }
+</section>
+
+<style lang="scss">
+  .Faq {
+    margin: clamp(2rem, calc(2.5vw / 0.48), 4rem) 0;
+    header {
+      max-width: 44rem;
+      margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+      .heading {
+        font-size: var(--typography-heading-l, 1.5rem);
+      }
+    }
+    &[data-has-large-text='true'] {
+      :global(summary) {
+        &::before {
+          margin-top: clamp(0.1rem, calc(0.2vw / 0.48), 0.25rem);
+        }
+        :global(.heading) {
+          font-size: var(--typography-body-2xl, 1.25rem);
+        }
+      }
+      :global(.content) {
+        font-size: var(--typography-body-xl, 1rem);
+      }
+    }
+    .list {
+      counter-reset: item;
+      :global(details) {
+        counter-increment: item;
+        :global(summary) {
+          grid-template-columns: clamp(1.5rem, calc(2vw / 0.48), 3rem) 1fr auto;
+          &::before {
+            content: counter(item, decimal-leading-zero);
+            color: var(--neutral-400, #c6cdcc);
+          }
+        }
+        :global(.content) {
+          margin-left: calc(clamp(1.5rem, calc(2vw / 0.48), 3rem) + clamp(1rem, calc(2vw / 0.48), 2rem) + 1rem);
+          @media (max-width: 31rem) {
+            margin-left: calc(clamp(1.5rem, calc(2vw / 0.48), 3rem) + clamp(1rem, calc(2vw / 0.48), 2rem));
+          }
+        }
+      }
+    }
+    .load-more {
+      margin: 2rem auto 0;
+      width: fit-content;
+      .tooltip {
+        display: inline-block;
+        width: 3rem;
+        text-align: center;
+        border-radius: 48px;
+        padding: 0.12rem 0.38rem;
+        background-color: var(--primary-600, #042b2b);
+        font-size: var(--typography-body-s, 0.75rem);
+        color: var(--neutral-400, #c6cdcc);
+        margin-bottom: 0.6rem;
+        margin-left: -1.5rem;
+        position: relative;
+        transition: transform 800ms var(--easing);
+        &::before {
+          content: '';
+          position: absolute;
+          left: 50%;
+          bottom: 0;
+          width: 0.375rem;
+          height: 0.375rem;
+          background-color: inherit;
+          transform: translate(-50%, 50%) rotate(45deg);
+          z-index: -1;
+        }
+        .current {
+          color: var(--neutral-200, #f0f7f7);
+        }
+      }
+      .progress {
+        margin-bottom: 0.25rem;
+        width: 130px;
+        .container {
+          background-color: var(--primary-500, #064040);
+          border-radius: 2px;
+          div {
+            border-radius: inherit;
+            width: 100%;
+            height: 1px;
+            background: var(--primary-gradient-400);
+            transition: transform 800ms var(--easing);
+            transform: scaleX(0);
+            transform-origin: left;
+          }
+        }
+      }
+      button {
+        font-size: var(--typography-body-m, 0.875rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: 3rem;
+        @media (prefers-reduced-motion: no-preference) {
+          &:hover {
+            svg {
+              animation: loadMoreArrow 500ms var(--easing) infinite alternate;
+              @keyframes loadMoreArrow {
+                0% {
+                  transform: translateY(0);
+                }
+                100% {
+                  transform: translateY(-3px);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  const ITEMS_PER_LOAD = 10
+  document.querySelectorAll('.Faq').forEach((section) => {
+    let currentlyOpened: HTMLDetailsElement | null = null
+    const accordions = section.querySelectorAll('details')
+    accordions.forEach((details) => {
+      details.addEventListener('toggle', () => {
+        if (details.open) {
+          currentlyOpened = details
+          accordions.forEach((otherDetails) => {
+            if (currentlyOpened !== otherDetails && otherDetails.open) {
+              otherDetails.querySelector('summary')?.click()
+            }
+          })
+        } else {
+          currentlyOpened = null
+        }
+      })
+    })
+
+    const loadMoreContainer = section.querySelector('.load-more')!
+    if (!loadMoreContainer) return
+    let visibleItems = 10
+    const items = section.querySelectorAll<HTMLDetailsElement>('.list .item')!
+    const totalItems = parseInt(loadMoreContainer.getAttribute('data-total-items') || '0')
+    const loadMoreBtn = loadMoreContainer.querySelector('button')!
+    const countVisibleElements = loadMoreContainer.querySelector('.tooltip .current')!
+    const tooltip = loadMoreContainer.querySelector<HTMLDivElement>('.tooltip')!
+    const progressBar = loadMoreContainer.querySelector<HTMLDivElement>('.progress-bar')!
+
+    loadMoreBtn.addEventListener('click', () => {
+      if (visibleItems < totalItems) {
+        for (let i = visibleItems; i < Math.min(visibleItems + ITEMS_PER_LOAD, totalItems); i++) {
+          items[i].hidden = false
+        }
+        visibleItems = Math.min(visibleItems + ITEMS_PER_LOAD, totalItems)
+        progressBar.style.transform = `scaleX(${visibleItems / totalItems})`
+        tooltip.style.transform = `translateX(${(visibleItems / totalItems) * 130}px)`
+
+        loadMoreBtn.setAttribute('aria-label', `Wczytaj więcej. Pokazano ${visibleItems} z ${totalItems} elementów`)
+        if (visibleItems >= totalItems) {
+          loadMoreContainer.remove()
+        }
+      }
+      countVisibleElements.textContent = visibleItems.toString()
+    })
+  })
+</script>
+
+<script
+  is:inline
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${Astro.url.pathname}#faq`,
+    mainEntity: await Promise.all(
+      list.map(async ({ question, answer }) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: await portableTextToHTML(answer),
+        },
+      }))
+    ),
+  })}
+/>

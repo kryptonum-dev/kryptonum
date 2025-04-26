@@ -1,0 +1,87 @@
+---
+import ContentNav, { ContentNav_Query, type ContentNavProps } from '@components/shared/ContentNav.astro'
+import ContentPT, { ContentPT_Query, type Props as ContentPTProps } from './content-pt/index.astro'
+import EstimatedReadingTime from '@repo/ui/EstimatedReadingTime.astro'
+
+export type ContentProps = ContentNavProps & {
+  content: ContentPTProps['value']
+}
+
+export const Content_Query = `
+  "content": {
+    ${ContentNav_Query}
+    ${ContentPT_Query}
+  },
+`
+
+const { headings, content } = Astro.props as ContentProps
+---
+
+<article class="content">
+  <ContentNav headings={headings} title="W tym dokumencie znajdziesz:" />
+  <section class="content-body">
+    <EstimatedReadingTime content={content} />
+    <ContentPT value={content} />
+  </section>
+</article>
+
+<style lang="scss">
+  :global(html) {
+    scroll-padding-top: 123px;
+  }
+  .content {
+    display: grid;
+    grid-template-columns: 1fr 2.66fr;
+    align-items: flex-start;
+    gap: clamp(3rem, calc(4vw / 0.48), 5rem) clamp(3rem, calc(3vw / 0.48), 7rem);
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    :global(.content-nav) {
+      position: sticky;
+      top: 89px;
+      max-height: calc(100vh - 89px);
+      overflow-y: auto;
+      bottom: 0;
+      border-right: 1px solid var(--primary-600, #042b2b);
+      padding-right: 1rem;
+    }
+    .content-body {
+      > {
+        :global(p),
+        :global(ul),
+        :global(ol) {
+          margin-bottom: clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+        }
+        :global(:nth-child(2)) {
+          margin-top: 0;
+        }
+        :global(:last-child) {
+          margin-bottom: 0;
+        }
+        :global(h2) {
+          font-size: var(--typography-heading-2xl, 2.25rem);
+          margin: clamp(4rem, calc(6vw / 0.48), 6rem) 0 clamp(1.5rem, calc(2vw / 0.48), 2rem);
+        }
+        :global(h3) {
+          font-size: var(--typography-body-2xl, 1.25rem);
+          border-bottom: 1px solid var(--neutral-gradient-100, #4a4a57);
+          padding-bottom: 1rem;
+          margin: clamp(2rem, calc(4vw / 0.48), 4rem) 0 clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+        }
+        :global(ul) {
+          margin: clamp(1.25rem, calc(2vw / 0.48), 2rem) 0;
+        }
+      }
+    }
+    @media (max-width: 69rem) {
+      max-width: 48rem;
+      margin: 0 auto;
+      grid-template-columns: 1fr;
+      :global(.content-nav) {
+        position: static;
+        border-right: none;
+        padding-right: 0;
+        max-height: none;
+      }
+    }
+  }
+</style>
