@@ -62,9 +62,7 @@ export const Listing_Query = `
     "listing": *[_type == 'CaseStudy_Collection'
       && language == $language
       && select(
-        defined($category) => count(categories[]->{
-          "matches": slug.current match ($category + "$")
-        }) > 0,
+        defined($category) => categories[]->slug.current match ($category + "$"),
         true
       )
     ] | order(_createdAt desc) [$PAGINATION_BEFORE...$PAGINATION_AFTER] {

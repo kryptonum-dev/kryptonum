@@ -45,7 +45,10 @@ export const Listing_Query = `
     },
     "totalPostsByCategory": count(*[_type == 'BlogPost_Collection'
       && language == $language
-      && select(defined($category) => category -> slug.current match $category + "$", true)
+      && select(
+        defined($category) => category -> slug.current match $category + "$",
+        true
+      )
     ]),
     "listing": *[_type == 'BlogPost_Collection'
       && language == $language
