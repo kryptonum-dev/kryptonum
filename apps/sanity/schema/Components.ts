@@ -30,6 +30,7 @@ import PersonIntroduction from "./components/PersonIntroduction";
 import PersonEmojisIntroduction from "./components/PersonEmojisIntroduction";
 import StatsHighlight from "./components/StatsHighlight";
 import TeamIntroduction from "./components/TeamIntroduction";
+import FullWidthImage from "./components/FullWidthImage";
 import CenteredMediaTextSection from "./components/CenteredMediaTextSection";
 import DetailedInfoAndStats from "./components/DetailedInfoAndStats";
 import CaseStudyShowcase from "./components/CaseStudyShowcase";
@@ -84,6 +85,7 @@ export default defineType({
     PersonEmojisIntroduction,
     StatsHighlight,
     TeamIntroduction,
+    FullWidthImage,
     CenteredMediaTextSection,
     DetailedInfoAndStats,
     CaseStudyShowcase,
