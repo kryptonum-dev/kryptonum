@@ -57,6 +57,7 @@ import PricingRange, { PricingRange_Query } from '@repo/shared/components/Pricin
 import ShowcaseProjectsExpand, {
   ShowcaseProjectsExpand_Query,
 } from '@repo/shared/components/ShowcaseProjectsExpand.astro'
+import ExpertProfiles, { ExpertProfiles_Query } from '@repo/shared/components/ExpertProfiles.astro'
 
 const components = {
   SimpleCtaSection,
@@ -106,6 +107,7 @@ const components = {
   Pricing,
   PricingRange,
   ShowcaseProjectsExpand,
+  ExpertProfiles,
 }
 
 type ComponentsMap = {
@@ -174,6 +176,7 @@ export const Components_Query = /* groq */ `
     ${Pricing_Query}
     ${PricingRange_Query}
     ${ShowcaseProjectsExpand_Query}
+    ${ExpertProfiles_Query}
   },
 `
 ---

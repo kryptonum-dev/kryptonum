@@ -1,0 +1,155 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+
+export const ExpertProfiles_Query = `
+  _type == "ExpertProfiles" => {
+    ${ImageDataQuery('icon')}
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    list[] {
+      ${ImageDataQuery('img')}
+      name,
+      position,
+      ${PortableTextQuery('description')}
+    }
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  icon?: ImageDataProps
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  list: Array<{
+    img: ImageDataProps
+    name: string
+    position: string
+    description: PortableTextValue
+  }>
+}
+
+const { index, sectionId, icon, heading, paragraph, list } = Astro.props
+
+const Heading = index === 0 ? 'h1' : 'h2'
+const Subheading = index === 0 ? 'h2' : 'h3'
+---
+
+<section class="ExpertProfiles" id={sectionId}>
+  <div class="header">
+    {
+      icon && (
+        <div class="icon">
+          <Image {...icon} sizes="24px" />
+        </div>
+      )
+    }
+    <PortableText value={heading} heading={Heading} class="heading" />
+    <PortableText value={paragraph} class="paragraph" />
+  </div>
+  <div class="experts-list">
+    {
+      list.map(({ img, name, position, description }) => (
+        <div class="expert-card">
+          <Image {...img} sizes="(max-width: 40rem) 37vw, (max-width: 62rem) 19rem, 25vw" class="img" />
+          <div>
+            <Subheading class="name">{name}</Subheading>
+            <p class="position">{position}</p>
+            <PortableText value={description} class="description" />
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style lang="scss">
+  .ExpertProfiles {
+    @mixin flex-item($columns, $gap) {
+      width: calc((100% - ($gap * ($columns - 1))) / $columns);
+    }
+    padding: clamp(4rem, calc(5vw / 0.48), 5rem) 0;
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+      max-width: 40rem;
+      margin: 0 auto clamp(2.25rem, calc(3vw / 0.48), 4rem);
+      .icon {
+        width: clamp(2.5rem, calc(4vw / 0.48), 4rem);
+        height: clamp(2.5rem, calc(4vw / 0.48), 4rem);
+        border-radius: 50%;
+        border: 1px solid var(--primary-500, #064040);
+        background: var(--background, #000103);
+        margin: 0 auto;
+        display: grid;
+        place-items: center;
+        img {
+          width: clamp(16px, calc(24vw / 7.68), 24px);
+          height: clamp(16px, calc(24vw / 7.68), 24px);
+          object-fit: contain;
+        }
+      }
+      .heading {
+        max-width: 30rem;
+        margin: 0 auto;
+        font-size: var(--typography-heading-l, 1.5rem);
+      }
+      .paragraph {
+        font-size: var(--typography-body-xl, 1rem);
+        color: var(--neutral-400, #c6cdcc);
+      }
+    }
+    .experts-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 100%;
+      gap: 1.5rem clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+      .expert-card {
+        @include flex-item(4, clamp(0.75rem, calc(1vw / 0.48), 1.25rem));
+        text-align: center;
+        .img {
+          border-radius: 0.125rem;
+          border: 1px solid var(--primary-500, #064040);
+          aspect-ratio: 19/24;
+        }
+        .name {
+          font-size: var(--typography-body-xl, 1rem);
+          margin-top: 0.75rem;
+        }
+        .position {
+          font-size: var(--typography-body-m, 0.875rem);
+          color: var(--neutral-400, #c6cdcc);
+        }
+        .description {
+          font-size: var(--typography-body-m, 0.875rem);
+          color: var(--neutral-400, #c6cdcc);
+          margin-top: clamp(0.75rem, calc(1vw / 0.48), 1.5rem);
+        }
+      }
+    }
+    @media (max-width: 62rem) {
+      max-width: 38rem;
+      margin: 0 auto;
+      .experts-list {
+        .expert-card {
+          @include flex-item(2, clamp(0.75rem, calc(1vw / 0.48), 1.25rem));
+        }
+      }
+    }
+    @media (max-width: 40rem) {
+      .experts-list {
+        .expert-card {
+          text-align: left;
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1.5fr 2.5fr;
+          gap: 1rem;
+        }
+      }
+    }
+  }
+</style>

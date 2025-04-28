@@ -46,6 +46,7 @@ import StagesAccordion from "./components/StagesAccordion";
 import Pricing from "./components/Pricing";
 import PricingRange from "./components/PricingRange";
 import ShowcaseProjectsExpand from "./components/ShowcaseProjectsExpand";
+import ExpertProfiles from "./components/ExpertProfiles";
 
 export default defineType({
   name: 'components',
@@ -99,6 +100,7 @@ export default defineType({
     Pricing,
     PricingRange,
     ShowcaseProjectsExpand,
+    ExpertProfiles,
   ],
   options: {
     insertMenu: {
