@@ -304,6 +304,9 @@ li {
   & > * {
     flex: 1 1 auto;
   }
+  @media (max-width: 31rem) {
+    width: 100%;
+  }
 }
 
 .gradient-thumbnail {
