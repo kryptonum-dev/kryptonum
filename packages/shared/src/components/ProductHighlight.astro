@@ -1,0 +1,107 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
+
+export const ProductHighlight_Query = `
+  _type == "ProductHighlight" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    ${ButtonDataQuery('cta')}
+    hint,
+    ${ImageDataQuery('img')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  cta: ButtonDataProps
+  hint?: string
+  img: ImageDataProps
+}
+
+const { index, sectionId, heading, paragraph, cta, hint, img } = Astro.props
+---
+
+<section class="ProductHighlight" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h1" />
+    <PortableText value={paragraph} class="paragraph" />
+    <Button {...cta} className="cta" />
+    {hint && <p class="cta-hint">{hint}</p>}
+  </header>
+  <div class="image-wrapper">
+    <div class="circle"></div>
+    <div class="pattern"></div>
+    <Image {...img} sizes="(min-width: 1024px) 50vw, 100vw" class="product-image" priority={index === 0} />
+  </div>
+</section>
+
+<style lang="scss">
+  .ProductHighlight {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    align-items: center;
+    header {
+      max-width: 34rem;
+      padding: clamp(3rem, calc(4vw / 0.48), 8rem) 0;
+      .paragraph {
+        margin: clamp(1rem, calc(1.5vw / 0.48), 1.5rem) 0 clamp(2rem, calc(3.5vw / 0.48), 3.5rem);
+      }
+      .cta-hint {
+        margin-top: 0.75rem;
+        font-size: var(--typography-body-s, 0.75rem);
+        color: var(--neutral-400, #c6cdcc);
+      }
+    }
+    .image-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .circle {
+        position: absolute;
+        height: 100%;
+        aspect-ratio: 1/1;
+        background:
+          linear-gradient(var(--neutral-900, #000103), var(--neutral-900, #000103)) padding-box,
+          linear-gradient(-25deg, rgba(6, 64, 64, 0) 42%, #064040, #158282) border-box;
+        border: 1px solid rgba(255, 255, 255, 0);
+        border-radius: 50%;
+        z-index: -1;
+        transform: scale(1.2);
+        transform-origin: top;
+        &::before {
+          content: '';
+          position: absolute;
+          width: 72%;
+          aspect-ratio: 1/1;
+          top: 0;
+          left: 50%;
+          transform: translate3d(-50%, 0, 0);
+          border-radius: 50%;
+          background-color: var(--primary-500, #064040);
+          filter: blur(127px);
+        }
+      }
+      .pattern {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translate(-50%, 25%);
+        width: 30%;
+        aspect-ratio: 1/1.3;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='none' viewBox='0 0 30 30'%3E%3Cg clip-path='url(%23clip0_7831_69874)'%3E%3Cpath fill='url(%23paint0_linear_7831_69874)' fill-rule='evenodd' d='m0 28.942 2.123-2.122 1.057 1.058L1.057 30H0v-1.058ZM0 1.05l2.123 2.122L3.18 2.115 1.057 0H0v1.058-.008ZM28.942 30l-2.122-2.122 1.058-1.058L30 28.942V30h-1.058ZM30 1.058 27.878 3.18 26.82 2.122 28.942 0H30v1.058ZM15 13.95l2.122-2.122 1.058 1.057L16.058 15l2.122 2.122-1.058 1.058L15 16.058l-2.123 2.122-1.057-1.058L13.943 15l-2.123-2.123 1.057-1.057L15 13.943v.007Z' clip-rule='evenodd'/%3E%3C/g%3E%3Cdefs%3E%3ClinearGradient id='paint0_linear_7831_69874' x1='29.438' x2='-1.784' y1='0' y2='1.989' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%232DD282'/%3E%3Cstop offset='1' stop-color='%2390F4E8'/%3E%3C/linearGradient%3E%3CclipPath id='clip0_7831_69874'%3E%3Cpath fill='%23fff' d='M0 0h30v30H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E");
+        mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0) 62%);
+      }
+    }
+    @media (max-width: 73rem) {
+      grid-template-columns: 1fr;
+      max-width: 38rem;
+      margin: 0 auto;
+    }
+  }
+</style>

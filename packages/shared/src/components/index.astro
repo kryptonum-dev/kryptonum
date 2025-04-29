@@ -60,6 +60,7 @@ import ShowcaseProjectsExpand, {
 import ExpertProfiles, { ExpertProfiles_Query } from '@repo/shared/components/ExpertProfiles.astro'
 import FullWidthImage, { FullWidthImage_Query } from '@repo/shared/components/FullWidthImage.astro'
 import GridIconsList, { GridIconsList_Query } from '@repo/shared/components/GridIconsList.astro'
+import ProductHighlight, { ProductHighlight_Query } from '@repo/shared/components/ProductHighlight.astro'
 
 const components = {
   SimpleCtaSection,
@@ -112,6 +113,7 @@ const components = {
   ExpertProfiles,
   FullWidthImage,
   GridIconsList,
+  ProductHighlight, 
 }
 
 type ComponentsMap = {
@@ -183,6 +185,7 @@ export const Components_Query = /* groq */ `
     ${ExpertProfiles_Query}
     ${FullWidthImage_Query}
     ${GridIconsList_Query}
+    ${ProductHighlight_Query}
   },
 `
 ---

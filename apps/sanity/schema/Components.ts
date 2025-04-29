@@ -49,6 +49,7 @@ import PricingRange from "./components/PricingRange";
 import ShowcaseProjectsExpand from "./components/ShowcaseProjectsExpand";
 import ExpertProfiles from "./components/ExpertProfiles";
 import GridIconsList from "./components/GridIconsList";
+import ProductHighlight from "./components/ProductHighlight";
 
 export default defineType({
   name: 'components',
@@ -105,6 +106,7 @@ export default defineType({
     ShowcaseProjectsExpand,
     ExpertProfiles,
     GridIconsList,
+    ProductHighlight,
   ],
   options: {
     insertMenu: {
