@@ -2,6 +2,7 @@
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
+import RatingBox from '@repo/ui/RatingBox.astro'
 
 export const ProductHighlight_Query = `
   _type == "ProductHighlight" => {
@@ -10,6 +11,11 @@ export const ProductHighlight_Query = `
     ${ButtonDataQuery('cta')}
     hint,
     ${ImageDataQuery('img')}
+    "rating": *[_type == "ShopProduct_Collection" && slug.current == $slug][0].rating {
+      rating,
+      text,
+      ${ImageDataQuery('avatars[]')}
+    }
   },
 `
 
@@ -21,9 +27,14 @@ type Props = {
   cta: ButtonDataProps
   hint?: string
   img: ImageDataProps
+  rating: {
+    rating: number
+    text: string
+    avatars: ImageDataProps[]
+  }
 }
 
-const { index, sectionId, heading, paragraph, cta, hint, img } = Astro.props
+const { index, sectionId, heading, paragraph, cta, hint, img, rating } = Astro.props
 ---
 
 <section class="ProductHighlight" id={sectionId}>
@@ -36,6 +47,7 @@ const { index, sectionId, heading, paragraph, cta, hint, img } = Astro.props
   <div class="image-wrapper">
     <div class="circle"></div>
     <div class="pattern"></div>
+    <RatingBox {...rating} class="rating-box" />
     <Image {...img} sizes="(min-width: 1024px) 50vw, 100vw" class="product-image" priority={index === 0} />
   </div>
 </section>
@@ -71,7 +83,7 @@ const { index, sectionId, heading, paragraph, cta, hint, img } = Astro.props
           linear-gradient(-25deg, rgba(6, 64, 64, 0) 42%, #064040, #158282) border-box;
         border: 1px solid rgba(255, 255, 255, 0);
         border-radius: 50%;
-        z-index: -1;
+        z-index: -2;
         transform: scale(1.2);
         transform-origin: top;
         &::before {
@@ -101,9 +113,10 @@ const { index, sectionId, heading, paragraph, cta, hint, img } = Astro.props
         position: absolute;
         left: 50%;
         bottom: 0;
-        transform: translate(-50%, 25%);
+        transform: translate(-50%, 10%);
         width: 30%;
         aspect-ratio: 1/1.3;
+        z-index: -1;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='none' viewBox='0 0 30 30'%3E%3Cg clip-path='url(%23clip0_7831_69874)'%3E%3Cpath fill='url(%23paint0_linear_7831_69874)' fill-rule='evenodd' d='m0 28.942 2.123-2.122 1.057 1.058L1.057 30H0v-1.058ZM0 1.05l2.123 2.122L3.18 2.115 1.057 0H0v1.058-.008ZM28.942 30l-2.122-2.122 1.058-1.058L30 28.942V30h-1.058ZM30 1.058 27.878 3.18 26.82 2.122 28.942 0H30v1.058ZM15 13.95l2.122-2.122 1.058 1.057L16.058 15l2.122 2.122-1.058 1.058L15 16.058l-2.123 2.122-1.057-1.058L13.943 15l-2.123-2.123 1.057-1.057L15 13.943v.007Z' clip-rule='evenodd'/%3E%3C/g%3E%3Cdefs%3E%3ClinearGradient id='paint0_linear_7831_69874' x1='29.438' x2='-1.784' y1='0' y2='1.989' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%232DD282'/%3E%3Cstop offset='1' stop-color='%2390F4E8'/%3E%3C/linearGradient%3E%3CclipPath id='clip0_7831_69874'%3E%3Cpath fill='%23fff' d='M0 0h30v30H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E");
         mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0) 62%);
         animation: ProductHighlight-pattern 3s var(--easing) both;
@@ -116,11 +129,38 @@ const { index, sectionId, heading, paragraph, cta, hint, img } = Astro.props
           }
         }
       }
+      .rating-box {
+        width: max-content;
+        max-width: 100%;
+        position: absolute;
+        bottom: 10%;
+        left: 50%;
+        transform: translate(-50%, 0);
+        animation: ProductHighlight-rating 1.3s var(--easing) both;
+        @keyframes ProductHighlight-rating {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, 34px);
+          }
+          100% {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+        }
+      }
     }
     @media (max-width: 73rem) {
       grid-template-columns: 1fr;
       max-width: 38rem;
       margin: 0 auto;
+    }
+    @media (max-width: 40rem) {
+      .image-wrapper {
+        margin-bottom: 5rem;
+        .rating-box {
+          bottom: -5rem;
+        }
+      }
     }
   }
 </style>
