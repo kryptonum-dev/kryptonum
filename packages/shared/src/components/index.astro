@@ -43,6 +43,9 @@ import CenteredMediaTextSection, {
 import DetailedInfoAndStats, { DetailedInfoAndStats_Query } from '@repo/shared/components/DetailedInfoAndStats.astro'
 import CaseStudyShowcase, { CaseStudyShowcase_Query } from '@repo/shared/components/CaseStudyShowcase.astro'
 import MediaShowcase, { MediaShowcase_Query } from '@repo/shared/components/MediaShowcase.astro'
+import MediaIrregularShowcase, {
+  MediaIrregularShowcase_Query,
+} from '@repo/shared/components/MediaIrregularShowcase.astro'
 import CompareTable, { CompareTable_Query } from '@repo/shared/components/CompareTable.astro'
 import Timeline, { Timeline_Query } from '@repo/shared/components/Timeline.astro'
 import NetworkedShowcase, { NetworkedShowcase_Query } from '@repo/shared/components/NetworkedShowcase.astro'
@@ -98,6 +101,7 @@ const components = {
   DetailedInfoAndStats,
   CaseStudyShowcase,
   MediaShowcase,
+  MediaIrregularShowcase,
   CompareTable,
   Timeline,
   NetworkedShowcase,
@@ -113,7 +117,7 @@ const components = {
   ExpertProfiles,
   FullWidthImage,
   GridIconsList,
-  ProductHighlight, 
+  ProductHighlight,
 }
 
 type ComponentsMap = {
@@ -170,6 +174,7 @@ export const Components_Query = /* groq */ `
     ${DetailedInfoAndStats_Query}
     ${CaseStudyShowcase_Query}
     ${MediaShowcase_Query}
+    ${MediaIrregularShowcase_Query}
     ${CompareTable_Query}
     ${Timeline_Query}
     ${NetworkedShowcase_Query}
