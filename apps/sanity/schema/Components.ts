@@ -51,6 +51,7 @@ import ExpertProfiles from "./components/ExpertProfiles";
 import GridIconsList from "./components/GridIconsList";
 import ProductHighlight from "./components/ProductHighlight";
 import MediaIrregularShowcase from "./components/MediaIrregularShowcase";
+import FeaturedProducts from "./components/FeaturedProducts";
 
 export default defineType({
   name: 'components',
@@ -109,6 +110,7 @@ export default defineType({
     GridIconsList,
     ProductHighlight,
     MediaIrregularShowcase,
+    FeaturedProducts,
   ],
   options: {
     insertMenu: {

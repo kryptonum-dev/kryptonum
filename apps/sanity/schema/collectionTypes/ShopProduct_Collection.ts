@@ -19,6 +19,19 @@ export default defineType({
     }),
     ...defineSlugForDocument({ prefixes: { en: '/en/', pl: '/pl/' } }),
     defineField({
+      name: 'description',
+      type: 'text',
+      rows: 5,
+      title: 'Description',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
+      name: 'thumbnail',
+      type: 'image',
+      title: 'Thumbnail',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'purchase_url',
       type: 'url',
       title: 'Purchase URL',
@@ -55,6 +68,13 @@ export default defineType({
               title: 'Avatar',
             }),
           ],
+          validation: Rule => Rule.required().max(3),
+        }),
+        defineField({
+          name: 'download_count',
+          type: 'string',
+          title: 'Download count',
+          description: 'Just a number, no unit. It will be displayed as "X downloads", where X is the value that you will provide. Recommended to use number with + sign, like: „500+”',
           validation: Rule => Rule.required(),
         }),
       ],
