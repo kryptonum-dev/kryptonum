@@ -1,0 +1,272 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import CountUp from '@repo/ui/CountUp.astro'
+
+export const IrregularBlocksWithStats_Query = `
+  _type == "IrregularBlocksWithStats" => {
+    ${PortableTextQuery('heading')}
+    list[] {
+      ${ImageDataQuery('icon')}
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+    },
+    ${ImageDataQuery('img')}
+    stats[] {
+      value,
+      description,
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  list: Array<{
+    icon: ImageDataProps
+    heading: PortableTextValue
+    paragraph: PortableTextValue
+  }>
+  img: ImageDataProps
+  stats: Array<{
+    value: string
+    description: string
+  }>
+}
+
+const { index, sectionId, heading, list, img, stats } = Astro.props
+---
+
+<section class="IrregularBlocksWithStats sec-wo-margin" id={sectionId}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="31.69 48.88 141.56 110.99" class="blob" aria-hidden="true">
+    <path
+      fill="#49e1b1"
+      d="M154.2 52.7c14.4 7.6 23.4 27.4 16.9 40.7-6.6 13.3-28.7 20.1-43.2 33-14.4 12.9-21.2 32.1-29.2 33.4-8 1.3-17.4-15.2-32.3-28.2-14.9-12.9-35.3-22.3-34.7-31 .6-8.8 22.2-16.9 37.1-24.5 14.9-7.5 23-14.3 37-20.2 14.1-5.8 33.9-10.7 48.4-3.2Z">
+    </path>
+  </svg>
+  <div class="max-width">
+    <header>
+      <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h1" />
+    </header>
+    <ul class="list">
+      {
+        list.map(({ icon, heading, paragraph }, listIndex) => (
+          <li class="item">
+            <div class="icon" aria-hidden="true">
+              <div class="pattern">
+                <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none">
+                  <rect
+                    x="-3.25"
+                    y="-2.76709"
+                    width="47.5"
+                    height="47.5"
+                    rx="23.75"
+                    stroke="#064040"
+                    stroke-width="0.5"
+                  />
+                  <circle cx="21" cy="21.4829" r="15.25" stroke="#064040" stroke-width="0.5" />
+                  <rect x="-3.5" y="13.3149" width="16.3333" height="8.16667" stroke="#064040" stroke-width="0.5" />
+                  <rect x="-3.5" y="21.4829" width="16.3333" height="8.16667" stroke="#064040" stroke-width="0.5" />
+                  <rect x="29.1641" y="13.3149" width="16.3333" height="8.16667" stroke="#064040" stroke-width="0.5" />
+                  <rect x="29.1641" y="21.4829" width="16.3333" height="8.16667" stroke="#064040" stroke-width="0.5" />
+                  <rect x="12.8359" y="-3.01709" width="8.16667" height="16.3333" stroke="#064040" stroke-width="0.5" />
+                  <rect x="21" y="-3.01709" width="8.16667" height="16.3333" stroke="#064040" stroke-width="0.5" />
+                  <rect x="12.8359" y="29.6509" width="8.16667" height="16.3333" stroke="#064040" stroke-width="0.5" />
+                  <rect x="21" y="29.6509" width="8.16667" height="16.3333" stroke="#064040" stroke-width="0.5" />
+                  <rect x="12.8359" y="21.4829" width="8.16667" height="8.16667" stroke="#064040" stroke-width="0.5" />
+                  <rect x="21" y="21.4829" width="8.16667" height="8.16667" stroke="#064040" stroke-width="0.5" />
+                  <rect x="21" y="13.3149" width="8.16667" height="8.16667" stroke="#064040" stroke-width="0.5" />
+                  <rect x="12.8359" y="13.3149" width="8.16667" height="8.16667" stroke="#064040" stroke-width="0.5" />
+                  <rect x="-3.5" y="29.6509" width="16.3333" height="16.3333" stroke="#064040" stroke-width="0.5" />
+                  <rect x="29.1641" y="29.6509" width="16.3333" height="16.3333" stroke="#064040" stroke-width="0.5" />
+                  <rect x="29.1641" y="-3.01709" width="16.3333" height="16.3333" stroke="#064040" stroke-width="0.5" />
+                  <rect x="-3.5" y="-3.01709" width="16.3333" height="16.3333" stroke="#064040" stroke-width="0.5" />
+                </svg>
+              </div>
+              <Image {...icon} sizes="32px" loading={index === 0 ? 'eager' : 'lazy'} />
+            </div>
+            <PortableText value={heading} heading={index === 0 ? 'h2' : 'h3'} class="heading" />
+            <PortableText value={paragraph} class="paragraph" />
+          </li>
+        ))
+      }
+      <li class="item-image">
+        <Image {...img} sizes="(max-width: 33rem) 100vw, (min-width: 33rem) 38rem, 33vw" priority={index === 0} />
+      </li>
+    </ul>
+    <ul class="stats">
+      {
+        stats.map(({ value, description }) => (
+          <li class="item">
+            <CountUp class="value">{value}</CountUp>
+            <p class="description">{description}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style lang="scss">
+  .IrregularBlocksWithStats {
+    background: linear-gradient(180deg, #0a2827, rgba(10, 40, 39, 0.6), rgba(10, 40, 39, 0));
+    padding: clamp(3rem, calc(6vw / 0.48), 6rem) 0;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    .blob {
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translate(25%, -50%) translateZ(0);
+      width: 48rem;
+      aspect-ratio: 1 / 1;
+      max-width: 62%;
+      filter: blur(78px);
+      z-index: -1;
+    }
+    header {
+      max-width: 38rem;
+      margin: 0 auto 5rem;
+      .heading {
+        font-size: var(--typography-heading-2xl, 2.25rem);
+      }
+    }
+    .list {
+      max-width: 64rem;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      .item {
+        padding: clamp(1rem, calc(1.75vw / 0.48), 2.5rem);
+        border-radius: 0.75rem;
+        border: 1px solid var(--primary-500, #064040);
+        width: calc(100% / 3);
+        margin: -0.5px;
+        &:nth-child(1) {
+          order: -2;
+        }
+        &:nth-child(2) {
+          order: 0;
+        }
+        .icon {
+          width: 48px;
+          height: 48px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 0.25rem;
+          border: 0.5px solid var(--primary-500, #064040);
+          background: var(--primary-700, #021d1d);
+          margin-bottom: 8rem;
+          position: relative;
+          .pattern {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.125rem;
+            &::before {
+              content: '';
+              position: absolute;
+              left: 50%;
+              top: 0;
+              transform: translate(-50%, -50%) translateZ(0);
+              width: 100%;
+              height: 100%;
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+              mix-blend-mode: plus-lighter;
+              filter: blur(16px);
+            }
+          }
+          img {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+          }
+          &::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translate(-50%, 0) translateZ(0);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+            mix-blend-mode: plus-lighter;
+            filter: blur(20px);
+            z-index: -1;
+          }
+        }
+        .heading {
+          font-size: var(--typography-body-2xl, 1.25rem);
+          margin-bottom: 0.5rem;
+        }
+        .paragraph {
+          font-size: var(--typography-body-xl, 1rem);
+          color: var(--neutral-400, #c6cdcc);
+        }
+      }
+      .item-image {
+        order: -1;
+        align-self: center;
+        width: calc((100% / 3) + 5rem);
+        margin: 0 -2.5rem;
+        z-index: 2;
+      }
+      @media (max-width: 56rem) {
+        max-width: 38rem;
+        margin: 0 auto;
+        .item {
+          width: 50%;
+        }
+        .item-image {
+          width: 100%;
+          margin: 0;
+          order: -3;
+        }
+      }
+      @media (max-width: 33rem) {
+        .item {
+          width: 100%;
+          .icon {
+            margin-bottom: 1.5rem;
+          }
+        }
+      }
+    }
+    .stats {
+      max-width: calc(64rem / 3 * 2);
+      margin: clamp(1.75rem, calc(3vw / 0.48), 3rem) auto 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 2rem;
+      .item {
+        width: calc(50% - 1rem);
+        .value {
+          :global(span.number) {
+            font-size: 3rem;
+            line-height: 1.4;
+          }
+        }
+        .description {
+          font-size: var(--typography-body-xl, 1rem);
+          color: var(--neutral-400, #c6cdcc);
+        }
+      }
+      @media (max-width: 33rem) {
+        .item {
+          width: 100%;
+          .icon {
+            margin-bottom: 1.5rem;
+          }
+        }
+      }
+    }
+  }
+</style>

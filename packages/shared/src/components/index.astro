@@ -65,6 +65,9 @@ import FullWidthImage, { FullWidthImage_Query } from '@repo/shared/components/Fu
 import GridIconsList, { GridIconsList_Query } from '@repo/shared/components/GridIconsList.astro'
 import ProductHighlight, { ProductHighlight_Query } from '@repo/shared/components/ProductHighlight.astro'
 import FeaturedProducts, { FeaturedProducts_Query } from '@repo/shared/components/FeaturedProducts.astro'
+import IrregularBlocksWithStats, {
+  IrregularBlocksWithStats_Query,
+} from '@repo/shared/components/IrregularBlocksWithStats.astro'
 
 const components = {
   SimpleCtaSection,
@@ -120,6 +123,7 @@ const components = {
   GridIconsList,
   ProductHighlight,
   FeaturedProducts,
+  IrregularBlocksWithStats,
 }
 
 type ComponentsMap = {
@@ -194,6 +198,7 @@ export const Components_Query = /* groq */ `
     ${GridIconsList_Query}
     ${ProductHighlight_Query}
     ${FeaturedProducts_Query}
+    ${IrregularBlocksWithStats_Query}
   },
 `
 ---

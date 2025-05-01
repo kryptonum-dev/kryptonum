@@ -70,7 +70,7 @@ const { index, sectionId, heading, medias } = Astro.props
       width: calc((100% - ($gap * ($columns - 1))) / $columns);
     }
     position: relative;
-    padding: clamp(2rem, calc(3vw / 0.48), 3rem) 0;
+    padding: clamp(2rem, calc(3vw / 0.48), 3rem) 0 clamp(4rem, calc(5vw / 0.48), 8rem);
     z-index: 2;
     .background {
       margin: calc(clamp(2rem, calc(3vw / 0.48), 3rem) * -1) calc(var(--page-margin) * -1) 0;
