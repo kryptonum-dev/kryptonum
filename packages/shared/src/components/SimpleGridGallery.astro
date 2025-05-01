@@ -1,0 +1,376 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import Video, { VideoDataQuery, type VideoDataProps } from '@repo/ui/Video.astro'
+import { type Language } from '@repo/shared/languages'
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    sliderPagination: (index: number) => `Przejdź do ${index + 1} elementu`,
+    sliderButtonPrev: 'Poprzedni element',
+    sliderButtonNext: 'Następny element',
+  },
+  en: {
+    sliderPagination: (index: number) => `Go to ${index + 1} element`,
+    sliderButtonPrev: 'Previous element',
+    sliderButtonNext: 'Next element',
+  },
+} as const
+const t = translations[lang]
+
+export const SimpleGridGallery_Query = `
+  _type == "SimpleGridGallery" => {
+    title,
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    list[] {
+      _type,
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+      media[] {
+        _type,
+        _type == "image" => ${ImageDataQuery('@')}
+        _type == "video" => ${VideoDataQuery('@')}
+      }
+    },
+  },
+`
+
+type MediaItem = { _type: 'image'; image: ImageDataProps } | (VideoDataProps & { _type: 'video' })
+
+type Props = {
+  index: number
+  sectionId?: string
+  title: string
+  heading: PortableTextValue
+  paragraph?: PortableTextValue
+  list: {
+    _type: string
+    heading: PortableTextValue
+    paragraph: PortableTextValue
+    media: MediaItem[]
+  }[]
+}
+
+const { index, sectionId, title, heading, paragraph, list } = Astro.props
+---
+
+<section class="SimpleGridGallery" id={sectionId}>
+  <header>
+    <span class="title">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" fill="none" viewBox="0 0 14 15" aria-hidden="true">
+        <g stroke-width="1.25" clip-path="url(#clip0_9984_74131)">
+          <circle cx="7" cy="7.284" r="5.833" stroke="url(#paint0_linear_9984_74131)"></circle>
+          <path
+            stroke="url(#paint1_linear_9984_74131)"
+            stroke-linecap="round"
+            d="M8.75 7.283H7m0 0H5.25m1.75 0v-1.75m0 1.75v1.75">
+          </path>
+        </g>
+        <defs>
+          <linearGradient
+            id="paint0_linear_9984_74131"
+            x1="12.614"
+            x2=".473"
+            y1="1.45"
+            y2="2.224"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient><linearGradient
+            id="paint1_linear_9984_74131"
+            x1="8.684"
+            x2="5.042"
+            y1="5.533"
+            y2="5.765"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient><clipPath id="clip0_9984_74131"><path fill="#fff" d="M0 .283h14v14H0z"></path></clipPath>
+        </defs>
+      </svg>
+      {title}
+    </span>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+  </header>
+  <ul class="gallery">
+    {
+      list.map((item, itemIndex) => (
+        <li class="gallery-item">
+          <div class="media-wrapper">
+            {item.media.length === 1 ? (
+              <div class="media">
+                {item.media[0]._type === 'image' ? (
+                  <Image
+                    {...(item.media[0] as unknown as ImageDataProps)}
+                    sizes="(max-width: 35rem) 100vw, (max-width: 72rem) 50vw, 33vw"
+                    priority={index === 0 && itemIndex === 0}
+                  />
+                ) : (
+                  <Video {...item.media[0]} class="video" />
+                )}
+              </div>
+            ) : (
+              <div class="embla" data-carousel={`gallery-${itemIndex}`}>
+                <div class="embla__viewport">
+                  <div class="embla__container">
+                    {item.media.map((mediaItem, mediaIndex) => (
+                      <div class="embla__slide">
+                        <div class="media">
+                          {mediaItem._type === 'image' ? (
+                            <Image
+                              {...(mediaItem as unknown as ImageDataProps)}
+                              sizes="(max-width: 35rem) 100vw, (max-width: 72rem) 50vw, 33vw"
+                              priority={index === 0 && itemIndex === 0 && mediaIndex === 0}
+                            />
+                          ) : (
+                            <Video {...mediaItem} class="video" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  class="embla__button embla__button--prev"
+                  data-carousel-prev={`gallery-${itemIndex}`}
+                  aria-label={t.sliderButtonPrev}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none" viewBox="0 0 16 17">
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M13.333 8.361H2.667m0 0 4-4m-4 4 4 4"
+                    />
+                  </svg>
+                </button>
+                <div class="embla__dots" aria-hidden="true">
+                  {item.media.map((_, dotIndex) => (
+                    <button
+                      class="embla__dot"
+                      data-carousel-for={`gallery-${itemIndex}`}
+                      aria-label={t.sliderPagination(dotIndex)}
+                    />
+                  ))}
+                </div>
+                <button
+                  class="embla__button embla__button--next"
+                  data-carousel-next={`gallery-${itemIndex}`}
+                  aria-label={t.sliderButtonNext}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none" viewBox="0 0 16 17">
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M2.667 8.361h10.666m0 0-4-4m4 4-4 4"
+                    />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+          <PortableText value={item.heading} heading={index === 0 ? 'h2' : 'h3'} class="item-heading" />
+          <PortableText value={item.paragraph} class="item-paragraph" />
+        </li>
+      ))
+    }
+  </ul>
+  {paragraph && <PortableText value={paragraph} class="paragraph" />}
+</section>
+
+<style lang="scss">
+  .SimpleGridGallery {
+    padding: clamp(3rem, calc(5vw / 0.48), 6rem) 0;
+    header {
+      max-width: 34rem;
+      margin: 0 auto clamp(1.5rem, calc(2vw / 0.48), 2.5rem);
+      text-align: center;
+      .title {
+        display: inline-grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.5rem;
+        align-items: center;
+        background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 1.25rem;
+      .gallery-item {
+        .media-wrapper {
+          border-radius: 0.25rem;
+          border: 1px solid var(--primary-500, #064040);
+          overflow: hidden;
+          aspect-ratio: 3/2;
+          background-color: var(--primary-900, #001414);
+          .media {
+            width: 100%;
+            height: 100%;
+            :global(img),
+            :global(.video) {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+        }
+        .item-heading {
+          font-size: var(--typography-body-xl, 1rem);
+          margin: 0.75rem 0 0.25rem;
+        }
+        .item-paragraph {
+          font-size: var(--typography-body-m, 0.875rem);
+          color: var(--neutral-400, #c6cdcc);
+        }
+      }
+      @media (max-width: 72rem) {
+        grid-template-columns: 1fr 1fr;
+      }
+      @media (max-width: 35rem) {
+        grid-template-columns: 1fr;
+        .gallery-item {
+          .media-wrapper {
+            aspect-ratio: unset;
+          }
+        }
+      }
+    }
+    .paragraph {
+      max-width: 26rem;
+      margin: clamp(3rem, calc(5vw / 0.48), 5rem) auto 0;
+      text-align: center;
+      color: var(--neutral-400, #c6cdcc);
+    }
+    .embla {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      .embla__viewport {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+      }
+      .embla__container {
+        display: flex;
+        height: 100%;
+      }
+      .embla__slide {
+        flex: 0 0 100%;
+        min-width: 0;
+        position: relative;
+      }
+      .embla__dots {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        bottom: 0.75rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: fit-content;
+        gap: 0.5rem;
+        z-index: 1;
+        border-radius: 3rem;
+        padding: 0.25rem;
+        background-color: rgba(0, 1, 3, 0.38);
+        backdrop-filter: blur(3px);
+        .embla__dot {
+          width: 0.375rem;
+          height: 0.375rem;
+          border-radius: 50%;
+          background-color: var(--neutral-500, #75758a);
+          position: relative;
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+            transition: opacity 500ms var(--easing);
+            opacity: 0;
+          }
+          &[data-active='true'] {
+            &::before {
+              opacity: 1;
+            }
+          }
+        }
+      }
+      .embla__button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 50%;
+        background: rgba(0, 1, 3, 0.38);
+        backdrop-filter: blur(3px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        color: var(--neutral-400, #c6cdcc);
+        transition:
+          color 500ms var(--easing),
+          opacity 500ms var(--easing);
+        opacity: 0.62;
+        &:hover {
+          color: var(--neutral-200, #f0f7f7);
+          opacity: 1;
+        }
+        &--prev {
+          left: 0.5rem;
+        }
+        &--next {
+          right: 0.5rem;
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  import EmblaCarousel from 'embla-carousel'
+
+  const section = document.querySelector<HTMLElement>('.SimpleGridGallery')!
+  const carousels = section.querySelectorAll<HTMLElement>('[data-carousel]')
+
+  carousels.forEach((carousel) => {
+    const carouselId = carousel.dataset.carousel
+    const viewport = carousel.querySelector<HTMLElement>('.embla__viewport')!
+
+    const embla = EmblaCarousel(viewport, {
+      loop: true,
+      dragFree: false,
+    })
+
+    const dots = carousel.querySelectorAll<HTMLElement>(`[data-carousel-for="${carouselId}"]`)
+
+    if (dots.length) {
+      const setActiveDot = () => {
+        const index = embla.selectedScrollSnap()
+        dots.forEach((dot, i) => {
+          dot.dataset.active = i === index ? 'true' : 'false'
+        })
+      }
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          embla.scrollTo(index)
+        })
+      })
+      embla.on('select', setActiveDot)
+      embla.on('init', setActiveDot)
+    }
+
+    const prevButton = carousel.querySelector<HTMLElement>(`[data-carousel-prev="${carouselId}"]`)
+    const nextButton = carousel.querySelector<HTMLElement>(`[data-carousel-next="${carouselId}"]`)
+    if (prevButton) prevButton.addEventListener('click', () => embla.scrollPrev())
+    if (nextButton) nextButton.addEventListener('click', () => embla.scrollNext())
+  })
+</script>

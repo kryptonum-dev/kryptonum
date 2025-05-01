@@ -101,7 +101,7 @@ const t = translations[lang]
   import { showToast } from '@repo/ui/Toast/index.ts'
 
   document.querySelectorAll('.CopyToClipboard').forEach((element) => {
-    const successMessage = element.getAttribute('data-success-message')
+    const successMessage = element.getAttribute('data-success-message')!
     element.addEventListener('click', () => {
       const copyText = element.getAttribute('data-copy-text')
       if (copyText) {

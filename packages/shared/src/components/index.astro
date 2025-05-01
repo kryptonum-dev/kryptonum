@@ -69,6 +69,7 @@ import IrregularBlocksWithStats, {
   IrregularBlocksWithStats_Query,
 } from '@repo/shared/components/IrregularBlocksWithStats.astro'
 import ImageListAndMarquee, { ImageListAndMarquee_Query } from '@repo/shared/components/ImageListAndMarquee.astro'
+import SimpleGridGallery, { SimpleGridGallery_Query } from '@repo/shared/components/SimpleGridGallery.astro'
 
 const components = {
   SimpleCtaSection,
@@ -126,6 +127,7 @@ const components = {
   FeaturedProducts,
   IrregularBlocksWithStats,
   ImageListAndMarquee,
+  SimpleGridGallery,
 }
 
 type ComponentsMap = {
@@ -202,6 +204,7 @@ export const Components_Query = /* groq */ `
     ${FeaturedProducts_Query}
     ${IrregularBlocksWithStats_Query}
     ${ImageListAndMarquee_Query}
+    ${SimpleGridGallery_Query}
   },
 `
 ---
