@@ -53,6 +53,7 @@ import ProductHighlight from "./components/ProductHighlight";
 import MediaIrregularShowcase from "./components/MediaIrregularShowcase";
 import FeaturedProducts from "./components/FeaturedProducts";
 import IrregularBlocksWithStats from "./components/IrregularBlocksWithStats";
+import ImageListAndMarquee from "./components/ImageListAndMarquee";
 
 export default defineType({
   name: 'components',
@@ -113,6 +114,7 @@ export default defineType({
     MediaIrregularShowcase,
     FeaturedProducts,
     IrregularBlocksWithStats,
+    ImageListAndMarquee,
   ],
   options: {
     insertMenu: {

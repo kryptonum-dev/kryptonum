@@ -68,6 +68,7 @@ import FeaturedProducts, { FeaturedProducts_Query } from '@repo/shared/component
 import IrregularBlocksWithStats, {
   IrregularBlocksWithStats_Query,
 } from '@repo/shared/components/IrregularBlocksWithStats.astro'
+import ImageListAndMarquee, { ImageListAndMarquee_Query } from '@repo/shared/components/ImageListAndMarquee.astro'
 
 const components = {
   SimpleCtaSection,
@@ -124,6 +125,7 @@ const components = {
   ProductHighlight,
   FeaturedProducts,
   IrregularBlocksWithStats,
+  ImageListAndMarquee,
 }
 
 type ComponentsMap = {
@@ -199,6 +201,7 @@ export const Components_Query = /* groq */ `
     ${ProductHighlight_Query}
     ${FeaturedProducts_Query}
     ${IrregularBlocksWithStats_Query}
+    ${ImageListAndMarquee_Query}
   },
 `
 ---
