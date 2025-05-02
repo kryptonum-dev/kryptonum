@@ -74,7 +74,77 @@ export default defineType({
           name: 'download_count',
           type: 'string',
           title: 'Download count',
-          description: 'Just a number, no unit. It will be displayed as "X downloads", where X is the value that you will provide. Recommended to use number with + sign, like: „500+”',
+          description: 'Just a number, no unit. It will be displayed as "X downloads", where X is the value that you will provide. Recommended to use number with + sign, like: „500+"',
+          validation: Rule => Rule.required(),
+        }),
+      ],
+    }),
+    defineField({
+      name: 'nav',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'links',
+          type: 'array',
+          title: 'Navigation Links',
+          description: 'Add section IDs for the navigation menu (max 5). Do not include the # symbol.',
+          of: [
+            defineField({
+              type: 'object',
+              name: 'link',
+              fields: [
+                defineField({
+                  name: 'text',
+                  type: 'string',
+                  title: 'Display Text',
+                  validation: Rule => Rule.required()
+                }),
+                defineField({
+                  name: 'href',
+                  type: 'string',
+                  title: 'Section ID',
+                  description: 'The ID of the section to link to (without the # symbol)',
+                  validation: Rule => Rule.required().custom((href, context) => {
+                    if (!href) return true;
+
+                    const components = context.document?.components;
+                    if (!components) return true;
+
+                    const sectionIds = new Set();
+                    const findSectionIds = (comp: any) => {
+                      if (!comp) return;
+                      if (comp.sectionId) {
+                        sectionIds.add(comp.sectionId);
+                      }
+                      if (Array.isArray(comp)) {
+                        comp.forEach(item => findSectionIds(item));
+                        return;
+                      }
+                      Object.keys(comp).forEach(key => {
+                        const value = comp[key];
+                        if (typeof value === 'object' && value !== null) {
+                          findSectionIds(value);
+                        }
+                      });
+                    };
+                    findSectionIds(components);
+
+                    if (!sectionIds.has(href)) {
+                      return `Section ID "${href}" doesn't exist on the page. Please add this section ID to your page components or use a valid existing section ID.`;
+                    }
+
+                    return true;
+                  })
+                })
+              ]
+            })
+          ],
+          validation: Rule => Rule.max(5)
+        }),
+        defineField({
+          name: 'cta',
+          type: 'cta',
+          title: 'Call To Action Button',
           validation: Rule => Rule.required(),
         }),
       ],

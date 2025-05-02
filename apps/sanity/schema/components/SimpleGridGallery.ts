@@ -56,7 +56,7 @@ export default defineField({
                   name: 'image',
                   type: 'image',
                   title: 'Image',
-                  validation: Rule => Rule.required()
+                  validation: Rule => Rule.required(),
                 }),
                 defineField({
                   name: 'video',
@@ -70,6 +70,7 @@ export default defineField({
                   },
                 }),
               ],
+              description: 'The media (image or video) should have 3:2 aspect ratio',
               validation: Rule => Rule.required(),
             }),
           ],

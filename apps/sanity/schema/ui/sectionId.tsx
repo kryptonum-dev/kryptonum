@@ -11,7 +11,7 @@ export default [
     name: 'sectionId',
     type: 'string',
     title: 'Section ID (optional)',
-    description: 'The Section ID is a unique identifier used to link to specific sections of the page.',
+    description: 'The Section ID is a unique identifier used to link to specific sections of the page. Do not include the # symbol.',
     validation: Rule => [
       Rule.custom((value, context) => {
         if (!value) return true;

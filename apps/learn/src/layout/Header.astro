@@ -1,1 +1,373 @@
-header
+---
+import sanityFetch from '@repo/utils/sanity.fetch'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
+import { useTranslations, type Language } from '@repo/shared/languages'
+
+const pathname = Astro.url.pathname
+const lang = Astro.props.lang as Language
+const t = useTranslations(lang)
+
+interface NavLink {
+  text: string
+  href: string
+}
+
+interface HeaderData {
+  nav: {
+    links: NavLink[]
+    cta: ButtonDataProps
+  }
+}
+
+const data = await sanityFetch<HeaderData>({
+  query: `
+    *[_type == "ShopProduct_Collection" && slug.current == $slug && language == $language][0] {
+      nav {
+        links[] {
+          text,
+          href
+        },
+        ${ButtonDataQuery('cta')}
+      }
+    }
+  `,
+  params: {
+    slug: pathname,
+    language: lang,
+  },
+})
+---
+
+<a class="skip-link" href="#main">{t('skipLink')}</a>
+<header class="header" data-element="LayoutHeader">
+  <div class="max-width">
+    <svg xmlns="http://www.w3.org/2000/svg" width="112" height="24" fill="none" viewBox="0 0 112 24">
+      <title>Kryptonum</title>
+      <path
+        fill="url(#paint0_linear_6830_21701)"
+        d="M15.57 12a4.41 4.41 0 0 1-.778 2.495 4.725 4.725 0 0 1-2.083 1.68v7.663H8.893v-7.665a4.72 4.72 0 0 1-2.083-1.68A4.406 4.406 0 0 1 6.031 12c0-.886.271-1.753.78-2.494a4.72 4.72 0 0 1 2.082-1.68V.163h3.816v7.663c.85.354 1.575.938 2.083 1.68.508.742.779 1.609.779 2.495Z">
+      </path>
+      <path
+        fill="url(#paint1_linear_6830_21701)"
+        d="M22.42 0v5.464l-3.986 3.804-1.907-1.821-1.229 1.172c-.28-.338-.6-.644-.954-.911L22.419 0Z">
+      </path>
+      <path
+        fill="url(#paint2_linear_6830_21701)"
+        d="m18.437 14.732 3.985 3.804V24l-8.074-7.708c.354-.266.674-.572.954-.91l1.228 1.171 1.907-1.821Z">
+      </path>
+      <path
+        fill="#F0F7F7"
+        d="M5.078 12a5.278 5.278 0 0 0 1.227 3.38l-5.043 4.815v-5.463L3.17 12.91v-1.822L1.262 9.268V3.804L6.305 8.62a5.277 5.277 0 0 0-1.227 3.38ZM35.28 17.5l-4.592-5.088V17.5h-1.456V6.348h1.456v5.168l4.608-5.168h1.84l-5.056 5.584 5.104 5.568H35.28Zm4.346-7.344c.256-.501.619-.89 1.088-1.168.48-.277 1.062-.416 1.744-.416v1.504h-.384c-1.632 0-2.448.885-2.448 2.656V17.5H38.17V8.732h1.456v1.424Zm11.905-1.424-5.28 12.896h-1.504l1.728-4.224-3.536-8.672h1.616l2.752 7.104 2.72-7.104h1.504Zm2.28 1.616c.288-.501.714-.917 1.28-1.248.575-.341 1.242-.512 2-.512a4.06 4.06 0 0 1 2.111.56c.64.373 1.142.901 1.505 1.584.362.672.544 1.456.544 2.352 0 .885-.182 1.675-.544 2.368a4.004 4.004 0 0 1-1.505 1.616 3.974 3.974 0 0 1-2.111.576c-.747 0-1.409-.165-1.985-.496-.565-.341-.997-.763-1.296-1.264v5.776h-1.456V8.732h1.456v1.616Zm5.952 2.736c0-.661-.134-1.237-.4-1.728a2.754 2.754 0 0 0-1.088-1.12 2.946 2.946 0 0 0-1.489-.384 2.91 2.91 0 0 0-1.488.4c-.448.256-.81.635-1.087 1.136-.267.49-.4 1.061-.4 1.712 0 .661.133 1.243.4 1.744.277.49.64.87 1.087 1.136.46.256.955.384 1.488.384.544 0 1.04-.128 1.489-.384a2.864 2.864 0 0 0 1.087-1.136c.267-.501.4-1.088.4-1.76Zm4.38-3.152V15.1c0 .427.09.73.272.912.181.17.496.256.944.256h1.072V17.5h-1.312c-.81 0-1.419-.187-1.824-.56-.405-.373-.608-.987-.608-1.84V9.932h-1.136v-1.2h1.136V6.524h1.456v2.208h2.288v1.2h-2.288Zm7.236 7.712a4.534 4.534 0 0 1-2.24-.56 4.07 4.07 0 0 1-1.568-1.584c-.373-.693-.56-1.493-.56-2.4 0-.896.192-1.685.576-2.368a4.01 4.01 0 0 1 1.6-1.584c.672-.373 1.424-.56 2.256-.56.832 0 1.584.187 2.256.56a3.93 3.93 0 0 1 1.584 1.568c.395.683.592 1.477.592 2.384 0 .907-.203 1.707-.608 2.4a4.118 4.118 0 0 1-1.616 1.584c-.682.373-1.44.56-2.272.56Zm0-1.28c.523 0 1.013-.123 1.472-.368a2.748 2.748 0 0 0 1.104-1.104c.288-.49.432-1.088.432-1.792s-.138-1.301-.416-1.792c-.277-.49-.64-.853-1.088-1.088a2.983 2.983 0 0 0-1.456-.368c-.533 0-1.024.123-1.472.368-.437.235-.79.597-1.056 1.088-.267.49-.4 1.088-.4 1.792 0 .715.128 1.317.384 1.808.267.49.619.859 1.056 1.104.438.235.918.352 1.44.352Zm10.042-7.792c1.067 0 1.931.325 2.592.976.662.64.992 1.568.992 2.784V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.437-.47-1.034-.704-1.791-.704-.768 0-1.382.24-1.84.72-.449.48-.672 1.179-.672 2.096V17.5H77.15V8.732h1.456V9.98a2.903 2.903 0 0 1 1.168-1.04 3.698 3.698 0 0 1 1.647-.368Zm13.099.16V17.5h-1.456v-1.296c-.277.448-.667.8-1.168 1.056a3.598 3.598 0 0 1-1.632.368c-.683 0-1.296-.139-1.84-.416a3.184 3.184 0 0 1-1.296-1.28c-.31-.565-.464-1.253-.464-2.064V8.732h1.44v4.944c0 .864.219 1.53.656 2 .437.459 1.034.688 1.792.688.778 0 1.392-.24 1.84-.72.448-.48.672-1.179.672-2.096V8.732h1.456Zm12.362-.16c.683 0 1.291.144 1.824.432.534.277.955.699 1.264 1.264.31.565.464 1.253.464 2.064V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.426-.47-1.008-.704-1.744-.704-.757 0-1.36.245-1.808.736-.448.48-.672 1.179-.672 2.096V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.426-.47-1.008-.704-1.744-.704-.757 0-1.36.245-1.808.736-.448.48-.672 1.179-.672 2.096V17.5h-1.456V8.732h1.456v1.264a2.89 2.89 0 0 1 1.152-1.056 3.562 3.562 0 0 1 1.616-.368c.736 0 1.387.165 1.952.496.566.33.987.816 1.264 1.456a2.88 2.88 0 0 1 1.216-1.44 3.585 3.585 0 0 1 1.888-.512Z">
+      </path>
+      <defs>
+        <linearGradient
+          id="paint0_linear_6830_21701"
+          x1="15.392"
+          x2="5.43"
+          y1=".162"
+          y2=".417"
+          gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+        <linearGradient
+          id="paint1_linear_6830_21701"
+          x1="22.268"
+          x2="13.855"
+          y1="0"
+          y2=".467"
+          gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+        <linearGradient
+          id="paint2_linear_6830_21701"
+          x1="22.271"
+          x2="13.859"
+          y1="14.732"
+          y2="15.199"
+          gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+      </defs>
+    </svg>
+    <nav class="nav">
+      {
+        data?.nav?.links?.map(({ href, text }) => (
+          <a href={`#${href}`} class="nav-link">
+            <span>{text}</span>
+          </a>
+        ))
+      }
+      {data?.nav?.cta && <Button {...data.nav.cta} className="nav-cta" />}
+    </nav>
+    <button type="button" class="menu-button">
+      <span>Menu</span>
+      <div class="icon">
+        <div></div>
+        <div></div>
+      </div>
+    </button>
+    {data?.nav?.cta && <Button {...data.nav.cta} className="header-cta" />}
+  </div>
+</header>
+
+<style lang="scss">
+  .skip-link {
+    position: fixed;
+    top: 2.5rem;
+    left: 2.5rem;
+    border-radius: 0.25rem;
+    background:
+      linear-gradient(var(--neutral-900), var(--neutral-900)) padding-box,
+      var(--primary-gradient-400) border-box;
+    border: 2px solid rgba(0, 0, 0, 0);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--typography-body-m, 0.875rem);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    &:focus-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+  .header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 9;
+    height: clamp(3.875rem, calc(4.75vw / 0.48), 4.75rem);
+    border-bottom: 1px solid var(--primary-500, #064040);
+    font-size: var(--typography-body-m, 0.875rem);
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.86);
+      backdrop-filter: blur(10px);
+      z-index: -1;
+    }
+    .max-width {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav {
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      .nav-link {
+        min-height: 2.75rem;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        position: relative;
+        span {
+          position: relative;
+          &::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate3d(-50%, -50%, 0);
+            width: 2rem;
+            height: 2rem;
+            background-color: var(--primary-500, #064040);
+            filter: blur(12px);
+            z-index: -1;
+            transition:
+              opacity 200ms,
+              transform 500ms var(--easing);
+            opacity: 0;
+          }
+        }
+        &:hover {
+          span::before {
+            opacity: 1;
+          }
+        }
+        &:active {
+          span::before {
+            transform: translate3d(-50%, -50%, 0) scale(1.3);
+          }
+        }
+        &::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: -1rem;
+          height: 1px;
+          background: var(--primary-gradient-400);
+          filter: blur(1px);
+          transform: scaleX(0);
+          transition: transform 500ms var(--easing);
+        }
+        &[aria-current='page'] {
+          &::after {
+            transform: scaleX(1);
+          }
+        }
+      }
+      .nav-cta {
+        display: none;
+      }
+    }
+    .menu-button {
+      display: none;
+      height: 2.75rem;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      z-index: 8;
+      padding-left: 0.75rem;
+      border-radius: 2.75rem;
+      background-color: rgba(0, 0, 0, 0.86);
+      backdrop-filter: blur(10px);
+      .icon {
+        width: 2.75rem;
+        height: 2.75rem;
+        display: grid;
+        gap: 0.375rem;
+        align-content: center;
+        justify-content: center;
+        div {
+          width: 1.25rem;
+          height: 0.0625rem;
+          border-radius: 0.125rem;
+          background-color: var(--neutral-200, #f0f7f7);
+          transition: transform 500ms var(--easing);
+        }
+      }
+    }
+    @media (max-width: 69rem) {
+      &[data-opened='true'] {
+        .nav {
+          visibility: visible;
+          transform: translateX(0);
+        }
+        .menu-button {
+          .icon {
+            div {
+              &:nth-child(1) {
+                transform: translateY(0.21875rem) rotate(-45deg);
+              }
+              &:nth-child(2) {
+                transform: translateY(-0.21875rem) rotate(45deg);
+              }
+            }
+          }
+        }
+      }
+      .header-cta {
+        display: none;
+      }
+      .menu-button {
+        display: grid;
+      }
+      .nav {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100vh;
+        height: 100dvh;
+        width: 86%;
+        max-width: 24rem;
+        visibility: hidden;
+        transform: translateX(100%);
+        transition:
+          transform 500ms var(--easing),
+          visibility 500ms var(--easing);
+        border-left: 1px solid var(--primary-500, #064040);
+        background-color: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        overflow: auto;
+        overscroll-behavior: contain;
+        align-items: stretch;
+        padding: clamp(5rem, calc(6vw / 0.48), 6rem) clamp(1rem, calc(2vw / 0.48), 3rem)
+          clamp(5rem, calc(6vw / 0.48), 6rem) clamp(2rem, calc(5vw / 0.48), 5rem);
+        .nav-link {
+          padding: 0;
+          width: 100%;
+          text-align: left;
+          font-size: 1rem;
+          margin-bottom: 1rem;
+          &::after {
+            left: -1rem;
+            right: unset;
+            bottom: calc(50% - 0.0625rem);
+            width: 0.125rem;
+            height: 0.125rem;
+          }
+        }
+        .nav-cta {
+          display: inline-flex;
+          margin-top: 1rem;
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector('.header[data-element="LayoutHeader"]')!
+  const menuButton = header.querySelector('.menu-button')!
+
+  menuButton.addEventListener('click', () => {
+    const isCurrentlyOpened = header.getAttribute('data-opened') === 'true'
+    if (isCurrentlyOpened) {
+      header.setAttribute('data-opened', 'false')
+    } else {
+      header.setAttribute('data-opened', 'true')
+    }
+  })
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && header.getAttribute('data-opened') === 'true') {
+      header.setAttribute('data-opened', 'false')
+    }
+  })
+
+  const navLinks = document.querySelectorAll('.nav-link')
+  const sections = Array.from(navLinks)
+    .map((link) => {
+      const href = link.getAttribute('href')
+      if (href && href.startsWith('#')) {
+        const id = href.substring(1)
+        const section = document.getElementById(id)
+        return { link, section }
+      }
+      return null
+    })
+    .filter((item): item is { link: Element; section: HTMLElement | null } => item !== null)
+
+  if (sections.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const matchingItem = sections.find((item) => item.section === entry.target)
+          if (matchingItem) {
+            if (entry.isIntersecting) {
+              matchingItem.link.setAttribute('aria-current', 'page')
+            } else {
+              matchingItem.link.removeAttribute('aria-current')
+            }
+          }
+        })
+      },
+      {
+        root: null,
+        rootMargin: '-50% 0px',
+        threshold: 0,
+      }
+    )
+    sections.forEach((item) => {
+      if (item.section) {
+        observer.observe(item.section)
+      }
+    })
+  }
+</script>
