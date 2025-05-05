@@ -7,14 +7,12 @@ const pathname = Astro.url.pathname
 const lang = Astro.props.lang as Language
 const t = useTranslations(lang)
 
-interface NavLink {
-  text: string
-  href: string
-}
-
 interface HeaderData {
   nav: {
-    links: NavLink[]
+    links: {
+      text: string
+      href: string
+    }[]
     cta: ButtonDataProps
   }
 }

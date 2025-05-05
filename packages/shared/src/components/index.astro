@@ -57,6 +57,7 @@ import TagsLine, { TagsLine_Query } from '@repo/shared/components/TagsLine.astro
 import StagesAccordion, { StagesAccordion_Query } from '@repo/shared/components/StagesAccordion.astro'
 import Pricing, { Pricing_Query } from '@repo/shared/components/Pricing.astro'
 import PricingRange, { PricingRange_Query } from '@repo/shared/components/PricingRange.astro'
+import PricingTiles, { PricingTiles_Query } from '@repo/shared/components/PricingTiles.astro'
 import ShowcaseProjectsExpand, {
   ShowcaseProjectsExpand_Query,
 } from '@repo/shared/components/ShowcaseProjectsExpand.astro'
@@ -119,6 +120,7 @@ const components = {
   StagesAccordion,
   Pricing,
   PricingRange,
+  PricingTiles,
   ShowcaseProjectsExpand,
   ExpertProfiles,
   FullWidthImage,
@@ -196,6 +198,7 @@ export const Components_Query = /* groq */ `
     ${StagesAccordion_Query}
     ${Pricing_Query}
     ${PricingRange_Query}
+    ${PricingTiles_Query}
     ${ShowcaseProjectsExpand_Query}
     ${ExpertProfiles_Query}
     ${FullWidthImage_Query}

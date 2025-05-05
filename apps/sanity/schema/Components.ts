@@ -46,6 +46,7 @@ import TagsLine from "./components/TagsLine";
 import StagesAccordion from "./components/StagesAccordion";
 import Pricing from "./components/Pricing";
 import PricingRange from "./components/PricingRange";
+import PricingTiles from "./components/PricingTiles";
 import ShowcaseProjectsExpand from "./components/ShowcaseProjectsExpand";
 import ExpertProfiles from "./components/ExpertProfiles";
 import GridIconsList from "./components/GridIconsList";
@@ -108,6 +109,7 @@ export default defineType({
     StagesAccordion,
     Pricing,
     PricingRange,
+    PricingTiles,
     ShowcaseProjectsExpand,
     ExpertProfiles,
     GridIconsList,
