@@ -1,12 +1,22 @@
 ---
-import Image, { type ImageDataProps } from '@repo/ui/Image'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import type { HTMLAttributes } from 'astro/types'
+
+export const RatingBox_Query = `
+  "rating": *[_type == "ShopProduct_Collection" && slug.current == $slug][0].rating {
+    rating,
+    text,
+    ${ImageDataQuery('avatars[]')}
+  }
+`
 
 export interface RatingBoxProps extends HTMLAttributes<'div'> {
   rating: number
   text: string
   avatars: ImageDataProps[]
 }
+
+type Props = RatingBoxProps
 
 const { rating, text, avatars, ...props } = Astro.props
 
@@ -51,7 +61,7 @@ const renderStars = (rating: number) => {
     border: 1px solid var(--primary-900, #001414);
     background: var(--neutral-900, #000103);
     padding: 0.5rem;
-    display: grid;
+    display: inline-grid;
     grid-template-columns: auto 1fr;
     gap: 0.75rem;
     .avatars {
@@ -87,7 +97,6 @@ const renderStars = (rating: number) => {
           mix-blend-mode: plus-lighter;
           filter: blur(16px);
           border-radius: 50%;
-          z-index: -1;
         }
       }
     }

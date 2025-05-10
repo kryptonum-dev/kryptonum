@@ -2,7 +2,7 @@
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
-import RatingBox from '@repo/ui/RatingBox.astro'
+import RatingBox, { RatingBox_Query, type RatingBoxProps } from '@repo/ui/RatingBox.astro'
 
 export const ProductHighlight_Query = `
   _type == "ProductHighlight" => {
@@ -11,11 +11,7 @@ export const ProductHighlight_Query = `
     ${ButtonDataQuery('cta')}
     hint,
     ${ImageDataQuery('img')}
-    "rating": *[_type == "ShopProduct_Collection" && slug.current == $slug][0].rating {
-      rating,
-      text,
-      ${ImageDataQuery('avatars[]')}
-    }
+    ${RatingBox_Query}
   },
 `
 
@@ -27,11 +23,7 @@ type Props = {
   cta: ButtonDataProps
   hint?: string
   img: ImageDataProps
-  rating: {
-    rating: number
-    text: string
-    avatars: ImageDataProps[]
-  }
+  rating: RatingBoxProps
 }
 
 const { index, sectionId, heading, paragraph, cta, hint, img, rating } = Astro.props
