@@ -46,7 +46,7 @@ const { index, sectionId, heading, paragraph, items, additionalInfo } = Astro.pr
                 ? '(max-width: 37rem) 100vw, (max-width: 63rem) 40rem, 66vw'
                 : '(max-width: 37rem) 100vw, (max-width: 63rem) 20rem, 33vw'
             }
-            priority={itemIndex === 0}
+            priority={index === 0 && itemIndex === 0}
           />
         </div>
       ))
