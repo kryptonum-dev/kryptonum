@@ -56,6 +56,7 @@ import FeaturedProducts from "./components/FeaturedProducts";
 import IrregularBlocksWithStats from "./components/IrregularBlocksWithStats";
 import ImageListAndMarquee from "./components/ImageListAndMarquee";
 import SimpleGridGallery from "./components/SimpleGridGallery";
+import HighlightsGrid from "./components/HighlightsGrid";
 
 export default defineType({
   name: 'components',
@@ -119,6 +120,7 @@ export default defineType({
     IrregularBlocksWithStats,
     ImageListAndMarquee,
     SimpleGridGallery,
+    HighlightsGrid,
   ],
   options: {
     insertMenu: {

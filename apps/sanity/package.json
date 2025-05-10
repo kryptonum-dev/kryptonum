@@ -16,19 +16,19 @@
   ],
   "dependencies": {
     "@repo/utils": "workspace:*",
-    "@sanity/assist": "^4.0.2",
+    "@sanity/assist": "^4.2.0",
     "@sanity/document-internationalization": "3.3.1",
-    "@sanity/vision": "^3.86.1",
+    "@sanity/vision": "^3.88.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "sanity": "^3.86.1",
+    "sanity": "^3.88.2",
     "sanity-plugin-iframe-pane": "^3.2.1",
     "sanity-plugin-media-i18n": "^2.3.6",
     "sanity-plugin-mux-input": "^2.8.0",
-    "styled-components": "^6.1.17"
+    "styled-components": "^6.1.18"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^5.0.2",
-    "@types/react": "^19.1.2"
+    "@types/react": "^19.1.3"
   }
 }
