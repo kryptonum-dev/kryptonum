@@ -107,6 +107,7 @@ const data = await sanityFetch<HeaderData>({
     {data?.nav?.cta && <Button {...data.nav.cta} className="header-cta" />}
   </div>
 </header>
+<div class="overlay" aria-hidden="true"></div>
 
 <style lang="scss">
   .skip-link {
@@ -308,28 +309,53 @@ const data = await sanityFetch<HeaderData>({
       }
     }
   }
+  .overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.62);
+    backdrop-filter: blur(4px);
+    z-index: 8;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 800ms var(--easing);
+    &[data-active='true'] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
 </style>
 
 <script>
   const header = document.querySelector('.header[data-element="LayoutHeader"]')!
   const menuButton = header.querySelector('.menu-button')!
+  const overlay = document.querySelector('.overlay')!
 
   menuButton.addEventListener('click', () => {
     const isCurrentlyOpened = header.getAttribute('data-opened') === 'true'
-    if (isCurrentlyOpened) {
-      header.setAttribute('data-opened', 'false')
-    } else {
-      header.setAttribute('data-opened', 'true')
-    }
+    header.setAttribute('data-opened', isCurrentlyOpened ? 'false' : 'true')
+    overlay.setAttribute('data-active', isCurrentlyOpened ? 'false' : 'true')
   })
+
+  function closeMenu() {
+    header.setAttribute('data-opened', 'false')
+    overlay.setAttribute('data-active', 'false')
+  }
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && header.getAttribute('data-opened') === 'true') {
-      header.setAttribute('data-opened', 'false')
+      closeMenu()
     }
   })
+  overlay.addEventListener('click', closeMenu)
 
   const navLinks = document.querySelectorAll('.nav-link')
+  navLinks.forEach((link) => {
+    link.addEventListener('click', closeMenu)
+  })
+
   const sections = Array.from(navLinks)
     .map((link) => {
       const href = link.getAttribute('href')
