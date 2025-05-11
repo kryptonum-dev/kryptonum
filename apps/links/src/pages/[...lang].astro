@@ -12,9 +12,17 @@ import { DOMAIN } from '@repo/shared/constants'
 
 const URL = Astro.url.href
 
-type Props = { lang: 'pl' | 'en' }
+const { lang } = Astro.params as { lang: 'pl' | 'en' }
 
-const { lang = '' } = Astro.params
+const translations = {
+  pl: {
+    checkMap: 'Zobacz na mapie',
+  },
+  en: {
+    checkMap: 'Check on map',
+  },
+} as const
+const t = translations[lang]
 
 if (!['en', 'pl'].includes(lang)) {
   return Astro.redirect('/pl')
@@ -329,7 +337,7 @@ const page = await sanityFetch<{
                 d="M7.647 13.207c1.863-2.915 4.027-4.233 4.027-7.62 0-.93-.23-1.801-.629-2.575l-7.45 8.84c.315.411.642.883.956 1.367 1.137 1.753.822 2.793 1.548 2.793.726 0 .411-1.052 1.548-2.805Z">
               </path>
             </svg>
-            Zobacz na mapie
+            {t.checkMap}
           </span>
         </a>
       </div>
