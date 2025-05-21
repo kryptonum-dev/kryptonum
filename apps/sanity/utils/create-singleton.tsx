@@ -32,6 +32,7 @@ export const createSingleton = (S: StructureBuilder, name: string) => {
           .defaultLayout('detail')
           .id(name)
           .title(title)
+          .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
           .filter('_type == $type')
           .params({ type: name })
           .child(documentId =>
