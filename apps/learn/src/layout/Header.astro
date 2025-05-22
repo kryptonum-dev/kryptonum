@@ -87,23 +87,25 @@ const data = await sanityFetch<HeaderData>({
         </linearGradient>
       </defs>
     </svg>
-    <nav class="nav">
-      {
-        data?.nav?.links?.map(({ href, text }) => (
-          <a href={`#${href}`} class="nav-link">
-            <span>{text}</span>
-          </a>
-        ))
-      }
-      {data?.nav?.cta && <Button {...data.nav.cta} className="nav-cta" />}
-    </nav>
-    <button type="button" class="menu-button">
-      <span>Menu</span>
-      <div class="icon">
-        <div></div>
-        <div></div>
-      </div>
-    </button>
+    {data?.nav?.links && (
+      <nav class="nav">
+        {
+          data.nav.links.map(({ href, text }) => (
+            <a href={`#${href}`} class="nav-link">
+              <span>{text}</span>
+            </a>
+          ))
+        }
+        {data?.nav?.cta && <Button {...data.nav.cta} className="nav-cta" />}
+      </nav>
+      <button type="button" class="menu-button">
+        <span>Menu</span>
+        <div class="icon">
+          <div></div>
+          <div></div>
+        </div>
+      </button>
+    )}
     {data?.nav?.cta && <Button {...data.nav.cta} className="header-cta" />}
   </div>
 </header>
@@ -333,7 +335,7 @@ const data = await sanityFetch<HeaderData>({
   const menuButton = header.querySelector('.menu-button')!
   const overlay = document.querySelector('.overlay')!
 
-  menuButton.addEventListener('click', () => {
+  menuButton?.addEventListener('click', () => {
     const isCurrentlyOpened = header.getAttribute('data-opened') === 'true'
     header.setAttribute('data-opened', isCurrentlyOpened ? 'false' : 'true')
     overlay.setAttribute('data-active', isCurrentlyOpened ? 'false' : 'true')

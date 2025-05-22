@@ -5,6 +5,16 @@ import type { Language } from '@repo/shared/languages'
 
 const lang = Astro.props.lang as Language
 
+const translations = {
+  pl: {
+    resetCookieConsent: 'Zresetuj ustawienia cookies',
+  },
+  en: {
+    resetCookieConsent: 'Reset cookie settings',
+  },
+}
+const t = translations[lang]
+
 const data = await sanityFetch<{
   privacyPolicy: {
     name: string
@@ -37,7 +47,7 @@ const data = await sanityFetch<{
     <div class="legal">
       <a href={`${DOMAIN}${data.privacyPolicy.slug}`} target="_blank" rel="noopener">{data.privacyPolicy.name}</a>
       <a href={`${DOMAIN}${data.terms.slug}`} target="_blank" rel="noopener">{data.terms.name}</a>
-      <button id="reset-cookie-consent">Zresetuj ustawienia cookies</button>
+      <button id="reset-cookie-consent">{t.resetCookieConsent}</button>
     </div>
   </div>
 </footer>
@@ -45,6 +55,7 @@ const data = await sanityFetch<{
 <style lang="scss">
   footer {
     border-top: 1px solid var(--primary-500, #064040);
+    margin-top: clamp(2rem, calc(3vw / 0.48), 5rem);
     padding: clamp(2rem, calc(2.5vw / 0.48), 3rem) 0 3rem;
     font-size: var(--typography-body-m, 0.875rem);
     color: var(--neutral-400, #c6cdcc);

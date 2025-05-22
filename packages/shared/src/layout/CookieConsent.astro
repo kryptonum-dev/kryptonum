@@ -278,7 +278,6 @@ const groups = [
     if (focusedElement && cookieConsentElement.contains(focusedElement)) {
       focusedElement.blur()
     }
-    cookieConsentElement.style.display = 'none'
     cookieConsentElement.setAttribute('aria-hidden', 'true')
   }
 
@@ -371,6 +370,7 @@ const groups = [
 
   document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('reset-cookie-consent')?.addEventListener('click', () => {
+      console.log(cookieConsentElement)
       document.cookie = 'cookie-consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC;'
       gtag('consent', 'default', {
         functionality_storage: 'denied',

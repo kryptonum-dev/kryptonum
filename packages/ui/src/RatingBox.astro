@@ -3,7 +3,7 @@ import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import type { HTMLAttributes } from 'astro/types'
 
 export const RatingBox_Query = `
-  "rating": *[_type == "ShopProduct_Collection" && slug.current == $slug][0].rating {
+  "rating": ^.rating {
     rating,
     text,
     ${ImageDataQuery('avatars[]')}
@@ -19,6 +19,8 @@ export interface RatingBoxProps extends HTMLAttributes<'div'> {
 type Props = RatingBoxProps
 
 const { rating, text, avatars, ...props } = Astro.props
+
+if (!rating || !text || !avatars) return null
 
 const renderStars = (rating: number) => {
   const fullStars = Math.floor(rating)
@@ -40,7 +42,7 @@ const renderStars = (rating: number) => {
 
 <ui-rating-box {...props}>
   <div class="avatars">
-    {avatars.map((avatar: ImageDataProps) => <Image {...avatar} sizes="40px" />)}
+    {avatars?.map((avatar: ImageDataProps) => <Image {...avatar} sizes="40px" />)}
   </div>
   <div>
     <div class="rating">
