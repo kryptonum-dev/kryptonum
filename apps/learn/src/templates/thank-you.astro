@@ -1,0 +1,161 @@
+---
+import Layout from '@layout/Layout.astro'
+import sanityFetch from '@repo/utils/sanity.fetch'
+import metadataFetch from '@repo/utils/metadata.fetch'
+import { type Language } from '@repo/shared/languages'
+import { Image } from 'astro:assets'
+import Components, { Components_Query, type ComponentsProps } from '@repo/shared/components/index.astro'
+import PortableText, { type PortableTextValue, PortableTextQuery } from '@repo/ui/portable-text'
+import Button from '@repo/ui/Button'
+
+type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
+
+export type StripeData = {
+  products: {
+    name: string
+    downloadUrl: string
+    imageUrl: string | null
+  }[]
+  email: string
+}
+
+interface Props extends FetchDataReturn {
+  stripe_data: StripeData
+}
+
+export async function fetchData(lang: Language, slug: string) {
+  const page = await sanityFetch<{
+    slug: string
+    header: { heading: PortableTextValue; paragraph: PortableTextValue }
+    components: ComponentsProps
+  }>({
+    query: `
+      *[_type == "ShopThankYou_Page" && language == $language][0] {
+        "slug": slug.current,
+        header {
+          ${PortableTextQuery('heading')}
+          ${PortableTextQuery('paragraph')}
+        },
+        ${Components_Query}
+      }
+    `,
+    params: { language: lang, slug: slug },
+  })
+  if (!page) return null
+  const metadata = await metadataFetch(slug)
+  return { page, metadata, lang, slug }
+}
+
+const { page, metadata, lang, stripe_data } = Astro.props
+
+const translations = {
+  pl: {
+    products: 'Produkty:',
+    email: 'Twój email:',
+    productCta: 'Pobierz',
+  },
+  en: {
+    products: 'Products:',
+    email: 'Your email:',
+    productCta: 'Download',
+  },
+}
+const t = translations[lang]
+---
+
+<Layout {...metadata} lang={lang}>
+  <section class="ThankYouSummary_Header">
+    <header>
+      <PortableText value={page.header.heading} heading="h1" class="h2 heading" />
+      <PortableText value={page.header.paragraph} class="paragraph" />
+      <div class="info">
+        <p><span>{t.products}</span> {stripe_data.products.map((product) => product.name).join(', ')}</p>
+        <p><span>{t.email}</span> {stripe_data.email}</p>
+      </div>
+    </header>
+  </section>
+  {
+    stripe_data.products && stripe_data.products.length > 0 && (
+      <section class="ThankYouSummary_Products">
+        {stripe_data.products.map((product) => (
+          <article class="item">
+            <Image src={product.imageUrl!} alt={product.name} width={178} height={133} />
+            <header>
+              <h2 class="name">{product.name}</h2>
+              <Button href={product.downloadUrl} theme="secondary" linkType="external">
+                {t.productCta}
+              </Button>
+            </header>
+          </article>
+        ))}
+      </section>
+    )
+  }
+  {page.components && <Components data={page.components} hasPreviousSections={true} />}
+</Layout>
+
+<style lang="scss">
+  .ThankYouSummary_Header {
+    text-align: center;
+    margin: 3rem auto;
+    .heading {
+      max-width: 32rem;
+      margin: 0 auto 1rem;
+    }
+    .paragraph {
+      max-width: 40rem;
+      margin: 0 auto;
+    }
+    .info {
+      display: grid;
+      gap: 0.5rem;
+      max-width: 28rem;
+      margin: 2rem auto 0;
+      background-color: var(--primary-900, #001414);
+      padding: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+      border-radius: 0.5rem;
+      font-size: var(--typography-body-m, 0.875rem);
+      text-align: left;
+      span {
+        color: var(--neutral-400, #c6cdcc);
+      }
+    }
+  }
+  .ThankYouSummary_Products {
+    padding: 2rem 0 8rem;
+    max-width: 28rem;
+    margin: 0 auto;
+    display: grid;
+    gap: clamp(1rem, calc(1.25vw / 0.48), 1.25rem);
+    .item {
+      padding: clamp(1rem, calc(1vw / 0.48), 1.25rem);
+      border-radius: 0.25rem;
+      border: 1px solid var(--primary-500, #064040);
+      display: grid;
+      grid-template-columns: clamp(55px, calc(89px / 7.68), 89px) 1fr;
+      gap: 1rem;
+      img {
+        border-radius: 0.25rem;
+        border: 1px solid var(--primary-600, #042b2b);
+        height: auto;
+      }
+      header {
+        .name {
+          font-size: var(--typography-body-2xl, 1.25rem);
+          margin-bottom: 1rem;
+        }
+        a {
+          width: 100%;
+        }
+      }
+    }
+    @media (max-width: 46rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { startConfetti } from '../utils/confetti'
+  document.addEventListener('DOMContentLoaded', startConfetti)
+</script>

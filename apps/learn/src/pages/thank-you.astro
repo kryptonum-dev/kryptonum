@@ -1,0 +1,46 @@
+---
+import ThankYouPage, { fetchData, type StripeData } from '@templates/thank-you.astro'
+import Stripe from 'stripe'
+
+const session_id = Astro.url.searchParams.get('session_id')
+const isFromStripeRedirect = Astro.request.headers.get('referer')?.includes('stripe.com') ?? false
+
+if (!session_id || !isFromStripeRedirect) return Astro.rewrite('/404')
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const session = await stripe.checkout.sessions.retrieve(session_id, {
+  expand: ['line_items.data.price.product'],
+})
+
+if (!session) return Astro.rewrite('/404')
+
+const lineItems = session.line_items?.data || []
+const products = lineItems
+  .filter((item) => item.price?.product)
+  .map((item) => ({ product: item.price?.product }))
+  .filter((item) => item.product && (item.product as Stripe.Product).metadata?.download_url)
+
+const countryCode = session.customer_details?.address?.country?.toLowerCase() || 'pl'
+const lang = countryCode === 'pl' ? 'pl' : 'en'
+const slug = lang === 'pl' ? '/pl/dziekujemy' : '/en/thank-you'
+
+if (!products || products.length === 0) return Astro.rewrite(`/${lang}/404`)
+
+const data = await fetchData(lang, slug)
+
+if (!data) return Astro.rewrite(`/${lang}/404`)
+
+const stripe_data = {
+  products: products.map((item) => ({
+    name: (item.product as Stripe.Product).name,
+    downloadUrl: (item.product as Stripe.Product).metadata?.download_url,
+    imageUrl:
+      (item.product as Stripe.Product).images && (item.product as Stripe.Product).images.length > 0
+        ? (item.product as Stripe.Product).images[0]
+        : null,
+  })),
+  email: session.customer_details?.email || '',
+} as StripeData
+---
+
+<ThankYouPage {...data} stripe_data={stripe_data} />
