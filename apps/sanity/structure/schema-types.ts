@@ -11,6 +11,7 @@ import PrivacyPolicy_Page from '../schema/singleTypes/Legal/PrivacyPolicy_Page';
 import TermsAndConditions_Page from '../schema/singleTypes/Legal/TermsAndConditions_Page';
 import NotFound_Page from '../schema/singleTypes/NotFound_Page';
 import Shop_Page from '../schema/singleTypes/Shop_Page';
+import ShopThankYou_Page from '../schema/singleTypes/ShopThankYou_Page';
 
 const singleTypes = [
   global,
@@ -25,6 +26,7 @@ const singleTypes = [
   TermsAndConditions_Page,
   NotFound_Page,
   Shop_Page,
+  ShopThankYou_Page,
 ];
 
 // Collections Types

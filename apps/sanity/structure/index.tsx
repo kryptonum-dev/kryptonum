@@ -32,6 +32,7 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
       createSingleton(S, "Shop_Page"),
       createCollection(S, "ShopProduct_Collection"),
+      createSingleton(S, "ShopThankYou_Page"),
       S.divider(),
       createCollection(S, "Review_Collection"),
       createCollection(S, "Faq_Collection"),

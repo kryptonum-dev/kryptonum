@@ -9,10 +9,16 @@ export default defineConfig({
     preact({ compat: true }),
   ],
   image: {
-    remotePatterns: [{
-      protocol: "https",
-      hostname: "cdn.sanity.io"
-    }],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io"
+      },
+      {
+        protocol: "https",
+        hostname: 'files.stripe.com'
+      }
+    ],
   },
   prefetch: {
     prefetchAll: true
