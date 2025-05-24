@@ -9,7 +9,6 @@ export function startConfetti(): void {
   let frame: number | undefined = undefined;
   const confetti: Confetto[] = [];
 
-  const particles = 10;
   const spread = 40;
   const sizeMin = 3;
   const sizeMax = 12 - sizeMin;
