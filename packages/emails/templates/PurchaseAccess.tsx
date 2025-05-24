@@ -153,7 +153,6 @@ type SendPurchaseAccessEmailProps = {
 } & Props
 
 export async function sendPurchaseAccessEmail({ to, lang, products }: SendPurchaseAccessEmailProps) {
-  const template = PurchaseAccess({ lang, products });
   const subject = lang === 'pl'
     ? 'Dostęp do zakupionych produktów - Kryptonum'
     : 'Access to purchased products - Kryptonum';
@@ -163,8 +162,8 @@ export async function sendPurchaseAccessEmail({ to, lang, products }: SendPurcha
       from: 'Kryptonum <learn@send.kryptonum.eu>',
       to,
       subject,
-      react: template,
-      text: await render(template, { plainText: true }),
+      react: PurchaseAccess({ lang, products }),
+      text: await render(PurchaseAccess({ lang, products }), { plainText: true }),
     });
 
     if (error) {
