@@ -3,9 +3,9 @@ import ThankYouPage, { fetchData, type StripeData } from '@templates/thank-you.a
 import Stripe from 'stripe'
 
 const session_id = Astro.url.searchParams.get('session_id')
-const isFromStripeRedirect = Astro.request.headers.get('referer')?.includes('stripe.com') ?? false
+const product_id = Astro.url.searchParams.get('product_id')
 
-if (!session_id || !isFromStripeRedirect) return Astro.rewrite('/404')
+if (!session_id) return Astro.rewrite('/404')
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 const session = await stripe.checkout.sessions.retrieve(session_id, {
@@ -25,6 +25,17 @@ const lang = countryCode === 'pl' ? 'pl' : 'en'
 const slug = lang === 'pl' ? '/pl/dziekujemy' : '/en/thank-you'
 
 if (!products || products.length === 0) return Astro.rewrite(`/${lang}/404`)
+
+if (product_id !== null) {
+  const productIndex = parseInt(product_id, 10)
+  if (!isNaN(productIndex) && productIndex >= 0 && productIndex < products.length) {
+    const product = products[productIndex].product as Stripe.Product
+    const downloadUrl = product.metadata?.download_url
+    if (downloadUrl) {
+      return Astro.redirect(downloadUrl)
+    }
+  }
+}
 
 const data = await fetchData(lang, slug)
 
