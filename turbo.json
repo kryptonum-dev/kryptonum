@@ -1,7 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["SANITY_API_TOKEN", "MAILERLITE_API_KEY", "RESEND_API_KEY", "STRIPE_SECRET_KEY"],
+  "globalEnv": [
+    "SANITY_API_TOKEN",
+    "MAILERLITE_API_KEY",
+    "RESEND_API_KEY",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_CHECKOUT_SESSION_COMPLETED_SECRET"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
