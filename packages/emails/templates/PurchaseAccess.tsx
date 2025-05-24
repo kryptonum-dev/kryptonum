@@ -164,7 +164,7 @@ export async function sendPurchaseAccessEmail({ to, lang, products }: SendPurcha
       to,
       subject,
       react: template,
-      text: await render(template),
+      text: await render(template, { plainText: true }),
     });
 
     if (error) {
