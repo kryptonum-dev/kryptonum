@@ -13,13 +13,13 @@ type Props = {
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
-function PurchaseAccess({ lang, products }: Props) {
+export default function PurchaseAccess({ lang, products }: Props) {
   return (
     <Html lang={lang}>
       <Head>
         <Font
           fontFamily="Poppins"
-          fallbackFontFamily={['Helvetica', 'Arial', 'sans-serif']}
+          fallbackFontFamily={['Arial', 'sans-serif']}
           fontWeight={400}
           fontStyle="normal"
           webFont={{
@@ -27,11 +27,6 @@ function PurchaseAccess({ lang, products }: Props) {
             format: 'woff2',
           }}
         />
-        <style>{`
-          * {
-            font-family: "Poppins" , "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen-Sans", "Ubuntu", "Cantarell", "Helvetica Neue", "sans-serif"
-          }
-        `}</style>
       </Head>
       <Preview>{
         lang === 'pl'
@@ -66,7 +61,7 @@ function PurchaseAccess({ lang, products }: Props) {
                 </Text>
               </Column>
             </Row>
-            {products.map(({ name, link }, index) => (
+            {products?.map(({ name, link }, index) => (
               <Row style={{ marginTop: '16px' }} key={index}>
                 <Column>
                   <Text style={{ fontSize: '14px', margin: 0, paddingRight: '12px' }}>
@@ -119,7 +114,7 @@ const body = {
   color: '#f0f7f7',
   WebkitFontSmoothing: 'antialiased',
   fontSize: '14px',
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'
+  fontFamily: 'Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'
 };
 
 const container = {
