@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect } from 'react';
 import { useForm, type FieldValues } from 'react-hook-form';
 import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'

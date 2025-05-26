@@ -11,7 +11,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/preact": "^4.1.0",
     "@astrojs/react": "^4.3.0",
     "@astrojs/vercel": "^8.1.4",
     "@mux/mux-video": "^0.25.1",
