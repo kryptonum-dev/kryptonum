@@ -50,11 +50,7 @@ export const POST: APIRoute = async ({ request }) => {
     const countryCode = session.customer_details?.address?.country?.toLowerCase() || 'pl';
     const lang = countryCode === 'pl' ? 'pl' : 'en';
 
-    const emailResult = await sendPurchaseAccessEmail({
-      to: customer_email,
-      lang,
-      products,
-    });
+    const emailResult = await sendPurchaseAccessEmail({ to: customer_email, lang, products });
 
     if (!emailResult.success) {
       console.error('Failed to send email:', emailResult.error);

@@ -1,12 +1,12 @@
 import { defineConfig } from "astro/config";
-import preact from '@astrojs/preact';
+import react from '@astrojs/react';
 import vercel from "@astrojs/vercel";
 import { isProductionDeployment } from "@repo/utils/is-production-deployment";
 
 export default defineConfig({
   site: 'https://learn.kryptonum.eu',
   integrations: [
-    preact({ compat: true }),
+    react(),
   ],
   image: {
     remotePatterns: [

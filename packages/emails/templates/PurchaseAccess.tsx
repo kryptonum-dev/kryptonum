@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Container, Font, Head, Hr, Html, Preview, Text, Body, Link, Img, Heading, Section, Row, Column } from "@react-email/components";
 import { Resend } from 'resend';
+import { Container, Font, Head, Hr, Html, Preview, Text, Body, Link, Img, Heading, Section, Row, Column } from "@react-email/components";
 import { render } from '@react-email/render';
 
 type Props = {
@@ -11,7 +11,9 @@ type Props = {
   }[];
 }
 
-const PurchaseAccess = ({ lang, products }: Props) => {
+const resend = new Resend(process.env.RESEND_API_KEY!);
+
+function PurchaseAccess({ lang, products }: Props) {
   return (
     <Html lang={lang}>
       <Head>
@@ -112,7 +114,6 @@ const PurchaseAccess = ({ lang, products }: Props) => {
   );
 }
 
-
 const body = {
   backgroundColor: '#000103',
   color: '#f0f7f7',
@@ -146,7 +147,6 @@ const text = {
   lineHeight: '1.75',
 };
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
 
 type SendPurchaseAccessEmailProps = {
   to: string;
@@ -162,8 +162,8 @@ export async function sendPurchaseAccessEmail({ to, lang, products }: SendPurcha
       from: 'Kryptonum <learn@send.kryptonum.eu>',
       to,
       subject,
-      react: PurchaseAccess({ lang, products }),
-      text: await render(PurchaseAccess({ lang, products }), { plainText: true }),
+      react: <PurchaseAccess lang={lang} products={products} />,
+      text: await render(<PurchaseAccess lang={lang} products={products} />, { plainText: true }),
     });
 
     if (error) {
