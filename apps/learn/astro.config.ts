@@ -2,6 +2,7 @@ import { defineConfig } from "astro/config";
 import react from '@astrojs/react';
 import vercel from "@astrojs/vercel";
 import { isProductionDeployment } from "@repo/utils/is-production-deployment";
+import redirects from "@repo/shared/redirects";
 
 export default defineConfig({
   site: 'https://learn.kryptonum.eu',
@@ -35,6 +36,7 @@ export default defineConfig({
       }
     }
   },
+  redirects: await redirects('learnRedirects'),
   output: "server",
   adapter: vercel({
     ...(isProductionDeployment && {

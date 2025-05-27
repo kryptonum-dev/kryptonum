@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import preact from '@astrojs/preact';
 import vercel from "@astrojs/vercel";
 import { DOMAIN } from "../../packages/shared/src/constants";
-import redirects from "./redirects";
+import redirects from "@repo/shared/redirects";
 import { isProductionDeployment } from "@repo/utils/is-production-deployment";
 
 export default defineConfig({
@@ -31,7 +31,7 @@ export default defineConfig({
       }
     }
   },
-  redirects: redirects,
+  redirects: await redirects('mainRedirects'),
   output: "server",
   adapter: vercel({
     ...(isProductionDeployment && {
