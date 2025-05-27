@@ -5,6 +5,9 @@
     "dev": "astro sync && tsc --watch",
     "build": "astro sync && tsc"
   },
+  "exports": {
+    "./redirects": "./src/redirects.ts"
+  },
   "dependencies": {
     "@repo/utils": "workspace:*",
     "@repo/ui": "workspace:*"
