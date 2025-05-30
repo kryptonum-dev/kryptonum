@@ -25,10 +25,29 @@ export default defineField({
       title: 'List',
       of: [
         defineField({
-          name: 'img',
-          type: 'image',
-          title: 'Image',
-          validation: Rule => Rule.required(),
+          name: 'item',
+          type: 'object',
+          title: 'Item',
+          fields: [
+            defineField({
+              name: 'img',
+              type: 'image',
+              title: 'Image',
+              validation: Rule => Rule.required(),
+            }),
+            defineField({
+              name: 'link',
+              type: 'url',
+              title: 'Link (optional)',
+              validation: Rule => Rule.uri({ scheme: ['https'] }),
+            }),
+            defineField({
+              name: 'name',
+              type: 'string',
+              title: 'Name',
+              validation: Rule => Rule.required(),
+            }),
+          ],
         }),
       ],
       validation: Rule => Rule.required(),

@@ -5,7 +5,11 @@ import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 export const TrustedCompanies_Query = `
   _type == "TrustedCompanies" => {
     ${PortableTextQuery('heading')}
-    ${ImageDataQuery('list[]')}
+    list[] {
+      ${ImageDataQuery('img')}
+      name,
+      link,
+    }
   },
 `
 
@@ -13,7 +17,11 @@ type Props = {
   index: number
   sectionId?: string
   heading: PortableTextValue
-  list: ImageDataProps[]
+  list: {
+    img: ImageDataProps
+    name: string
+    link?: string
+  }[]
 }
 
 const { index, sectionId, heading, list } = Astro.props
@@ -25,9 +33,15 @@ const { index, sectionId, heading, list } = Astro.props
   </header>
   <ul>
     {
-      list.map((img) => (
+      list.map(({ img, name, link }) => (
         <li>
-          <Image {...img} sizes="78px" />
+          {link ? (
+            <a href={link} target="_blank" rel="noopener noreferrer" aria-label={name}>
+              <Image {...img} sizes="78px" />
+            </a>
+          ) : (
+            <Image {...img} sizes="78px" />
+          )}
         </li>
       ))
     }
@@ -58,7 +72,8 @@ const { index, sectionId, heading, list } = Astro.props
       margin-left: auto;
       display: flex;
       flex-wrap: wrap;
-      gap: clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+      justify-content: flex-end;
+      gap: 1rem clamp(1rem, calc(1.25vw / 0.48), 1.5rem);
       li {
         height: 2.5rem;
         img {
