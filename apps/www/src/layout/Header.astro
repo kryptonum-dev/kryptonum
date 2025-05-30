@@ -293,9 +293,9 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
       <a href={data.blog.slug} class="item-button" aria-current={pathname === data.blog.slug ? 'page' : undefined}>
         <span>{data.blog.name}</span>
       </a>
-      <a href={data.shop.slug} class="item-button" aria-current={pathname === data.shop.slug ? 'page' : undefined}>
+      <!-- <a href={data.shop.slug} class="item-button" aria-current={pathname === data.shop.slug ? 'page' : undefined}>
         <span>{data.shop.name}</span>
-      </a>
+      </a> -->
       <Button {...data.cta} className="nav-cta" />
       <LanguageSwitcher lang={lang} alternates={alternates} class="nav-language-switcher" />
     </nav>
