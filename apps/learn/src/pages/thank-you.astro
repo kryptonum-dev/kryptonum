@@ -52,6 +52,66 @@ const stripe_data = {
   })),
   email: session.customer_details?.email || '',
 } as StripeData
+
+const tracking_data = {
+  currency: session.currency?.toUpperCase() || 'PLN',
+  value: (session.amount_total || 0) / 100,
+  contents: await Promise.all(
+    lineItems.map(async (item) => {
+      const product = item.price?.product as Stripe.Product
+      return {
+        id: product.id,
+        quantity: item.quantity || 1,
+        item_price: (item.price?.unit_amount || 0) / 100,
+      }
+    })
+  ),
+  content_type: lineItems.length > 1 ? 'product_group' : 'product',
+  user_data: {
+    email: session.customer_details?.email || '',
+    country: session.customer_details?.address?.country || '',
+  },
+}
 ---
 
 <ThankYouPage {...data} stripe_data={stripe_data} />
+
+<script is:inline define:vars={{ tracking_data }}>
+  window.trackingData = tracking_data
+</script>
+
+<script>
+  import { trackEvent } from './api/analytics/track-event'
+
+  // @ts-ignore
+  const tracking_data = trackingData
+  document.addEventListener('DOMContentLoaded', () => {
+    trackEvent({
+      user_data: {
+        email: tracking_data.user_data.email,
+      },
+      meta: {
+        event_name: 'Purchase',
+        params: {
+          currency: tracking_data.currency,
+          value: tracking_data.value,
+          content_type: tracking_data.content_type,
+          contents: tracking_data.contents,
+          num_items: tracking_data.contents.length,
+        },
+      },
+      ga: {
+        event_name: 'purchase',
+        params: {
+          value: tracking_data.value,
+          currency: tracking_data.currency,
+          items: tracking_data.contents.map((item: any) => ({
+            item_id: item.id,
+            quantity: item.quantity,
+            price: item.item_price,
+          })),
+        },
+      },
+    })
+  })
+</script>

@@ -7,10 +7,15 @@ import { type Language } from '@repo/shared/languages'
 
 const lang = (Astro.params.lang as Language) || 'pl'
 
-const { GTM_ID, privacyPolicySlug } = await sanityFetch<{ GTM_ID: string; privacyPolicySlug: string }>({
+const { GTM_ID, GA4_ID, privacyPolicySlug } = await sanityFetch<{
+  GTM_ID: string
+  GA4_ID: string
+  privacyPolicySlug: string
+}>({
   query: `
     {
-      "GTM_ID": *[_type == "global" && language == $language][0].analytics.gtm_id,
+      "GTM_ID": *[_type == "analytics"][0].gtm_id,
+      "GA4_ID": *[_type == "analytics"][0].ga4_id,
       "privacyPolicySlug": *[_type == "PrivacyPolicy_Page" && language == $language][0].slug.current
     }
   `,
@@ -244,11 +249,13 @@ const groups = [
   }
 </style>
 
-<script is:inline define:vars={{ GTM_ID }}>
+<script is:inline define:vars={{ GTM_ID, GA4_ID }}>
   window.dataLayer = window.dataLayer || []
   function gtag() {
     window.dataLayer.push(arguments)
   }
+  window.gtag = gtag
+  gtag('config', GA4_ID)
   function getCookie(name) {
     const cookies = document.cookie.split(';').map((cookie) => cookie.trim())
     const cookie = cookies.find((cookie) => cookie.startsWith(`${name}=`))
@@ -279,6 +286,8 @@ const groups = [
       focusedElement.blur()
     }
     cookieConsentElement.setAttribute('aria-hidden', 'true')
+
+    document.dispatchEvent(new CustomEvent('cookie_consent_updated', { detail: consentMode }))
   }
 
   const cookieConsentElement = document.querySelector('.cookie-consent')
@@ -370,7 +379,6 @@ const groups = [
 
   document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('reset-cookie-consent')?.addEventListener('click', () => {
-      console.log(cookieConsentElement)
       document.cookie = 'cookie-consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC;'
       gtag('consent', 'default', {
         functionality_storage: 'denied',

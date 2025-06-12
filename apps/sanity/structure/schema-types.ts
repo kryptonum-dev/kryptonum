@@ -1,5 +1,6 @@
 // Single Types
 import global from '../schema/singleTypes/global';
+import analytics from '../schema/singleTypes/analytics';
 import redirects from '../schema/singleTypes/redirects';
 import Links_Page from '../schema/singleTypes/Links_Page';
 import Index_Page from '../schema/singleTypes/Index_Page';
@@ -15,6 +16,7 @@ import ShopThankYou_Page from '../schema/singleTypes/ShopThankYou_Page';
 
 const singleTypes = [
   global,
+  analytics,
   redirects,
   Links_Page,
   Index_Page,
@@ -78,7 +80,7 @@ export const schemaTypes = [...singleTypes, ...collectionTypes, ...components, .
 
 export const i18nTypes = [...singleTypes, ...collectionTypes]
   .map(type => type.name)
-  .filter(name => !['redirects'].includes(name))
+  .filter(name => !['redirects', 'analytics'].includes(name))
 
 export const singletonActions = new Set(["publish", "discardChanges", "restore"]);
 export const singletonTypes = new Set(singleTypes.map(type => type.name as string));

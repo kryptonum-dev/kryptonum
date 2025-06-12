@@ -7,6 +7,9 @@ import { sendPurchaseAccessEmail } from '@repo/emails/templates/PurchaseAccess';
 const endpointSecret = process.env.STRIPE_CHECKOUT_SESSION_COMPLETED_SECRET!;
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
+const access_link = (session_id: string, product_id: number) =>
+  `https://learn.kryptonum.eu/thank-you?session_id=${session_id}&product_id=${product_id}`
+
 export const POST: APIRoute = async ({ request }) => {
   const sig = request.headers.get('stripe-signature');
 
@@ -38,7 +41,7 @@ export const POST: APIRoute = async ({ request }) => {
       .filter((item) => item.product && (item.product as Stripe.Product).metadata?.download_url)
       .map((item, index) => ({
         name: (item.product as Stripe.Product).name,
-        link: `https://learn.kryptonum.eu/thank-you?session_id=${session.id}&product_id=${index}`,
+        link: access_link(session.id, index),
       }));
 
     if (!products || products.length === 0) {

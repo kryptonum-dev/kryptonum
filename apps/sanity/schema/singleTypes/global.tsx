@@ -276,33 +276,6 @@ export default defineType({
         }),
       ],
     }),
-    defineField({
-      name: 'analytics',
-      title: 'Analytics',
-      type: 'object',
-      options: { collapsible: true },
-      description: 'Configure analytics tracking tools to monitor page performance and user behavior. Leave fields empty to disable tracking.',
-      fields: [
-        defineField({
-          name: 'gtm_id',
-          type: 'string',
-          title: 'Google Tag Manager ID',
-          description: 'Format: GTM-XXXXXX. Container ID for managing analytics tools (GA4, Facebook Pixel, etc.).',
-        }),
-        defineField({
-          name: 'meta_pixel_id',
-          type: 'string',
-          title: 'Meta (Facebook) Pixel ID',
-          description: 'Format: XXXXXXXXXX. Used for Meta Pixel and Conversion API tracking.',
-        }),
-        defineField({
-          name: 'meta_conversion_token',
-          type: 'string',
-          title: 'Meta Conversion API Token',
-          description: 'Secret token for server-side Meta Conversion API tracking.',
-        }),
-      ],
-    }),
   ],
   preview: {
     select: {
