@@ -8,11 +8,15 @@ const product_id = Astro.url.searchParams.get('product_id')
 if (!session_id) return Astro.rewrite('/404')
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-const session = await stripe.checkout.sessions.retrieve(session_id, {
-  expand: ['line_items.data.price.product'],
-})
 
-if (!session) return Astro.rewrite('/404')
+let session
+try {
+  session = await stripe.checkout.sessions.retrieve(session_id, {
+    expand: ['line_items.data.price.product'],
+  })
+} catch {
+  return Astro.rewrite('/404')
+}
 
 const lineItems = session.line_items?.data || []
 const products = lineItems
@@ -85,7 +89,19 @@ const tracking_data = {
 
   // @ts-ignore
   const tracking_data = trackingData
+
   document.addEventListener('DOMContentLoaded', () => {
+    const sessionId = new URLSearchParams(window.location.search).get('session_id')
+    if (!sessionId) return
+
+    const trackedSessions =
+      document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('tracked_sessions='))
+        ?.split('=')[1] || ''
+
+    if (trackedSessions.includes(sessionId)) return
+
     trackEvent({
       user_data: {
         email: tracking_data.user_data.email,
@@ -113,5 +129,8 @@ const tracking_data = {
         },
       },
     })
+
+    const newTrackedSessions = trackedSessions ? `${trackedSessions},${sessionId}` : sessionId
+    document.cookie = `tracked_sessions=${newTrackedSessions}; path=/; max-age=2592000`
   })
 </script>
