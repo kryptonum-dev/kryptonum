@@ -264,7 +264,7 @@ const groups = [
   function setCookie(name, value, days = 1) {
     const date = new Date(Date.now() + 86400000 * days)
     const expires = days ? `; expires=${date.toUTCString()}` : ''
-    document.cookie = `${name}=${encodeURIComponent(value)}${expires}; SameSite=Strict`
+    document.cookie = `${name}=${encodeURIComponent(value)}${expires}; SameSite=Strict; path=/`
   }
   function setConsent(consent) {
     const consentMode = {

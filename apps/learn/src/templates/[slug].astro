@@ -14,10 +14,20 @@ interface Props extends FetchDataReturn {
 }
 
 export async function fetchData(lang: Language, slug: string) {
-  const page = await sanityFetch<{ name: string; components: ComponentsProps }>({
+  const page = await sanityFetch<{
+    name: string
+    components: ComponentsProps
+    analytics: { name: string; product_id: string; price: number; currency: string }
+  }>({
     query: `
       *[_type == "ShopProduct_Collection" && slug.current == $slug && language == $language][0] {
         name,
+        "analytics": {
+          name,
+          "product_id": analytics.product_id,
+          "price": analytics.price,
+          "currency": analytics.currency,
+        },
         ${Components_Query}
       }
     `,
@@ -53,3 +63,121 @@ const breadcrumbs = [{ name: page.name, path: slug }]
   <Breadcrumbs data={breadcrumbs} isHidden={true} />
   <Components data={page.components} />
 </Layout>
+
+<script
+  is:inline
+  define:vars={{
+    productName: page.analytics.name,
+    productId: page.analytics.product_id,
+    price: page.analytics.price,
+    currency: page.analytics.currency,
+  }}
+>
+  window.productData = {
+    productId,
+    productName,
+    price,
+    currency,
+  }
+</script>
+
+<script>
+  import { trackEvent } from '@pages/api/analytics/track-event'
+
+  // @ts-ignore
+  const { productId, productName, price, currency } = window.productData
+  document.addEventListener('DOMContentLoaded', () => {
+    trackEvent({
+      meta: {
+        event_name: 'ViewContent',
+        content_name: productName,
+        params: {
+          content_type: 'product',
+          content_ids: [productId],
+          value: price,
+          currency: currency,
+        },
+      },
+      ga: {
+        event_name: 'view_item',
+        params: {
+          currency: currency,
+          value: price,
+          items: [
+            {
+              item_id: productId,
+              item_name: productName,
+              price: price,
+              quantity: 1,
+            },
+          ],
+        },
+      },
+    })
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement
+      const link = target.closest('a') as HTMLAnchorElement
+      if (link && link.href) {
+        const isStripeCheckout = link.href.includes('buy.stripe.com') || link.href.includes('checkout.stripe.com')
+        if (isStripeCheckout) {
+          trackEvent({
+            meta: {
+              event_name: 'AddToCart',
+              content_name: productName,
+              params: {
+                content_type: 'product',
+                content_ids: [productId],
+                value: price,
+                currency: currency,
+              },
+            },
+            ga: {
+              event_name: 'add_to_cart',
+              params: {
+                currency: currency,
+                value: price,
+                items: [
+                  {
+                    item_id: productId,
+                    item_name: productName,
+                    price: price,
+                    quantity: 1,
+                  },
+                ],
+              },
+            },
+          })
+          trackEvent({
+            meta: {
+              event_name: 'InitiateCheckout',
+              content_name: productName,
+              params: {
+                content_type: 'product',
+                content_ids: [productId],
+                value: price,
+                currency: currency,
+                num_items: 1,
+              },
+            },
+            ga: {
+              event_name: 'begin_checkout',
+              params: {
+                currency: currency,
+                value: price,
+                items: [
+                  {
+                    item_id: productId,
+                    item_name: productName,
+                    price: price,
+                    quantity: 1,
+                  },
+                ],
+              },
+            },
+          })
+        }
+      }
+    })
+  })
+</script>

@@ -32,6 +32,46 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'analytics',
+      type: 'object',
+      title: 'Analytics',
+      fields: [
+        defineField({
+          name: 'product_id',
+          type: 'string',
+          title: 'Product ID',
+          description: 'The Stripe product ID. You can find that in Product catalog -> Choose product -> Product details -> Product ID on the right side „Details”',
+          validation: Rule => Rule.required(),
+        }),
+        defineField({
+          name: 'price',
+          type: 'number',
+          title: 'Price',
+          description: 'Price should be a full number, without currency symbol or decimal points.',
+          validation: Rule => Rule.required(),
+          fieldset: 'price',
+        }),
+        defineField({
+          name: 'currency',
+          type: 'string',
+          title: 'Currency',
+          description: 'Currency should be a 3-letter code, like: "USD", "EUR", "PLN"',
+          validation: Rule => Rule.required(),
+          fieldset: 'price',
+        }),
+      ],
+      fieldsets: [
+        {
+          name: 'price',
+          title: 'Price',
+          options: {
+            columns: 2,
+          },
+        },
+      ],
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'purchase_url',
       type: 'url',
       title: 'Purchase URL',
