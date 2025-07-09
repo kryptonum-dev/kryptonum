@@ -4,7 +4,16 @@ import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
 import { REGEX } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www/pages/api/contact/sendContactEmail';
+import { DOMAIN } from '@repo/shared/constants';
 import { type Language } from '@repo/shared/languages';
+import { trackEvent } from '@apps/links/src/pages/api/analytics/track-event';
+
+const shouldTrackAnalytics = () => {
+  if (typeof window !== 'undefined') {
+    return !window.location.hostname.startsWith('kryptonum.eu');
+  }
+  return false;
+};
 
 type Props = {
   children: React.ReactNode,
@@ -19,7 +28,7 @@ const translations = {
     messageLabel: 'Temat rozmowy',
     messagePlaceholder: 'Daj znać, o czym porozmawiamy',
     messageRequired: 'Temat jest wymagany',
-    legal: <>Akceptuję <a href="/pl/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">politykę prywatności</a></>,
+    legal: <>Akceptuję <a href={`${DOMAIN}/pl/polityka-prywatnosci`} target="_blank" rel="noopener noreferrer" className="link">politykę prywatności</a></>,
     legalRequired: 'Zgoda jest wymagana',
   },
   en: {
@@ -28,7 +37,7 @@ const translations = {
     messageLabel: 'Subject',
     messagePlaceholder: 'Let us know what we will talk about',
     messageRequired: 'Message is required',
-    legal: <>I accept <a href="/en/privacy-policy" target="_blank" rel="noopener noreferrer" className="link">privacy policy</a></>,
+    legal: <>I accept <a href={`${DOMAIN}/en/privacy-policy`} target="_blank" rel="noopener noreferrer" className="link">privacy policy</a></>,
     legalRequired: 'Consent is required',
   },
 }
@@ -77,6 +86,27 @@ export default function Form({ children, variant, lang, ...props }: Props) {
       setStatus('success');
       reset();
       if (typeof fathom !== 'undefined') fathom.trackEvent('contactForm_submit');
+      if (shouldTrackAnalytics()) {
+        trackEvent({
+          user_data: {
+            email: data.email as string,
+          },
+          meta: {
+            event_name: 'Lead',
+            content_name: 'contact_form',
+            params: {
+              form_variant: variant,
+            }
+          },
+          ga: {
+            event_name: 'generate_lead',
+            params: {
+              content_name: 'contact_form',
+              form_variant: variant,
+            }
+          }
+        });
+      }
     } else {
       setStatus('error');
       if (typeof fathom !== 'undefined') fathom.trackEvent('contactForm_error');
