@@ -1,3 +1,5 @@
+import { DOMAIN } from "@repo/shared/constants"
+
 export type Props = {
   email: string
   message: string
@@ -5,7 +7,7 @@ export type Props = {
 }
 
 export async function sendContactEmail({ email, message, legal }: Props): Promise<{ success: boolean }> {
-  const response = await fetch('/api/contact', {
+  const response = await fetch(`${DOMAIN}/api/contact`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, message, legal }),

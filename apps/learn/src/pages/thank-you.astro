@@ -1,0 +1,136 @@
+---
+import ThankYouPage, { fetchData, type StripeData } from '@templates/thank-you.astro'
+import Stripe from 'stripe'
+
+const session_id = Astro.url.searchParams.get('session_id')
+const product_id = Astro.url.searchParams.get('product_id')
+
+if (!session_id) return Astro.rewrite('/404')
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+
+let session
+try {
+  session = await stripe.checkout.sessions.retrieve(session_id, {
+    expand: ['line_items.data.price.product'],
+  })
+} catch {
+  return Astro.rewrite('/404')
+}
+
+const lineItems = session.line_items?.data || []
+const products = lineItems
+  .filter((item) => item.price?.product)
+  .map((item) => ({ product: item.price?.product }))
+  .filter((item) => item.product && (item.product as Stripe.Product).metadata?.download_url)
+
+const countryCode = session.customer_details?.address?.country?.toLowerCase() || 'pl'
+const lang = countryCode === 'pl' ? 'pl' : 'en'
+const slug = lang === 'pl' ? '/pl/dziekujemy' : '/en/thank-you'
+
+if (!products || products.length === 0) return Astro.rewrite(`/${lang}/404`)
+
+if (product_id !== null) {
+  const productIndex = parseInt(product_id, 10)
+  if (!isNaN(productIndex) && productIndex >= 0 && productIndex < products.length) {
+    const product = products[productIndex].product as Stripe.Product
+    const downloadUrl = product.metadata?.download_url
+    if (downloadUrl) {
+      return Astro.redirect(downloadUrl)
+    }
+  }
+}
+
+const data = await fetchData(lang, slug)
+
+if (!data) return Astro.rewrite(`/${lang}/404`)
+
+const stripe_data = {
+  products: products.map((item) => ({
+    name: (item.product as Stripe.Product).name,
+    downloadUrl: (item.product as Stripe.Product).metadata?.download_url,
+    imageUrl:
+      (item.product as Stripe.Product).images && (item.product as Stripe.Product).images.length > 0
+        ? (item.product as Stripe.Product).images[0]
+        : null,
+  })),
+  email: session.customer_details?.email || '',
+} as StripeData
+
+const tracking_data = {
+  currency: session.currency?.toUpperCase() || 'PLN',
+  value: (session.amount_total || 0) / 100,
+  contents: await Promise.all(
+    lineItems.map(async (item) => {
+      const product = item.price?.product as Stripe.Product
+      return {
+        id: product.id,
+        quantity: item.quantity || 1,
+        item_price: (item.price?.unit_amount || 0) / 100,
+      }
+    })
+  ),
+  content_type: lineItems.length > 1 ? 'product_group' : 'product',
+  user_data: {
+    email: session.customer_details?.email || '',
+    country: session.customer_details?.address?.country || '',
+  },
+}
+---
+
+<ThankYouPage {...data} stripe_data={stripe_data} />
+
+<script is:inline define:vars={{ tracking_data }}>
+  window.trackingData = tracking_data
+</script>
+
+<script>
+  import { trackEvent } from '@pages/api/analytics/track-event'
+
+  // @ts-ignore
+  const tracking_data = trackingData
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const sessionId = new URLSearchParams(window.location.search).get('session_id')
+    if (!sessionId) return
+
+    const trackedSessions =
+      document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('tracked_sessions='))
+        ?.split('=')[1] || ''
+
+    if (trackedSessions.includes(sessionId)) return
+
+    trackEvent({
+      user_data: {
+        email: tracking_data.user_data.email,
+      },
+      meta: {
+        event_name: 'Purchase',
+        params: {
+          currency: tracking_data.currency,
+          value: tracking_data.value,
+          content_type: tracking_data.content_type,
+          contents: tracking_data.contents,
+          num_items: tracking_data.contents.length,
+        },
+      },
+      ga: {
+        event_name: 'purchase',
+        params: {
+          value: tracking_data.value,
+          currency: tracking_data.currency,
+          items: tracking_data.contents.map((item: any) => ({
+            item_id: item.id,
+            quantity: item.quantity,
+            price: item.item_price,
+          })),
+        },
+      },
+    })
+
+    const newTrackedSessions = trackedSessions ? `${trackedSessions},${sessionId}` : sessionId
+    document.cookie = `tracked_sessions=${newTrackedSessions}; path=/; max-age=2592000`
+  })
+</script>

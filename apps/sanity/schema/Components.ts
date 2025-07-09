@@ -30,6 +30,7 @@ import PersonIntroduction from "./components/PersonIntroduction";
 import PersonEmojisIntroduction from "./components/PersonEmojisIntroduction";
 import StatsHighlight from "./components/StatsHighlight";
 import TeamIntroduction from "./components/TeamIntroduction";
+import FullWidthImage from "./components/FullWidthImage";
 import CenteredMediaTextSection from "./components/CenteredMediaTextSection";
 import DetailedInfoAndStats from "./components/DetailedInfoAndStats";
 import CaseStudyShowcase from "./components/CaseStudyShowcase";
@@ -45,7 +46,18 @@ import TagsLine from "./components/TagsLine";
 import StagesAccordion from "./components/StagesAccordion";
 import Pricing from "./components/Pricing";
 import PricingRange from "./components/PricingRange";
+import PricingTiles from "./components/PricingTiles";
 import ShowcaseProjectsExpand from "./components/ShowcaseProjectsExpand";
+import ExpertProfiles from "./components/ExpertProfiles";
+import GridIconsList from "./components/GridIconsList";
+import ProductHighlight from "./components/ProductHighlight";
+import MediaIrregularShowcase from "./components/MediaIrregularShowcase";
+import FeaturedProducts from "./components/FeaturedProducts";
+import IrregularBlocksWithStats from "./components/IrregularBlocksWithStats";
+import ImageListAndMarquee from "./components/ImageListAndMarquee";
+import SimpleGridGallery from "./components/SimpleGridGallery";
+import HighlightsGrid from "./components/HighlightsGrid";
+import TestimonialsMasonry from "./components/TestimonialsMasonry";
 
 export default defineType({
   name: 'components',
@@ -83,6 +95,7 @@ export default defineType({
     PersonEmojisIntroduction,
     StatsHighlight,
     TeamIntroduction,
+    FullWidthImage,
     CenteredMediaTextSection,
     DetailedInfoAndStats,
     CaseStudyShowcase,
@@ -98,7 +111,18 @@ export default defineType({
     StagesAccordion,
     Pricing,
     PricingRange,
+    PricingTiles,
     ShowcaseProjectsExpand,
+    ExpertProfiles,
+    GridIconsList,
+    ProductHighlight,
+    MediaIrregularShowcase,
+    FeaturedProducts,
+    IrregularBlocksWithStats,
+    ImageListAndMarquee,
+    SimpleGridGallery,
+    HighlightsGrid,
+    TestimonialsMasonry,
   ],
   options: {
     insertMenu: {

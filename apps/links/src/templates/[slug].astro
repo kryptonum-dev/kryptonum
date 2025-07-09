@@ -1,0 +1,78 @@
+---
+import Layout from '@layout/Layout.astro'
+import sanityFetch from '@repo/utils/sanity.fetch'
+import metadataFetch from '@repo/utils/metadata.fetch'
+import Breadcrumbs from '@repo/ui/Breadcrumbs.astro'
+import { type Language } from '@repo/shared/languages'
+import Components, { Components_Query, type ComponentsProps } from '@repo/shared/components/index.astro'
+
+type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
+
+interface Props extends FetchDataReturn {
+  lang: Language
+  slug: string
+}
+
+export async function fetchData(lang: Language, slug: string) {
+  const page = await sanityFetch<{
+    name: string
+    components: ComponentsProps
+  }>({
+    query: `
+      *[_type == "LandingPage_Collection" && slug.current == $slug && language == $language][0] {
+        name,
+        ${Components_Query}
+      }
+    `,
+    params: { slug: slug, language: lang },
+  })
+
+  if (!page) return null
+  const metadata = await metadataFetch(slug)
+  return { page, metadata, lang, slug }
+}
+
+export async function staticPaths() {
+  const prefix: Record<Language, string> = { pl: '/pl/', en: '/en/' }
+  const pages = await sanityFetch<{ slug: string; language: Language }[]>({
+    query: `
+      *[_type == 'LandingPage_Collection'][] {
+        "slug": slug.current,
+        "language": language
+      }
+    `,
+  })
+  return pages?.map(({ slug, language }) => ({
+    params: { lang: language, slug: slug.replace(prefix[language], '') },
+  }))
+}
+
+const { page, metadata, slug } = Astro.props
+
+const breadcrumbs = [{ name: page.name, path: slug }]
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={breadcrumbs} isHidden={true} />
+  <Components data={page.components} />
+</Layout>
+
+<script>
+  import { trackEvent } from '@pages/api/analytics/track-event'
+
+  document.addEventListener('DOMContentLoaded', () => {
+    trackEvent({
+      meta: {
+        event_name: 'ViewContent',
+        content_name: document.title,
+        params: {
+          content_type: 'landing_page',
+        },
+      },
+      ga: {
+        event_name: 'page_view',
+        params: {},
+      },
+    })
+  })
+</script>

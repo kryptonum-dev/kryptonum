@@ -123,7 +123,7 @@ const { index, sectionId, heading, paragraph, cta, projects } = Astro.props
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting || entry.boundingClientRect.top <= window.innerHeight * 0.7) {
             entry.target.setAttribute('data-active', 'true')
             observer.unobserve(entry.target)
           }

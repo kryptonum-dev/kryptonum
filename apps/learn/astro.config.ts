@@ -1,18 +1,25 @@
 import { defineConfig } from "astro/config";
-import preact from '@astrojs/preact';
+import react from '@astrojs/react';
 import vercel from "@astrojs/vercel";
 import { isProductionDeployment } from "@repo/utils/is-production-deployment";
+import redirects from "../../packages/shared/src/redirects";
 
 export default defineConfig({
   site: 'https://learn.kryptonum.eu',
   integrations: [
-    preact({ compat: true }),
+    react(),
   ],
   image: {
-    remotePatterns: [{
-      protocol: "https",
-      hostname: "cdn.sanity.io"
-    }],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io"
+      },
+      {
+        protocol: "https",
+        hostname: 'files.stripe.com'
+      }
+    ],
   },
   prefetch: {
     prefetchAll: true
@@ -29,6 +36,7 @@ export default defineConfig({
       }
     }
   },
+  redirects: await redirects('learnRedirects'),
   output: "server",
   adapter: vercel({
     ...(isProductionDeployment && {

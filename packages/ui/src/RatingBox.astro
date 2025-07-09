@@ -1,0 +1,110 @@
+---
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import type { HTMLAttributes } from 'astro/types'
+
+export const RatingBox_Query = `
+  "rating": ^.rating {
+    rating,
+    text,
+    ${ImageDataQuery('avatars[]')}
+  }
+`
+
+export interface RatingBoxProps extends HTMLAttributes<'div'> {
+  rating: number
+  text: string
+  avatars: ImageDataProps[]
+}
+
+type Props = RatingBoxProps
+
+const { rating, text, avatars, ...props } = Astro.props
+
+if (!rating || !text || !avatars) return null
+
+const renderStars = (rating: number) => {
+  const fullStars = Math.floor(rating)
+  const isEmpty = rating - fullStars >= 0.5
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" fill="none" viewBox="0 0 17 16">
+      <defs>
+        <linearGradient id="RatingBox-star" x1="14.916" x2="1.04" y1="1.332" y2="2.216" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#2DD282"></stop>
+          <stop offset="1" stop-color="#90F4E8"></stop>
+        </linearGradient>
+        <path id="star-path" d="M6.602 3.604C7.446 2.09 7.868 1.332 8.5 1.332c.63 0 1.053.757 1.898 2.272l.218.392c.24.43.36.646.547.788.187.142.42.195.886.3l.424.096c1.64.371 2.46.557 2.655 1.184.195.627-.364 1.28-1.482 2.588l-.289.338c-.318.372-.476.557-.548.787-.071.23-.047.478 0 .973l.044.452c.17 1.744.254 2.616-.257 3.003-.51.388-1.278.035-2.813-.672l-.398-.183c-.436-.201-.654-.301-.885-.301-.232 0-.45.1-.886.3l-.397.184c-1.536.707-2.303 1.06-2.814.672-.51-.387-.426-1.26-.257-3.003l.044-.452c.048-.495.072-.743 0-.973-.071-.23-.23-.415-.548-.787l-.289-.338c-1.118-1.307-1.677-1.96-1.482-2.588.195-.627 1.015-.813 2.655-1.184l.424-.096c.466-.105.7-.158.886-.3.187-.142.307-.357.547-.788l.219-.392Z" />
+      </defs>
+      <use href="#star-path" fill="url(#RatingBox-star)" />
+    </svg>
+    ${[...Array(4)].map((_, i) => `<svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" fill="none" viewBox="0 0 17 16"><use href="#star-path" ${i + 1 < fullStars || (i + 1 === fullStars && isEmpty) ? 'fill' : 'stroke'}="url(#RatingBox-star)" /></svg>`).join('')}`
+}
+---
+
+<ui-rating-box {...props}>
+  <div class="avatars">
+    {avatars?.map((avatar: ImageDataProps) => <Image {...avatar} sizes="40px" />)}
+  </div>
+  <div>
+    <div class="rating">
+      <span>{rating.toFixed(1)}</span>
+      <div class="stars">
+        <Fragment set:html={renderStars(rating)} />
+      </div>
+    </div>
+    <p class="text">{text}</p>
+  </div>
+</ui-rating-box>
+
+<style lang="scss">
+  ui-rating-box {
+    border-radius: 0.5rem;
+    font-size: var(--typography-body-m, 0.875rem);
+    overflow: hidden;
+    border: 1px solid var(--primary-900, #001414);
+    background: var(--neutral-900, #000103);
+    padding: 0.5rem;
+    display: inline-grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    .avatars {
+      display: flex;
+      img {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 2px solid var(--primary-900, #001414);
+        &:not(:last-child) {
+          margin-right: -14px;
+        }
+      }
+    }
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 0.62rem;
+      .stars {
+        display: flex;
+        align-items: center;
+        gap: 0.38rem;
+        position: relative;
+        &::before {
+          content: '';
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate3d(-50%, -50%, 0);
+          width: 5rem;
+          height: 5rem;
+          background-color: var(--primary-600, #042b2b);
+          mix-blend-mode: plus-lighter;
+          filter: blur(16px);
+          border-radius: 50%;
+        }
+      }
+    }
+    .text {
+      color: var(--neutral-400, #c6cdcc);
+      line-height: 1.5;
+    }
+  }
+</style>

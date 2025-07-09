@@ -2,10 +2,34 @@ export const prerender = false
 
 import type { APIRoute } from "astro";
 import type { Props } from "./sendContactEmail";
-import { REGEX } from "@repo/shared/constants";
+import { DOMAIN, REGEX } from "@repo/shared/constants";
 import { htmlToString } from "@repo/utils/html-to-string";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
+
+const isAllowedOrigin = (origin: string | null): boolean => {
+  if (!origin) return false;
+  const domainPart = DOMAIN.replace('https://', '');
+  return origin === DOMAIN || new RegExp(`^https://.+\\.${domainPart.replace('.', '\\.')}$`).test(origin);
+};
+
+const getCorsHeaders = (origin: string | null) => {
+  const allowedOrigin = isAllowedOrigin(origin) ? origin : null;
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin || 'null',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+};
+
+export const OPTIONS: APIRoute = async ({ request }) => {
+  const origin = request.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+  return new Response(null, {
+    status: 200,
+    headers: corsHeaders
+  });
+};
 
 const template = ({ email, message }: Omit<Props, 'legal'>) => `
   <p>Adres email: <b>${email}</b></p>
@@ -14,13 +38,19 @@ const template = ({ email, message }: Omit<Props, 'legal'>) => `
 `;
 
 export const POST: APIRoute = async ({ request }) => {
+  const origin = request.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   const { email, message, legal } = await request.json() as Props;
 
   if (!REGEX.email.test(email) || !message || !legal) {
     return new Response(JSON.stringify({
       message: "Missing required fields",
       success: false
-    }), { status: 400 });
+    }), {
+      status: 400,
+      headers: corsHeaders
+    });
   }
 
   const htmlTemplate = template({ email, message });
@@ -51,17 +81,26 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({
         message: "Something went wrong",
         success: false
-      }), { status: 400 });
+      }), {
+        status: 400,
+        headers: corsHeaders
+      });
     }
 
     return new Response(JSON.stringify({
       message: "Successfully sent message",
       success: true
-    }), { status: 200 });
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
   } catch (error) {
     return new Response(JSON.stringify({
       message: "An error occurred while sending message",
       success: false
-    }), { status: 400 });
+    }), {
+      status: 400,
+      headers: corsHeaders
+    });
   }
 };

@@ -1,0 +1,180 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import Video, { VideoDataQuery, type VideoDataProps } from '@repo/ui/Video.astro'
+
+export const MediaIrregularShowcase_Query = `
+  _type == "MediaIrregularShowcase" => {
+    ${PortableTextQuery('heading')}
+    medias[] {
+      _type,
+      _type == "image" => ${ImageDataQuery('@')}
+      _type == "video" => ${VideoDataQuery('@')}
+    },
+  },
+`
+
+type MediaItem = { _type: 'image'; image: ImageDataProps } | (VideoDataProps & { _type: 'video' })
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  medias: MediaItem[]
+}
+
+const { index, sectionId, heading, medias } = Astro.props
+---
+
+<section class="MediaIrregularShowcase" id={sectionId}>
+  <div class="background">
+    <div class="gradient-blob gradient-blob-1"></div>
+    <div class="gradient-blob gradient-blob-2"></div>
+    <div class="gradient-blob gradient-blob-3"></div>
+  </div>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h1" />
+  </header>
+  {
+    medias && medias.length > 0 && (
+      <div class="medias">
+        {medias.map((item, mediaIndex) =>
+          item._type === 'image' ? (
+            <div class="media">
+              <Image
+                {...(item as unknown as ImageDataProps)}
+                sizes={
+                  medias.length === 1
+                    ? '100vw'
+                    : medias.length === 2
+                      ? '(max-width: 24rem) 100vw, 50vw'
+                      : '(max-width: 28rem) 100vw, 33vw'
+                }
+                priority={index === 0 && mediaIndex === 0}
+              />
+            </div>
+          ) : (
+            <div class="media">
+              <Video {...item} class="video" />
+            </div>
+          )
+        )}
+      </div>
+    )
+  }
+</section>
+
+<style lang="scss">
+  .MediaIrregularShowcase {
+    @mixin flex-item($columns, $gap) {
+      width: calc((100% - ($gap * ($columns - 1))) / $columns);
+    }
+    position: relative;
+    padding: clamp(2rem, calc(3vw / 0.48), 3rem) 0 clamp(4rem, calc(5vw / 0.48), 8rem);
+    z-index: 2;
+    .background {
+      margin: calc(clamp(2rem, calc(3vw / 0.48), 3rem) * -1) calc(var(--page-margin) * -1) 0;
+      border-radius: 2rem;
+      border: 3px solid var(--primary-700, #021d1d);
+      background: var(--background, #000103);
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 72%;
+      position: absolute;
+      overflow: hidden;
+      z-index: -1;
+      &::before {
+        content: '';
+        position: absolute;
+        width: 80%;
+        height: 100%;
+        left: 10%;
+        top: 5%;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(76, 255, 177, 0.4) 0%,
+          rgba(34, 255, 159, 0.15) 40%,
+          rgba(19, 203, 123, 0.05) 60%,
+          rgba(0, 0, 0, 0) 80%
+        );
+        filter: blur(60px);
+        z-index: 0;
+      }
+      .gradient-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        mix-blend-mode: screen;
+      }
+      .gradient-blob-1 {
+        top: -10%;
+        left: -20%;
+        width: 80%;
+        height: 90%;
+        background: radial-gradient(circle at 30% 50%, rgba(101, 255, 214, 0.5) 0%, rgba(6, 64, 64, 0.1) 70%);
+        transform: skew(-10deg, 5deg);
+      }
+      .gradient-blob-2 {
+        bottom: -20%;
+        right: -5%;
+        width: 70%;
+        height: 100%;
+        background: radial-gradient(circle at 60% 40%, rgba(34, 255, 159, 0.4) 0%, rgba(3, 82, 61, 0.08) 70%);
+        transform: skew(5deg, -5deg);
+      }
+      .gradient-blob-3 {
+        top: 15%;
+        left: 20%;
+        width: 75%;
+        height: 110%;
+        background: radial-gradient(ellipse at center, rgba(70, 223, 167, 0.3) 0%, rgba(19, 203, 123, 0.05) 60%);
+        transform: rotate(-15deg);
+        opacity: 0.8;
+      }
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 42%, #000103 90%);
+        z-index: 2;
+      }
+    }
+    header {
+      max-width: 32rem;
+      margin: 0 auto;
+      text-align: center;
+      margin-bottom: clamp(2rem, calc(3.5vw / 0.48), 4.5rem);
+    }
+    $gap: clamp(1rem, calc(1.5vw / 0.48), 2.75rem);
+    .medias {
+      margin: 0 auto;
+      max-width: 70rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: $gap;
+      .media {
+        @include flex-item(3, $gap);
+        img,
+        .video {
+          border-radius: 1.5rem;
+          aspect-ratio: 405/720;
+        }
+        &:nth-of-type(odd) {
+          margin-top: 4.5rem;
+        }
+      }
+    }
+    @media (max-width: 56rem) {
+      .medias {
+        .media {
+          @include flex-item(2, $gap);
+          &:nth-of-type(odd) {
+            margin-top: 0;
+          }
+        }
+      }
+    }
+  }
+</style>

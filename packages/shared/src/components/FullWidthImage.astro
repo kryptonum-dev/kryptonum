@@ -1,0 +1,21 @@
+---
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+
+export const FullWidthImage_Query = `
+  _type == "FullWidthImage" => {
+    ${ImageDataQuery('img')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  img: ImageDataProps
+}
+
+const { index, sectionId, img } = Astro.props
+---
+
+<section class="FullWidthImage" id={sectionId}>
+  <Image {...img} sizes="100vw" priority={index === 0} class="img" />
+</section>

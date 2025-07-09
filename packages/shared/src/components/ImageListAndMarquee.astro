@@ -1,0 +1,195 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+
+export const ImageListAndMarquee_Query = `
+  _type == "ImageListAndMarquee" => {
+    theme,
+    marqueeString,
+    ${ImageDataQuery('img')}
+    list[],
+    ${PortableTextQuery('paragraph')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  theme: 'problems' | 'solutions'
+  marqueeString: string
+  img: ImageDataProps
+  list: string[]
+  paragraph: PortableTextValue
+}
+
+const { sectionId, theme, marqueeString, img, list, paragraph } = Astro.props
+---
+
+<section class="ImageListAndMarquee" id={sectionId} data-theme={theme}>
+  <div class="image-wrapper">
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-wrapper">
+        {Array.from({ length: 10 }).map(() => <span class="marquee-item">{marqueeString}</span>)}
+      </div>
+    </div>
+    <Image {...img} sizes="(max-width: 46rem) 100vw, 46rem" />
+  </div>
+  <ul class="list">
+    {
+      list.map((item) => (
+        <li class="list-item">
+          {theme === 'problems' ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="21"
+              fill="none"
+              viewBox="0 0 20 21"
+              aria-hidden="true">
+              <path
+                fill="url(#paint0_linear_9984_44328)"
+                fill-rule="evenodd"
+                d="M18.333 10.57a8.333 8.333 0 1 1-16.667 0 8.333 8.333 0 0 1 16.667 0ZM7.475 8.046a.625.625 0 0 1 .883 0L10 9.687l1.641-1.642a.625.625 0 0 1 .884.884l-1.641 1.642 1.641 1.641a.625.625 0 0 1-.884.884L10 11.454l-1.642 1.642a.625.625 0 1 1-.883-.884l1.64-1.641-1.64-1.642a.625.625 0 0 1 0-.884Z"
+                clip-rule="evenodd"
+              />
+              <defs>
+                <linearGradient
+                  id="paint0_linear_9984_44328"
+                  x1="18.021"
+                  x2=".675"
+                  y1="2.237"
+                  y2="3.342"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#D44A84" />
+                  <stop offset=".521" stop-color="#DA2B53" />
+                  <stop offset="1" stop-color="#BF3A3A" />
+                </linearGradient>
+              </defs>
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="21"
+              fill="none"
+              viewBox="0 0 20 21"
+              aria-hidden="true">
+              <path
+                fill="url(#paint0_linear_9984_44320)"
+                fill-rule="evenodd"
+                d="M18.333 10.57a8.333 8.333 0 1 1-16.667 0 8.333 8.333 0 0 1 16.667 0Zm-4.975-2.525a.625.625 0 0 1 0 .884l-4.166 4.167a.625.625 0 0 1-.884 0L6.64 11.429a.625.625 0 1 1 .884-.884L8.75 11.77l1.862-1.862 1.863-1.863a.625.625 0 0 1 .883 0Z"
+                clip-rule="evenodd"
+              />
+              <defs>
+                <linearGradient
+                  id="paint0_linear_9984_44320"
+                  x1="18.021"
+                  x2=".675"
+                  y1="2.237"
+                  y2="3.342"
+                  gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#2DD282" />
+                  <stop offset="1" stop-color="#90F4E8" />
+                </linearGradient>
+              </defs>
+            </svg>
+          )}
+          <span>{item}</span>
+        </li>
+      ))
+    }
+  </ul>
+  {paragraph && <PortableText value={paragraph} class="paragraph" />}
+</section>
+
+<style lang="scss">
+  .ImageListAndMarquee {
+    position: relative;
+    padding: clamp(4rem, calc(6vw / 0.48), 6rem) 0;
+    max-width: 46rem;
+    margin: 0 auto;
+    .image-wrapper {
+      position: relative;
+      .marquee {
+        z-index: -1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-2deg);
+        margin: 0 auto;
+        max-width: 160rem;
+        overflow: hidden;
+        .marquee-wrapper {
+          display: flex;
+          width: max-content;
+          justify-content: space-between;
+          gap: 1.5rem;
+          @media (prefers-reduced-motion: no-preference) {
+            animation: ImageListAndMarquee-marquee 20s linear infinite;
+          }
+          @keyframes ImageListAndMarquee-marquee {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          .marquee-item {
+            border-radius: 0.28125rem;
+            font-size: var(--typography-body-2xl, 1.25rem);
+            padding: 0.5rem;
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+    .list {
+      border-radius: 1rem;
+      padding: clamp(1rem, calc(1.5vw / 0.48), 2rem);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(0.62rem, calc(1vw / 0.48), 1.5rem) clamp(1rem, calc(1.5vw / 0.48), 2rem);
+      li {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.5rem;
+        color: var(--neutral-400, #c6cdcc);
+        svg {
+          margin-top: 0.21rem;
+        }
+      }
+    }
+    &[data-theme='problems'] {
+      .marquee-item {
+        background-color: var(--error-600, #380713);
+      }
+      .list {
+        background-color: var(--error-600, #380713);
+      }
+    }
+    &[data-theme='solutions'] {
+      .marquee-item {
+        background-color: var(--primary-600, #042b2b);
+      }
+      .list {
+        background-color: var(--primary-600, #042b2b);
+      }
+    }
+    .paragraph {
+      padding: 0 clamp(1rem, calc(1.5vw / 0.48), 2.5rem);
+      color: var(--neutral-400, #c6cdcc);
+      margin-top: clamp(0.75rem, calc(1vw / 0.48), 1.5rem);
+    }
+    @media (max-width: 34rem) {
+      .image-wrapper {
+        .marquee {
+          top: 0%;
+        }
+      }
+      .list {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+</style>

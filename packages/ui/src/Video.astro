@@ -9,7 +9,7 @@ type Props = {
 
 const { playbackId, aspectRatio, hideControls, ...props } = Astro.props
 
-const aspect_ratio = aspectRatio.replace(':', ' / ')
+const aspect_ratio = aspectRatio?.replace(':', ' / ')
 
 export type VideoDataProps = Props
 

@@ -43,6 +43,9 @@ import CenteredMediaTextSection, {
 import DetailedInfoAndStats, { DetailedInfoAndStats_Query } from '@repo/shared/components/DetailedInfoAndStats.astro'
 import CaseStudyShowcase, { CaseStudyShowcase_Query } from '@repo/shared/components/CaseStudyShowcase.astro'
 import MediaShowcase, { MediaShowcase_Query } from '@repo/shared/components/MediaShowcase.astro'
+import MediaIrregularShowcase, {
+  MediaIrregularShowcase_Query,
+} from '@repo/shared/components/MediaIrregularShowcase.astro'
 import CompareTable, { CompareTable_Query } from '@repo/shared/components/CompareTable.astro'
 import Timeline, { Timeline_Query } from '@repo/shared/components/Timeline.astro'
 import NetworkedShowcase, { NetworkedShowcase_Query } from '@repo/shared/components/NetworkedShowcase.astro'
@@ -54,9 +57,22 @@ import TagsLine, { TagsLine_Query } from '@repo/shared/components/TagsLine.astro
 import StagesAccordion, { StagesAccordion_Query } from '@repo/shared/components/StagesAccordion.astro'
 import Pricing, { Pricing_Query } from '@repo/shared/components/Pricing.astro'
 import PricingRange, { PricingRange_Query } from '@repo/shared/components/PricingRange.astro'
+import PricingTiles, { PricingTiles_Query } from '@repo/shared/components/PricingTiles.astro'
 import ShowcaseProjectsExpand, {
   ShowcaseProjectsExpand_Query,
 } from '@repo/shared/components/ShowcaseProjectsExpand.astro'
+import ExpertProfiles, { ExpertProfiles_Query } from '@repo/shared/components/ExpertProfiles.astro'
+import FullWidthImage, { FullWidthImage_Query } from '@repo/shared/components/FullWidthImage.astro'
+import GridIconsList, { GridIconsList_Query } from '@repo/shared/components/GridIconsList.astro'
+import ProductHighlight, { ProductHighlight_Query } from '@repo/shared/components/ProductHighlight.astro'
+import FeaturedProducts, { FeaturedProducts_Query } from '@repo/shared/components/FeaturedProducts.astro'
+import IrregularBlocksWithStats, {
+  IrregularBlocksWithStats_Query,
+} from '@repo/shared/components/IrregularBlocksWithStats.astro'
+import ImageListAndMarquee, { ImageListAndMarquee_Query } from '@repo/shared/components/ImageListAndMarquee.astro'
+import SimpleGridGallery, { SimpleGridGallery_Query } from '@repo/shared/components/SimpleGridGallery.astro'
+import HighlightsGrid, { HighlightsGrid_Query } from '@repo/shared/components/HighlightsGrid.astro'
+import TestimonialsMasonry, { TestimonialsMasonry_Query } from '@repo/shared/components/TestimonialsMasonry.astro'
 
 const components = {
   SimpleCtaSection,
@@ -94,6 +110,7 @@ const components = {
   DetailedInfoAndStats,
   CaseStudyShowcase,
   MediaShowcase,
+  MediaIrregularShowcase,
   CompareTable,
   Timeline,
   NetworkedShowcase,
@@ -105,7 +122,18 @@ const components = {
   StagesAccordion,
   Pricing,
   PricingRange,
+  PricingTiles,
   ShowcaseProjectsExpand,
+  ExpertProfiles,
+  FullWidthImage,
+  GridIconsList,
+  ProductHighlight,
+  FeaturedProducts,
+  IrregularBlocksWithStats,
+  ImageListAndMarquee,
+  SimpleGridGallery,
+  HighlightsGrid,
+  TestimonialsMasonry,
 }
 
 type ComponentsMap = {
@@ -162,6 +190,7 @@ export const Components_Query = /* groq */ `
     ${DetailedInfoAndStats_Query}
     ${CaseStudyShowcase_Query}
     ${MediaShowcase_Query}
+    ${MediaIrregularShowcase_Query}
     ${CompareTable_Query}
     ${Timeline_Query}
     ${NetworkedShowcase_Query}
@@ -173,7 +202,18 @@ export const Components_Query = /* groq */ `
     ${StagesAccordion_Query}
     ${Pricing_Query}
     ${PricingRange_Query}
+    ${PricingTiles_Query}
     ${ShowcaseProjectsExpand_Query}
+    ${ExpertProfiles_Query}
+    ${FullWidthImage_Query}
+    ${GridIconsList_Query}
+    ${ProductHighlight_Query}
+    ${FeaturedProducts_Query}
+    ${IrregularBlocksWithStats_Query}
+    ${ImageListAndMarquee_Query}
+    ${SimpleGridGallery_Query}
+    ${HighlightsGrid_Query}
+    ${TestimonialsMasonry_Query}
   },
 `
 ---

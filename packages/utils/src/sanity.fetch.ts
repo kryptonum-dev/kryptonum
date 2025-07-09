@@ -9,9 +9,9 @@ export const client = createClient({
   projectId: 'k3p1raj0',
   dataset: 'production',
   apiVersion: '2025-04-24',
-  useCdn: false,
+  useCdn: true,
   perspective: isProductionDeployment ? 'published' : 'drafts',
-  token: SANITY_API_TOKEN
+  token: SANITY_API_TOKEN,
 })
 
 export default async function sanityFetch<QueryResponse>({

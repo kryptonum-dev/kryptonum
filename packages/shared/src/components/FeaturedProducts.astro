@@ -1,0 +1,229 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import Button, { type ButtonDataProps, ButtonDataQuery } from '@repo/ui/Button'
+import { type Language } from '@repo/shared/languages'
+
+export const ProductItem_Query = /* groq */ `
+  name,
+  description,
+  ${ImageDataQuery('thumbnail')}
+  "url": purchase_url,
+  "rating": rating.rating,
+  "avatars": ${ImageDataQuery('rating.avatars[]')}
+  "download_count": rating.download_count,
+`
+
+export const FeaturedProducts_Query = /* groq */ `
+  ${PortableTextQuery('heading')}
+  ${PortableTextQuery('paragraph')}
+  ${ButtonDataQuery('cta')}
+  "products": coalesce(
+    products[] -> {
+      ${ProductItem_Query}
+    },
+    *[_type == 'ShopProduct_Collection' && language == $language] | order(_createdAt desc)[0..1] {
+      ${ProductItem_Query}
+    },
+  ),
+`
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    productCta: 'Zgarnij ebooka',
+    productDownloads: 'pobrań',
+  },
+  en: {
+    productCta: 'Grab the ebook',
+    productDownloads: 'downloads',
+  },
+}
+const t = translations[lang]
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  cta: ButtonDataProps
+  products: Array<{
+    name: string
+    description: string
+    thumbnail: ImageDataProps
+    url: string
+    rating: number
+    avatars: ImageDataProps[]
+    download_count: string
+  }>
+}
+
+const { index, sectionId, heading, paragraph, cta, products } = Astro.props
+---
+
+<section class="FeaturedProducts" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+    <PortableText value={paragraph} class="paragraph" />
+    <Button {...cta} />
+  </header>
+  <div class="products">
+    {
+      products?.map(({ name, description, thumbnail, url, rating, avatars, download_count }, productsIndex) => (
+        <article class="item">
+          <div class="image-wrapper">
+            <Image
+              {...thumbnail}
+              sizes="(max-width: 46rem) 100vw, (max-width: 71rem) 19rem, 30vw"
+              loading={index === 0 && productsIndex === 0 ? 'eager' : 'lazy'}
+            />
+            <div class="metadata">
+              {rating && (
+                <p class="rating" aria-label={`Ocenione na ${rating} w skali od 1 do 5`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" fill="none" viewBox="0 0 12 13">
+                    <path
+                      fill="url(#paint0_linear_9975_23291)"
+                      d="M4.577 3.204C5.21 2.068 5.527 1.5 6 1.5c.473 0 .79.568 1.423 1.704l.164.294c.18.323.27.484.41.59.14.107.316.147.665.226l.318.072c1.23.278 1.845.417 1.991.888.147.47-.273.96-1.111 1.941l-.217.254c-.238.278-.357.418-.41.59-.055.172-.037.358 0 .73l.032.338c.127 1.308.19 1.962-.193 2.253-.383.29-.958.026-2.11-.504l-.298-.138c-.327-.15-.49-.226-.664-.226-.173 0-.337.076-.664.226l-.298.138c-1.152.53-1.727.795-2.11.504-.383-.29-.32-.945-.193-2.253l.032-.338c.037-.372.055-.558 0-.73-.053-.172-.172-.312-.41-.59l-.217-.254c-.838-.98-1.258-1.47-1.111-1.941.146-.47.76-.61 1.99-.888l.319-.072c.35-.079.524-.119.664-.225.14-.107.23-.268.41-.59l.165-.295Z"
+                    />
+                    <defs>
+                      <linearGradient
+                        id="paint0_linear_9975_23291"
+                        x1="10.813"
+                        x2=".405"
+                        y1="1.5"
+                        y2="2.163"
+                        gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#EBB523" />
+                        <stop offset="1" stop-color="#FFCE48" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  {rating}/5
+                </p>
+              )}
+              <div class="avatars">
+                {avatars.map((avatar) => (
+                  <Image {...avatar} sizes="24px" />
+                ))}
+                <span class="download-count">
+                  {download_count} {t.productDownloads}
+                </span>
+              </div>
+            </div>
+          </div>
+          <header>
+            <h3 class="name">{name}</h3>
+            <p class="description">{description}</p>
+            <Button href={url} linkType="external" className="cta">
+              {t.productCta}
+            </Button>
+          </header>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style lang="scss">
+  .FeaturedProducts {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    align-items: center;
+    gap: 3rem 1.25rem;
+    > header {
+      .paragraph {
+        margin: clamp(1rem, calc(1.25vw / 0.48), 1.25rem) 0 clamp(1.5rem, calc(1.5vw / 0.48), 3rem);
+      }
+    }
+    .products {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, calc(1.25vw / 0.48), 1.25rem);
+      .item {
+        border-radius: 0.25rem;
+        border: 1px solid var(--primary-500, #064040);
+        display: flex;
+        flex-direction: column;
+        .image-wrapper {
+          position: relative;
+          margin: clamp(1rem, calc(1vw / 0.48), 1.25rem);
+          margin-bottom: 0.5rem;
+          img {
+            aspect-ratio: 4/3;
+            object-fit: contain;
+            background-color: var(--primary-900, #001414);
+          }
+          .metadata {
+            position: absolute;
+            left: 0.75rem;
+            bottom: 0.75rem;
+            font-size: var(--typography-body-s, 0.75rem);
+            color: var(--neutral-400, #c6cdcc);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            .rating {
+              display: flex;
+              align-items: center;
+              gap: 0.38rem;
+              background: rgba(0, 1, 3, 0.8);
+              padding: 0.22rem 0.5rem 0.22rem 0.38rem;
+              border-radius: 3rem;
+            }
+            .avatars {
+              border-radius: 3rem;
+              background: rgba(0, 1, 3, 0.8);
+              padding: 0.12rem 0.5rem 0.12rem 0.12rem;
+              display: flex;
+              align-items: center;
+              img {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                border: 1px solid var(--primary-500, #064040);
+                &:not(:first-child) {
+                  margin-left: -0.25rem;
+                }
+              }
+              .download-count {
+                margin-left: 0.38rem;
+              }
+            }
+          }
+        }
+        header {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          padding: clamp(1rem, calc(1vw / 0.48), 1.25rem);
+          .name {
+            font-size: var(--typography-body-2xl, 1.25rem);
+          }
+          .description {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            color: var(--neutral-400, #c6cdcc);
+            font-size: var(--typography-body-m, 0.875rem);
+            margin: 0.5rem 0 1.75rem;
+          }
+          .cta {
+            margin-top: auto;
+          }
+        }
+      }
+    }
+    @media (max-width: 71rem) {
+      grid-template-columns: 1fr;
+      max-width: 38rem;
+      margin: 0 auto;
+    }
+    @media (max-width: 46rem) {
+      .products {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+</style>

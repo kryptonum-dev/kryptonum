@@ -52,7 +52,7 @@ const { index, sectionId, email, groupId, img, heading, paragraph, state } = Ast
   <div class="wrapper">
     <Image {...img} sizes="(max-width: 768px) 320px, 426px" priority={index === 0} class="img" />
     <header>
-      <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+      <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
       <PortableText value={paragraph} />
     </header>
     <FormWrapper state={state} email={email} groupId={groupId} />

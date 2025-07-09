@@ -1,0 +1,131 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+
+export const HighlightsGrid_Query = `
+  _type == "HighlightsGrid" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    items[] {
+      ${PortableTextQuery('title')}
+      ${ImageDataQuery('img')}
+    },
+    ${PortableTextQuery('additionalInfo')}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph: PortableTextValue
+  items: Array<{
+    title: PortableTextValue
+    img: ImageDataProps
+  }>
+  additionalInfo?: PortableTextValue
+}
+
+const { index, sectionId, heading, paragraph, items, additionalInfo } = Astro.props
+---
+
+<section class="HighlightsGrid" id={sectionId}>
+  <header>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h1" />
+    <PortableText value={paragraph} class="paragraph" />
+  </header>
+  <div class="grid">
+    {
+      items?.map(({ title, img }, itemIndex) => (
+        <div class="grid-item">
+          <PortableText value={title} heading="h3" class="title" />
+          <Image
+            {...img}
+            sizes={
+              itemIndex === 0
+                ? '(max-width: 37rem) 100vw, (max-width: 63rem) 40rem, 66vw'
+                : '(max-width: 37rem) 100vw, (max-width: 63rem) 20rem, 33vw'
+            }
+            priority={index === 0 && itemIndex === 0}
+          />
+        </div>
+      ))
+    }
+  </div>
+  {additionalInfo && <PortableText value={additionalInfo} class="additional-info" />}
+</section>
+
+<style lang="scss">
+  .HighlightsGrid {
+    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    header {
+      text-align: center;
+      margin-bottom: clamp(2rem, calc(3vw / 0.48), 3.5rem);
+      .heading {
+        max-width: 36rem;
+        margin: 0 auto 0.75rem;
+      }
+      .paragraph {
+        max-width: 40.375rem;
+        margin: 0 auto;
+        color: var(--neutral-400, #c6cdcc);
+      }
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: clamp(0.5rem, calc(0.5vw / 0.48), 0.75rem);
+      .grid-item {
+        border: 1px solid var(--primary-500, #064040);
+        border-radius: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        &:nth-child(1) {
+          grid-column: span 2;
+          .title {
+            font-size: var(--typography-heading-xl, 1.875rem);
+          }
+        }
+        &:nth-child(1),
+        &:nth-child(2) {
+          img {
+            padding-left: clamp(1rem, calc(2vw / 0.48), 2rem);
+          }
+        }
+        .title {
+          font-size: var(--typography-body-2xl, 1.25rem);
+          margin: clamp(1rem, calc(2vw / 0.48), 2rem);
+          max-width: 32rem;
+        }
+        img {
+          margin-top: auto;
+          border-radius: 0.75rem 0rem 0rem 0rem;
+          display: block;
+        }
+      }
+      @media (max-width: 63rem) {
+        display: block;
+        columns: 2;
+        max-width: 40rem;
+        margin: 0 auto;
+        .grid-item {
+          break-inside: avoid;
+          margin-bottom: clamp(0.5rem, calc(0.5vw / 0.48), 0.75rem);
+          &:nth-child(1) {
+            column-span: all;
+          }
+        }
+      }
+      @media (max-width: 37rem) {
+        columns: 1;
+      }
+    }
+    .additional-info {
+      max-width: 40rem;
+      margin: clamp(1.5rem, calc(2vw / 0.48), 2rem) auto 0;
+      text-align: center;
+      color: var(--neutral-400, #c6cdcc);
+    }
+  }
+</style>

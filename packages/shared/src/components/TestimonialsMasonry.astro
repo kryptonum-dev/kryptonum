@@ -1,0 +1,335 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import Video, { VideoDataQuery, type VideoDataProps } from '@repo/ui/Video.astro'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
+import RatingBox, { RatingBox_Query, type RatingBoxProps } from '@repo/ui/RatingBox.astro'
+import type { Language } from '@repo/shared/languages'
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    loadMore: 'Wczytaj więcej',
+  },
+  en: {
+    loadMore: 'Load more',
+  },
+}
+const t = translations[lang]
+
+export const TestimonialsMasonry_Query = `
+  _type == "TestimonialsMasonry" => {
+    ${PortableTextQuery('heading')}
+    badge,
+    testimonials[] {
+      type,
+      type == "text" => {
+        ${ImageDataQuery('img')}
+        name,
+        position,
+        ${PortableTextQuery('review')}
+        date,
+        ${ButtonDataQuery('cta')}
+      },
+      type == "video" => {
+        ${VideoDataQuery('video')}
+      }
+    },
+    ${RatingBox_Query}
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  badge?: string
+  testimonials: (
+    {
+      type: 'text'
+      img?: ImageDataProps
+      name: string
+      position: string
+      review: PortableTextValue
+      date: string
+      cta?: ButtonDataProps
+    }
+  | {
+      type: 'video'
+      video: VideoDataProps
+    }
+  )[]
+  rating: RatingBoxProps;
+}
+
+const { index, sectionId, heading, badge, testimonials, rating } = Astro.props
+
+const Subheading = index === 0 ? 'h2' : 'h3'
+const isTruncated = testimonials.length > 13;
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  const day = date.getDate()
+  const month = date.toLocaleString(lang, { month: 'long' })
+  const year = date.getFullYear()
+  return `${day} ${month} ${year}`
+}
+---
+
+<section class="TestimonialsMasonry" id={sectionId}>
+  <header>
+    <div class="heading">
+      <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="h2" />
+      {
+        badge && (
+          <p class="badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 22 22"><path fill="url(#paint0_linear_7679_31566)" fill-rule="evenodd" d="M8.558 4.273c-.193.184-.29.275-.395.353-.239.18-.512.31-.802.383-.126.032-.258.05-.523.084-.664.089-.996.133-1.269.246a2.26 2.26 0 0 0-1.304 1.449c-.084.283-.093.618-.112 1.287-.007.267-.01.4-.029.53a2.26 2.26 0 0 1-.297.837c-.066.112-.147.218-.31.43-.407.531-.61.797-.724 1.07a2.26 2.26 0 0 0 .102 1.947c.142.26.372.503.832.99.184.193.275.29.354.395.179.239.309.511.382.801.032.127.05.259.085.523.088.664.132.996.245 1.27a2.26 2.26 0 0 0 1.449 1.304c.283.084.618.093 1.288.111.266.008.4.011.529.03.296.042.58.143.837.296.112.067.218.148.43.31.532.408.798.611 1.07.724a2.26 2.26 0 0 0 1.948-.102c.26-.14.502-.371.989-.832.194-.183.29-.275.395-.353.24-.18.512-.31.802-.382.126-.032.258-.05.523-.085.664-.088.996-.132 1.269-.245a2.26 2.26 0 0 0 1.305-1.449c.083-.283.092-.618.11-1.288.008-.267.012-.4.03-.529a2.26 2.26 0 0 1 .297-.837c.067-.112.148-.218.31-.43.407-.532.61-.798.724-1.07a2.26 2.26 0 0 0-.102-1.948c-.141-.26-.372-.503-.832-.99-.184-.193-.275-.29-.354-.394a2.26 2.26 0 0 1-.382-.802 4.78 4.78 0 0 1-.085-.523c-.088-.664-.132-.996-.245-1.269A2.26 2.26 0 0 0 15.65 4.81c-.283-.083-.618-.093-1.288-.11-.266-.008-.4-.012-.529-.03a2.261 2.261 0 0 1-.837-.297c-.112-.067-.218-.148-.43-.31-.532-.407-.798-.61-1.07-.724a2.26 2.26 0 0 0-1.948.102c-.26.141-.502.372-.989.832Zm5.934 5.25a.678.678 0 1 0-1.008-.908l-3.825 4.248-1.397-1.258a.678.678 0 0 0-.907 1.008l1.9 1.711c.279.25.708.229.958-.05l4.279-4.752Z" clip-rule="evenodd"/><defs><linearGradient id="paint0_linear_7679_31566" x1="18.519" x2="1.255" y1="2.75" y2="4.761" gradientUnits="userSpaceOnUse"><stop stop-color="#2DD282"/><stop offset="1" stop-color="#90F4E8"/></linearGradient></defs></svg>
+            <span>{badge}</span>
+          </p>
+        )
+      }
+    </div>
+    <RatingBox {...rating} class="rating-box" />
+  </header>
+  <div class="testimonials sec-wo-margin" data-truncated={isTruncated}>
+    <div class="columns-container max-width">
+      {
+        testimonials?.map((testimonial) =>
+          <article class:list={["testimonials-item", testimonial.type === 'text' ? 'testimonials-item_text' : 'testimonials-item_video']}>
+            {testimonial.type === 'text' ? (
+              <header>
+                <div>
+                  <Subheading class="name">{testimonial.name}</Subheading>
+                  <p class="position">{testimonial.position}</p>
+                </div>
+                {testimonial.img && <Image {...testimonial.img} sizes="44px" />}
+              </header>
+              <PortableText value={testimonial.review} class="review" />
+              <div class="footer">
+                {testimonial.cta && <Button {...testimonial.cta} />}
+                {testimonial.date && <p class="date">{formatDate(testimonial.date)}</p>}
+              </div>
+            ) : (
+              <Video {...testimonial.video} />
+            )}
+          </article>
+        )
+      }
+    </div>
+    {isTruncated && (
+      <div class="overlay">
+        <svg xmlns="http://www.w3.org/2000/svg" width="249" height="220" fill="none" viewBox="0 0 249 220" class="blob-1"><path fill="#27DBAB" d="M-25.936 6.036c133.987-23.444 260.028 33.361 272.03 101.959 12.003 68.598-26.484 168.111-170.241 193.264-71.239 12.464-149.712 73.454-240.327 54.103-92.242-19.699-89.021-116.686-95.076-151.29-12.002-68.598 99.627-174.593 233.614-198.036Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="604" height="338" fill="none" viewBox="0 0 604 338" class="blob-2"><path fill="#23D2A4" d="M2.486 453.577c-60.448 23.2-73.73 46.967-109.486 102.669l581.837 216.163C623.094 546.847 843.534 49.171 741.5 8.336 660.817-23.954 514.171 53.66 439 98.258c-24.302 14.418-7.105 30.758-22.333 31.786-110.908 7.486-188.264 180.214-226.056 238.333-35.013 53.845-127.677 61.999-188.125 85.2Z"/></svg>
+      </div>
+    )}
+  </div>
+  {isTruncated && (
+    <button class="show-more-button">
+      {t.loadMore}
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none" viewBox="0 0 16 17"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M8 3.152V13.82m0 0 4-4m-4 4-4-4"/></svg>
+    </button>
+  )}
+</section>
+
+<style lang="scss">
+  .TestimonialsMasonry {
+    padding: clamp(2rem, calc(3vw / 0.48), 4rem) 0;
+    > header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      .heading {
+        max-width: 26rem;
+      }
+      .badge {
+        display: inline-flex;
+        border-radius: 3rem;
+        border: 1px solid var(--primary-900, #001414);
+        background: rgba(0, 1, 3, 0.01);
+        backdrop-filter: blur(2px);
+        font-size: var(--typography-body-m, 0.875rem);
+        padding: 0.38rem;
+        grid-template-columns: auto 1fr;
+        gap: 0.12rem;
+        position: relative;
+        overflow: hidden;
+        transform: rotate(-3deg);
+        transform-origin: top left;
+        &::before {
+          content: '';
+          width: 4.25rem;
+          height: 4.25rem;
+          border-radius: 50%;
+          background: var(--primary-600, #042B2B);
+          mix-blend-mode: plus-lighter;
+          filter: blur(16px);
+          position: absolute;
+          top: 50%;
+          left: 1rem;
+          transform: translate(-50%, -50%);
+          z-index: -1;
+        }
+      }
+    }
+    .testimonials {
+      position: relative;
+      overflow: hidden;
+      .overlay {
+        position: absolute;
+        width: 100vw;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        pointer-events: none;
+        z-index: 2;
+        height: 33%;
+        opacity: 0;
+        .blob-1 {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          filter: blur(34px);
+          transform: translateZ(0);
+          transition: transform 800ms var(--easing);
+        }
+        .blob-2 {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          max-width: 34rem;
+          filter: blur(21px);
+          transform: translateZ(0);
+          transition: transform 800ms 50ms var(--easing);
+        }
+        &::before, &::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          top: 0;
+        }
+        &::before {
+          background: linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--neutral-900, #000103) 76%);
+          z-index: -1;
+        }
+        &::after {
+          background: linear-gradient(to bottom, rgba(70, 223, 167, 0), rgba(70, 223, 167, 1));
+        }
+      }
+      &[data-truncated="true"] {
+        height: 1000px;
+        .overlay {
+          opacity: 1;
+        }
+      }
+      .columns-container {
+        height: auto;
+        columns: 3;
+        gap: clamp(0.5rem, calc(0.5vw / 0.48), 1.25rem);
+        @media (max-width: 68rem) {
+          columns: 2;
+        }
+        @media (max-width: 50rem) {
+          columns: 1;
+        }
+      }
+      .testimonials-item {
+        border-radius: 0.25rem;
+        overflow: hidden;
+        border: 1px solid var(--primary-500, #064040);
+        break-inside: avoid;
+        margin-bottom: clamp(0.5rem, calc(0.5vw / 0.48), 1.25rem);
+        &_text {
+          background-color: rgba(0, 1, 3, 0.7);
+          backdrop-filter: blur(8px);
+          padding: clamp(1rem, calc(1.25vw / 0.48), 1.5rem);
+          padding-bottom: clamp(1.25rem, calc(1.5vw / 0.48), 1.75rem);
+          header {
+            display: grid;
+            grid-template-columns: auto auto;
+            justify-content: space-between;
+            gap: 1.5rem;
+            .name {
+              font-size: var(--typography-body-xl, 1rem);
+            }
+            .position {
+              font-size: var(--typography-body-m, 0.875rem);
+              color: var(--neutral-400, #C6CDCC);
+            }
+            img {
+              width: 44px;
+              height: 44px;
+              border-radius: 50%;
+              border: 1px solid var(--neutral-700, #383842);
+              padding: 0.12rem;
+              box-sizing: content-box;
+            }
+          }
+          .review {
+            margin: clamp(1.25rem, calc(1.5vw / 0.48), 1.75rem) 0 clamp(1.25rem, calc(2.5vw / 0.48), 4rem);
+            font-size: var(--typography-body-m, 0.875rem);
+          }
+          .footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            align-items: center;
+            justify-content: space-between;
+            .date {
+              font-size: var(--typography-body-m, 0.875rem);
+              color: var(--neutral-400, #C6CDCC);
+            }
+            &:not(:has(a)) {
+              justify-content: flex-end;
+            }
+          }
+        }
+      }
+    }
+    &:has(.show-more-button:hover) {
+      .testimonials {
+        .overlay {
+          .blob-1 {
+            transform: translateZ(0) translateY(10%);
+          }
+          .blob-2 {
+            transform: translateZ(0) translateY(10%);
+          }
+        }
+      }
+    }
+    .show-more-button {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 auto;
+      transform: translateY(-4rem);
+      color: var(--neutral-900, #000103);
+      font-size: var(--typography-body-m, 0.875rem);
+      cursor: pointer;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.TestimonialsMasonry').forEach(section => {
+    const showMoreButton = section.querySelector<HTMLButtonElement>('.show-more-button');
+    const testimonials = section.querySelector<HTMLDivElement>('.testimonials');
+
+    if(!showMoreButton || !testimonials) return;
+
+    showMoreButton.addEventListener('click', () => {
+      const isTruncated = testimonials.dataset.truncated === 'true';
+      testimonials.dataset.truncated = isTruncated ? 'false' : 'true';
+      showMoreButton.remove();
+    })
+  });
+</script>

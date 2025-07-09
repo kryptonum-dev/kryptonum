@@ -1,3 +1,5 @@
+import { DOMAIN } from "@repo/shared/constants"
+
 export type Props = {
   email: string
   name: string
@@ -6,7 +8,7 @@ export type Props = {
 }
 
 export async function subscribeToNewsletter({ email, name, groupId, legal }: Props): Promise<{ success: boolean }> {
-  const response = await fetch('/api/newsletter', {
+  const response = await fetch(`${DOMAIN}/api/newsletter`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, name, groupId, legal }),

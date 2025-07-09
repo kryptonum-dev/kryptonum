@@ -2,11 +2,16 @@
 import '@repo/shared/global.scss'
 import Head, { type HeadProps } from '@repo/shared/layout/Head.astro'
 import Toast from '@repo/ui/Toast/Toast.astro'
+import CookieConsent from '@repo/shared/layout/CookieConsent.astro'
+import Header from './Header.astro'
+import Footer from './Footer.astro'
 import type { Language } from '@repo/shared/languages'
 
-type Props = Omit<HeadProps, 'lang'>
+type Props = Omit<HeadProps, 'lang'> & {
+  hideLayout?: boolean
+}
 
-const { ...props } = Astro.props
+const { hideLayout = false, ...props } = Astro.props
 
 const lang = (Astro.params.lang as Language) || 'pl'
 ---
@@ -19,9 +24,12 @@ const lang = (Astro.params.lang as Language) || 'pl'
     <script is:inline src="https://cdn.usefathom.com/script.js" data-site="PUUZZITA" defer></script>
   </head>
   <body>
+    {!hideLayout && <Header lang={lang} />}
     <main id="main">
       <slot />
     </main>
+    {!hideLayout && <Footer lang={lang} />}
     <Toast />
+    {!hideLayout && <CookieConsent lang={lang} />}
   </body>
 </html>

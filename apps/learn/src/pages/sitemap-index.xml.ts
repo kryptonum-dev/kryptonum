@@ -4,7 +4,7 @@ import type { APIRoute } from "astro";
 
 const slugs = [
   ...await Promise.all([
-    import("./[lang]/[slug].astro")
+    import("./[lang]/[...slug].astro")
       .then(res => res.getStaticPaths())
       .then(paths => paths.map(({ params: { lang, slug } }) => `/${lang}/${slug}`)),
   ]).then(paths => paths.flat())

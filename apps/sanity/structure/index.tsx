@@ -8,6 +8,7 @@ export const structure: StructureResolver = (S) =>
     .title('Content')
     .items([
       createSingleton(S, "global"),
+      createSingleton(S, "analytics"),
       createSingleton(S, "redirects"),
       S.divider(),
       createSingleton(S, "Index_Page"),
@@ -32,9 +33,11 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
       createSingleton(S, "Shop_Page"),
       createCollection(S, "ShopProduct_Collection"),
+      createSingleton(S, "ShopThankYou_Page"),
       S.divider(),
       createCollection(S, "Review_Collection"),
       createCollection(S, "Faq_Collection"),
       S.divider(),
       createSingleton(S, "Links_Page"),
+      createCollection(S, "LandingPage_Collection"),
     ])

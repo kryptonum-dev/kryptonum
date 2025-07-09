@@ -5,12 +5,15 @@ import Header from './Header.astro'
 import Footer from './Footer.astro'
 import Toast from '@repo/ui/Toast/Toast.astro'
 import type { Language } from '@repo/shared/languages'
+import CookieConsent from '@repo/shared/layout/CookieConsent.astro'
 
-type Props = Omit<HeadProps, 'lang'>
+type Props = Omit<HeadProps, 'lang'> & {
+  lang?: Language
+}
 
-const { ...props } = Astro.props
+const { lang: propLang, ...props } = Astro.props
 
-const lang = (Astro.params.lang as Language) || 'pl'
+const lang = (Astro.params.lang as Language) || propLang || 'pl'
 ---
 
 <!doctype html>
@@ -20,6 +23,7 @@ const lang = (Astro.params.lang as Language) || 'pl'
     <slot name="Head" />
   </head>
   <body>
+    <CookieConsent />
     <Header lang={lang} alternates={props.alternates} />
     <main id="main">
       <slot />
