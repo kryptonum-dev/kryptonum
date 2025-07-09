@@ -6,7 +6,10 @@
     "paths": {
       "@repo/shared/*": ["../../packages/shared/src/*"],
       "@repo/ui/*": ["../../packages/ui/src/*"],
-      "@layout/*": ["./src/layout/*"]
+      "@apps/www/*": ["../www/src/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@layout/*": ["./src/layout/*"],
+      "@templates/*": ["./src/templates/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],
