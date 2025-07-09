@@ -4,8 +4,45 @@ import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
 import { REGEX } from '@repo/shared/constants';
 import { subscribeToNewsletter, type Props as subscribeToNewsletterProps } from '@apps/www/pages/api/newsletter/subscribeToNewsletter';
+import { DOMAIN } from '@repo/shared/constants';
+import { type Language } from '@repo/shared/languages';
+import { trackEvent } from '@apps/links/src/pages/api/analytics/track-event';
 
-export default function Form({ children, groupId, ...props }: { children: React.ReactNode, groupId: string } & React.FormHTMLAttributes<HTMLFormElement>) {
+const shouldTrackAnalytics = () => {
+  if (typeof window !== 'undefined') {
+    return !window.location.hostname.startsWith('kryptonum.eu');
+  }
+  return false;
+};
+
+type Props = {
+  children: React.ReactNode,
+  groupId: string;
+  lang: Language
+} & React.FormHTMLAttributes<HTMLFormElement>
+
+const translations = {
+  pl: {
+    emailLabel: 'Email',
+    emailRequired: 'Email jest wymagany',
+    emailInvalid: 'Niepoprawny adres e-mail',
+    nameLabel: 'Imię',
+    nameRequired: 'Imię jest wymagane',
+    legal: <>Akceptuję <a href={`${DOMAIN}/pl/polityka-prywatnosci`} target="_blank" rel="noopener noreferrer" className="link">politykę prywatności</a></>,
+    legalRequired: 'Zgoda jest wymagana',
+  },
+  en: {
+    emailLabel: 'Email',
+    emailRequired: 'Email is required',
+    emailInvalid: 'Invalid email address',
+    nameLabel: 'Name',
+    nameRequired: 'Name is required',
+    legal: <>I accept <a href={`${DOMAIN}/en/privacy-policy`} target="_blank" rel="noopener noreferrer" className="link">privacy policy</a></>,
+    legalRequired: 'Consent is required',
+  },
+}
+
+export default function Form({ children, groupId, lang, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [step, setStep] = useState<1 | 2>(1);
   const {
@@ -59,6 +96,29 @@ export default function Form({ children, groupId, ...props }: { children: React.
       setStatus('success');
       reset();
       if (typeof fathom !== 'undefined') fathom.trackEvent('newsletter_subscribe');
+      if (shouldTrackAnalytics()) {
+        trackEvent({
+          user_data: {
+            email: data.email as string,
+          },
+          meta: {
+            event_name: 'Lead',
+            content_name: 'newsletter_subscription',
+            params: {
+              group_id: groupId,
+              name: data.name as string,
+            }
+          },
+          ga: {
+            event_name: 'generate_lead',
+            params: {
+              content_name: 'newsletter_subscription',
+              group_id: groupId,
+              name: data.name as string,
+            }
+          }
+        });
+      }
     } else {
       setStatus('error');
       if (typeof fathom !== 'undefined') fathom.trackEvent('newsletter_error');
@@ -68,30 +128,28 @@ export default function Form({ children, groupId, ...props }: { children: React.
   return (
     <form {...props} onSubmit={handleSubmit(onSubmit)} data-status={status} data-step={step}>
       <Input
-        label='Email'
+        label={translations[lang].emailLabel}
         register={register('email', {
-          required: { value: true, message: 'Email jest wymagany' },
-          pattern: { value: REGEX.email, message: 'Niepoprawny adres e-mail' },
+          required: { value: true, message: translations[lang].emailRequired },
+          pattern: { value: REGEX.email, message: translations[lang].emailInvalid },
         })}
         errors={errors}
         type='email'
       />
       <Input
-        label='Imię'
+        label={translations[lang].nameLabel}
         register={register('name', {
-          required: { value: true, message: 'Imię jest wymagane' },
+          required: { value: true, message: translations[lang].nameRequired },
         })}
         errors={errors}
       />
       <Checkbox
         register={register('legal', {
-          required: { value: true, message: 'Zgoda jest wymagana' },
+          required: { value: true, message: translations[lang].legalRequired },
         })}
         errors={errors}
       >
-        Akceptuję <a href="/pl/polityka-prywatnosci" target="_blank" rel="noopener noreferrer" className="link">
-          politykę prywatności
-        </a>
+        {translations[lang].legal}
       </Checkbox>
       {children}
     </form>

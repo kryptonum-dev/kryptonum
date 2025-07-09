@@ -6,6 +6,7 @@ import Button from '@repo/ui/Button'
 import Copy from '@repo/ui/Copy.astro'
 import Loader from '@repo/ui/Loader.astro'
 import PortableText from '@repo/ui/portable-text'
+import { type Language } from '@repo/shared/languages'
 
 type Props = {
   state: NewsletterProps['state']
@@ -13,22 +14,39 @@ type Props = {
   groupId: NewsletterProps['groupId']
 }
 
+const lang = Astro.params.lang as Language
+const translations = {
+  pl: {
+    backButton: 'Wróć',
+    submitButton: 'Zapisuję się',
+    tryAgain: 'Spróbuj ponownie',
+    copyEmailSuccess: 'Pomyślnie skopiowano adres e-mail',
+  },
+  en: {
+    backButton: 'Back',
+    submitButton: 'Subscribe',
+    tryAgain: 'Try again',
+    copyEmailSuccess: 'Successfully copied email address',
+  },
+} as const
+const t = translations[lang]
+
 const { state, email, groupId } = Astro.props as Props
 
 const svgId = Math.random().toString(36).slice(2)
 ---
 
-<Form className="Form" groupId={groupId} client:load>
+<Form className="Form" groupId={groupId} lang={lang} client:load>
   <div class="submit-wrapper">
     <button class="prev-step" type="button">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" fill="none" viewBox="0 0 13 10">
         <path stroke="#F0F7F7" stroke-linecap="round" stroke-linejoin="round" d="M11.835 5H1.168m0 0 4-4m-4 4 4 4">
         </path>
       </svg>
-      Wróć
+      {t.backButton}
     </button>
-    <Button type="button" className="next-step">Zapisuję się</Button>
-    <Button type="submit" className="submit-button">Zapisuję się</Button>
+    <Button type="button" className="next-step">{t.submitButton}</Button>
+    <Button type="submit" className="submit-button">{t.submitButton}</Button>
   </div>
   <Loader class="Loader" />
   <div class="ErrorState">
@@ -80,9 +98,9 @@ const svgId = Math.random().toString(36).slice(2)
     <PortableText value={state.error.heading} class="h2 heading" />
     <PortableText value={state.error.paragraph} class="paragraph" />
     <div class="actions">
-      <Button type="button" className="cta tryAgain">Spróbuj ponownie</Button>
+      <Button type="button" className="cta tryAgain">{t.tryAgain}</Button>
       <a href={`mailto:${email}`} class="email">{email}</a>
-      <Copy data={email} successMessage="Pomyślnie skopiowano adres e-mail" />
+      <Copy data={email} successMessage={t.copyEmailSuccess} />
     </div>
   </div>
 </Form>
