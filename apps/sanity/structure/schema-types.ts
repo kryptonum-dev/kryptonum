@@ -42,6 +42,7 @@ import CaseStudy_Collection from '../schema/collectionTypes/CaseStudy_Collection
 import CaseStudyCategory_Collection from '../schema/collectionTypes/CaseStudyCategory_Collection';
 import Faq_Collection from '../schema/collectionTypes/Faq_Collection';
 import ShopProduct_Collection from '../schema/collectionTypes/ShopProduct_Collection';
+import LandingPage_Collection from '../schema/collectionTypes/LandingPage_Collection';
 
 const collectionTypes = [
   Service_Collection,
@@ -54,6 +55,7 @@ const collectionTypes = [
   CaseStudyCategory_Collection,
   Faq_Collection,
   ShopProduct_Collection,
+  LandingPage_Collection,
 ];
 
 // Components

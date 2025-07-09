@@ -100,6 +100,7 @@ export default defineField({
           },
         }),
       ],
+      validation: Rule => Rule.required(),
     }),
     ...sectionId,
   ],
