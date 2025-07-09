@@ -32,7 +32,6 @@ export default defineConfig({
       }
     }
   },
-  redirects: await redirects('mainRedirects'),
   output: "server",
   adapter: vercel({
     ...(isProductionDeployment && {
