@@ -1,6 +1,4 @@
 ---
-export const prerender = false
-
 import sanityFetch from '@repo/utils/sanity.fetch'
 import Layout from '@layout/Layout.astro'
 import type { HeadProps } from '@repo/shared/layout/Head.astro'
@@ -25,7 +23,7 @@ const translations = {
 const t = translations[lang]
 
 if (!['en', 'pl'].includes(lang)) {
-  return Astro.redirect('/pl')
+  return Astro.redirect('/en')
 }
 
 const page = await sanityFetch<{
