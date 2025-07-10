@@ -7,13 +7,13 @@
     "dev": "email dev --dir templates"
   },
   "dependencies": {
-    "@react-email/components": "0.0.41",
-    "@react-email/render": "^1.1.2",
+    "@react-email/components": "0.2.0",
+    "@react-email/render": "^1.1.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "resend": "^4.5.1"
+    "resend": "^4.6.0"
   },
   "devDependencies": {
-    "react-email": "4.0.15"
+    "react-email": "4.1.0"
   }
 }
