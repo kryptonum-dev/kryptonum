@@ -11,6 +11,7 @@ export const ButtonDataQuery = (name: string) => `
     "href": select(
       linkType == "internal" => internal -> slug.current,
       linkType == "external" => external,
+      linkType == "anchor" => anchor,
       "#"
     ),
     ${ImageDataQuery('img')}
