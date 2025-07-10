@@ -2,7 +2,6 @@ import { defineConfig } from "astro/config";
 import react from '@astrojs/react';
 import vercel from "@astrojs/vercel";
 import { isProductionDeployment } from "@repo/utils/is-production-deployment";
-import redirects from "../../packages/shared/src/redirects";
 
 export default defineConfig({
   site: 'https://l.kryptonum.eu',
