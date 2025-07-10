@@ -5,7 +5,7 @@ export type Props = React.HTMLAttributes<HTMLAnchorElement> & React.ButtonHTMLAt
   text?: string | React.ReactNode
   children: React.ReactNode;
   theme?: 'primary' | 'secondary'
-  linkType?: 'external' | 'internal'
+  linkType?: 'external' | 'internal' | 'anchor'
   href?: string
   img?: ImageDataProps
   className?: string

@@ -16,6 +16,11 @@ if (props.linkType === 'internal' && props.href) {
   } else if (props.documentType !== 'ShopProduct_Collection' && currentDomain.includes('learn.kryptonum.eu')) {
     finalHref = `https://kryptonum.eu${props.href}`
   }
+  if (props.documentType === 'LandingPage_Collection' && !currentDomain.includes('l.kryptonum.eu')) {
+    finalHref = `https://l.kryptonum.eu${props.href}`
+  } else if (props.documentType !== 'LandingPage_Collection' && currentDomain.includes('l.kryptonum.eu')) {
+    finalHref = `https://kryptonum.eu${props.href}`
+  }
 }
 
 const modifiedProps = {

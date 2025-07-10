@@ -25,42 +25,130 @@ if (!GTM_ID) return null
 
 const privacyPolicyUrl = `${DOMAIN}${privacyPolicySlug}`
 
+const translations = {
+  pl: {
+    heading: 'Korzystając ze strony zgadzasz się na użycie ciasteczek',
+    description:
+      'Korzystamy z cookie i podobnych technologii, by analizować ruch na stronie, dopasować ją do Ciebie i wyświetlać trafniejsze reklamy.',
+    learnMore: 'Dowiedz się więcej',
+    settingsHeading: 'Ustawienia cookies',
+    settingsDescription: 'Korzystając ze strony zgadzasz się na użycie tych ciasteczek.',
+    necessary: {
+      name: 'Niezbędne',
+      description:
+        'Te pliki cookie są konieczne do działania strony i nie mogą być wyłączone. Umożliwiają podstawowe funkcje, takie jak nawigacja, dostęp do zabezpieczonych obszarów oraz prawidłowe działanie formularzy. Są niezbędne do zapewnienia funkcjonalności i bezpieczeństwa strony zgodnie z wymogami RODO.',
+    },
+    analytics: {
+      name: 'Analityczne',
+      description:
+        'Pomagają nam zrozumieć, jak korzystasz z naszej strony, zbierając anonimowe dane o interakcjach, czasie spędzonym na stronie i odwiedzanych podstronach. Dzięki nim możemy identyfikować problemy, ulepszać strukturę i zawartość witryny oraz optymalizować doświadczenie użytkownika. Dane są przetwarzane w formie zagregowanej i pseudonimizowanej.',
+    },
+    preferences: {
+      name: 'Preferencyjne',
+      description:
+        'Zapamiętują Twoje indywidualne wybory i ustawienia (np. preferowany język, rozmiar czcionki, układ strony) podczas Twojej sesji oraz między wizytami, aby dostosować wygląd i działanie strony do Twoich potrzeb. Zwiększają wygodę korzystania z witryny, eliminując potrzebę ponownego wprowadzania tych samych informacji.',
+    },
+    marketing: {
+      name: 'Marketingowe',
+      description:
+        'Służą do śledzenia Twoich aktywności na naszej stronie i innych witrynach, aby tworzyć profile zainteresowań i wyświetlać Ci bardziej trafne i spersonalizowane reklamy. Przetwarzanie tych danych odbywa się wyłącznie za Twoją zgodą, zgodnie z przepisami RODO, i może być w każdej chwili wycofane.',
+      subGroups: {
+        conversionApi: {
+          name: 'API Konwersji',
+          description:
+            'Przesyła dane o Twoich działaniach bezpośrednio do platform reklamowych (takich jak Meta, LinkedIn, itp.), aby mierzyć skuteczność reklam zgodnie z RODO. Pozwala to na dokładniejsze śledzenie konwersji i optymalizację kampanii reklamowych.',
+        },
+        advancedMatching: {
+          name: 'Zaawansowane Dopasowanie',
+          description:
+            'Umożliwia platformom reklamowym (takim jak Meta, LinkedIn, itp.) lepsze dopasowanie Twoich działań na stronie do Twojego profilu, co zwiększa trafność wyświetlanych reklam. Mechanizm ten działa w zgodzie z przepisami RODO, przetwarzając dane tylko za Twoją wyraźną zgodą.',
+        },
+      },
+    },
+    buttons: {
+      deny: 'Odmowa',
+      setPreferences: 'Ustaw preferencje',
+      agreeAll: 'Zgoda na wszystkie',
+    },
+  },
+  en: {
+    heading: 'By using the website, you agree to the use of cookies',
+    description:
+      'We use cookies and similar technologies to analyze website traffic, tailor it to you, and display more relevant ads.',
+    learnMore: 'Learn more',
+    settingsHeading: 'Cookie settings',
+    settingsDescription: 'By using the website, you agree to the use of these cookies.',
+    necessary: {
+      name: 'Necessary',
+      description:
+        'These cookies are essential for the website to function and cannot be disabled. They enable basic functions such as navigation, access to secure areas, and proper form functionality. They are necessary to ensure the functionality and security of the site in accordance with GDPR requirements.',
+    },
+    analytics: {
+      name: 'Analytics',
+      description:
+        'Help us understand how you use our website by collecting anonymous data about interactions, time spent on the site, and visited pages. This allows us to identify problems, improve the structure and content of the website, and optimize the user experience. Data is processed in aggregated and pseudonymized form.',
+    },
+    preferences: {
+      name: 'Preferences',
+      description:
+        'Remember your individual choices and settings (e.g., preferred language, font size, page layout) during your session and between visits to customize the appearance and operation of the site to your needs. They increase the convenience of using the website, eliminating the need to re-enter the same information.',
+    },
+    marketing: {
+      name: 'Marketing',
+      description:
+        'Used to track your activities on our website and other sites to create interest profiles and show you more relevant and personalized ads. Processing of this data occurs only with your consent, in accordance with GDPR regulations, and can be withdrawn at any time.',
+      subGroups: {
+        conversionApi: {
+          name: 'Conversion API',
+          description:
+            'Sends data about your actions directly to advertising platforms (such as Meta, LinkedIn, etc.) to measure ad effectiveness in accordance with GDPR. This allows for more accurate conversion tracking and advertising campaign optimization.',
+        },
+        advancedMatching: {
+          name: 'Advanced Matching',
+          description:
+            'Enables advertising platforms (such as Meta, LinkedIn, etc.) to better match your on-site activities to your profile, increasing the relevance of displayed ads. This mechanism works in compliance with GDPR regulations, processing data only with your explicit consent.',
+        },
+      },
+    },
+    buttons: {
+      deny: 'Deny',
+      setPreferences: 'Set preferences',
+      agreeAll: 'Accept all',
+    },
+  },
+}
+const t = translations[lang]
+
 const groups = [
   {
     id: 'necessary',
-    name: 'Niezbędne',
-    description:
-      'Te pliki cookie są konieczne do działania strony i nie mogą być wyłączone. Umożliwiają podstawowe funkcje, takie jak nawigacja, dostęp do zabezpieczonych obszarów oraz prawidłowe działanie formularzy. Są niezbędne do zapewnienia funkcjonalności i bezpieczeństwa strony zgodnie z wymogami RODO.',
+    name: t.necessary.name,
+    description: t.necessary.description,
   },
   {
     id: 'analytics',
-    name: 'Analityczne',
-    description:
-      'Pomagają nam zrozumieć, jak korzystasz z naszej strony, zbierając anonimowe dane o interakcjach, czasie spędzonym na stronie i odwiedzanych podstronach. Dzięki nim możemy identyfikować problemy, ulepszać strukturę i zawartość witryny oraz optymalizować doświadczenie użytkownika. Dane są przetwarzane w formie zagregowanej i pseudonimizowanej.',
+    name: t.analytics.name,
+    description: t.analytics.description,
   },
   {
     id: 'preferences',
-    name: 'Preferencyjne',
-    description:
-      'Zapamiętują Twoje indywidualne wybory i ustawienia (np. preferowany język, rozmiar czcionki, układ strony) podczas Twojej sesji oraz między wizytami, aby dostosować wygląd i działanie strony do Twoich potrzeb. Zwiększają wygodę korzystania z witryny, eliminując potrzebę ponownego wprowadzania tych samych informacji.',
+    name: t.preferences.name,
+    description: t.preferences.description,
   },
   {
     id: 'marketing',
-    name: 'Marketingowe',
-    description:
-      'Służą do śledzenia Twoich aktywności na naszej stronie i innych witrynach, aby tworzyć profile zainteresowań i wyświetlać Ci bardziej trafne i spersonalizowane reklamy. Przetwarzanie tych danych odbywa się wyłącznie za Twoją zgodą, zgodnie z przepisami RODO, i może być w każdej chwili wycofane.',
+    name: t.marketing.name,
+    description: t.marketing.description,
     subGroups: [
       {
         id: 'conversion_api',
-        name: 'API Konwersji',
-        description:
-          'Przesyła dane o Twoich działaniach bezpośrednio do platform reklamowych (takich jak Meta, LinkedIn, itp.), aby mierzyć skuteczność reklam zgodnie z RODO. Pozwala to na dokładniejsze śledzenie konwersji i optymalizację kampanii reklamowych.',
+        name: t.marketing.subGroups.conversionApi.name,
+        description: t.marketing.subGroups.conversionApi.description,
       },
       {
         id: 'advanced_matching',
-        name: 'Zaawansowane Dopasowanie',
-        description:
-          'Umożliwia platformom reklamowym (takim jak Meta, LinkedIn, itp.) lepsze dopasowanie Twoich działań na stronie do Twojego profilu, co zwiększa trafność wyświetlanych reklam. Mechanizm ten działa w zgodzie z przepisami RODO, przetwarzając dane tylko za Twoją wyraźną zgodą.',
+        name: t.marketing.subGroups.advancedMatching.name,
+        description: t.marketing.subGroups.advancedMatching.description,
       },
     ],
   },
@@ -79,23 +167,20 @@ const groups = [
   <section class="content">
     <header class="header">
       <div data-header-initial>
-        <h2 class="heading">Korzystając ze strony zgadzasz się na użycie ciasteczek</h2>
+        <h2 class="heading">{t.heading}</h2>
         <p class="description">
-          Korzystamy z&nbsp;cookie i&nbsp;podobnych technologii, by analizować ruch na stronie, dopasować ją do Ciebie
-          i&nbsp;wyświetlać trafniejsze reklamy. <a href={privacyPolicyUrl} target="_blank" rel="noopener" class="link">
-            Dowiedz się więcej
+          {t.description}&nbsp;
+          <a href={privacyPolicyUrl} target="_blank" rel="noopener" class="link">
+            {t.learnMore}
           </a>
         </p>
       </div>
       <div data-header-settings style="display: none">
-        <h3 class="heading">Ustawienia cookies</h3>
+        <h3 class="heading">{t.settingsHeading}</h3>
         <p class="description">
-          Korzystając ze strony zgadzasz się na użycie tych ciasteczek. <a
-            href={privacyPolicyUrl}
-            target="_blank"
-            rel="noopener"
-            class="link">
-            Dowiedz się więcej
+          {t.settingsDescription}&nbsp;
+          <a href={privacyPolicyUrl} target="_blank" rel="noopener" class="link">
+            {t.learnMore}
           </a>
         </p>
       </div>
@@ -143,9 +228,9 @@ const groups = [
       }
     </div>
     <div class="actions">
-      <button class="deny">Odmowa</button>
-      <button class="setPreferences">Ustaw preferencje</button>
-      <Button className="agree" theme="primary">Zgoda na wszystkie</Button>
+      <button class="deny">{t.buttons.deny}</button>
+      <button class="setPreferences">{t.buttons.setPreferences}</button>
+      <Button className="agree" theme="primary">{t.buttons.agreeAll}</Button>
     </div>
   </section>
 </aside>

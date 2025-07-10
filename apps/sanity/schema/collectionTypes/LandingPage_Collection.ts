@@ -11,6 +11,9 @@ export default defineType({
   type: 'document',
   title,
   icon,
+  options: {
+    documentPreview: true,
+  },
   fields: [
     defineField({
       name: 'language',
