@@ -1,4 +1,3 @@
-
 /**
  * Global declaration of the domain for the application.
  * This constant is used for constructing full URLs and determining external links.
@@ -8,11 +7,18 @@
 export const DOMAIN: string = "https://kryptonum.eu";
 
 /**
- * The domain used for preview deployments.
- * This constant is utilized to generate URLs for preview environments,
- * allowing content to be reviewed before it's published to the main site.
+ * Preview domains for different subdomains.
+ * Environment variables should contain the full URL including protocol (https://)
+ * but without trailing slash. Example: "https://preview.kryptonum.eu"
  * @constant
- * @type {string}
+ * @type {Record<string, string>}
  */
-export const PREVIEW_DEPLOYMENT_DOMAIN: string = process.env.SANITY_STUDIO_PREVIEW_DOMAIN ?? "";
+export const PREVIEW_DOMAINS: Record<string, string> = {
+  // Main domain (default)
+  main: process.env.SANITY_STUDIO_PREVIEW_DOMAIN ?? "",
+  // Links subdomain for Links_Page and LandingPage_Collection
+  links: process.env.SANITY_STUDIO_PREVIEW_LINKS_DOMAIN ?? "",
+  // Learn subdomain for ShopProduct_Collection
+  learn: process.env.SANITY_STUDIO_PREVIEW_LEARN_DOMAIN ?? ""
+} as const;
 

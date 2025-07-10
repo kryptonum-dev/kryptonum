@@ -9,6 +9,10 @@ export default defineType({
   type: 'document',
   title: title,
   icon: () => '🔗',
+  options: {
+    documentPreview: true,
+    previewSlug: '/'
+  },
   fields: [
     defineField({
       name: 'language',
