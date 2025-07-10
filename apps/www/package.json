@@ -11,12 +11,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@repo/utils": "workspace:*",
-    "@repo/ui": "workspace:*",
-    "@repo/shared": "workspace:*",
     "@astrojs/preact": "^4.0.10",
     "@astrojs/vercel": "^8.1.4",
     "@mux/mux-video": "^0.25.1",
+    "@repo/shared": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@repo/utils": "workspace:*",
     "autoprefixer": "^10.4.21",
     "cssnano": "^7.0.6",
     "postcss-combine-media-query": "^1.0.1",

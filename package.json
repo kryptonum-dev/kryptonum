@@ -22,7 +22,8 @@
     "astro": "^5.7.5",
     "astro-portabletext": "^0.11.1",
     "embla-carousel": "^8.6.0",
-    "react-hook-form": "^7.56.1"
+    "react-hook-form": "^7.56.1",
+    "sharp-ico": "^0.1.5"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.31.0",
