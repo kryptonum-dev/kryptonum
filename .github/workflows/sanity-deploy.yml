@@ -11,6 +11,8 @@ jobs:
     env:
       SANITY_AUTH_TOKEN: ${{ secrets.SANITY_DEPLOY_STUDIO_TOKEN }}
       SANITY_STUDIO_PREVIEW_DOMAIN: ${{ secrets.SANITY_STUDIO_PREVIEW_DOMAIN }}
+      SANITY_STUDIO_PREVIEW_LINKS_DOMAIN: ${{ secrets.SANITY_STUDIO_PREVIEW_LINKS_DOMAIN }}
+      SANITY_STUDIO_PREVIEW_LEARN_DOMAIN: ${{ secrets.SANITY_STUDIO_PREVIEW_LEARN_DOMAIN }}
     steps:
       - uses: actions/checkout@v2
         with:
