@@ -25,6 +25,7 @@ export default defineField({
         defineField({
           name: 'item',
           type: 'reference',
+          title: 'FAQ Reference',
           to: [{ type: 'Faq_Collection' }],
           options: {
             filter: ({ parent, document }) => {
@@ -37,8 +38,38 @@ export default defineField({
             }
           }
         }),
+        defineField({
+          name: 'inline_item',
+          type: 'object',
+          title: 'Inline FAQ',
+          fields: [
+            defineField({
+              name: 'question',
+              type: 'text',
+              rows: 2,
+              title: 'Question',
+              validation: Rule => Rule.required(),
+            }),
+            defineField({
+              name: 'answer',
+              type: 'PortableText',
+              title: 'Answer',
+              validation: Rule => Rule.required(),
+            }),
+          ],
+          preview: {
+            select: {
+              question: 'question',
+              answer: 'answer',
+            },
+            prepare: ({ question, answer }) => ({
+              title: toPlainText(question),
+              subtitle: toPlainText(answer),
+            }),
+          },
+        }),
       ],
-      title: 'List',
+      title: 'FAQ Items',
       validation: Rule => Rule.required().unique(),
     }),
     ...sectionId,
@@ -49,7 +80,7 @@ export default defineField({
       list: 'list',
     },
     prepare: ({ heading, list }) => ({
-      title: `${title} (${list.length} references)`,
+      title: `${title} (${list.length} items)`,
       subtitle: toPlainText(heading),
       ...sectionPreview({ imgUrl: `/static/components/${name}.webp`, icon: icon() }),
     }),

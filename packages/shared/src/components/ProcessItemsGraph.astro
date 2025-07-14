@@ -161,8 +161,8 @@ const { index, sectionId, heading, paragraph, items } = Astro.props
           margin-top: clamp(1.5rem, calc(1.75vw / 0.48), 4rem);
           font-size: var(--typography-body-xl, 1rem);
           padding-right: 2rem;
-          & > :global(p) {
-            display: inline;
+          & > :global(p:first-child) {
+            display: inline-block;
           }
           &::before {
             content: counter(item) '. ';

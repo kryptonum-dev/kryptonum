@@ -110,6 +110,12 @@ export default defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'img',
+      type: 'image',
+      title: 'Image (optional)',
+      description: 'If you want to display small image instead of arrow, you can add it here.',
+    }),
   ],
   preview: {
     select: {
