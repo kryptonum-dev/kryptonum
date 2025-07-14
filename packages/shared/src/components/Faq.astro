@@ -5,9 +5,15 @@ import Accordion from '@repo/ui/Accordion.astro'
 export const Faq_Query = `
   _type == "Faq" => {
     ${PortableTextQuery('heading')}
-    list[] -> {
-      question,
-      ${PortableTextQuery('answer')}
+    list[] {
+      _type == "item" => @-> {
+        question,
+        ${PortableTextQuery('answer')}
+      },
+      _type == "inline_item" => {
+        question,
+        ${PortableTextQuery('answer')}
+      },
     }
   },
 `
@@ -24,6 +30,8 @@ type Props = {
 }
 
 const { index, sectionId, heading, list, hasLargeText = false } = Astro.props
+
+console.log(list)
 
 const visibleItems = 10
 const listItems = list?.length || 0
@@ -78,6 +86,7 @@ const listItems = list?.length || 0
 <style lang="scss">
   .Faq {
     margin: clamp(2rem, calc(2.5vw / 0.48), 4rem) 0;
+    scroll-margin-top: 8rem;
     header {
       max-width: 44rem;
       margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
