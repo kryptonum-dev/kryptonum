@@ -10,6 +10,9 @@ import { type Language } from '@repo/shared/languages'
 type Props = NonNullable<Awaited<ReturnType<typeof fetchData>>>
 
 export async function fetchData(lang: Language) {
+  // Temporarily disable the shop page
+  return null
+
   const page = await sanityFetch<{
     name: string
     slug: string
