@@ -33,7 +33,6 @@ export default defineConfig({
   },
   output: "server",
   adapter: vercel({
-    imageService: true,
     ...(isProductionDeployment && {
       isr: {
         bypassToken: process.env.VERCEL_DEPLOYMENT_ID,
