@@ -45,7 +45,7 @@ const { index, sectionId, heading, list, ctaBox, cta } = Astro.props
   <div>
     <ul class="list">
       {
-        list?.map(({ icon, heading, paragraph }) => (
+        list.map(({ icon, heading, paragraph }) => (
           <li class="item">
             <Image {...icon} sizes="20px" />
             <div>
@@ -140,8 +140,8 @@ const { index, sectionId, heading, list, ctaBox, cta } = Astro.props
       }
       .ctaBox-list {
         text-align: left;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        display: flex;
+        flex-wrap: wrap;
         gap: 1.5rem;
         font-size: var(--typography-body-m, 0.875rem);
         .heading {
@@ -149,6 +149,14 @@ const { index, sectionId, heading, list, ctaBox, cta } = Astro.props
         }
         .paragraph {
           color: var(--neutral-400, #c6cdcc);
+        }
+        .item {
+          width: calc(50% - 0.75rem);
+          &:only-child {
+            max-width: 24rem;
+            margin: 0 auto;
+            text-align: center;
+          }
         }
       }
       .cta {
