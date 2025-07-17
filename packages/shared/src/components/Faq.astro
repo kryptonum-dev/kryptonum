@@ -1,6 +1,7 @@
 ---
 import PortableText, { PortableTextQuery, portableTextToHTML, type PortableTextValue } from '@repo/ui/portable-text'
 import Accordion from '@repo/ui/Accordion.astro'
+import { type Language } from '@repo/shared/languages'
 
 export const Faq_Query = `
   _type == "Faq" => {
@@ -29,12 +30,25 @@ type Props = {
   hasLargeText?: boolean
 }
 
-const { index, sectionId, heading, list, hasLargeText = false } = Astro.props
-
-console.log(list)
+const { index, sectionId, heading, list, hasLargeText = false } = Astro.props as Props
 
 const visibleItems = 10
 const listItems = list?.length || 0
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    loadMore: 'Wczytaj więcej',
+    loadMoreAriaLabel: (visible: number | string, total: number | string) =>
+      `Wczytaj więcej. Pokazano ${visible} z ${total} elementów`,
+  },
+  en: {
+    loadMore: 'Load more',
+    loadMoreAriaLabel: (visible: number | string, total: number | string) =>
+      `Load more. Showing ${visible} of ${total} items`,
+  },
+} as const
+const t = translations[lang]
 ---
 
 <section class="Faq" id={sectionId} data-has-large-text={hasLargeText.toString()}>
@@ -61,8 +75,10 @@ const listItems = list?.length || 0
             <div style={`transform: scaleX(${visibleItems / listItems})`} class="progress-bar" />
           </div>
         </div>
-        <button aria-label={`Wczytaj więcej. Pokazano ${visibleItems} z ${listItems} elementów`}>
-          Wczytaj więcej
+        <button
+          aria-label={t.loadMoreAriaLabel(visibleItems, listItems)}
+          data-aria-label-template={t.loadMoreAriaLabel('{visible}', '{total}')}>
+          {t.loadMore}
           <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none">
             <path
               stroke="url(#faq-load)"
@@ -178,6 +194,7 @@ const listItems = list?.length || 0
         font-size: var(--typography-body-m, 0.875rem);
         display: flex;
         align-items: center;
+        margin: 0 auto;
         gap: 0.5rem;
         height: 3rem;
         @media (prefers-reduced-motion: no-preference) {
@@ -239,7 +256,13 @@ const listItems = list?.length || 0
         progressBar.style.transform = `scaleX(${visibleItems / totalItems})`
         tooltip.style.transform = `translateX(${(visibleItems / totalItems) * 130}px)`
 
-        loadMoreBtn.setAttribute('aria-label', `Wczytaj więcej. Pokazano ${visibleItems} z ${totalItems} elementów`)
+        loadMoreBtn.setAttribute(
+          'aria-label',
+          loadMoreBtn
+            .getAttribute('data-aria-label-template')
+            ?.replace('{visible}', visibleItems.toString())
+            .replace('{total}', totalItems.toString()) || ''
+        )
         if (visibleItems >= totalItems) {
           loadMoreContainer.remove()
         }
