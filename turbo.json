@@ -11,10 +11,19 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".vercel/**"]
+      "outputs": [".vercel/**", "dist/**"]
     },
     "@apps/www#build": {
-      "outputs": []
+      "outputs": [".vercel/**", "dist/**"]
+    },
+    "@apps/learn#build": {
+      "outputs": [".vercel/**", "dist/**"]
+    },
+    "@apps/links#build": {
+      "outputs": [".vercel/**", "dist/**"]
+    },
+    "@apps/sanity#build": {
+      "outputs": ["dist/**"]
     },
     "@repo/shared#build": {
       "outputs": []
