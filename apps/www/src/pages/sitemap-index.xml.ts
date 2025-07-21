@@ -6,8 +6,9 @@ import { DOMAIN } from "@repo/shared/constants";
 
 const slugs = [
   ...await sanityFetch<string[]>({
+    // TODO: Update the query to exclude the shop pages
     query: `
-      *[defined(slug.current) && _type != "NotFound_Page"].slug.current
+      *[defined(slug.current) && _type != "NotFound_Page" && _type != "Shop_Page" && _type != "ShopProduct_Collection" && _type != "ShopThankYou_Page" && _type != "LandingPage_Collection"].slug.current
     `,
   }),
   ...await Promise.all([
