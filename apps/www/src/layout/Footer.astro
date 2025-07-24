@@ -136,7 +136,7 @@ const data = await sanityFetch<{
   params: { language: lang },
 })
 
-const cities = [
+const predefinedCities = [
   { name: 'Szczecin', left: '7.35%', top: '17.24%', pages: [] },
   { name: 'Gdańsk', left: '40.27%', top: '6.1%', pages: [] },
   { name: 'Olsztyn', left: '62.66%', top: '18.59%', pages: [] },
@@ -147,6 +147,8 @@ const cities = [
   { name: 'Kraków', left: '46.06%', top: '66.22%', pages: [] },
   { name: 'Rzeszów', left: '75.10%', top: '75.68%', pages: [] },
 ]
+
+const cities = predefinedCities
   .map((city) => {
     const cityPages = data.locationPages.filter((page) => page.name.includes(city.name))
     return {
@@ -155,6 +157,10 @@ const cities = [
     }
   })
   .filter((city) => city.pages.length > 0)
+
+const orphanedPages = data.locationPages.filter(
+  (page) => !predefinedCities.some((city) => page.name.includes(city.name))
+)
 ---
 
 <footer class="footer max-width">
@@ -293,6 +299,13 @@ const cities = [
               ))}
             </div>
           ))}
+          {orphanedPages.length > 0 && (
+            <div class="footer-cities-orphaned" aria-hidden="true" hidden>
+              {orphanedPages.map(({ name, slug }) => (
+                <a href={slug}>{name}</a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     )
@@ -519,6 +532,10 @@ const cities = [
               color: var(--neutral-400, #c6cdcc);
             }
           }
+        }
+        .footer-cities-orphaned {
+          visibility: hidden;
+          position: absolute;
         }
       }
     }
