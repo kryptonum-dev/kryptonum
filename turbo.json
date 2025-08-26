@@ -11,16 +11,20 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".vercel/**", "dist/**"]
+      "outputs": [".vercel/**", "dist/**"],
+      "cache": false
     },
     "@apps/www#build": {
-      "outputs": [".vercel/**", "dist/**"]
+      "outputs": [".vercel/**", "dist/**"],
+      "cache": false
     },
     "@apps/learn#build": {
-      "outputs": [".vercel/**", "dist/**"]
+      "outputs": [".vercel/**", "dist/**"],
+      "cache": false
     },
     "@apps/links#build": {
-      "outputs": [".vercel/**", "dist/**"]
+      "outputs": [".vercel/**", "dist/**"],
+      "cache": false
     },
     "@apps/sanity#build": {
       "outputs": ["dist/**"]
