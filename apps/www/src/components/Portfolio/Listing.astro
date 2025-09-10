@@ -65,7 +65,7 @@ export const Listing_Query = `
         defined($category) => categories[]->slug.current match ($category + "$"),
         true
       )
-    ] | order(_createdAt desc) [$PAGINATION_BEFORE...$PAGINATION_AFTER] {
+    ] | order(orderRank) [$PAGINATION_BEFORE...$PAGINATION_AFTER] {
       "slug": slug.current,
       ${ImageDataQuery('img')}
       name,

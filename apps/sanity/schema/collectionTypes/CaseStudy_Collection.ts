@@ -1,5 +1,6 @@
 import { defineField, defineType } from "sanity";
 import { defineSlugForDocument } from "../../utils/define-slug-for-document";
+import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
 
 const name = 'CaseStudy_Collection';
 const title = 'Case Study Collection';
@@ -11,7 +12,9 @@ export default defineType({
   title,
   icon,
   options: { documentPreview: true },
+  orderings: [orderRankOrdering],
   fields: [
+    orderRankField({ type: name }),
     defineField({
       name: 'language',
       type: 'string',

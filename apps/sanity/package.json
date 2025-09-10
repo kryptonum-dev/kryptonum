@@ -18,6 +18,7 @@
     "@repo/utils": "workspace:*",
     "@sanity/assist": "^4.4.2",
     "@sanity/document-internationalization": "3.3.2",
+    "@sanity/orderable-document-list": "^1.4.0",
     "@sanity/vision": "^3.98.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
