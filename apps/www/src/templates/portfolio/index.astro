@@ -34,7 +34,7 @@ export async function fetchData(lang: Language, category: string | null, pageNum
       *[_type == "Portfolio_Page" && language == $language][0] {
         name,
         "slug": slug.current,
-        "selectedCategory": *[_type == "CaseStudyCategory_Collection" && slug.current match $category + "$"][0] {
+        "selectedCategory": *[_type == "CaseStudyCategory_Collection" && slug.current match $category + "$" && language == $language][0] {
           name,
           "slug": slug.current,
           ${PortableTextQuery('heading')}
