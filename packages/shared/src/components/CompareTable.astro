@@ -1,5 +1,6 @@
 ---
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import { type Language } from '@repo/shared/languages'
 
 export const CompareTable_Query = `
   _type == "CompareTable" => {
@@ -12,6 +13,17 @@ export const CompareTable_Query = `
     },
   },
 `
+
+const lang = (Astro.params.lang as Language) || 'pl'
+const translations = {
+  pl: {
+    others: 'Inne agencje',
+  },
+  en: {
+    others: 'Other agencies',
+  },
+} as const
+const t = translations[lang]
 
 type Props = {
   index: number
@@ -119,7 +131,7 @@ const { index, sectionId, heading, paragraph, compare } = Astro.props
             <use href="#kryptonum-logo"></use>
           </svg>
         </th>
-        <th scope="col" class="company-col">Inne agencje</th>
+        <th scope="col" class="company-col">{t.others}</th>
       </tr>
     </thead>
     <tbody>
