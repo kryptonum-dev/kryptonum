@@ -10,6 +10,10 @@ export const Newsletter_Query = `
     ${ImageDataQuery('img')}
     ${PortableTextQuery('heading')}
     ${PortableTextQuery('paragraph')}
+    ctaButtons {
+      step1,
+      step2
+    },
     state {
       success {
         ${PortableTextQuery('heading')}
@@ -32,6 +36,10 @@ export type Props = {
   img: ImageDataProps
   heading: PortableTextValue
   paragraph: PortableTextValue
+  ctaButtons?: {
+    step1?: string
+    step2?: string
+  }
   state: {
     success: {
       heading: PortableTextValue
@@ -45,7 +53,7 @@ export type Props = {
   }
 }
 
-const { index, sectionId, email, groupId, img, heading, paragraph, state } = Astro.props
+const { index, sectionId, email, groupId, img, heading, paragraph, ctaButtons, state } = Astro.props
 ---
 
 <section class="Newsletter" id={sectionId}>
@@ -55,7 +63,7 @@ const { index, sectionId, email, groupId, img, heading, paragraph, state } = Ast
       <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
       <PortableText value={paragraph} />
     </header>
-    <FormWrapper state={state} email={email} groupId={groupId} />
+    <FormWrapper state={state} email={email} groupId={groupId} ctaButtons={ctaButtons} />
   </div>
 </section>
 

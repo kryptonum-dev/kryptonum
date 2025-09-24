@@ -41,6 +41,28 @@ export default defineField({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'ctaButtons',
+      type: 'object',
+      title: 'CTA Buttons (Optional)',
+      description: 'Override default button text for each step',
+      fields: [
+        defineField({
+          name: 'step1',
+          type: 'string',
+          title: 'Step 1 Button Text',
+          description: 'Custom text for the first step button (default: "Subscribe" / "Zapisuję się")',
+          validation: Rule => Rule.max(30).warning('Keep button text short for better UX'),
+        }),
+        defineField({
+          name: 'step2',
+          type: 'string',
+          title: 'Step 2 Button Text',
+          description: 'Custom text for the second step button (default: "Subscribe" / "Zapisuję się")',
+          validation: Rule => Rule.max(30).warning('Keep button text short for better UX'),
+        }),
+      ],
+    }),
+    defineField({
       name: 'state',
       type: 'object',
       title: 'Form States',

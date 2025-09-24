@@ -12,6 +12,7 @@ type Props = {
   state: NewsletterProps['state']
   email: NewsletterProps['email']
   groupId: NewsletterProps['groupId']
+  ctaButtons?: NewsletterProps['ctaButtons']
 }
 
 const lang = Astro.params.lang as Language
@@ -31,7 +32,7 @@ const translations = {
 } as const
 const t = translations[lang]
 
-const { state, email, groupId } = Astro.props as Props
+const { state, email, groupId, ctaButtons } = Astro.props as Props
 
 const svgId = Math.random().toString(36).slice(2)
 ---
@@ -45,8 +46,8 @@ const svgId = Math.random().toString(36).slice(2)
       </svg>
       {t.backButton}
     </button>
-    <Button type="button" className="next-step">{t.submitButton}</Button>
-    <Button type="submit" className="submit-button">{t.submitButton}</Button>
+    <Button type="button" className="next-step">{ctaButtons?.step1 || t.submitButton}</Button>
+    <Button type="submit" className="submit-button">{ctaButtons?.step2 || t.submitButton}</Button>
   </div>
   <Loader class="Loader" />
   <div class="ErrorState">
