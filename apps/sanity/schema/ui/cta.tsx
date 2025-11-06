@@ -34,7 +34,6 @@ export default defineType({
         layout: 'radio',
         direction: 'horizontal',
       },
-      initialValue: 'primary',
       validation: Rule => Rule.required(),
     }),
     defineField({
@@ -51,7 +50,6 @@ export default defineType({
         layout: 'radio',
         direction: 'horizontal',
       },
-      initialValue: 'external',
       validation: Rule => Rule.required(),
     }),
     defineField({
