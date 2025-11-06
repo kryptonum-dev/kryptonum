@@ -28,7 +28,7 @@ export default defineField({
     defineField({
       name: 'metrics',
       type: 'array',
-      title: 'Metrics',
+      title: 'Metrics (optional)',
       of: [
         defineField({
           name: 'metric',
@@ -57,7 +57,6 @@ export default defineField({
           },
         })
       ],
-      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'cta',
