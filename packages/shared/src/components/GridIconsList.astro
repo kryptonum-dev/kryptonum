@@ -28,7 +28,7 @@ type Props = {
     title: PortableTextValue
     paragraph: PortableTextValue
   }>
-  ctas: Array<ButtonDataProps>
+  ctas?: Array<ButtonDataProps>
 }
 
 const { index, sectionId, heading, paragraph, img, list, ctas } = Astro.props
@@ -37,7 +37,7 @@ const { index, sectionId, heading, paragraph, img, list, ctas } = Astro.props
 <section class="GridIconsList" id={sectionId}>
   <header>
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
-    <PortableText value={paragraph} class="paragraph" />
+    {paragraph && <PortableText value={paragraph} class="paragraph" />}
     {
       img && (
         <div class="image-container">
@@ -55,14 +55,20 @@ const { index, sectionId, heading, paragraph, img, list, ctas } = Astro.props
               <Image {...icon} sizes="20px" />
             </div>
             <PortableText value={title} heading="h3" class="title" />
-            <PortableText value={paragraph} class="paragraph" />
+            {paragraph && <PortableText value={paragraph} class="paragraph" />}
           </li>
         ))
       }
     </ul>
-    <div class="cta-wrapper">
-      {ctas.map((cta) => <Button {...cta} />)}
-    </div>
+    {
+      ctas && (
+        <div class="cta-wrapper">
+          {ctas.map((cta) => (
+            <Button {...cta} />
+          ))}
+        </div>
+      )
+    }
   </div>
 </section>
 

@@ -23,7 +23,6 @@ export default defineField({
       name: 'paragraph',
       type: 'PortableText',
       title: 'Paragraph',
-      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'img',
@@ -56,7 +55,6 @@ export default defineField({
               name: 'paragraph',
               type: 'PortableText',
               title: 'Paragraph',
-              validation: Rule => Rule.required(),
             }),
           ],
           preview: {
@@ -80,7 +78,7 @@ export default defineField({
       type: 'array',
       of: [{ type: 'cta' }],
       title: 'CTAs',
-      validation: Rule => Rule.required().min(1).max(2),
+      validation: Rule => Rule.min(1).max(2),
     }),
     ...sectionId,
   ],
