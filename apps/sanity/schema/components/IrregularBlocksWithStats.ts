@@ -44,8 +44,7 @@ export default defineField({
             defineField({
               name: 'paragraph',
               type: 'PortableText',
-              title: 'Paragraph',
-              validation: Rule => Rule.required(),
+              title: 'Paragraph (optional)',
             }),
           ],
           preview: {

@@ -10,6 +10,7 @@ export const IrregularBlocksWithStats_Query = `
       ${ImageDataQuery('icon')}
       ${PortableTextQuery('heading')}
       ${PortableTextQuery('paragraph')}
+      ${PortableTextQuery('paragraph')}
     },
     ${ImageDataQuery('img')}
     stats[] {
@@ -26,7 +27,7 @@ type Props = {
   list: Array<{
     icon: ImageDataProps
     heading: PortableTextValue
-    paragraph: PortableTextValue
+    paragraph?: PortableTextValue
   }>
   img: ImageDataProps
   stats: Array<{
@@ -42,7 +43,8 @@ const { index, sectionId, heading, list, img, stats } = Astro.props
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="31.69 48.88 141.56 110.99" class="blob" aria-hidden="true">
     <path
       fill="#49e1b1"
-      d="M154.2 52.7c14.4 7.6 23.4 27.4 16.9 40.7-6.6 13.3-28.7 20.1-43.2 33-14.4 12.9-21.2 32.1-29.2 33.4-8 1.3-17.4-15.2-32.3-28.2-14.9-12.9-35.3-22.3-34.7-31 .6-8.8 22.2-16.9 37.1-24.5 14.9-7.5 23-14.3 37-20.2 14.1-5.8 33.9-10.7 48.4-3.2Z">
+      d="M154.2 52.7c14.4 7.6 23.4 27.4 16.9 40.7-6.6 13.3-28.7 20.1-43.2 33-14.4 12.9-21.2 32.1-29.2 33.4-8 1.3-17.4-15.2-32.3-28.2-14.9-12.9-35.3-22.3-34.7-31 .6-8.8 22.2-16.9 37.1-24.5 14.9-7.5 23-14.3 37-20.2 14.1-5.8 33.9-10.7 48.4-3.2Z"
+    >
     </path>
   </svg>
   <div class="max-width">
@@ -87,7 +89,7 @@ const { index, sectionId, heading, list, img, stats } = Astro.props
               <Image {...icon} sizes="32px" loading={index === 0 ? 'eager' : 'lazy'} />
             </div>
             <PortableText value={heading} heading={index === 0 ? 'h2' : 'h3'} class="heading" />
-            <PortableText value={paragraph} class="paragraph" />
+            {paragraph && <PortableText value={paragraph} class="paragraph" />}
           </li>
         ))
       }
@@ -216,7 +218,7 @@ const { index, sectionId, heading, list, img, stats } = Astro.props
         order: -1;
         align-self: center;
         width: calc((100% / 3) + 5rem);
-        margin: 0 -2.5rem;
+        margin: 0.5px -2.5rem;
         z-index: 2;
       }
       @media (max-width: 56rem) {
