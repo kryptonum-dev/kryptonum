@@ -139,13 +139,7 @@ export default defineField({
     defineField({
       name: 'paragraph',
       type: 'PortableText',
-      title: 'Paragraph',
-      hidden: ({ parent }) => parent?.variant === 'form-with-person',
-      validation: Rule => Rule.custom((value, context) => {
-        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
-        if (variant === 'form-with-list' && !value) return 'Paragraph is required';
-        return true;
-      }),
+      title: 'Paragraph (optional)',
     }),
     defineField({
       name: 'list',

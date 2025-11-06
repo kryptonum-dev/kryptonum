@@ -15,7 +15,7 @@ export type Props = {
   telText: string
   tel?: string
   heading: PortableTextValue
-  paragraph: PortableTextValue
+  paragraph?: PortableTextValue
   list: Array<{
     icon: ImageDataProps
     label: PortableTextValue
@@ -95,7 +95,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
       <div class="wrapper">
         <header>
           <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
-          <PortableText value={paragraph} />
+          {paragraph && <PortableText value={paragraph} />}
         </header>
         <ul class="list">
           {list.map(({ icon, label }) => (
@@ -114,6 +114,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
       <div class="wrapper">
         <header>
           <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+          {paragraph && <PortableText value={paragraph} />}
         </header>
         <div class="avatar-wrapper">
           <Image {...img} sizes="64px" class="gradient-thumbnail" />
@@ -203,7 +204,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
         header {
           grid-area: header;
           .heading {
-            font-size: var(--typography-body-xl, 1rem);
+            margin-bottom: 1rem;
           }
         }
         .avatar-wrapper {
