@@ -22,8 +22,7 @@ export default defineField({
     defineField({
       name: 'paragraph',
       type: 'PortableText',
-      title: 'Paragraph',
-      validation: Rule => Rule.required(),
+      title: 'Paragraph (optional)',
     }),
     defineField({
       name: 'items',
@@ -45,7 +44,6 @@ export default defineField({
               name: 'price',
               type: 'string',
               title: 'Price',
-              validation: Rule => Rule.required(),
               fieldset: 'pricing',
             }),
             defineField({
@@ -64,7 +62,6 @@ export default defineField({
               name: 'featuresTitle',
               type: 'string',
               title: 'Features Title',
-              validation: Rule => Rule.required(),
             }),
             defineField({
               name: 'features',
@@ -152,12 +149,10 @@ export default defineField({
           preview: {
             select: {
               name: 'name',
-              price: 'price',
-              oldPrice: 'oldPrice',
               media: 'thumbnails.0',
             },
-            prepare: ({ name, price, oldPrice, media }) => ({
-              title: `${name} - ${price}${oldPrice ? ` (was ${oldPrice})` : ''}`,
+            prepare: ({ name, media }) => ({
+              title: name,
               media,
             }),
           },

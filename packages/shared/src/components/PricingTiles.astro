@@ -34,10 +34,10 @@ type Props = {
   paragraph: PortableTextValue
   items: {
     name: string
-    price: string
+    price?: string
     oldPrice?: string
     cta: ButtonDataProps
-    featuresTitle: string
+    featuresTitle?: string
     features: string[]
     thumbnails?: Array<ImageDataProps & { isHighlighted?: boolean }>
     isHighlighted?: boolean
@@ -75,25 +75,27 @@ const Subheading = index === 0 ? 'h2' : 'h3'
           {isHighlighted && highlight && (
             <div class="highlight">
               <div class="avatars">
-                {highlight.avatars?.map((avatar) => (
+                {highlight?.avatars?.map((avatar) => (
                   <Image {...avatar} sizes="32px" class="avatar-image" />
                 ))}
-                <span>{highlight.avatarsTruncation}</span>
+                <span>{highlight?.avatarsTruncation}</span>
               </div>
               <Image {...highlight.icon} class="highlight-icon" sizes="24px" />
-              <p class="highlight-title">{highlight.title}</p>
+              <p class="highlight-title">{highlight?.title}</p>
             </div>
           )}
           <header class="tile-header">
             <Subheading class="name">{name}</Subheading>
-            <div class="price-container">
-              <p class="price">{price}</p>
-              {oldPrice && <del class="old-price">{oldPrice}</del>}
-            </div>
+            {price && (
+              <div class="price-container">
+                <p class="price">{price}</p>
+                {oldPrice && <del class="old-price">{oldPrice}</del>}
+              </div>
+            )}
           </header>
           <Button {...cta} className="cta" />
           <div class="features-container">
-            <p class="features-title">{featuresTitle}</p>
+            {featuresTitle && <p class="features-title">{featuresTitle}</p>}
             <ul class="features">
               {features.map((feature) => (
                 <li>
@@ -111,7 +113,8 @@ const Subheading = index === 0 ? 'h2' : 'h3'
                         x2=".818"
                         y1="2.269"
                         y2="4.28"
-                        gradientUnits="userSpaceOnUse">
+                        gradientUnits="userSpaceOnUse"
+                      >
                         <stop stop-color="#2DD282" />
                         <stop offset="1" stop-color="#90F4E8" />
                       </linearGradient>
@@ -136,7 +139,8 @@ const Subheading = index === 0 ? 'h2' : 'h3'
           height="82"
           fill="none"
           viewBox="0 0 66 82"
-          aria-hidden="true">
+          aria-hidden="true"
+        >
           <path
             fill="url(#paint0_linear_7676_44167)"
             fill-rule="evenodd"
@@ -155,7 +159,8 @@ const Subheading = index === 0 ? 'h2' : 'h3'
               x2="23.673"
               y1="33.664"
               y2="34.769"
-              gradientUnits="userSpaceOnUse">
+              gradientUnits="userSpaceOnUse"
+            >
               <stop stop-color="#2DD282" />
               <stop offset="1" stop-color="#90F4E8" />
             </linearGradient>
@@ -165,7 +170,8 @@ const Subheading = index === 0 ? 'h2' : 'h3'
               x2="72.712"
               y1="78.151"
               y2="26.107"
-              gradientUnits="userSpaceOnUse">
+              gradientUnits="userSpaceOnUse"
+            >
               <stop stop-color="#2DD282" stop-opacity=".3" />
               <stop offset=".5" stop-color="#90F4E8" stop-opacity=".15" />
               <stop offset="1" stop-color="#90F4E8" stop-opacity="0" />
@@ -176,7 +182,8 @@ const Subheading = index === 0 ? 'h2' : 'h3'
               x2="72.712"
               y1="78.151"
               y2="26.107"
-              gradientUnits="userSpaceOnUse">
+              gradientUnits="userSpaceOnUse"
+            >
               <stop stop-color="#2DD282" stop-opacity=".3" />
               <stop offset=".5" stop-color="#90F4E8" stop-opacity=".15" />
               <stop offset="1" stop-color="#90F4E8" stop-opacity="0" />
@@ -191,7 +198,7 @@ const Subheading = index === 0 ? 'h2' : 'h3'
 
 <style lang="scss">
   .PricingTiles {
-    padding: clamp(3rem, calc(4vw / 0.48), 5rem) 0;
+    padding: clamp(2rem, calc(3vw / 0.48), 4rem) 0;
     .header {
       text-align: center;
       margin-bottom: clamp(6rem, calc(7vw / 0.48), 7.5rem);
