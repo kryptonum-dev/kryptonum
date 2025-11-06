@@ -6,12 +6,20 @@ import Video, { VideoDataQuery, type VideoDataProps } from '@repo/ui/Video.astro
 export const SingleReview_Query = `
   _type == "SingleReview" => {
     ${PortableTextQuery('heading')}
-    review -> {
-      ${ImageDataQuery('img')}
-      name,
-      ${PortableTextQuery('review')}
-      ${VideoDataQuery('video')}
-    }
+    "review": coalesce(
+      customReview {
+        ${ImageDataQuery('img')}
+        name,
+        ${PortableTextQuery('review')}
+        ${VideoDataQuery('video')}
+      },
+      review -> {
+        ${ImageDataQuery('img')}
+        name,
+        ${PortableTextQuery('review')}
+        ${VideoDataQuery('video')}
+      }
+    )
   },
 `
 
@@ -19,8 +27,8 @@ type Props = {
   index: number
   sectionId?: string
   heading: PortableTextValue
-  review: {
-    img: ImageDataProps
+  review?: {
+    img?: ImageDataProps
     name: string
     review: PortableTextValue
     video?: VideoDataProps
@@ -28,6 +36,8 @@ type Props = {
 }
 
 const { index, sectionId, heading, review } = Astro.props
+
+if (!review) return null
 ---
 
 <section class="SingleReview" id={sectionId} data-is-video={(!!review?.video).toString()}>
@@ -41,7 +51,7 @@ const { index, sectionId, heading, review } = Astro.props
         <Video {...review.video} class="video" />
       ) : (
         <div class="avatar">
-          <Image {...review.img} sizes="(max-width: 768px) 106px, 138px" />
+          {review.img && <Image {...review.img} sizes="(max-width: 768px) 106px, 138px" />}
           <p class="name">{review.name}</p>
         </div>
       )

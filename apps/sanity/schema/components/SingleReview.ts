@@ -33,7 +33,62 @@ export default defineField({
           }
         }
       },
-      validation: Rule => Rule.required(),
+      validation: Rule => Rule.custom((value, context) => {
+        const customReview = (context.parent as { customReview?: unknown })?.customReview;
+        if (value || customReview) {
+          return true;
+        }
+
+        return 'Select a review from the collection or provide custom review details.';
+      }),
+    }),
+    defineField({
+      name: 'customReview',
+      type: 'object',
+      title: 'Custom Review (optional)',
+      description: 'Fill in to provide review content without using the collection reference.',
+      fields: [
+        defineField({
+          name: 'name',
+          type: 'string',
+          title: 'Name',
+          validation: Rule => Rule.required(),
+        }),
+        defineField({
+          name: 'img',
+          type: 'image',
+          title: 'Image',
+          validation: Rule => Rule.custom((value, context) => {
+            const { video } = context.parent as { video?: unknown };
+
+            if (video || value) {
+              return true;
+            }
+
+            return 'Provide an image when no video is set.';
+          }),
+        }),
+        defineField({
+          name: 'video',
+          type: 'mux.video',
+          title: 'Video (optional)',
+        }),
+        defineField({
+          name: 'review',
+          type: 'PortableText',
+          title: 'Review',
+          validation: Rule => Rule.required(),
+        }),
+      ],
+      validation: Rule => Rule.custom((value, context) => {
+        const { review } = context.parent as { review?: unknown };
+
+        if (value || review) {
+          return true;
+        }
+
+        return 'Select a review from the collection or provide custom review details.';
+      }),
     }),
     ...sectionId,
   ],
