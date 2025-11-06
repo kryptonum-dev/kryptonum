@@ -35,7 +35,7 @@ export const TestimonialsMasonry_Query = `
         ${VideoDataQuery('video')}
       }
     },
-    ${RatingBox_Query}
+    ${RatingBox_Query('coalesce(rating, ^.rating)')}
   },
 `
 
@@ -59,7 +59,7 @@ type Props = {
       video: VideoDataProps
     }
   )[]
-  rating: RatingBoxProps;
+  rating?: RatingBoxProps;
 }
 
 const { index, sectionId, heading, badge, testimonials, rating } = Astro.props
@@ -89,7 +89,7 @@ const formatDate = (dateString: string) => {
         )
       }
     </div>
-    <RatingBox {...rating} class="rating-box" />
+    {rating && <RatingBox {...rating} class="rating-box" />}
   </header>
   <div class="testimonials sec-wo-margin" data-truncated={isTruncated}>
     <div class="columns-container max-width">

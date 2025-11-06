@@ -43,6 +43,42 @@ export default defineField({
       title: 'Image',
       validation: Rule => Rule.required(),
     }),
+    defineField({
+      name: 'rating',
+      type: 'object',
+      title: 'Rating (optional)',
+      description: 'Override the product collection rating for this section. Leave empty to reuse the default rating.',
+      fields: [
+        defineField({
+          name: 'rating',
+          type: 'number',
+          title: 'Rating (1.0 - 5.0)',
+          validation: Rule => Rule.required().max(5).min(1),
+        }),
+        defineField({
+          name: 'text',
+          type: 'string',
+          title: 'Rating text',
+          validation: Rule => Rule.required(),
+        }),
+        defineField({
+          name: 'avatars',
+          type: 'array',
+          title: 'Avatars',
+          options: {
+            layout: 'grid',
+          },
+          of: [
+            defineField({
+              name: 'avatar',
+              type: 'image',
+              title: 'Avatar',
+            }),
+          ],
+          validation: Rule => Rule.required().max(3),
+        }),
+      ],
+    }),
     ...sectionId,
   ],
   preview: {

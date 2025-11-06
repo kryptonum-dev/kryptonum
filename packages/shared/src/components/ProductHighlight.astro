@@ -11,7 +11,7 @@ export const ProductHighlight_Query = `
     ${ButtonDataQuery('cta')}
     hint,
     ${ImageDataQuery('img')}
-    ${RatingBox_Query}
+    ${RatingBox_Query('coalesce(rating, ^.rating)')}
   },
 `
 
@@ -23,7 +23,7 @@ type Props = {
   cta: ButtonDataProps
   hint?: string
   img: ImageDataProps
-  rating: RatingBoxProps
+  rating?: RatingBoxProps
 }
 
 const { index, sectionId, heading, paragraph, cta, hint, img, rating } = Astro.props
@@ -39,7 +39,7 @@ const { index, sectionId, heading, paragraph, cta, hint, img, rating } = Astro.p
   <div class="image-wrapper">
     <div class="circle"></div>
     <div class="pattern"></div>
-    <RatingBox {...rating} class="rating-box" />
+    {rating && <RatingBox {...rating} class="rating-box" />}
     <Image {...img} sizes="(min-width: 1024px) 50vw, 100vw" class="product-image" priority={index === 0} />
   </div>
 </section>
