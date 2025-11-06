@@ -4,6 +4,7 @@ import { PortableText } from 'astro-portabletext'
 import type { PortableTextValue } from './index'
 import Mark from './Mark.astro'
 import Block from './Block.astro'
+import BulletList from './BulletList.astro'
 
 type Props = {
   value: PortableTextValue
@@ -28,7 +29,7 @@ const valueArray = Array.isArray(value) ? value : [value]
     </HeadingTag>
   ) : (
     <div {...props}>
-      <PortableText value={value} components={{ mark: Mark }} />
+      <PortableText value={value} components={{ mark: Mark, listItem: { bullet: BulletList } }} />
     </div>
   )
 }
