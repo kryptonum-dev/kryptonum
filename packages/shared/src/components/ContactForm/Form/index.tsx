@@ -69,13 +69,6 @@ export default function Form({ children, variant, lang, ...props }: Props) {
   } = useForm({ mode: 'onTouched' });
 
   useEffect(() => {
-    console.log('Turnstile: Site key =', TURNSTILE_SITE_KEY ? 'SET' : 'EMPTY');
-    
-    if (!TURNSTILE_SITE_KEY) {
-      console.warn('Turnstile: Missing PUBLIC_TURNSTILE_SITE_KEY environment variable');
-      return;
-    }
-
     // Load Turnstile script
     if (!document.querySelector('script[src*="turnstile"]')) {
       const script = document.createElement('script');
@@ -86,23 +79,11 @@ export default function Form({ children, variant, lang, ...props }: Props) {
 
     // Initialize Turnstile when script is loaded
     const initTurnstile = () => {
-      console.log('Turnstile: Checking init -', 
-        'turnstile:', !!window.turnstile, 
-        'ref:', !!turnstileRef.current, 
-        'widgetId:', turnstileWidgetId.current
-      );
       if (window.turnstile && turnstileRef.current && !turnstileWidgetId.current) {
-        console.log('Turnstile: Rendering widget...');
         turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
-          callback: (token: string) => {
-            console.log('Turnstile: Token received');
-            setTurnstileToken(token);
-          },
-          'expired-callback': () => {
-            console.log('Turnstile: Token expired');
-            setTurnstileToken('');
-          },
+          callback: (token: string) => setTurnstileToken(token),
+          'expired-callback': () => setTurnstileToken(''),
           theme: 'dark',
         });
       }
