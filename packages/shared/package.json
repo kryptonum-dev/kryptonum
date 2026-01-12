@@ -6,7 +6,8 @@
     "build": "astro sync && tsc"
   },
   "dependencies": {
+    "@repo/ui": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@repo/ui": "workspace:*"
+    "botid": "^1.5.10"
   }
 }

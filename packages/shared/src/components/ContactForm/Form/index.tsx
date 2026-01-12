@@ -7,6 +7,7 @@ import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www
 import { DOMAIN } from '@repo/shared/constants';
 import { type Language } from '@repo/shared/languages';
 import { trackEvent } from '@apps/links/src/pages/api/analytics/track-event';
+import { BotIdClient } from 'botid/client';
 
 const shouldTrackAnalytics = () => {
   if (typeof window !== 'undefined') {
@@ -115,6 +116,7 @@ export default function Form({ children, variant, lang, ...props }: Props) {
 
   return (
     <form {...props} onSubmit={handleSubmit(onSubmit)} data-status={status} data-variant={variant} data-step={variant === 'form-with-person' ? step : undefined}>
+      <BotIdClient protect={[{ path: '/api/contact', method: 'POST' }]} />
       {variant === 'form-with-list' && (
         <>
           <Input

@@ -4,6 +4,7 @@ import type { APIRoute } from "astro";
 import type { Props } from "./sendContactEmail";
 import { DOMAIN, REGEX } from "@repo/shared/constants";
 import { htmlToString } from "@repo/utils/html-to-string";
+import { checkBotId } from "botid/server";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
 
@@ -40,6 +41,22 @@ const template = ({ email, message }: Omit<Props, 'legal'>) => `
 export const POST: APIRoute = async ({ request }) => {
   const origin = request.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
+
+  // Bot detection
+  const { isBot } = await checkBotId({
+    advancedOptions: {
+      headers: Object.fromEntries(request.headers.entries()),
+    },
+  });
+  if (isBot) {
+    return new Response(JSON.stringify({
+      message: "Request blocked",
+      success: false
+    }), {
+      status: 403,
+      headers: corsHeaders
+    });
+  }
 
   const { email, message, legal } = await request.json() as Props;
 
