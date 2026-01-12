@@ -6,7 +6,7 @@ import { REGEX } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www/pages/api/contact/sendContactEmail';
 import { DOMAIN } from '@repo/shared/constants';
 
-const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "";
+const TURNSTILE_SITE_KEY = "0x4AAAAAACMBUyp7IalZNTGl";
 import { type Language } from '@repo/shared/languages';
 import { trackEvent } from '@apps/links/src/pages/api/analytics/track-event';
 
@@ -69,6 +69,8 @@ export default function Form({ children, variant, lang, ...props }: Props) {
   } = useForm({ mode: 'onTouched' });
 
   useEffect(() => {
+    console.log('Turnstile: Site key =', TURNSTILE_SITE_KEY ? 'SET' : 'EMPTY');
+    
     if (!TURNSTILE_SITE_KEY) {
       console.warn('Turnstile: Missing PUBLIC_TURNSTILE_SITE_KEY environment variable');
       return;
@@ -84,7 +86,13 @@ export default function Form({ children, variant, lang, ...props }: Props) {
 
     // Initialize Turnstile when script is loaded
     const initTurnstile = () => {
+      console.log('Turnstile: Checking init -', 
+        'turnstile:', !!window.turnstile, 
+        'ref:', !!turnstileRef.current, 
+        'widgetId:', turnstileWidgetId.current
+      );
       if (window.turnstile && turnstileRef.current && !turnstileWidgetId.current) {
+        console.log('Turnstile: Rendering widget...');
         turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
           callback: (token: string) => {
