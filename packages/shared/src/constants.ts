@@ -60,11 +60,3 @@ export const REGEX: { email: RegExp; phone: RegExp; string: RegExp } = {
  * @type {number[]}
  */
 export const EASING: number[] = [0.6, -0.15, 0.27, 1.15];
-
-/**
- * Cloudflare Turnstile site key for bot protection.
- * Get your key from: https://dash.cloudflare.com/ → Turnstile
- * @constant
- * @type {string}
- */
-export const TURNSTILE_SITE_KEY: string = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "";

@@ -4,7 +4,9 @@ import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
 import { REGEX } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www/pages/api/contact/sendContactEmail';
-import { DOMAIN, TURNSTILE_SITE_KEY } from '@repo/shared/constants';
+import { DOMAIN } from '@repo/shared/constants';
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "";
 import { type Language } from '@repo/shared/languages';
 import { trackEvent } from '@apps/links/src/pages/api/analytics/track-event';
 
@@ -67,6 +69,11 @@ export default function Form({ children, variant, lang, ...props }: Props) {
   } = useForm({ mode: 'onTouched' });
 
   useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) {
+      console.warn('Turnstile: Missing PUBLIC_TURNSTILE_SITE_KEY environment variable');
+      return;
+    }
+
     // Load Turnstile script
     if (!document.querySelector('script[src*="turnstile"]')) {
       const script = document.createElement('script');
@@ -80,8 +87,14 @@ export default function Form({ children, variant, lang, ...props }: Props) {
       if (window.turnstile && turnstileRef.current && !turnstileWidgetId.current) {
         turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
-          callback: (token: string) => setTurnstileToken(token),
-          'expired-callback': () => setTurnstileToken(''),
+          callback: (token: string) => {
+            console.log('Turnstile: Token received');
+            setTurnstileToken(token);
+          },
+          'expired-callback': () => {
+            console.log('Turnstile: Token expired');
+            setTurnstileToken('');
+          },
           theme: 'dark',
         });
       }
