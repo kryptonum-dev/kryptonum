@@ -1,13 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm, type FieldValues } from 'react-hook-form';
 import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
 import { REGEX } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www/pages/api/contact/sendContactEmail';
-import { DOMAIN } from '@repo/shared/constants';
+import { DOMAIN, TURNSTILE_SITE_KEY } from '@repo/shared/constants';
 import { type Language } from '@repo/shared/languages';
 import { trackEvent } from '@apps/links/src/pages/api/analytics/track-event';
-import { BotIdClient } from 'botid/client';
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (container: HTMLElement, options: { sitekey: string; callback: (token: string) => void; 'expired-callback': () => void; theme: string }) => string;
+      reset: (widgetId: string) => void;
+    };
+  }
+}
 
 const shouldTrackAnalytics = () => {
   if (typeof window !== 'undefined') {
@@ -46,6 +54,9 @@ const translations = {
 export default function Form({ children, variant, lang, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [step, setStep] = useState<1 | 2>(1);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetId = useRef<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -56,7 +67,49 @@ export default function Form({ children, variant, lang, ...props }: Props) {
   } = useForm({ mode: 'onTouched' });
 
   useEffect(() => {
-    const tryAgain = () => setStatus('idle');
+    // Load Turnstile script
+    if (!document.querySelector('script[src*="turnstile"]')) {
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+
+    // Initialize Turnstile when script is loaded
+    const initTurnstile = () => {
+      if (window.turnstile && turnstileRef.current && !turnstileWidgetId.current) {
+        turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: (token: string) => setTurnstileToken(token),
+          'expired-callback': () => setTurnstileToken(''),
+          theme: 'dark',
+        });
+      }
+    };
+
+    // Check if already loaded or wait for it
+    if (window.turnstile) {
+      initTurnstile();
+    } else {
+      const interval = setInterval(() => {
+        if (window.turnstile) {
+          initTurnstile();
+          clearInterval(interval);
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  useEffect(() => {
+    const tryAgain = () => {
+      setStatus('idle');
+      // Reset Turnstile on retry
+      if (window.turnstile && turnstileWidgetId.current) {
+        window.turnstile.reset(turnstileWidgetId.current);
+        setTurnstileToken('');
+      }
+    };
     document.addEventListener('Contact-TryAgain', tryAgain);
     if (variant === 'form-with-person') {
       const nextStep = async () => {
@@ -82,7 +135,10 @@ export default function Form({ children, variant, lang, ...props }: Props) {
 
   const onSubmit = async (data: FieldValues) => {
     setStatus('loading');
-    const response = await sendContactEmail(data as sendContactEmailProps);
+    const response = await sendContactEmail({
+      ...data as sendContactEmailProps,
+      turnstileToken,
+    });
     if (response.success) {
       setStatus('success');
       reset();
@@ -116,7 +172,6 @@ export default function Form({ children, variant, lang, ...props }: Props) {
 
   return (
     <form {...props} onSubmit={handleSubmit(onSubmit)} data-status={status} data-variant={variant} data-step={variant === 'form-with-person' ? step : undefined}>
-      <BotIdClient protect={[{ path: '/api/contact', method: 'POST' }]} />
       {variant === 'form-with-list' && (
         <>
           <Input
@@ -177,6 +232,7 @@ export default function Form({ children, variant, lang, ...props }: Props) {
           </Checkbox>
         </>
       )}
+      <div ref={turnstileRef} className="turnstile-container" />
       {children}
     </form>
   )

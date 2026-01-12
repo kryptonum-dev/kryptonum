@@ -4,9 +4,9 @@ import type { APIRoute } from "astro";
 import type { Props } from "./sendContactEmail";
 import { DOMAIN, REGEX } from "@repo/shared/constants";
 import { htmlToString } from "@repo/utils/html-to-string";
-import { checkBotId } from "botid/server";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
+const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || import.meta.env.TURNSTILE_SECRET_KEY;
 
 const isAllowedOrigin = (origin: string | null): boolean => {
   if (!origin) return false;
@@ -42,23 +42,38 @@ export const POST: APIRoute = async ({ request }) => {
   const origin = request.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
 
-  // Bot detection
-  const { isBot } = await checkBotId({
-    advancedOptions: {
-      headers: Object.fromEntries(request.headers.entries()),
-    },
-  });
-  if (isBot) {
+  const { email, message, legal, turnstileToken } = await request.json() as Props & { turnstileToken?: string };
+
+  // Verify Turnstile token
+  if (!turnstileToken) {
     return new Response(JSON.stringify({
-      message: "Request blocked",
+      message: "Verification required",
+      success: false
+    }), {
+      status: 400,
+      headers: corsHeaders
+    });
+  }
+
+  const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      secret: TURNSTILE_SECRET_KEY,
+      response: turnstileToken,
+    }),
+  });
+  const turnstileResult = await turnstileResponse.json() as { success: boolean };
+
+  if (!turnstileResult.success) {
+    return new Response(JSON.stringify({
+      message: "Verification failed",
       success: false
     }), {
       status: 403,
       headers: corsHeaders
     });
   }
-
-  const { email, message, legal } = await request.json() as Props;
 
   if (!REGEX.email.test(email) || !message || !legal) {
     return new Response(JSON.stringify({

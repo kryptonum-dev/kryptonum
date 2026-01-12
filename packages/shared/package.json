@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
-    "@repo/utils": "workspace:*",
-    "botid": "^1.5.10"
+    "@repo/utils": "workspace:*"
   }
 }
