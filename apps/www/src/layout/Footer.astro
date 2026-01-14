@@ -338,7 +338,8 @@ const orphanedPages = data.locationPages.filter(
     grid-template-areas:
       'language language language language language language language language language language language language'
       'services services services services services services services services services . caseStudies caseStudies'
-      'teamAndBlog teamAndBlog teamAndBlog contact contact contact locationPages locationPages locationPages locationPages locationPages locationPages';
+      'teamAndBlog teamAndBlog teamAndBlog contact contact contact locationPages locationPages locationPages locationPages locationPages locationPages'
+      'credits credits credits credits credits credits credits credits credits credits credits credits';
     .services {
       grid-area: services;
       display: grid;
@@ -544,7 +545,7 @@ const orphanedPages = data.locationPages.filter(
       }
     }
     .credits {
-      grid-column: 1 / -1;
+      grid-area: credits;
       font-size: var(--typography-body-m, 0.875rem);
       padding: clamp(1rem, calc(1.5vw / 0.48), 1.5rem) 0 5rem;
       background:
@@ -624,7 +625,8 @@ const orphanedPages = data.locationPages.filter(
         'services services'
         'teamAndBlog caseStudies'
         'contact contact'
-        'locationPages locationPages';
+        'locationPages locationPages'
+        'credits credits';
       .services {
         grid-template-columns: 1fr 1fr;
       }
@@ -637,7 +639,8 @@ const orphanedPages = data.locationPages.filter(
         'caseStudies'
         'teamAndBlog'
         'contact'
-        'locationPages';
+        'locationPages'
+        'credits';
       .services {
         grid-template-columns: 1fr;
       }
