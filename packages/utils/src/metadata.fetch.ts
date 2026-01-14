@@ -20,7 +20,7 @@ export default async function metadataFetch(slug: string) {
           _type == 'NotFound_Page' => [],
           coalesce(
             *[_type == 'translation.metadata' && references(^._id)][0] {
-              "urls": translations[] {
+              "urls": translations[defined(*[_id == ^.value._ref][0].slug.current)] {
                 "lang": _key,
                 "url": *[_id == ^.value._ref][0].slug.current
               }
