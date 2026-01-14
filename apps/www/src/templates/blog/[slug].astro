@@ -7,6 +7,7 @@ import Hero, { Hero_Query, type HeroProps } from '@components/Blog/Post/Hero.ast
 import Content, { Content_Query, type ContentProps } from '@components/Blog/Post/Content/index.astro'
 import Components, { Components_Query, type ComponentsProps } from '@repo/shared/components/index.astro'
 import ScrollToNextPage from '@components/shared/ScrollToNextPage.astro'
+import ArticleSchema from '@components/schemas/ArticleSchema.astro'
 import { type Language } from '@repo/shared/languages'
 
 type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
@@ -84,21 +85,34 @@ const breadcrumbs = [
 ---
 
 <Layout {...metadata}>
+  <ArticleSchema
+    slot='Head'
+    headline={page.name}
+    description={metadata.description}
+    imageUrl={page.hero.imageUrl}
+    datePublished={page.hero._createdAt.toString()}
+    dateModified={page.hero._updatedAt.toString()}
+    author={page.content.author}
+    category={page.hero.category}
+    slug={slug}
+    content={page.content.content}
+    lang={lang}
+  />
   <Breadcrumbs data={breadcrumbs} />
   <Hero {...page.hero} />
   <Content {...page.content} />
   <Components data={page.components} hasPreviousSections={true} />
-  <ScrollToNextPage slot="ScrollToNextPage" path={page.ScrollToNextPage.slug} data-element="ScrollToNextPage">
+  <ScrollToNextPage slot='ScrollToNextPage' path={page.ScrollToNextPage.slug} data-element='ScrollToNextPage'>
     <h2
       set:html={lang === 'pl'
-        ? `❧ Scrolluj, scrolluj, to <strong>jeszcze nie koniec!</strong>`
-        : `❧ Scroll, scroll, it’s <strong>not over yet!</strong>`}
+        ? `❧ Scrolluj, scrolluj, to <strong>jeszcze nie koniec!</strong>`
+        : `❧ Scroll, scroll, it's <strong>not over yet!</strong>`}
     />
     <p>{page.ScrollToNextPage.name}</p>
   </ScrollToNextPage>
 </Layout>
 
-<style lang="scss">
+<style lang='scss'>
   [data-element='ScrollToNextPage'] {
     text-align: center;
     h2 {

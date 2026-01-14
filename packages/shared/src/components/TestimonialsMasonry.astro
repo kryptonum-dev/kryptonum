@@ -4,6 +4,7 @@ import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Video, { VideoDataQuery, type VideoDataProps } from '@repo/ui/Video.astro'
 import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
 import RatingBox, { RatingBox_Query, type RatingBoxProps } from '@repo/ui/RatingBox.astro'
+import ReviewSchema, { type ReviewItem } from '../../../../apps/www/src/components/schemas/ReviewSchema.astro'
 import type { Language } from '@repo/shared/languages'
 
 const lang = (Astro.params.lang as Language) || 'pl'
@@ -25,6 +26,7 @@ export const TestimonialsMasonry_Query = `
       type,
       type == "text" => {
         ${ImageDataQuery('img')}
+        "imgUrl": img.asset -> url,
         name,
         position,
         ${PortableTextQuery('review')}
@@ -48,6 +50,7 @@ type Props = {
     {
       type: 'text'
       img?: ImageDataProps
+      imgUrl?: string
       name: string
       position: string
       review: PortableTextValue
@@ -74,6 +77,20 @@ const formatDate = (dateString: string) => {
   const year = date.getFullYear()
   return `${day} ${month} ${year}`
 }
+
+// Map text testimonials to schema format (skip video testimonials)
+const reviewSchemaItems: ReviewItem[] = testimonials
+  .filter((t): t is Extract<typeof t, { type: 'text' }> => t.type === 'text')
+  .map((testimonial) => ({
+    authorName: testimonial.name,
+    authorPosition: testimonial.position,
+    authorImage: testimonial.imgUrl,
+    reviewBody: testimonial.review,
+    datePublished: testimonial.date,
+    ratingValue: 5, // Default to 5 stars for curated testimonials
+  }))
+
+const pageUrl = Astro.url.pathname
 ---
 
 <section class="TestimonialsMasonry" id={sectionId}>
@@ -129,6 +146,7 @@ const formatDate = (dateString: string) => {
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" fill="none" viewBox="0 0 16 17"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M8 3.152V13.82m0 0 4-4m-4 4-4-4"/></svg>
     </button>
   )}
+  <ReviewSchema reviews={reviewSchemaItems} pageUrl={pageUrl} />
 </section>
 
 <style lang="scss">

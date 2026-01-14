@@ -1,0 +1,176 @@
+---
+import sanityFetch from '@repo/utils/sanity.fetch'
+import { DOMAIN } from '@repo/shared/constants'
+import { type Language } from '@repo/shared/languages'
+
+const lang = (Astro.params.lang as Language) || 'pl'
+
+type GlobalData = {
+  name: string | null
+  description: string | null
+  logo: string | null
+  foundingDate: string | null
+  priceRange: string | null
+  areaServed: Array<{ name: string }> | null
+  email: string | null
+  tel: string | null
+  address: {
+    streetAddress: string | null
+    addressLocality: string | null
+    postalCode: string | null
+    addressCountry: string | null
+    geo: {
+      latitude: number | null
+      longitude: number | null
+    } | null
+  } | null
+  socials: {
+    instagram: string | null
+    facebook: string | null
+    tiktok: string | null
+    linkedin: string | null
+  } | null
+  googleData: {
+    rating: number | null
+    user_ratings_total: number | null
+    url: string | null
+  } | null
+} | null
+
+const global = await sanityFetch<GlobalData>({
+  query: `
+    *[_type == "global" && language == $language][0] {
+      "name": OrganizationSchema.name,
+      "description": OrganizationSchema.description,
+      "logo": OrganizationSchema.logo.asset -> url,
+      "foundingDate": OrganizationSchema.foundingDate,
+      "priceRange": OrganizationSchema.priceRange,
+      "areaServed": OrganizationSchema.areaServed[] { name },
+      email,
+      tel,
+      address {
+        streetAddress,
+        addressLocality,
+        postalCode,
+        addressCountry,
+        geo {
+          latitude,
+          longitude
+        }
+      },
+      socials {
+        instagram,
+        facebook,
+        tiktok,
+        linkedin
+      },
+      googleData {
+        rating,
+        user_ratings_total,
+        url
+      }
+    }
+  `,
+  params: { language: lang },
+})
+
+// Early return if no data or missing required fields
+if (!global?.name || !global?.email) return null
+
+// Build sameAs array (filter out null/empty values)
+const sameAs = [
+  global.socials?.instagram,
+  global.socials?.facebook,
+  global.socials?.linkedin,
+  global.socials?.tiktok,
+  global.googleData?.url,
+].filter((url): url is string => Boolean(url))
+
+// Build areaServed array for local SEO
+const areaServed = global.areaServed
+  ?.filter((location) => location?.name)
+  ?.map((location) => ({
+    '@type': 'City',
+    name: location.name,
+  }))
+
+// Build the ProfessionalService schema (combines Organization + LocalBusiness)
+const professionalService: Record<string, unknown> = {
+  '@type': 'ProfessionalService',
+  '@id': `${DOMAIN}/#organization`,
+  name: global.name,
+  url: DOMAIN,
+  email: global.email,
+  ...(global.description && { description: global.description }),
+  ...(global.tel && { telephone: global.tel }),
+  ...(global.foundingDate && { foundingDate: global.foundingDate }),
+  ...(global.priceRange && { priceRange: global.priceRange }),
+  ...(sameAs.length > 0 && { sameAs }),
+  ...(areaServed && areaServed.length > 0 && { areaServed }),
+}
+
+// Add address if available
+if (global.address) {
+  const { streetAddress, addressLocality, postalCode, addressCountry } = global.address
+  if (streetAddress || addressLocality || postalCode || addressCountry) {
+    professionalService.address = {
+      '@type': 'PostalAddress',
+      ...(streetAddress && { streetAddress }),
+      ...(addressLocality && { addressLocality }),
+      ...(postalCode && { postalCode }),
+      ...(addressCountry && { addressCountry }),
+    }
+  }
+
+  // Add geo coordinates if available
+  const geo = global.address.geo
+  if (geo?.latitude != null && geo?.longitude != null) {
+    professionalService.geo = {
+      '@type': 'GeoCoordinates',
+      latitude: geo.latitude,
+      longitude: geo.longitude,
+    }
+  }
+}
+
+// Add logo if available
+if (global.logo) {
+  professionalService.logo = {
+    '@type': 'ImageObject',
+    '@id': `${DOMAIN}/#logo`,
+    url: global.logo,
+    contentUrl: global.logo,
+    caption: global.name,
+  }
+  professionalService.image = { '@id': `${DOMAIN}/#logo` }
+}
+
+// Add aggregate rating from Google reviews if available
+if (global.googleData?.rating != null && global.googleData?.user_ratings_total != null) {
+  professionalService.aggregateRating = {
+    '@type': 'AggregateRating',
+    ratingValue: global.googleData.rating.toString(),
+    reviewCount: global.googleData.user_ratings_total.toString(),
+    bestRating: '5',
+    worstRating: '1',
+  }
+}
+
+// Build the WebSite schema
+const webSite = {
+  '@type': 'WebSite',
+  '@id': `${DOMAIN}/#website`,
+  url: DOMAIN,
+  name: global.name,
+  publisher: { '@id': `${DOMAIN}/#organization` },
+  inLanguage: ['pl', 'en'],
+}
+
+// Combine into @graph structure
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [professionalService, webSite],
+}
+---
+
+<script type='application/ld+json' set:html={JSON.stringify(schema)} />

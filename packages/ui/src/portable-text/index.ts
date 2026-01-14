@@ -3,7 +3,7 @@ import type { PortableTextProps } from 'astro-portabletext/types'
 export type PortableTextValue = PortableTextProps['value']
 export { default as Mark } from './Mark.astro';
 export { default as Block } from './Block.astro';
-export { portableTextToHTML } from './portable-text-to-html'
+export { portableTextToHTML, calculateWordCount } from './portable-text-to-html'
 
 /**
  * GROQ query helper for Portable Text fields that ensures proper handling of text formatting
