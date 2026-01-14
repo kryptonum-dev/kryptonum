@@ -5,6 +5,7 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import icon from '../assets/icon.png'
 import faviconSvg from '../assets/favicon.svg'
 import { type Language } from '../languages'
+import { isLanguageIndexable } from '../language-policy'
 
 const icons = {
   favicon: await getImage({ src: faviconSvg, format: 'svg' }),
@@ -46,7 +47,11 @@ const getOgImage = async () => {
 const ogImage = await getOgImage()
 
 const url = _url || `${DOMAIN}${path}`
-const shouldNoindex = noindex || lang === 'en'
+const shouldNoindex = noindex || !isLanguageIndexable(lang)
+
+// Only output hreflang if current language is indexable AND there are other indexable alternates
+const indexableAlternates = alternates?.filter(alt => alt.url && alt.lang !== lang && isLanguageIndexable(alt.lang as Language)) || []
+const shouldRenderHreflang = isLanguageIndexable(lang) && indexableAlternates.length > 0
 ---
 
 <meta charset="utf-8" />
@@ -61,9 +66,15 @@ const shouldNoindex = noindex || lang === 'en'
 <link rel="manifest" href="/manifest.webmanifest" />
 {shouldNoindex && <meta name="robots" content="noindex,follow" />}
 <link rel="canonical" href={url} />
-<link rel="alternate" hreflang="x-default" href={url} />
-<link rel="alternate" hreflang={lang} href={url} />
-{alternates && alternates.filter(alt => alt.url && alt.lang !== lang).map(({ lang: altLang, url: altUrl }) => <link rel="alternate" hreflang={altLang} href={`${DOMAIN}${altUrl}`} />)}
+{shouldRenderHreflang && (
+  <>
+    <link rel="alternate" hreflang="x-default" href={url} />
+    <link rel="alternate" hreflang={lang} href={url} />
+    {indexableAlternates.map(({ lang: altLang, url: altUrl }) => (
+      <link rel="alternate" hreflang={altLang} href={`${DOMAIN}${altUrl}`} />
+    ))}
+  </>
+)}
 <meta property="og:url" content={url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
