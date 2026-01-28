@@ -5,12 +5,11 @@ import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
 
 export const NetworkedShowcase_Query = `
   _type == "NetworkedShowcase" => {
-    // Tags: plain strings OR linked items (based on tagsAsLinks boolean)
     tagsAsLinks,
-    !tagsAsLinks => {
+    tagsAsLinks != true => {
       tags[],
     },
-    tagsAsLinks => {
+    tagsAsLinks == true => {
       linkedTags[] {
         name,
         "slug": page->slug.current,
@@ -26,16 +25,15 @@ export const NetworkedShowcase_Query = `
       rating,
       url,
     },
-    // Right column: Video OR Services (based on showVideo boolean)
     showVideo,
-    !showVideo => {
+    showVideo != true => {
       pages[] -> {
         ${ImageDataQuery('img')}
         name,
         "slug": slug.current,
       },
     },
-    showVideo => {
+    showVideo == true => {
       video {
         "playbackId": asset.asset->playbackId,
         useVideoThumbnail,
@@ -1194,19 +1192,20 @@ const hasLinkedTags = tagsData.some((tag) => tag.slug)
       width: min(500px, 85vw, calc(90vh * 9 / 16));
       height: min(calc(500px * 16 / 9), calc(85vw * 16 / 9), 90vh);
       aspect-ratio: 9 / 16;
-      border-radius: 8px;
-      overflow: visible;
+      border-radius: 12px;
+      overflow: hidden;
       
-      &::before {
+      &::after {
         content: '';
         position: absolute;
-        inset: -1px;
-        border-radius: 9px;
-        background: linear-gradient(180deg, rgba(45, 210, 130, 0.4) 0%, rgba(45, 210, 130, 0.1) 100%);
-        z-index: -1;
+        inset: 0;
+        border-radius: 12px;
+        border: 1px solid rgba(45, 210, 130, 0.4);
+        z-index: 5;
+        pointer-events: none;
       }
       
-      mux-player { width: 100%; height: 100%; display: block; border-radius: 8px; --media-object-fit: cover; }
+      mux-player { width: 100%; height: 100%; display: block; --media-object-fit: cover; }
     }
     
     .close-btn {
