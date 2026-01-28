@@ -47,7 +47,7 @@ export default defineField({
           }
         }),
       ],
-      validation: Rule => Rule.min(2).max(2).unique(),
+      validation: Rule => Rule.min(2).unique(),
     }),
     ...sectionId,
   ],

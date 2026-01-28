@@ -2,7 +2,7 @@
 
 > **Project:** KryptoSEO  
 > **Last Updated:** 2026-01-28  
-> **Status:** In Progress — Hero Section Update  
+> **Status:** In Progress — Blog Section Update  
 > **URL:** `/pl/programowanie/strony-internetowe`
 
 ---
@@ -309,22 +309,187 @@ Local pages will be linked from the Hero section infinite scroll instead.
 
 ---
 
-### 13. Blog HUB
+### 13. Blog HUB (UPDATED STRATEGY)
 
-**Component:** Existing blog section (needs expansion)
+**Component:** Existing blog section (extended with backwards-compatible flag)
 
-**Changes needed:**
+**Goal:** Nurture visitors who aren't ready to convert — provide relevant educational content that deepens their understanding and keeps them in the Kryptonum ecosystem.
 
-- Add support for more than 2 articles
-- Copy adjustment for user journey
-- Priority: Articles related to this pillar page (biggest context)
+#### Backwards Compatibility
+
+The component will remain fully backwards compatible via a boolean flag:
+
+| Flag               | Default | Effect                                                                                          |
+| ------------------ | ------- | ----------------------------------------------------------------------------------------------- |
+| `showExtendedList` | `false` | When `false`/`null`: show existing max 2 posts array. When `true`: show new unlimited posts array |
+
+#### Data Structure
+
+**Old behavior (showExtendedList: false/null):**
+- Uses existing `posts` array (max 2 items)
+- Backwards compatible with all current implementations
+
+**New behavior (showExtendedList: true):**
+- Uses new `extendedPosts` array
+- Minimum: 2 posts (validation enforced)
+- Maximum: unlimited (no cap)
+- Unique posts only (no duplicates allowed via Sanity validation)
+
+#### Layout (When Extended Mode Enabled)
 
 **Format:**
 
-- Carousel 6–10 slots (dynamically from CMS)
+- Carousel/grid with 6–10+ slots (dynamically from CMS)
 - Each slot: title + 1 line "why it's worth reading"
-- No dates/authors
+- No dates/authors (cleaner, more evergreen appearance)
 - Text links only (no CTA buttons)
+- Priority: Articles related to this pillar page (biggest context)
+
+#### New Sanity Schema Fields
+
+```typescript
+// Add to LatestBlogPosts schema (or equivalent blog section component)
+{
+  name: 'showExtendedList',
+  title: 'Show Extended Blog List',
+  type: 'boolean',
+  initialValue: false,
+  description: 'Enable extended blog post list (unlimited posts instead of max 2)',
+},
+{
+  name: 'extendedPosts',
+  title: 'Extended Blog Posts',
+  type: 'array',
+  hidden: ({ parent }) => !parent?.showExtendedList,
+  of: [
+    {
+      type: 'reference',
+      to: [{ type: 'BlogPost_Collection' }], // Adjust to actual blog post type
+    },
+  ],
+  validation: (Rule) =>
+    Rule.custom((posts, context) => {
+      // Only validate if showExtendedList is true
+      if (!context.parent?.showExtendedList) return true;
+      
+      if (!posts || posts.length < 2) {
+        return 'Minimum 2 blog posts required when extended list is enabled';
+      }
+      
+      // Check for duplicates
+      const refs = posts.map((p) => p._ref);
+      const uniqueRefs = new Set(refs);
+      if (refs.length !== uniqueRefs.size) {
+        return 'Duplicate blog posts are not allowed';
+      }
+      
+      return true;
+    }),
+  description: 'Select blog posts to display (minimum 2, no maximum, no duplicates)',
+},
+```
+
+#### GROQ Query Update
+
+```typescript
+export const LatestBlogPosts_Query = `
+  _type == "LatestBlogPosts" => {
+    // Existing fields
+    heading,
+    ${PortableTextQuery('paragraph')}
+    
+    // Existing posts array (for backwards compatibility)
+    posts[]-> {
+      title,
+      "slug": slug.current,
+      excerpt,
+      ${ImageDataQuery('img')}
+    },
+    
+    // NEW: Extended list configuration
+    showExtendedList,
+    showExtendedList == true => {
+      "extendedPosts": extendedPosts[]-> {
+        title,
+        "slug": slug.current,
+        excerpt,
+        ${ImageDataQuery('img')}
+      },
+    },
+  },
+`
+```
+
+#### Component Implementation Logic
+
+```typescript
+// In the Astro component
+const {
+  heading,
+  paragraph,
+  posts,                    // Existing: max 2 posts
+  showExtendedList = false, // NEW: boolean flag
+  extendedPosts = [],       // NEW: unlimited posts array
+} = Astro.props;
+
+// Determine which posts to display based on the flag
+const displayPosts = showExtendedList && extendedPosts.length >= 2
+  ? extendedPosts
+  : posts;
+```
+
+#### TypeScript Props Update
+
+```typescript
+type BlogPostItem = {
+  title: string;
+  slug: string;
+  excerpt?: string;
+  img?: ImageDataProps;
+};
+
+type Props = {
+  heading: string;
+  paragraph?: PortableTextValue;
+  // Existing (for backwards compatibility)
+  posts: BlogPostItem[];
+  // NEW
+  showExtendedList?: boolean;
+  extendedPosts?: BlogPostItem[];
+};
+```
+
+#### Rendering Logic
+
+```astro
+{/* Render posts based on the flag */}
+{displayPosts.map((post) => (
+  <article class="blog-post-card">
+    <a href={`/pl/blog/${post.slug}`}>
+      <h3>{post.title}</h3>
+      {post.excerpt && <p>{post.excerpt}</p>}
+    </a>
+  </article>
+))}
+```
+
+#### Copy Adjustment
+
+- Heading should reflect user journey on this pillar page
+- Focus on educational content related to websites/web development
+- Example: "Dowiedz się więcej" / "Pogłęb swoją wiedzę"
+
+#### Implementation Checklist
+
+- [ ] Update Sanity schema with `showExtendedList` boolean
+- [ ] Add `extendedPosts` array field with min 2 validation
+- [ ] Add duplicate detection validation
+- [ ] Update GROQ query with conditional extended posts fetch
+- [ ] Update TypeScript props in component
+- [ ] Add conditional rendering logic
+- [ ] Test backwards compatibility (existing pages still work)
+- [ ] Test new behavior with 2+ posts
+- [ ] Adjust copy for pillar page context
 
 ---
 
@@ -344,7 +509,7 @@ Local pages will be linked from the Hero section infinite scroll instead.
 | 10  | FAQ              | 🟢 Existing | Use existing FAQ, max 10 questions                                  |
 | 11  | Kontakt          | 🟢 Existing | COPY adjustment needed for user journey                             |
 | 12  | Lokalizacje HUB  | ⚫ OUT      | Cities moved to Hero infinite scroll                                |
-| 13  | Blog HUB         | 🟡 UPDATE   | Support more than 2 articles                                        |
+| 13  | Blog HUB         | 🟡 UPDATE   | Extend with `showExtendedList` flag for unlimited posts array       |
 
 ---
 
@@ -353,8 +518,8 @@ Local pages will be linked from the Hero section infinite scroll instead.
 ### Oliwier (Architecture & Implementation)
 
 - [x] Information architecture for Pillar 1 (this document)
-- [ ] **TODAY:** Update Hero section
-- [ ] Update Blog section
+- [x] **Hero section update** (completed 2026-01-28)
+- [ ] **Blog section update** (strategy documented, implementation pending)
 - [ ] Integrate ready content, video, and design to Staging
 - [ ] Navigation changes (Header/Footer) at publish time
 
@@ -1403,7 +1568,12 @@ apps/sanity/static/components/NetworkedShowcase-Video.webp
    - ✅ Modified/extended `NetworkedShowcase.astro`
    - ✅ Added vertical video support with modal (desktop) and inline playback (mobile)
    - 🔜 Add localization infinite scroll (cities ticker - Phase 2)
-3. Update Blog section
+3. **Update Blog section** (strategy documented 2026-01-28)
+   - [ ] Update Sanity schema with `showExtendedList` boolean + `extendedPosts` array
+   - [ ] Add validation (min 2 posts, no duplicates)
+   - [ ] Update GROQ query with conditional fetch
+   - [ ] Update component with conditional rendering
+   - [ ] Design extended layout (carousel/grid for 6–10+ posts)
 4. Create Diagnoza component
 5. Create Case Studies component
 6. Finalize copy with Aneta
