@@ -42,7 +42,7 @@ const { state, variant, email } = Astro.props
 const svgId = Math.random().toString(36).slice(2)
 ---
 
-<Form className="Form" variant={variant} lang={lang} client:load>
+<Form className="Form" variant={variant} lang={lang} client:only="preact">
   <div class="submit-wrapper">
     <div class="wrapper">
       {variant === 'form-with-list' && <Button type="submit" className="submit-button">{t.submit}</Button>}
