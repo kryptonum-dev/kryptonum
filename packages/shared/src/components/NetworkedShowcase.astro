@@ -1191,11 +1191,11 @@ const hasLinkedTags = tagsData.some((tag) => tag.slug)
     
     .video-container {
       position: relative;
-      width: min(500px, 85vw, calc((85vh - 70px) * 9 / 16));
-      height: min(calc(500px * 16 / 9), calc(85vw * 16 / 9), calc(85vh - 70px));
+      width: min(500px, 85vw, calc(90vh * 9 / 16));
+      height: min(calc(500px * 16 / 9), calc(85vw * 16 / 9), 90vh);
       aspect-ratio: 9 / 16;
       border-radius: 8px;
-      overflow: hidden;
+      overflow: visible;
       
       &::before {
         content: '';
@@ -1211,15 +1211,15 @@ const hasLinkedTags = tagsData.some((tag) => tag.slug)
     
     .close-btn {
       position: absolute;
-      top: -56px;
-      right: 0;
-      z-index: 2;
-      width: 44px;
-      height: 44px;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: rgba(4, 43, 43, 0.7);
+      background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       display: grid;
       place-items: center;
       cursor: pointer;
@@ -1227,15 +1227,13 @@ const hasLinkedTags = tagsData.some((tag) => tag.slug)
       transform: scale(0.9);
       transition: opacity 250ms var(--easing), transform 250ms var(--easing), background-color 200ms var(--easing);
       
-      &:hover, &:focus { background: rgba(6, 64, 64, 0.9); transform: scale(1.05); outline: none; }
-      &:focus-visible { box-shadow: 0 0 0 2px rgba(45, 210, 130, 0.5); }
-      svg { width: 18px; height: 18px; stroke: var(--neutral-200, #f0f7f7); }
+      &:hover, &:focus { background: rgba(0, 0, 0, 0.8); transform: scale(1.1); outline: none; }
+      &:focus-visible { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); }
+      svg { width: 16px; height: 16px; stroke: #fff; }
     }
     
     @media (max-width: 34rem) {
-      .video-container { width: min(92vw, calc((80vh - 60px) * 9 / 16)); height: min(calc(92vw * 16 / 9), calc(80vh - 60px)); }
-      .close-btn { top: -50px; width: 40px; height: 40px;
-      }
+      .video-container { width: min(92vw, calc(85vh * 9 / 16)); height: min(calc(92vw * 16 / 9), 85vh); }
     }
   }
 </style>
