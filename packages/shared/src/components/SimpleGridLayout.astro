@@ -1,0 +1,235 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+
+export const SimpleGridLayout_Query = `
+  _type == "SimpleGridLayout" => {
+    eyebrow,
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    items[] {
+      ${ImageDataQuery('icon')}
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('paragraph')}
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  eyebrow?: string
+  heading: PortableTextValue
+  paragraph?: PortableTextValue
+  items: Array<{
+    icon: ImageDataProps
+    heading: PortableTextValue
+    paragraph: PortableTextValue
+  }>
+}
+
+const { index, sectionId, eyebrow, heading, paragraph, items } = Astro.props
+---
+
+<section class='SimpleGridLayout' id={sectionId}>
+  <header>
+    {
+      eyebrow && (
+        <span class='eyebrow'>
+          <span class='pulse-dot' aria-hidden='true'>
+            <span class='pulse-ring' />
+            <span class='pulse-core' />
+          </span>
+          {eyebrow}
+        </span>
+      )
+    }
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class='heading h1' />
+    {paragraph && <PortableText value={paragraph} class='paragraph' />}
+  </header>
+  <ul class='grid'>
+    {
+      items?.map(({ icon, heading: itemHeading, paragraph: itemParagraph }) => (
+        <li class='card'>
+          <div class='icon-wrapper'>
+            <Image {...icon} sizes='24px' loading={index === 0 ? 'eager' : 'lazy'} />
+          </div>
+          <PortableText value={itemHeading} heading='h3' class='card-heading' />
+          <PortableText value={itemParagraph} class='card-paragraph' />
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style lang='scss'>
+  .SimpleGridLayout {
+    padding: clamp(4rem, calc(6vw / 0.48), 8rem) 0;
+
+    header {
+      text-align: center;
+      max-width: 48rem;
+      margin: 0 auto clamp(2.5rem, calc(4vw / 0.48), 5rem);
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: var(--typography-body-m, 0.875rem);
+        margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+        letter-spacing: 0.04em;
+        background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        .pulse-dot {
+          position: relative;
+          width: 0.625rem;
+          height: 0.625rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+
+          .pulse-ring {
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+            opacity: 0;
+            animation: pulse-ring 2.5s ease-out infinite;
+          }
+
+          .pulse-core {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+            position: relative;
+            z-index: 1;
+          }
+        }
+
+        @keyframes pulse-ring {
+          0% {
+            transform: scale(0.8);
+            opacity: 0.6;
+          }
+          50% {
+            opacity: 0.3;
+          }
+          100% {
+            transform: scale(2.2);
+            opacity: 0;
+          }
+        }
+      }
+
+      .heading {
+        margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+      }
+
+      .paragraph {
+        color: var(--neutral-400, #c6cdcc);
+        max-width: 36rem;
+        margin: 0 auto;
+      }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
+
+      @media (max-width: 56rem) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (max-width: 36rem) {
+        grid-template-columns: 1fr;
+        max-width: 24rem;
+        margin: 0 auto;
+      }
+    }
+
+    .card {
+      position: relative;
+      padding: clamp(1.25rem, calc(1.5vw / 0.48), 1.75rem);
+      border: 1px solid var(--primary-500, #064040);
+      border-radius: 0.75rem;
+      background: linear-gradient(180deg, rgba(4, 43, 43, 0.15) 0%, rgba(2, 29, 29, 0.08) 100%);
+      transition: border-color 200ms var(--easing);
+
+      &:hover {
+        border-color: var(--primary-400, #0a5454);
+        background: linear-gradient(180deg, rgba(4, 43, 43, 0.25) 0%, rgba(2, 29, 29, 0.12) 100%);
+      }
+
+      .icon-wrapper {
+        width: clamp(2.5rem, calc(3vw / 0.48), 3rem);
+        height: clamp(2.5rem, calc(3vw / 0.48), 3rem);
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1rem);
+        position: relative;
+        background: linear-gradient(135deg, var(--primary-600, #042b2b) 0%, var(--primary-700, #021d1d) 100%);
+        border: 1px solid var(--primary-500, #064040);
+
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+          background-size: 6px 6px;
+          mask-image: radial-gradient(60% 70% at 50% 0%, rgb(0, 0, 0) 50%, transparent 100%);
+          pointer-events: none;
+        }
+
+        img {
+          width: clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+          height: clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+          position: relative;
+          z-index: 1;
+        }
+      }
+
+      .card-heading {
+        font-size: var(--typography-body-2xl, 1.25rem);
+        margin-bottom: clamp(0.5rem, calc(0.75vw / 0.48), 0.75rem);
+        line-height: 1.4;
+      }
+
+      .card-paragraph {
+        font-size: var(--typography-body-m, 0.875rem);
+        color: var(--neutral-400, #c6cdcc);
+        line-height: 1.6;
+
+        :global(ul) {
+          list-style-type: none;
+          padding-left: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.375rem;
+
+          :global(li) {
+            padding-left: 0.75rem;
+            position: relative;
+
+            &::before {
+              content: '';
+              position: absolute;
+              left: 0;
+              top: 0.425em;
+              width: 0.25rem;
+              height: 0.25rem;
+              border-radius: 50%;
+              background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+            }
+          }
+        }
+      }
+    }
+  }
+</style>

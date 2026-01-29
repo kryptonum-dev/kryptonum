@@ -1,8 +1,8 @@
 # Strony Internetowe — Pillar Page Strategy
 
 > **Project:** KryptoSEO  
-> **Last Updated:** 2026-01-28  
-> **Status:** In Progress — Blog Section Update  
+> **Last Updated:** 2026-01-29  
+> **Status:** In Progress — Diagnoza Section Implemented  
 > **URL:** `/pl/programowanie/strony-internetowe`
 
 ---
@@ -120,35 +120,47 @@ The component will remain fully backwards compatible via boolean flags:
 
 ---
 
-### 3. Diagnoza (Symptoms) — NEW COMPONENT
+### 3. Diagnoza (Symptoms) — IMPLEMENTED ✅
 
-**Goal:** Quick "that's me" recognition + engaging format (click/expand), no wall of text.
+**Component:** `SimpleGridLayout.astro` (new component, completed 2026-01-29)
+
+**Goal:** Quick "that's me" recognition in a scannable, static grid format — no interaction complexity, just fast problem identification.
+
+**Final Implementation:**
+
+Simplified from the original interactive concept to a **static 3×2 grid** of cards (6 symptoms total) for better scannability and mobile experience.
 
 **Layout:**
 
-- Panel: "Check-up Twojej strony"
-- 6 symptom chips (short headlines)
-- On click: Expanded panel with:
-  - 1 sentence consequence (business impact)
-  - 3 short bullet points "Co to zwykle oznacza"
+- **Header (centered):**
+  - Eyebrow: "Check-up Twojej strony" with animated gradient dot
+  - Main heading (H1/H2): "Dlaczego twoja strona nie dowozi?"
+  - Optional intro paragraph
+- **Grid:** 3 columns × 2 rows (responsive: 3→2→1 on smaller screens)
+- **Each card contains:**
+  - Small gradient icon (circular wrapper with dot pattern overlay)
+  - Heading (symptom/problem)
+  - Paragraph with bullet list (description + what it usually means)
 
-**Example:**
+**Design Features:**
 
-> **Symptom:** "Mamy ruch, ale brak zapytań"
->
-> **Consequence:** Ruch jest, ale strona nie prowadzi do decyzji — więc przepalasz budżet i czas.
->
-> **What it usually means:**
->
-> - Brakuje ścieżki „co dalej" (CTA jest za późno albo ginie w treści)
-> - Treść nie odpowiada na realne pytania użytkownika („czy to dla mnie?")
-> - Dowody (case'y/liczby) pojawiają się dopiero wtedy, kiedy user już wyszedł
+- Dark cards with gradient borders (`--primary-500`)
+- Hover effect: lighter border + brighter background
+- Custom gradient bullet dots for lists
+- Pulsing animated dot in eyebrow
+- Responsive grid (3→2→1 columns)
 
-**Below the panel:** Mini-diagram showing:
+**Schema:**
 
-- "Strona jako projekt" → ✗
-- "Strona jako system" → ✓
-- 4 pillars: UX/IA • Content/SEO • Analityka • CMS/Performance
+- Eyebrow: string (optional)
+- Heading: PortableText (required)
+- Paragraph: PortableText (optional)
+- Items: array (min: 3, max: 9)
+  - Icon: image/SVG
+  - Heading: PortableText
+  - Paragraph: PortableText
+
+**Note:** The "Strona jako projekt vs system" diagram was removed in the final implementation to keep the section focused and scannable.
 
 ---
 
@@ -162,6 +174,35 @@ The component will remain fully backwards compatible via boolean flags:
 
 - Left column (sticky): Heading + 1 sentence intro
 - Right column: 4 static cards (no accordions, no clicks)
+
+**Proposed COPY (draft, PL — matches `RichListAndCtaBox` schema)**
+
+**Top-level (`heading`)**
+
+Jaki efekt ma dowozić Twoja strona?
+
+**List items (`list[]`: `heading` + `paragraph`)**
+
+1. **Strona, która dowozi leady (B2B sprzedaż)**
+   - Strona prowadzi użytkownika do decyzji: jasno pokazuje ofertę, buduje zaufanie i zamienia ruch w rozmowy z właściwymi leadami.
+
+2. **Wzrost przez SEO i content (widoczność, popyt)**
+   - Strona staje się systemem treści: porządkuje tematy, klastry i podstrony tak, żeby Google rozumiało specjalizację, a ruch organiczny rósł miesiąc do miesiąca.
+
+3. **Ekspansja: nowa oferta / nowe rynki / wielojęzyczność**
+   - Struktura, content i CMS są gotowe na skalowanie: możesz szybko dodawać usługi, landing pages i języki bez chaosu, spadków SEO i przepisywania pół serwisu.
+
+4. **Integracje i mierzalność (CRM, automatyzacje, dane)**
+   - Wszystko jest policzalne: eventy i cele, porządek w leadach, integracje z CRM oraz automatyzacje, które domykają proces (a nie kończą się na formularzu).
+
+**Optional CTA box (`ctaBox[]`: `heading` + `paragraph`)**
+
+- **Nie wiesz, który scenariusz pasuje?**
+  - Opowiedz w 10 minut, gdzie jesteś teraz — dopasujemy kierunek i priorytety, a Ty dostaniesz jasny plan: co robimy najpierw i dlaczego.
+
+**Optional CTA (`cta`)**
+
+- Button label: Umów krótką konsultację
 
 **Cards:**
 
@@ -178,27 +219,48 @@ The component will remain fully backwards compatible via boolean flags:
 
 ---
 
-### 5. Jak Dowozimy (How We Deliver)
+### 5. Jak Dowozimy (How We Deliver) — IMPLEMENTED ✅
 
-**Component:** `Grouped Elements` (existing in Sanity)
+**Component:** `TwoColumnImageList` (new component, completed 2026-01-29)
 
-**Goal:** Show the delivery mechanism in 2 clear blocks (decisions → execution).
+**Goal:** Show the delivery mechanism in 2 clear phases with strong visual hierarchy and focus.
 
-**Format:** 2 large cards side by side (desktop) / stacked (mobile)
+**Layout:** Two-column grid with sticky left header and stacked blocks on right
 
-**Layer A: Fundament (Decisions That Make a Difference)**
+**Design features:**
+- Sticky header on left keeps context visible during scroll
+- Vertically stacked blocks (2 phases) on right for focused reading
+- Large illustrations per phase with subtle border treatment
+- Floating "01"/"02" numbers behind blocks for visual anchoring
+- Scroll-triggered fade-in animations (blocks reveal as you scroll)
+- Gradient bullet points for list items
+- Mobile: single column, header at top
 
-- Information architecture and user paths for conversion
-- Content/SEO plan (spider-web + priorities) BEFORE "pretty design"
-- Measurement plan: goals, events, lead definitions
-- Quality criteria and scope — what must the site deliver
+**Schema:**
+- Heading: PortableText (required) — main section heading
+- Paragraph: PortableText (optional) — intro text
+- Columns: array (exactly 2 required)
+  - Image: image (required) — large illustration
+  - Heading: PortableText (required) — phase heading
+  - Description: PortableText (required) — supports bullet lists
 
-**Layer B: Dowiezienie (Implementation That Doesn't Limit Growth)**
+**Content structure:**
 
-- Implementation and UX in code — no tool compromises
-- Headless CMS and content model for painless scaling
-- Performance / stability / security as standard
-- Ready for iteration: easy changes, tests, growth
+**Block 1: Decyzje, które robią różnicę (Fundament)**
+- Ustalamy cel strony i definicję „leada", żeby każdy element miał sens biznesowy
+- Projektujemy architekturę informacji i ścieżki użytkownika pod konwersję
+- Porządkujemy ofertę: komunikaty, dowody zaufania, priorytety i kolejność argumentów
+- Budujemy plan treści i SEO (tematy, klastry, podstrony), zanim zaczniemy „ładny design"
+- Ustalamy pomiar: zdarzenia, cele, źródła leadów i co raportujemy po starcie
+- Spisujemy kryteria jakości i zakres, żeby nie było niedopowiedzeń w trakcie
+
+**Block 2: Wdrożenie, które nie blokuje wzrostu (Dowiezienie)**
+- Wdrażamy UX w kodzie: szybko, responsywnie i bez kompromisów narzędziowych
+- Budujemy CMS i model treści tak, żeby edycja była prosta, a rozbudowa przewidywalna
+- Dbamy o performance, dostępność i SEO techniczne jako standard, nie „opcję"
+- Integrujemy analitykę i automatyzacje (np. CRM), żeby lead nie kończył się na formularzu
+- Przygotowujemy stronę pod iteracje: łatwe zmiany, testy, rozbudowę i nowe landing pages
+- Start nie kończy pracy: po publikacji optymalizujemy na podstawie danych i zachowań użytkowników
 
 ---
 
@@ -497,11 +559,11 @@ type Props = {
 
 | #   | Section          | Status      | Notes                                                               |
 | --- | ---------------- | ----------- | ------------------------------------------------------------------- |
-| 1   | Hero             | 🟡 UPDATE   | Extend `NetworkedShowcase` with `showVideo` + `showCityLinks` flags |
+| 1   | Hero             | ✅ DONE     | `NetworkedShowcase` extended with `showVideo` + `showCityLinks` flags (2026-01-28) |
 | 2   | Social Proof Bar | 🟢 Existing | No changes for MVP                                                  |
-| 3   | Diagnoza         | 🔴 NEW      | New interactive symptom-check component                             |
+| 3   | Diagnoza         | ✅ DONE     | New `SimpleGridLayout` component implemented (2026-01-29)           |
 | 4   | Scenariusze      | 🟢 Existing | Use `RichListAndCtaBox` from Sanity                                 |
-| 5   | Jak Dowozimy     | 🟢 Existing | Use `GroupedElements` from Sanity                                   |
+| 5   | Jak Dowozimy     | ✅ DONE     | New `TwoColumnImageList` component implemented (2026-01-29)         |
 | 6   | Case Studies     | 🔴 NEW      | New vertical card layout with glow effects                          |
 | 7   | Pill CTA         | 🟢 Existing | Use `PillCtaSection`                                                |
 | 8   | Technologie      | 🟢 Existing | No COPY changes for now                                             |
@@ -509,7 +571,7 @@ type Props = {
 | 10  | FAQ              | 🟢 Existing | Use existing FAQ, max 10 questions                                  |
 | 11  | Kontakt          | 🟢 Existing | COPY adjustment needed for user journey                             |
 | 12  | Lokalizacje HUB  | ⚫ OUT      | Cities moved to Hero infinite scroll                                |
-| 13  | Blog HUB         | 🟡 UPDATE   | Extend with `showExtendedList` flag for unlimited posts array       |
+| 13  | Blog HUB         | ✅ DONE     | `LatestBlogPosts` extended with `showExtendedList` flag (2026-01-28) |
 
 ---
 
@@ -519,7 +581,9 @@ type Props = {
 
 - [x] Information architecture for Pillar 1 (this document)
 - [x] **Hero section update** (completed 2026-01-28)
-- [ ] **Blog section update** (strategy documented, implementation pending)
+- [x] **Blog section update** (completed 2026-01-28)
+- [x] **Diagnoza section implementation** (SimpleGridLayout component, completed 2026-01-29)
+- [x] **Jak Dowozimy section implementation** (TwoColumnImageList component, completed 2026-01-29)
 - [ ] Integrate ready content, video, and design to Staging
 - [ ] Navigation changes (Header/Footer) at publish time
 
@@ -1568,13 +1632,17 @@ apps/sanity/static/components/NetworkedShowcase-Video.webp
    - ✅ Modified/extended `NetworkedShowcase.astro`
    - ✅ Added vertical video support with modal (desktop) and inline playback (mobile)
    - 🔜 Add localization infinite scroll (cities ticker - Phase 2)
-3. **Update Blog section** (strategy documented 2026-01-28)
-   - [ ] Update Sanity schema with `showExtendedList` boolean + `extendedPosts` array
-   - [ ] Add validation (min 2 posts, no duplicates)
-   - [ ] Update GROQ query with conditional fetch
-   - [ ] Update component with conditional rendering
-   - [ ] Design extended layout (carousel/grid for 6–10+ posts)
-4. Create Diagnoza component
+3. ✅ **Update Blog section** (completed 2026-01-28)
+   - ✅ Updated Sanity schema with `showExtendedList` boolean + `extendedPosts` array
+   - ✅ Added validation (min 2 posts, no duplicates)
+   - ✅ Updated GROQ query with conditional fetch
+   - ✅ Updated component with conditional rendering
+   - ✅ Backwards compatible implementation
+4. ✅ **Create Diagnoza component** (completed 2026-01-29)
+   - ✅ Created `SimpleGridLayout` Sanity schema (min 3, max 9 items)
+   - ✅ Implemented `SimpleGridLayout.astro` frontend component
+   - ✅ 3×2 responsive grid with gradient cards and hover effects
+   - ✅ Custom bullet styling, animated eyebrow with pulsing dot
 5. Create Case Studies component
 6. Finalize copy with Aneta
 7. Record video with Kuba
