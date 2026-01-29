@@ -75,6 +75,9 @@ import HighlightsGrid, { HighlightsGrid_Query } from '@repo/shared/components/Hi
 import TestimonialsMasonry, { TestimonialsMasonry_Query } from '@repo/shared/components/TestimonialsMasonry.astro'
 import SimpleGridLayout, { SimpleGridLayout_Query } from '@repo/shared/components/SimpleGridLayout.astro'
 import TwoColumnImageList, { TwoColumnImageList_Query } from '@repo/shared/components/TwoColumnImageList.astro'
+import HighlightedCaseStudies, {
+  HighlightedCaseStudies_Query,
+} from '@repo/shared/components/HighlightedCaseStudies.astro'
 
 const components = {
   SimpleCtaSection,
@@ -138,6 +141,7 @@ const components = {
   TestimonialsMasonry,
   SimpleGridLayout,
   TwoColumnImageList,
+  HighlightedCaseStudies,
 }
 
 type ComponentsMap = {
@@ -220,6 +224,7 @@ export const Components_Query = /* groq */ `
     ${TestimonialsMasonry_Query}
     ${SimpleGridLayout_Query}
     ${TwoColumnImageList_Query}
+    ${HighlightedCaseStudies_Query}
   },
 `
 ---
