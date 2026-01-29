@@ -1,0 +1,394 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
+
+export const HighlightedCaseStudies_Query = `
+  _type == "HighlightedCaseStudies" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    layout,
+    caseStudies[] {
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('description')}
+      metrics[] {
+        ${ImageDataQuery('icon')}
+        text,
+      },
+      ${ImageDataQuery('image')}
+      "caseStudySlug": caseStudy -> slug.current,
+      "caseStudyName": caseStudy -> name,
+    },
+    ${PortableTextQuery('bottomParagraph')}
+    ${ButtonDataQuery('cta')}
+  },
+`
+
+type CaseStudyItem = {
+  heading: PortableTextValue
+  description: PortableTextValue
+  metrics?: Array<{
+    icon: ImageDataProps
+    text: string
+  }>
+  image: ImageDataProps
+  caseStudySlug?: string
+  caseStudyName?: string
+}
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph?: PortableTextValue
+  layout?: 'consistent' | 'alternating'
+  caseStudies: CaseStudyItem[]
+  bottomParagraph?: PortableTextValue
+  cta?: ButtonDataProps
+}
+
+const { index, sectionId, heading, paragraph, layout = 'consistent', caseStudies, bottomParagraph, cta } = Astro.props
+
+const Subheading = index === 0 ? 'h2' : 'h3'
+---
+
+<section class='HighlightedCaseStudies' id={sectionId} data-animate data-layout={layout}>
+  <header class='section-header'>
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class='heading h1' />
+    {paragraph && <PortableText value={paragraph} class='paragraph' />}
+  </header>
+
+  <ul class='case-studies'>
+    {
+      caseStudies?.map(({ heading: itemHeading, description, metrics, image, caseStudySlug, caseStudyName }, i) => (
+        <li class='case-study' data-index={i}>
+          <div class='content'>
+            <PortableText value={itemHeading} heading={Subheading} class='item-heading' />
+            <PortableText value={description} class='description' />
+
+            {metrics && metrics.length > 0 && (
+              <ul class='metrics'>
+                {metrics.map(({ icon, text }) => (
+                  <li class='metric-pill'>
+                    <div class='metric-icon'>
+                      <Image {...icon} sizes='20px' loading='lazy' />
+                    </div>
+                    <span class='metric-text'>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {caseStudySlug && (
+              <Button theme='secondary' href={caseStudySlug}>
+                Zobacz case study
+              </Button>
+            )}
+          </div>
+
+          <div class='image-wrapper'>
+            {caseStudySlug ? (
+              <a
+                href={caseStudySlug}
+                class='image-link'
+                aria-label={`Zobacz case study: ${caseStudyName || 'Projekt'}`}>
+                <div class='image-container'>
+                  <Image
+                    {...image}
+                    sizes='(max-width: 56rem) 100vw, 50vw'
+                    loading={i === 0 && index === 0 ? 'eager' : 'lazy'}
+                  />
+                </div>
+                <div class='image-glow' aria-hidden='true' />
+              </a>
+            ) : (
+              <>
+                <div class='image-container'>
+                  <Image
+                    {...image}
+                    sizes='(max-width: 56rem) 100vw, 50vw'
+                    loading={i === 0 && index === 0 ? 'eager' : 'lazy'}
+                  />
+                </div>
+                <div class='image-glow' aria-hidden='true' />
+              </>
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    (bottomParagraph || cta) && (
+      <footer class='section-footer'>
+        {bottomParagraph && <PortableText value={bottomParagraph} class='bottom-paragraph' />}
+        {cta && <Button {...cta} />}
+      </footer>
+    )
+  }
+</section>
+
+<script>
+  function initHighlightedCaseStudies() {
+    const sections = document.querySelectorAll<HTMLElement>('.HighlightedCaseStudies[data-animate]')
+
+    sections.forEach((section) => {
+      const caseStudies = section.querySelectorAll<HTMLElement>('.case-study')
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible')
+            }
+          })
+        },
+        {
+          threshold: 0.1,
+          rootMargin: '0px 0px -5% 0px',
+        }
+      )
+
+      caseStudies.forEach((item) => observer.observe(item))
+    })
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHighlightedCaseStudies)
+  } else {
+    initHighlightedCaseStudies()
+  }
+
+  document.addEventListener('astro:after-swap', initHighlightedCaseStudies)
+</script>
+
+<style lang='scss'>
+  .HighlightedCaseStudies {
+    padding: clamp(4rem, calc(6vw / 0.48), 8rem) 0;
+
+    // ===== SECTION HEADER =====
+    .section-header {
+      text-align: center;
+      max-width: 48rem;
+      margin: 0 auto clamp(3rem, calc(5vw / 0.48), 6rem);
+
+      .heading {
+        margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+      }
+
+      .paragraph {
+        color: var(--neutral-400, #c6cdcc);
+        max-width: 36rem;
+        margin: 0 auto;
+        font-size: var(--typography-body-xl, 1rem);
+      }
+    }
+
+    // ===== CASE STUDIES LIST =====
+    .case-studies {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(4rem, calc(5vw / 0.48), 7rem);
+    }
+
+    .case-study {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: clamp(2rem, calc(4vw / 0.48), 5rem);
+      align-items: center;
+
+      // Animation states
+      opacity: 1;
+      transform: translateY(0);
+      transition:
+        opacity 800ms var(--easing, cubic-bezier(0.08, 0.82, 0.17, 1)),
+        transform 800ms var(--easing, cubic-bezier(0.08, 0.82, 0.17, 1));
+
+      &:not(.is-visible) {
+        @media (prefers-reduced-motion: no-preference) {
+          opacity: 0;
+          transform: translateY(2.5rem);
+        }
+      }
+
+      @media (max-width: 56rem) {
+        grid-template-columns: 1fr;
+        gap: clamp(1.5rem, calc(2vw / 0.48), 2.5rem);
+      }
+    }
+
+    // ===== ALTERNATING LAYOUT =====
+    &[data-layout='alternating'] {
+      .case-study:nth-child(even) {
+        .content {
+          order: 2;
+        }
+        .image-wrapper {
+          order: 1;
+        }
+
+        @media (max-width: 56rem) {
+          .content {
+            order: 1;
+          }
+          .image-wrapper {
+            order: 2;
+          }
+        }
+      }
+    }
+
+    // ===== CONTENT AREA =====
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(1.25rem, calc(1.5vw / 0.48), 1.75rem);
+
+      .item-heading {
+        font-size: var(--typography-heading-l, 1.5rem);
+        line-height: 1.3;
+      }
+
+      .description {
+        color: var(--neutral-400, #c6cdcc);
+        font-size: var(--typography-body-xl, 1rem);
+        line-height: 1.75;
+
+        :global(p:not(:last-child)) {
+          margin-bottom: 0.75rem;
+        }
+
+        :global(strong) {
+          color: var(--neutral-200, #f0f7f7);
+        }
+      }
+
+      // ===== METRICS PILLS =====
+      .metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+
+        .metric-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.375rem 0.75rem;
+          border-radius: 6.25rem;
+          border: 1px solid var(--neutral-600, #4a4a57);
+          background: linear-gradient(180deg, rgba(74, 74, 87, 0.1) 0%, rgba(74, 74, 87, 0.05) 100%);
+          font-size: var(--typography-body-s, 0.75rem);
+          color: var(--neutral-400, #c6cdcc);
+          transition: all 200ms var(--easing);
+
+          &:hover {
+            border-color: var(--neutral-500, #75758a);
+            background: linear-gradient(180deg, rgba(74, 74, 87, 0.15) 0%, rgba(74, 74, 87, 0.08) 100%);
+          }
+
+          .metric-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-bottom: 2px;
+
+            :global(img) {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+            }
+          }
+
+          .metric-text {
+            line-height: 1.4;
+            white-space: nowrap;
+          }
+        }
+      }
+
+      a {
+        max-width: max-content;
+      }
+    }
+
+    // ===== IMAGE AREA =====
+    .image-wrapper {
+      position: relative;
+
+      .image-link {
+        display: block;
+        position: relative;
+      }
+
+      .image-container {
+        position: relative;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 1px solid var(--primary-500, #064040);
+        background: var(--primary-700, #021d1d);
+
+        :global(img) {
+          width: 100%;
+          height: auto;
+          display: block;
+          transition: transform 600ms var(--easing);
+        }
+      }
+
+      // Hover effect for clickable images
+      .image-link:hover .image-container :global(img) {
+        transform: scale(1.02);
+      }
+
+      .image-glow {
+        position: absolute;
+        inset: 10%;
+        background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+        filter: blur(80px);
+        opacity: 0.08;
+        z-index: -1;
+        pointer-events: none;
+      }
+    }
+
+    // ===== SECTION FOOTER =====
+    .section-footer {
+      margin-top: clamp(3rem, calc(5vw / 0.48), 6rem);
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+
+      .bottom-paragraph {
+        color: var(--neutral-400, #c6cdcc);
+        font-size: var(--typography-body-xl, 1rem);
+        max-width: 32rem;
+        text-align: left;
+      }
+
+      @media (max-width: 56rem) {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .bottom-paragraph {
+          text-align: left;
+        }
+      }
+    }
+
+    // ===== RESPONSIVE ADJUSTMENTS =====
+    @media (max-width: 36rem) {
+      .content {
+        .item-heading {
+          font-size: clamp(1.25rem, calc(1.5vw / 0.48), 1.375rem);
+        }
+      }
+    }
+  }
+</style>
