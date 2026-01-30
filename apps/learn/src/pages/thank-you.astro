@@ -85,7 +85,7 @@ const tracking_data = {
 </script>
 
 <script>
-  import { trackEvent } from '@pages/api/analytics/track-event'
+  import { trackEvent, updateAnalyticsUser } from '@repo/shared/analytics'
 
   // @ts-ignore
   const tracking_data = trackingData
@@ -102,23 +102,26 @@ const tracking_data = {
 
     if (trackedSessions.includes(sessionId)) return
 
+    // Save user email for advanced matching
+    if (tracking_data.user_data.email) {
+      updateAnalyticsUser({ email: tracking_data.user_data.email })
+    }
+
     trackEvent({
-      user_data: {
+      user: {
         email: tracking_data.user_data.email,
       },
       meta: {
-        event_name: 'Purchase',
+        eventName: 'Purchase',
         params: {
           currency: tracking_data.currency,
           value: tracking_data.value,
-          content_type: tracking_data.content_type,
-          contents: tracking_data.contents,
-          num_items: tracking_data.contents.length,
         },
       },
-      ga: {
-        event_name: 'purchase',
+      ga4: {
+        eventName: 'purchase',
         params: {
+          transaction_id: sessionId,
           value: tracking_data.value,
           currency: tracking_data.currency,
           items: tracking_data.contents.map((item: any) => ({

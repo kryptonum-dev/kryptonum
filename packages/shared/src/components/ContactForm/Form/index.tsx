@@ -6,7 +6,7 @@ import { REGEX } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www/pages/api/contact/sendContactEmail';
 import { DOMAIN } from '@repo/shared/constants';
 import { type Language } from '@repo/shared/languages';
-import { trackEvent } from '@apps/links/src/pages/api/analytics/track-event';
+import { trackEvent, updateAnalyticsUser } from '../../../analytics';
 
 const shouldTrackAnalytics = () => {
   if (typeof window !== 'undefined') {
@@ -87,22 +87,22 @@ export default function Form({ children, variant, lang, ...props }: Props) {
       reset();
       if (typeof fathom !== 'undefined') fathom.trackEvent('contactForm_submit');
       if (shouldTrackAnalytics()) {
+        updateAnalyticsUser({ email: data.email as string });
         trackEvent({
-          user_data: {
+          user: {
             email: data.email as string,
           },
           meta: {
-            event_name: 'Lead',
-            content_name: 'contact_form',
+            eventName: 'Lead',
+            contentName: 'contact_form',
             params: {
-              form_variant: variant,
+              form_name: `contact_form_${variant}`,
             }
           },
-          ga: {
-            event_name: 'generate_lead',
+          ga4: {
+            eventName: 'generate_lead',
             params: {
-              content_name: 'contact_form',
-              form_variant: variant,
+              form_name: `contact_form_${variant}`,
             }
           }
         });

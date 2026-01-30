@@ -1,0 +1,94 @@
+---
+/**
+ * Analytics component for tracking PageView and Contact events.
+ * This should be included in the Layout after CookieConsent.
+ *
+ * Features:
+ * - Tracks PageView on initial load and client-side navigation
+ * - Tracks Contact events (mailto: and tel: link clicks)
+ * - Supports both Meta Pixel and GA4
+ */
+---
+
+<script>
+  import { trackEvent } from '../analytics/track-event'
+
+  let previousUrl: string | null = null
+
+  function trackPageView() {
+    const url = window.location.href
+    const pathname = window.location.pathname
+
+    // Avoid duplicate tracking
+    if (previousUrl === url) {
+      return
+    }
+    previousUrl = url
+
+    const pageTitle = document.title || undefined
+
+    trackEvent({
+      meta: {
+        eventName: 'PageView',
+        params: {
+          page_path: pathname,
+          ...(pageTitle ? { page_title: pageTitle } : {}),
+        },
+      },
+      ga4: {
+        eventName: 'page_view',
+        params: {
+          page_location: url,
+          page_path: pathname,
+          ...(pageTitle ? { page_title: pageTitle } : {}),
+        },
+      },
+    })
+
+    window.__pageViewTracked = true
+  }
+
+  function handleContactClick(event: MouseEvent) {
+    const target = event.target as Element | null
+    if (!target) return
+
+    const link = target.closest('a[href^="mailto:"], a[href^="tel:"]') as HTMLAnchorElement | null
+    if (!link) return
+
+    const href = link.getAttribute('href') ?? ''
+    const contactType = href.startsWith('mailto:') ? 'email' : 'phone'
+
+    trackEvent({
+      meta: {
+        eventName: 'Contact',
+        params: {
+          contact_type: contactType,
+          contact_value: href,
+        },
+      },
+      ga4: {
+        eventName: 'contact',
+        params: {
+          contact_type: contactType,
+          contact_value: href,
+        },
+      },
+    })
+  }
+
+  // Track initial page view
+  trackPageView()
+
+  // Track contact clicks
+  document.addEventListener('click', handleContactClick, { capture: true })
+
+  // Handle Astro View Transitions (client-side navigation)
+  document.addEventListener('astro:page-load', () => {
+    trackPageView()
+  })
+
+  // Alternative: handle popstate for manual history navigation
+  window.addEventListener('popstate', () => {
+    trackPageView()
+  })
+</script>

@@ -82,15 +82,15 @@ const breadcrumbs = [{ name: page.name, path: slug }]
 </script>
 
 <script>
-  import { trackEvent } from '@pages/api/analytics/track-event'
+  import { trackEvent } from '@repo/shared/analytics'
 
   // @ts-ignore
   const { productId, productName, price, currency } = window.productData
   document.addEventListener('DOMContentLoaded', () => {
     trackEvent({
       meta: {
-        event_name: 'ViewContent',
-        content_name: productName,
+        eventName: 'ViewContent',
+        contentName: productName,
         params: {
           content_type: 'product',
           content_ids: [productId],
@@ -98,8 +98,8 @@ const breadcrumbs = [{ name: page.name, path: slug }]
           currency: currency,
         },
       },
-      ga: {
-        event_name: 'view_item',
+      ga4: {
+        eventName: 'view_item',
         params: {
           currency: currency,
           value: price,
@@ -123,8 +123,8 @@ const breadcrumbs = [{ name: page.name, path: slug }]
         if (isStripeCheckout) {
           trackEvent({
             meta: {
-              event_name: 'AddToCart',
-              content_name: productName,
+              eventName: 'AddToCart',
+              contentName: productName,
               params: {
                 content_type: 'product',
                 content_ids: [productId],
@@ -132,8 +132,8 @@ const breadcrumbs = [{ name: page.name, path: slug }]
                 currency: currency,
               },
             },
-            ga: {
-              event_name: 'add_to_cart',
+            ga4: {
+              eventName: 'add_to_cart',
               params: {
                 currency: currency,
                 value: price,
@@ -150,18 +150,16 @@ const breadcrumbs = [{ name: page.name, path: slug }]
           })
           trackEvent({
             meta: {
-              event_name: 'InitiateCheckout',
-              content_name: productName,
+              eventName: 'InitiateCheckout',
+              contentName: productName,
               params: {
-                content_type: 'product',
                 content_ids: [productId],
                 value: price,
                 currency: currency,
-                num_items: 1,
               },
             },
-            ga: {
-              event_name: 'begin_checkout',
+            ga4: {
+              eventName: 'begin_checkout',
               params: {
                 currency: currency,
                 value: price,
