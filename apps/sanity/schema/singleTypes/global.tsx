@@ -257,6 +257,45 @@ export default defineType({
             Rule.unique(),
           ]
         }),
+        defineField({
+          name: 'pillars',
+          type: 'array',
+          title: 'Pillar Services (Dropdown)',
+          description: 'Select 1-4 pillar services to show in header services dropdown.',
+          of: [{
+            type: 'reference',
+            to: [{ type: 'Service_Collection' }],
+            options: {
+              disableNew: true,
+              filter: ({ document, parent }) => {
+                const language = (document as { language?: string })?.language;
+                const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
+                if (selectedIds.length > 0) {
+                  return {
+                    filter: 'language == $lang && !defined(mainPage) && !(_id in $selectedIds) && !(_id in path("drafts.**"))',
+                    params: { lang: language, selectedIds }
+                  }
+                }
+                return {
+                  filter: 'language == $lang && !defined(mainPage) && !(_id in path("drafts.**"))',
+                  params: { lang: language }
+                }
+              }
+            }
+          }],
+          validation: Rule => [
+            Rule.required(),
+            Rule.min(1).max(4).error('You must select between 1 and 4 pillar services.'),
+            Rule.unique(),
+          ]
+        }),
+        defineField({
+          name: 'servicesHubCta',
+          type: 'cta',
+          title: 'Services Hub CTA',
+          description: 'Button shown in services dropdown preview panel (typically links to /uslugi hub).',
+          validation: Rule => Rule.required(),
+        }),
       ]
     }),
     defineField({

@@ -108,6 +108,14 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'description',
+      type: 'text',
+      title: 'Short Description',
+      description: 'Short description shown in header dropdown (e.g., "Strony, które prowadzą do decyzji i generują leady.")',
+      rows: 2,
+      validation: Rule => Rule.max(120).warning('Keep it under 120 characters for best display'),
+    }),
+    defineField({
       name: 'components',
       type: 'components',
       title: 'Page Components',
