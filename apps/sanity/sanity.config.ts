@@ -9,9 +9,11 @@ import { structure } from './structure'
 import { i18nTypes, schemaTypes, singletonActions, singletonTypes } from './structure/schema-types'
 import { LANGUAGES } from './structure/languages'
 
+const isStaging = process.env.SANITY_STUDIO_HOST === 'kryptonum-staging';
+
 export default defineConfig({
-  name: 'default',
-  title: 'Kryptonum',
+  name: isStaging ? 'staging' : 'default',
+  title: isStaging ? 'Kryptonum (Staging)' : 'Kryptonum',
 
   projectId: 'k3p1raj0',
   dataset: 'production',
