@@ -1032,7 +1032,6 @@ const hasLinkedTags = tagsData.some((tag) => tag.slug)
         .play-text {
           font-size: var(--typography-body-s, 0.75rem);
           color: var(--neutral-200, #f0f7f7);
-          text-transform: uppercase;
           letter-spacing: 0.15em;
           font-weight: 500;
           opacity: 0;
@@ -1200,7 +1199,7 @@ const hasLinkedTags = tagsData.some((tag) => tag.slug)
         position: absolute;
         inset: 0;
         border-radius: 12px;
-        border: 1px solid rgba(45, 210, 130, 0.4);
+        border: 1px solid var(--neutral-600, rgb(74, 74, 87));
         z-index: 5;
         pointer-events: none;
       }
