@@ -358,26 +358,35 @@ const Subheading = index === 0 ? 'h2' : 'h3'
 
     // ===== SECTION FOOTER =====
     .section-footer {
-      margin-top: clamp(3rem, calc(5vw / 0.48), 6rem);
-      display: flex;
-      flex-direction: row;
+      margin-top: clamp(3rem, calc(4vw / 0.48), 4rem);
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.5rem clamp(2rem, calc(4vw / 0.48), 5rem);
       align-items: center;
-      justify-content: flex-end;
-      gap: clamp(1.5rem, calc(2vw / 0.48), 2rem);
 
       .bottom-paragraph {
         color: var(--neutral-400, #c6cdcc);
         font-size: var(--typography-body-xl, 1rem);
-        max-width: 32rem;
         text-align: left;
+        grid-column: 2;
+      }
+
+      :global(a) {
+        grid-column: 2;
+        justify-self: end;
       }
 
       @media (max-width: 56rem) {
-        flex-direction: column;
-        align-items: flex-start;
+        grid-template-columns: 1fr;
+        gap: clamp(1.5rem, calc(2vw / 0.48), 2rem);
 
-        .bottom-paragraph {
-          text-align: left;
+        .bottom-paragraph,
+        :global(a) {
+          grid-column: 1;
+        }
+
+        :global(a) {
+          justify-self: start;
         }
       }
     }
