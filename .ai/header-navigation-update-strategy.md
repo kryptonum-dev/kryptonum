@@ -65,114 +65,80 @@ Usługi (dropdown)
 
 ## Implementation Phases
 
-### Phase 1: Schema Changes (Sanity)
+### Phase 1: Schema Changes (Sanity) ✅ COMPLETE
 
-**Files to modify:**
+**Files modified:**
 - `apps/sanity/schema/singleTypes/global.tsx`
+- `apps/sanity/schema/collectionTypes/Service_Collection.tsx`
 
-**New fields to add to `nav` object:**
+#### Service_Collection Changes
+
+Added `description` field for dropdown microcopy:
 
 ```typescript
-// 1. Pillar pages array (max 3)
+defineField({
+  name: 'description',
+  type: 'text',
+  title: 'Short Description',
+  description: 'Short description shown in header dropdown',
+  rows: 2,
+  validation: Rule => Rule.max(120).warning('Keep it under 120 characters'),
+}),
+```
+
+#### Global Nav Changes
+
+**1. Pillars array** (simple Service_Collection references):
+
+```typescript
 defineField({
   name: 'pillars',
   type: 'array',
-  title: 'Pillar Pages (Services Dropdown)',
-  description: 'Select up to 3 pillar pages for the services dropdown.',
+  title: 'Pillar Services (Dropdown)',
+  description: 'Select 1-4 pillar services to show in header services dropdown.',
   of: [{
-    type: 'object',
-    fields: [
-      defineField({
-        name: 'service',
-        type: 'reference',
-        to: [{ type: 'Service_Collection' }],
-        options: { disableNew: true },
-        validation: Rule => Rule.required(),
-      }),
-      defineField({
-        name: 'description',
-        type: 'string',
-        title: 'Microcopy',
-        description: 'Short selling description shown on hover',
-        validation: Rule => Rule.required(),
-      }),
-      defineField({
-        name: 'previewImage',
-        type: 'image',
-        title: 'Preview Image',
-        description: 'Image shown in the right panel on hover.',
-      }),
-    ],
-    preview: {
-      select: {
-        title: 'service.name',
-        subtitle: 'description',
-        media: 'previewImage',
-      },
-    },
+    type: 'reference',
+    to: [{ type: 'Service_Collection' }],
+    options: {
+      disableNew: true,
+      filter: 'language == $lang && !defined(mainPage)',  // Main services only
+    }
   }],
-  validation: Rule => Rule.max(3),
-}),
-
-// 2. Services hub link
-defineField({
-  name: 'servicesHub',
-  type: 'object',
-  title: 'Services Hub Link',
-  fields: [
-    defineField({
-      name: 'text',
-      type: 'string',
-      title: 'Link Text',
-      initialValue: 'Wszystkie usługi',
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'description',
-      type: 'string',
-      title: 'Description',
-      initialValue: 'Zobacz pełną listę (audyt, branding, analityka…).',
-    }),
-    defineField({
-      name: 'url',
-      type: 'string',
-      title: 'URL',
-      initialValue: '/pl/uslugi',
-      validation: Rule => Rule.required(),
-    }),
-  ],
-}),
-
-// 3. Services dropdown CTA
-defineField({
-  name: 'servicesCta',
-  type: 'object',
-  title: 'Services Dropdown CTA',
-  description: 'Mini-CTA shown in the preview panel.',
-  fields: [
-    defineField({
-      name: 'text',
-      type: 'string',
-      title: 'CTA Text',
-      initialValue: 'Masz cel? 15 min rozmowy.',
-    }),
-    defineField({
-      name: 'link',
-      type: 'cta',
-      title: 'CTA Link',
-    }),
-  ],
+  validation: Rule => [
+    Rule.required(),
+    Rule.min(1).max(4),
+    Rule.unique(),
+  ]
 }),
 ```
+
+**2. Services Hub CTA** (single button):
+
+```typescript
+defineField({
+  name: 'servicesHubCta',
+  type: 'cta',
+  title: 'Services Hub CTA',
+  description: 'Button shown in services dropdown preview panel.',
+  validation: Rule => Rule.required(),
+}),
+```
+
+#### Key Simplifications
+
+- ✅ **No nested objects** - Just reference Service_Collection documents
+- ✅ **Reuse existing fields** - Uses `img` from Service_Collection for preview
+- ✅ **Single CTA** - One button instead of separate hub link + CTA
+- ✅ **Future-proof** - When you reduce to 6-7 services, just update references
 
 **Why this is safe:**
 - Production studio (main branch) doesn't have these fields in schema
 - When we add data via staging studio, production studio ignores it
 - Production Header.astro doesn't query these fields
 
-**After schema changes:**
+**Staging studio deployed:**
 ```bash
-cd apps/sanity && bun run deploy:staging
+✅ https://kryptonum-staging.sanity.studio/
 ```
 
 ---
@@ -212,18 +178,14 @@ servicesCta?: {
 "services": *[_type == "Service_Collection" && !defined(mainPage)...
 
 // With new pillars query
-"pillars": nav.pillars[] {
-  "name": service->name,
-  "slug": service->slug.current,
+"pillars": nav.pillars[]-> {
+  name,
+  "slug": slug.current,
   description,
-  ${ImageDataQuery('previewImage')}
+  ${ImageDataQuery('icon')}     // Icon for list item
+  ${ImageDataQuery('img')}      // Featured image for preview panel
 },
-"servicesHub": nav.servicesHub {
-  text,
-  description,
-  url
-},
-${ButtonDataQuery('nav.servicesCta.link', 'servicesCta')}
+${ButtonDataQuery('nav.servicesHubCta', 'servicesHubCta')}
 ```
 
 #### 3. Update dropdown HTML structure
@@ -401,7 +363,7 @@ git push origin main
 | Phase | Tasks | Status |
 |-------|-------|--------|
 | **Setup** | Dual studio configuration | ✅ Complete |
-| **Phase 1** | Schema changes (global.tsx) | ⏳ Pending |
+| **Phase 1** | Schema changes (Service_Collection + global) | ✅ Complete |
 | **Phase 2** | Header component (Header.astro) | ⏳ Pending |
 | **Phase 3** | Content configuration (Sanity) | ⏳ Pending |
 | **Testing** | Vercel preview testing | ⏳ Pending |
