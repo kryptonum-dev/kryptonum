@@ -79,6 +79,7 @@ const metadata = {
   description: _metadata.description,
   openGraphImage: _metadata.openGraphImage,
   path: Astro.url.pathname,
+  noindex: currentPage > 1,
 }
 const getPaginationUrl = (page: number) => {
   if (lang === 'pl')

@@ -2,6 +2,7 @@
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Video, { VideoDataQuery, type VideoDataProps } from '@repo/ui/Video.astro'
+import ReviewSchema, { type ReviewItem } from '../../../../apps/www/src/components/schemas/ReviewSchema.astro'
 
 export const SingleReview_Query = `
   _type == "SingleReview" => {
@@ -9,12 +10,14 @@ export const SingleReview_Query = `
     "review": coalesce(
       customReview {
         ${ImageDataQuery('img')}
+        "imgUrl": img.asset -> url,
         name,
         ${PortableTextQuery('review')}
         ${VideoDataQuery('video')}
       },
       review -> {
         ${ImageDataQuery('img')}
+        "imgUrl": img.asset -> url,
         name,
         ${PortableTextQuery('review')}
         ${VideoDataQuery('video')}
@@ -29,6 +32,7 @@ type Props = {
   heading: PortableTextValue
   review?: {
     img?: ImageDataProps
+    imgUrl?: string
     name: string
     review: PortableTextValue
     video?: VideoDataProps
@@ -38,6 +42,18 @@ type Props = {
 const { index, sectionId, heading, review } = Astro.props
 
 if (!review) return null
+
+// Prepare schema data for single review (only if it's not a video review)
+const reviewSchemaItems: ReviewItem[] = !review.video && review.name ? [
+  {
+    authorName: review.name,
+    authorImage: review.imgUrl,
+    reviewBody: review.review,
+    ratingValue: 5, // Default to 5 stars for curated testimonials
+  }
+] : []
+
+const pageUrl = Astro.url.pathname
 ---
 
 <section class="SingleReview" id={sectionId} data-is-video={(!!review?.video).toString()}>
@@ -67,6 +83,7 @@ if (!review) return null
       {review.video && <p class="name">{review.name}</p>}
     </div>
   </article>
+  {reviewSchemaItems.length > 0 && <ReviewSchema reviews={reviewSchemaItems} pageUrl={pageUrl} />}
 </section>
 
 <style lang="scss">

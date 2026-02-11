@@ -1,0 +1,108 @@
+---
+import { DOMAIN } from '@repo/shared/constants'
+import { portableTextToHTML, calculateWordCount } from '@repo/ui/portable-text'
+import type { Language } from '@repo/shared/languages'
+
+export type ArticleSchemaProps = {
+  headline: string
+  description: string | null
+  imageUrl: string | null
+  datePublished: string
+  dateModified: string
+  author: {
+    name: string
+    slug: string
+  } | null
+  category: {
+    name: string
+  } | null
+  slug: string
+  content: any[] | null
+  lang: Language
+}
+
+const { headline, description, imageUrl, datePublished, dateModified, author, category, slug, content, lang } =
+  Astro.props as ArticleSchemaProps
+
+// Early return if missing required fields
+if (!headline || !datePublished || !slug) return null
+
+// Calculate word count from content
+const wordCount = content ? calculateWordCount(content) : null
+
+// Generate article body as HTML (preserves semantic structure for better rich results)
+let articleBody: string | null = null
+if (content) {
+  try {
+    articleBody = await portableTextToHTML(content)
+  } catch {
+    articleBody = null
+  }
+}
+
+// Build full canonical URL
+const canonicalUrl = `${DOMAIN}${slug}`
+
+// Build the BlogPosting schema
+const blogPosting: Record<string, unknown> = {
+  '@type': 'BlogPosting',
+  '@id': `${canonicalUrl}#article`,
+  headline,
+  url: canonicalUrl,
+  datePublished: new Date(datePublished).toISOString(),
+  dateModified: new Date(dateModified).toISOString(),
+  inLanguage: lang,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonicalUrl,
+  },
+  isPartOf: {
+    '@id': `${DOMAIN}/#website`,
+  },
+  publisher: {
+    '@id': `${DOMAIN}/#organization`,
+  },
+}
+
+// Optional fields
+if (description) {
+  blogPosting.description = description
+}
+
+if (imageUrl) {
+  blogPosting.image = {
+    '@type': 'ImageObject',
+    url: imageUrl,
+    contentUrl: imageUrl,
+  }
+}
+
+if (author?.name && author?.slug) {
+  blogPosting.author = {
+    '@type': 'Person',
+    name: author.name,
+    url: `${DOMAIN}${author.slug}`,
+  }
+}
+
+if (category?.name) {
+  blogPosting.articleSection = category.name
+}
+
+if (wordCount && wordCount > 0) {
+  blogPosting.wordCount = wordCount
+}
+
+if (articleBody && articleBody.length > 0) {
+  // Truncate articleBody if it's too long (keep it reasonable for schema)
+  blogPosting.articleBody = articleBody.length > 10000 ? articleBody.slice(0, 10000) + '...' : articleBody
+}
+
+// Build the final schema
+const schema = {
+  '@context': 'https://schema.org',
+  ...blogPosting,
+}
+---
+
+<script type='application/ld+json' set:html={JSON.stringify(schema)} />

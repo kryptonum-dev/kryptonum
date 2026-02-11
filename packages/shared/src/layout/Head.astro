@@ -5,6 +5,7 @@ import sanityFetch from '@repo/utils/sanity.fetch'
 import icon from '../assets/icon.png'
 import faviconSvg from '../assets/favicon.svg'
 import { type Language } from '../languages'
+import { isLanguageIndexable } from '../language-policy'
 
 const icons = {
   favicon: await getImage({ src: faviconSvg, format: 'svg' }),
@@ -25,9 +26,10 @@ export type HeadProps = ({ path: string; url?: never } | { url: string; path?: n
   openGraphImage?: string
   alternates?: Array<{ lang: Language; url: string }>
   lang: Language
+  noindex?: boolean
 }
 
-const { path, url: _url, title, description, openGraphImage, alternates, lang } = Astro.props as HeadProps
+const { path, url: _url, title, description, openGraphImage, alternates, lang, noindex } = Astro.props as HeadProps
 
 const getOgImage = async () => {
   const asset = await getImage({
@@ -45,6 +47,11 @@ const getOgImage = async () => {
 const ogImage = await getOgImage()
 
 const url = _url || `${DOMAIN}${path}`
+const shouldNoindex = noindex || !isLanguageIndexable(lang)
+
+// Only output hreflang if current language is indexable AND there are other indexable alternates
+const indexableAlternates = alternates?.filter(alt => alt.url && alt.lang !== lang && isLanguageIndexable(alt.lang as Language)) || []
+const shouldRenderHreflang = isLanguageIndexable(lang) && indexableAlternates.length > 0
 ---
 
 <meta charset="utf-8" />
@@ -57,8 +64,17 @@ const url = _url || `${DOMAIN}${path}`
 <link rel="apple-touch-icon" href={icons.appleTouchIcon.src} />
 <meta name="theme-color" content={THEME_COLOR} />
 <link rel="manifest" href="/manifest.webmanifest" />
+{shouldNoindex && <meta name="robots" content="noindex,follow" />}
 <link rel="canonical" href={url} />
-{alternates && alternates.map(({ lang, url }) => <link rel="alternate" hreflang={lang} href={`${DOMAIN}${url}`} />)}
+{shouldRenderHreflang && (
+  <>
+    <link rel="alternate" hreflang="x-default" href={url} />
+    <link rel="alternate" hreflang={lang} href={url} />
+    {indexableAlternates.map(({ lang: altLang, url: altUrl }) => (
+      <link rel="alternate" hreflang={altLang} href={`${DOMAIN}${altUrl}`} />
+    ))}
+  </>
+)}
 <meta property="og:url" content={url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />

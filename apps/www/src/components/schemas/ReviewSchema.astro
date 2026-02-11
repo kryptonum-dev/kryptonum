@@ -1,0 +1,92 @@
+---
+import { DOMAIN } from '@repo/shared/constants'
+import { portableTextToHTML } from '@repo/ui/portable-text'
+import type { PortableTextValue } from '@repo/ui/portable-text'
+
+export type ReviewItem = {
+  authorName: string
+  authorPosition?: string
+  authorImage?: string
+  reviewBody: PortableTextValue | string
+  datePublished?: string
+  ratingValue?: number
+}
+
+export type ReviewSchemaProps = {
+  reviews: ReviewItem[]
+  /** The page URL where reviews are displayed */
+  pageUrl?: string
+}
+
+const { reviews, pageUrl } = Astro.props as ReviewSchemaProps
+
+if (!reviews || reviews.length === 0) return null
+
+// Build the canonical URL for the page
+const canonicalUrl = pageUrl ? `${DOMAIN}${pageUrl}` : DOMAIN
+
+// Process reviews into schema objects
+const reviewSchemas = await Promise.all(
+  reviews.map(async (review, index) => {
+    // Convert PortableText to plain text for reviewBody if needed
+    let reviewBodyText: string
+    if (typeof review.reviewBody === 'string') {
+      reviewBodyText = review.reviewBody
+    } else {
+      try {
+        const html = await portableTextToHTML(review.reviewBody)
+        // Strip HTML tags for plain text version
+        reviewBodyText = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+      } catch {
+        reviewBodyText = ''
+      }
+    }
+
+    if (!reviewBodyText || !review.authorName) return null
+
+    const reviewSchema: Record<string, unknown> = {
+      '@type': 'Review',
+      '@id': `${canonicalUrl}#review-${index + 1}`,
+      author: {
+        '@type': 'Person',
+        name: review.authorName,
+        ...(review.authorPosition && { jobTitle: review.authorPosition }),
+        ...(review.authorImage && { image: review.authorImage }),
+      },
+      reviewBody: reviewBodyText,
+      itemReviewed: {
+        '@id': `${DOMAIN}/#organization`,
+      },
+    }
+
+    // Add rating (default to 5 for curated testimonials if not provided)
+    const rating = review.ratingValue ?? 5
+    reviewSchema.reviewRating = {
+      '@type': 'Rating',
+      ratingValue: rating,
+      bestRating: 5,
+      worstRating: 1,
+    }
+
+    // Add date if available
+    if (review.datePublished) {
+      reviewSchema.datePublished = new Date(review.datePublished).toISOString()
+    }
+
+    return reviewSchema
+  })
+)
+
+// Filter out null reviews
+const validReviews = reviewSchemas.filter(Boolean)
+
+if (validReviews.length === 0) return null
+
+// Build final schema with @graph for multiple reviews
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': validReviews,
+}
+---
+
+<script type='application/ld+json' set:html={JSON.stringify(schema)} />

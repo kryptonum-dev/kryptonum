@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "paths": {
       "@repo/shared/*": ["../../packages/shared/src/*"],
+      "@repo/utils/*": ["../../packages/utils/src/*"],
       "@repo/ui/*": ["../../packages/ui/src/*"],
       "@apps/www/*": ["../www/src/*"],
       "@pages/*": ["./src/pages/*"],

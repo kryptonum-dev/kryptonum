@@ -10,6 +10,7 @@ export type HeroProps = {
   _updatedAt: Date
   heading: PortableTextValue
   img: ImageDataProps
+  imageUrl: string | null
   category: {
     name: string
     slug: string
@@ -23,6 +24,7 @@ export const Hero_Query = `
     _updatedAt,
     ${PortableTextQuery('heading')}
     ${ImageDataQuery('img')}
+    "imageUrl": img.asset -> url,
     category -> {
       name,
       "slug": slug.current,

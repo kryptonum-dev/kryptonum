@@ -2,14 +2,17 @@
 import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import Button from '@repo/ui/Button'
+import ReviewSchema, { type ReviewItem } from '../../../../apps/www/src/components/schemas/ReviewSchema.astro'
 
 export const Review_Query = `
   ${ImageDataQuery('img')}
+  "imgUrl": img.asset -> url,
   name,
   headline,
   "scope": scope[] -> name,
   ${PortableTextQuery('review')}
-  "caseStudyLink": caseStudy -> slug.current
+  "caseStudyLink": caseStudy -> slug.current,
+  _createdAt
 `
 
 export const Reviews_Query = `
@@ -37,11 +40,13 @@ type Props = {
   heading: PortableTextValue
   reviews: Array<{
     img: ImageDataProps
+    imgUrl?: string
     name: string
     headline: string
     scope?: string[]
     review: PortableTextValue
     caseStudyLink?: string
+    _createdAt?: string
   }>
   googleData: {
     rating: number
@@ -84,6 +89,18 @@ const renderStars = (rating: number) => {
     </svg>
     ${[...Array(4)].map((_, i) => `<svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" fill="none" viewBox="0 0 17 16"><use href="#star-path" ${i + 1 < fullStars || (i + 1 === fullStars && isEmpty) ? 'fill' : 'stroke'}="url(#Reviews-star)" /></svg>`).join('')}`
 }
+
+// Map reviews to schema format
+const reviewSchemaItems: ReviewItem[] = reviews.map((review) => ({
+  authorName: review.name,
+  authorPosition: review.headline,
+  authorImage: review.imgUrl,
+  reviewBody: review.review,
+  datePublished: review._createdAt,
+  ratingValue: 5, // Default to 5 stars for curated testimonials
+}))
+
+const pageUrl = Astro.url.pathname
 ---
 
 <section class="Reviews" id={sectionId}>
@@ -149,6 +166,7 @@ const renderStars = (rating: number) => {
       ))
     }
   </div>
+  <ReviewSchema reviews={reviewSchemaItems} pageUrl={pageUrl} />
 </section>
 
 <style lang="scss">

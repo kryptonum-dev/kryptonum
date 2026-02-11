@@ -5,11 +5,15 @@ import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
 import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 import { useTranslations, type Language } from '@repo/shared/languages'
 import LanguageSwitcher from '@repo/ui/LanguageSwitcher.astro'
+import { getOtherIndexableLanguages } from '@repo/shared/language-policy'
 
 const pathname = Astro.url.pathname
 const lang = Astro.props.lang as Language
 const alternates = Astro.props.alternates as { lang: string; url: string }[]
 const t = useTranslations(lang)
+
+// Only show language switcher if there are other indexable languages
+const shouldShowLanguageSwitcher = getOtherIndexableLanguages(lang).length > 0
 
 const data = await sanityFetch<{
   annotation?: {
@@ -297,7 +301,7 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
         <span>{data.shop.name}</span>
       </a> -->
       <Button {...data.cta} className="nav-cta" />
-      <LanguageSwitcher lang={lang} alternates={alternates} class="nav-language-switcher" />
+      {shouldShowLanguageSwitcher && <LanguageSwitcher lang={lang} alternates={alternates} class="nav-language-switcher" />}
     </nav>
     <button type="button" class="menu-button">
       <span>Menu</span>
@@ -307,7 +311,7 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
       </div>
     </button>
     <Button {...data.cta} className="header-cta" />
-    <LanguageSwitcher lang={lang} alternates={alternates} class="header-language-switcher" />
+    {shouldShowLanguageSwitcher && <LanguageSwitcher lang={lang} alternates={alternates} class="header-language-switcher" />}
   </div>
 </header>
 <div class="overlay" aria-hidden="true"></div>
