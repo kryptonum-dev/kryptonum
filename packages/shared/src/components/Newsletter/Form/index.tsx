@@ -6,7 +6,7 @@ import { REGEX } from '@repo/shared/constants';
 import { subscribeToNewsletter, type Props as subscribeToNewsletterProps } from '@apps/www/pages/api/newsletter/subscribeToNewsletter';
 import { DOMAIN } from '@repo/shared/constants';
 import { type Language } from '@repo/shared/languages';
-import { trackEvent } from '@apps/links/src/pages/api/analytics/track-event';
+import { trackEvent, updateAnalyticsUser } from '../../../analytics';
 
 const shouldTrackAnalytics = () => {
   if (typeof window !== 'undefined') {
@@ -97,24 +97,23 @@ export default function Form({ children, groupId, lang, ...props }: Props) {
       reset();
       if (typeof fathom !== 'undefined') fathom.trackEvent('newsletter_subscribe');
       if (shouldTrackAnalytics()) {
+        updateAnalyticsUser({
+          email: data.email as string,
+          first_name: data.name as string,
+        });
         trackEvent({
-          user_data: {
+          user: {
             email: data.email as string,
+            first_name: data.name as string,
           },
           meta: {
-            event_name: 'Lead',
-            content_name: 'newsletter_subscription',
-            params: {
-              group_id: groupId,
-              name: data.name as string,
-            }
+            eventName: 'Lead',
+            contentName: 'newsletter_subscription',
           },
-          ga: {
-            event_name: 'generate_lead',
+          ga4: {
+            eventName: 'generate_lead',
             params: {
-              content_name: 'newsletter_subscription',
-              group_id: groupId,
-              name: data.name as string,
+              form_name: 'newsletter_subscription',
             }
           }
         });

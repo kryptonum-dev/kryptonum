@@ -11,51 +11,87 @@ const value = await Astro.slots.render('default')
 <p {...props} data-count-up>{value}</p>
 
 <script>
-  const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3)
+  const DURATION = 2500
 
-  function animateValue(element: HTMLElement, duration: number) {
-    const countFrom = 0
-    const countTo = parseInt(element.textContent || '0', 10)
-    let startTimestamp: number
-    const step = (timestamp: number) => {
-      if (!startTimestamp) startTimestamp = timestamp
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1)
-      const easedProgress = easeOutCubic(progress)
-      element.textContent = Math.floor(easedProgress * (countTo - countFrom) + countFrom).toString()
-      if (progress < 1) window.requestAnimationFrame(step)
+  // Matches numbers with thousand separators (1,500,000 or 1 500 000) as a single token,
+  // while still splitting truly separate numbers (e.g. "od 10 do 50%" → "10" and "50").
+  // The key: thousand separators require exactly 3 digits after each separator.
+  const NUMBER_PATTERN = /(\d{1,3}(?:[,\s]\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)/
+
+  const easeOutQuint = (x: number) => 1 - Math.pow(1 - x, 5)
+
+  function parseNumericValue(str: string) {
+    let separator = ''
+    let clean = str
+
+    if (/\d,\d{3}/.test(str)) {
+      separator = ','
+      clean = str.replace(/,/g, '')
+    } else if (/\d\s\d{3}/.test(str)) {
+      separator = ' '
+      clean = str.replace(/\s/g, '')
     }
-    setTimeout(() => {
-      const parent = element.closest<HTMLElement>('[data-count-up]')
-      if (parent) parent.removeAttribute('style')
-    }, duration)
-    window.requestAnimationFrame(step)
+
+    const value = parseFloat(clean)
+    const decMatch = clean.match(/\.(\d+)$/)
+    const decimals = decMatch ? decMatch[1].length : 0
+
+    return { value: isNaN(value) ? 0 : value, separator, decimals }
   }
 
-  function wrapNumbersInSpans(element: HTMLElement) {
+  function formatNumber(num: number, separator: string, decimals: number): string {
+    const str = decimals > 0 ? num.toFixed(decimals) : Math.floor(num).toString()
+    if (!separator) return str
+    const [intPart, decPart] = str.split('.')
+    const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, separator)
+    return decPart !== undefined ? `${grouped}.${decPart}` : grouped
+  }
+
+  function animateNumber(element: HTMLElement): void {
+    const originalText = element.textContent || '0'
+    const { value, separator, decimals } = parseNumericValue(originalText)
+    if (value === 0) return
+
+    let start: number
+    const step = (timestamp: number) => {
+      if (!start) start = timestamp
+      const progress = Math.min((timestamp - start) / DURATION, 1)
+      const current = easeOutQuint(progress) * value
+
+      if (progress < 1) {
+        element.textContent = formatNumber(current, separator, decimals)
+        requestAnimationFrame(step)
+      } else {
+        element.textContent = originalText
+      }
+    }
+    requestAnimationFrame(step)
+  }
+
+  function prepareElement(element: HTMLElement): void {
     const text = element.textContent || ''
     const initialWidth = element.getBoundingClientRect().width
     element.style.width = `${initialWidth}px`
-    const parts = text.split(/(\d+(?:\.\d+)?)/)
+
+    const parts = text.split(NUMBER_PATTERN)
     element.innerHTML = parts
-      .map((part) => {
-        const num = parseInt(part)
-        return isNaN(num) ? part : `<span class="number">${num}</span>`
-      })
+      .map((part) => (NUMBER_PATTERN.test(part) ? `<span class="number">${part}</span>` : part))
       .join('')
   }
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(({ isIntersecting, target }) => {
       if (isIntersecting) {
-        const element = target as HTMLElement
-        const numberElements = element.querySelectorAll<HTMLElement>('.number')
-        numberElements.forEach((numberElement) => animateValue(numberElement, 2500))
-        observer.unobserve(element)
+        const el = target as HTMLElement
+        el.querySelectorAll<HTMLElement>('.number').forEach((num) => animateNumber(num))
+        setTimeout(() => { el.style.width = '' }, DURATION)
+        observer.unobserve(el)
       }
     })
   })
-  document.querySelectorAll('[data-count-up]').forEach((element) => {
-    wrapNumbersInSpans(element as HTMLElement)
-    observer.observe(element)
+
+  document.querySelectorAll<HTMLElement>('[data-count-up]').forEach((el) => {
+    prepareElement(el)
+    observer.observe(el)
   })
 </script>

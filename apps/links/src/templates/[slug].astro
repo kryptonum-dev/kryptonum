@@ -58,20 +58,22 @@ const breadcrumbs = [{ name: page.name, path: slug }]
 </Layout>
 
 <script>
-  import { trackEvent } from '@pages/api/analytics/track-event'
+  import { trackEvent } from '@repo/shared/analytics'
 
   document.addEventListener('DOMContentLoaded', () => {
     trackEvent({
       meta: {
-        event_name: 'ViewContent',
-        content_name: document.title,
+        eventName: 'ViewContent',
+        contentName: document.title,
         params: {
           content_type: 'landing_page',
         },
       },
-      ga: {
-        event_name: 'page_view',
-        params: {},
+      ga4: {
+        eventName: 'view_item',
+        params: {
+          items: [{ item_name: document.title, item_category: 'landing_page' }],
+        },
       },
     })
   })

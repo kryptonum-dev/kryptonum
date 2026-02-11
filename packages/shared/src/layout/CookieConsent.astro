@@ -7,21 +7,21 @@ import { type Language } from '@repo/shared/languages'
 
 const lang = (Astro.params.lang as Language) || 'pl'
 
-const { GTM_ID, GA4_ID, privacyPolicySlug } = await sanityFetch<{
-  GTM_ID: string
-  GA4_ID: string
+const { GA4_ID, META_PIXEL_ID, privacyPolicySlug } = await sanityFetch<{
+  GA4_ID: string | null
+  META_PIXEL_ID: string | null
   privacyPolicySlug: string
 }>({
   query: `
     {
-      "GTM_ID": *[_type == "analytics"][0].gtm_id,
       "GA4_ID": *[_type == "analytics"][0].ga4_id,
+      "META_PIXEL_ID": *[_type == "analytics"][0].meta_pixel_id,
       "privacyPolicySlug": *[_type == "PrivacyPolicy_Page" && language == $language][0].slug.current
     }
   `,
   params: { language: lang },
 })
-if (!GTM_ID) return null
+if (!GA4_ID && !META_PIXEL_ID) return null
 
 const privacyPolicyUrl = `${DOMAIN}${privacyPolicySlug}`
 
@@ -155,14 +155,17 @@ const groups = [
 ]
 ---
 
-<noscript>
-  <iframe
-    src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-    height="0"
-    width="0"
-    style="display:none;visibility:hidden;">
-  </iframe>
-</noscript>
+{META_PIXEL_ID && (
+  <noscript>
+    <img
+      height="1"
+      width="1"
+      style="display:none"
+      src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+      alt=""
+    />
+  </noscript>
+)}
 <aside class="cookie-consent" aria-hidden="true">
   <section class="content">
     <header class="header">
@@ -334,79 +337,350 @@ const groups = [
   }
 </style>
 
-<script is:inline define:vars={{ GTM_ID, GA4_ID }}>
-  window.dataLayer = window.dataLayer || []
-  function gtag() {
-    window.dataLayer.push(arguments)
+<script is:inline define:vars={{ GA4_ID, META_PIXEL_ID }}>
+  // Constants
+  const COOKIE_NAME = 'cookie-consent'
+  const CONSENT_ACCEPT_TTL_DAYS = 365
+  const CONSENT_DENY_TTL_DAYS = 30 / (24 * 60) // 30 minutes
+
+  const DENIED_CONSENT_MODE = {
+    functionality_storage: 'denied',
+    security_storage: 'denied',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    personalization_storage: 'denied',
+    conversion_api: 'denied',
+    advanced_matching: 'denied',
   }
-  window.gtag = gtag
-  gtag('config', GA4_ID)
+
+  // State
+  const loadedMetaPixels = new Set()
+  let gtagScriptPromise = null
+  let metaPixelScriptPromise = null
+  const configuredGtagIds = new Set()
+
+  // Utility functions
   function getCookie(name) {
     const cookies = document.cookie.split(';').map((cookie) => cookie.trim())
     const cookie = cookies.find((cookie) => cookie.startsWith(`${name}=`))
     return cookie ? decodeURIComponent(cookie.substring(name.length + 1)) : null
   }
+
   function setCookie(name, value, days = 1) {
     const date = new Date(Date.now() + 86400000 * days)
     const expires = days ? `; expires=${date.toUTCString()}` : ''
     document.cookie = `${name}=${encodeURIComponent(value)}${expires}; SameSite=Strict; path=/`
   }
-  function setConsent(consent) {
-    const consentMode = {
-      functionality_storage: consent.necessary ? 'granted' : 'denied',
-      security_storage: consent.necessary ? 'granted' : 'denied',
-      ad_storage: consent.marketing ? 'granted' : 'denied',
-      ad_user_data: consent.marketing ? 'granted' : 'denied',
-      ad_personalization: consent.marketing ? 'granted' : 'denied',
-      analytics_storage: consent.analytics ? 'granted' : 'denied',
-      personalization_storage: consent.preferences ? 'granted' : 'denied',
-      conversion_api: consent.conversion_api ? 'granted' : 'denied',
-      advanced_matching: consent.advanced_matching ? 'granted' : 'denied',
+
+  function setAnalyticsReady(ready) {
+    window.__analyticsReady = ready
+    if (ready) {
+      document.dispatchEvent(new Event('analytics_ready'))
     }
-    gtag('consent', 'update', consentMode)
-    setCookie('cookie-consent', JSON.stringify(consentMode), 90)
+  }
+
+  function resolveConsentTtl(selection) {
+    const hasOptionalConsent =
+      selection.analytics ||
+      selection.preferences ||
+      selection.marketing ||
+      selection.conversion_api ||
+      selection.advanced_matching
+    return hasOptionalConsent ? CONSENT_ACCEPT_TTL_DAYS : CONSENT_DENY_TTL_DAYS
+  }
+
+  function toConsentMode(selection) {
+    return {
+      functionality_storage: selection.necessary ? 'granted' : 'denied',
+      security_storage: selection.necessary ? 'granted' : 'denied',
+      ad_storage: selection.marketing ? 'granted' : 'denied',
+      ad_user_data: selection.marketing ? 'granted' : 'denied',
+      ad_personalization: selection.marketing ? 'granted' : 'denied',
+      analytics_storage: selection.analytics ? 'granted' : 'denied',
+      personalization_storage: selection.preferences ? 'granted' : 'denied',
+      conversion_api: selection.conversion_api ? 'granted' : 'denied',
+      advanced_matching: selection.advanced_matching ? 'granted' : 'denied',
+    }
+  }
+
+  function selectionFromConsent(consent) {
+    if (!consent) {
+      return {
+        necessary: true,
+        analytics: false,
+        preferences: false,
+        marketing: false,
+        conversion_api: false,
+        advanced_matching: false,
+      }
+    }
+    return {
+      necessary: consent.functionality_storage === 'granted' && consent.security_storage === 'granted',
+      analytics: consent.analytics_storage === 'granted',
+      preferences: consent.personalization_storage === 'granted',
+      marketing: consent.ad_storage === 'granted',
+      conversion_api: consent.conversion_api === 'granted',
+      advanced_matching: consent.advanced_matching === 'granted',
+    }
+  }
+
+  function parseConsentCookie(raw) {
+    if (!raw) return null
+    try {
+      return JSON.parse(raw)
+    } catch {
+      return null
+    }
+  }
+
+  function phoneToE164(raw, defaultCountry = '+48') {
+    if (!raw) return undefined
+    const normalized = raw.replace(/[^\d+]/g, '')
+    if (!normalized) return undefined
+    if (normalized.startsWith('+')) return normalized
+    if (normalized.startsWith('00')) return `+${normalized.slice(2)}`
+    return `${defaultCountry}${normalized}`
+  }
+
+  function loadAnalyticsUser() {
+    try {
+      const raw = localStorage.getItem('analytics_user')
+      return raw ? JSON.parse(raw) : null
+    } catch {
+      return null
+    }
+  }
+
+  function buildAdvancedMatching(selection) {
+    if (!selection.advanced_matching) return null
+    const user = loadAnalyticsUser()
+    if (!user) return null
+
+    const payload = {}
+    if (user.email) payload.em = user.email.trim().toLowerCase()
+    if (user.phone) {
+      const phone = phoneToE164(user.phone)
+      if (phone) payload.ph = phone
+    }
+    if (user.first_name) payload.fn = user.first_name.trim().toLowerCase()
+    if (user.last_name) payload.ln = user.last_name.trim().toLowerCase()
+    if (user.city) payload.ct = user.city.trim().toLowerCase()
+    if (user.postal_code) payload.zp = user.postal_code.trim().toLowerCase()
+    if (user.country_code) payload.country = user.country_code.trim().toLowerCase()
+    if (user.external_id) payload.external_id = user.external_id.toString().trim()
+
+    return Object.keys(payload).length ? payload : null
+  }
+
+  // Meta Pixel functions
+  function bootstrapMetaPixel() {
+    if (typeof window.fbq === 'function') return
+
+    const fbq = function() {
+      fbq.queue.push(arguments)
+    }
+    fbq.push = function() {
+      fbq.queue.push(arguments)
+    }
+    fbq.queue = []
+    fbq.loaded = true
+    fbq.version = '2.0'
+
+    window.fbq = fbq
+    window._fbq = fbq
+  }
+
+  function loadMetaPixelScript() {
+    if (metaPixelScriptPromise) return metaPixelScriptPromise
+
+    metaPixelScriptPromise = new Promise((resolve) => {
+      const existing = document.getElementById('meta-pixel-script')
+      if (existing) {
+        if (existing._loaded) {
+          resolve()
+          return
+        }
+        existing.addEventListener('load', () => {
+          existing._loaded = true
+          resolve()
+        }, { once: true })
+        existing.addEventListener('error', () => resolve(), { once: true })
+        return
+      }
+
+      const script = document.createElement('script')
+      script.id = 'meta-pixel-script'
+      script.async = true
+      script.src = 'https://connect.facebook.net/en_US/fbevents.js'
+      script.onload = () => {
+        script._loaded = true
+        resolve()
+      }
+      script.onerror = () => resolve()
+      document.head.appendChild(script)
+    })
+
+    return metaPixelScriptPromise
+  }
+
+  async function ensureMetaPixel(pixelId, selection) {
+    if (!pixelId) return
+
+    bootstrapMetaPixel()
+    const scriptPromise = loadMetaPixelScript()
+    const advancedMatching = buildAdvancedMatching(selection)
+
+    window.__metaPixelId = pixelId
+    window.__metaPixelAdvancedMatching = Boolean(selection.advanced_matching)
+
+    if (!loadedMetaPixels.has(pixelId)) {
+      loadedMetaPixels.add(pixelId)
+      window.fbq('set', 'autoConfig', false, pixelId)
+      if (advancedMatching) {
+        window.fbq('init', pixelId, advancedMatching)
+      } else {
+        window.fbq('init', pixelId)
+      }
+    } else if (advancedMatching) {
+      window.fbq('init', pixelId, advancedMatching)
+    }
+
+    await scriptPromise
+  }
+
+  // Google Analytics functions
+  function ensureGtagScript(primaryId) {
+    if (!primaryId) return Promise.resolve()
+    if (gtagScriptPromise) return gtagScriptPromise
+
+    gtagScriptPromise = new Promise((resolve) => {
+      const existing = document.querySelector('script[data-analytics="gtag"]')
+      if (existing) {
+        resolve()
+        return
+      }
+
+      const script = document.createElement('script')
+      script.async = true
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(primaryId)}`
+      script.dataset.analytics = 'gtag'
+      script.onload = () => {
+        window.gtag('js', new Date())
+        resolve()
+      }
+      script.onerror = () => resolve()
+      document.head.appendChild(script)
+    })
+
+    return gtagScriptPromise
+  }
+
+  // Initialize tracking
+  async function initializeTracking(selection) {
+    // Meta Pixel
+    if (META_PIXEL_ID) {
+      if (selection.marketing) {
+        await ensureMetaPixel(META_PIXEL_ID, selection)
+        window.fbq && window.fbq('consent', 'grant')
+      } else {
+        window.fbq && window.fbq('consent', 'revoke')
+      }
+    }
+
+    // GA4 - always load for Consent Mode v2 cookieless tracking
+    if (GA4_ID) {
+      await ensureGtagScript(GA4_ID)
+
+      if (!configuredGtagIds.has(GA4_ID)) {
+        if (selection.analytics) {
+          // Full analytics mode with cookies
+          window.gtag('config', GA4_ID, { send_page_view: false })
+        } else {
+          // Cookieless mode - restricted settings
+          window.gtag('config', GA4_ID, {
+            send_page_view: false,
+            allow_google_signals: false,
+            allow_ad_personalization_signals: false,
+          })
+        }
+        configuredGtagIds.add(GA4_ID)
+      }
+    }
+  }
+
+  // Main consent handler
+  async function handleConsentApply(selection) {
+    const consentMode = toConsentMode(selection)
+    window.gtag('consent', 'update', consentMode)
+    setCookie(COOKIE_NAME, JSON.stringify(consentMode), resolveConsentTtl(selection))
+
+    window.__metaPixelId = META_PIXEL_ID || null
+    window.__metaPixelAdvancedMatching = selection.advanced_matching
+
+    setAnalyticsReady(false)
+    try {
+      await initializeTracking(selection)
+    } finally {
+      setAnalyticsReady(true)
+      document.dispatchEvent(new CustomEvent('cookie_consent_updated', { detail: consentMode }))
+    }
 
     const focusedElement = document.activeElement
     if (focusedElement && cookieConsentElement.contains(focusedElement)) {
       focusedElement.blur()
     }
     cookieConsentElement.setAttribute('aria-hidden', 'true')
-
-    document.dispatchEvent(new CustomEvent('cookie_consent_updated', { detail: consentMode }))
   }
 
+  // Initialize dataLayer and gtag
+  window.dataLayer = window.dataLayer || []
+  window.gtag = function gtag() {
+    window.dataLayer.push(arguments)
+  }
+
+  // Set initial analytics ready state
+  window.__analyticsReady = false
+
+  // Check for existing consent
+  const storedConsentRaw = getCookie(COOKIE_NAME)
+  const storedConsent = parseConsentCookie(storedConsentRaw)
+
+  if (!storedConsent) {
+    // No consent decision yet - set default denied
+    window.gtag('consent', 'default', DENIED_CONSENT_MODE)
+  } else {
+    // Has consent - set stored values as default
+    window.gtag('consent', 'default', storedConsent)
+  }
+
+  // DOM elements
   const cookieConsentElement = document.querySelector('.cookie-consent')
   const acceptAllButton = cookieConsentElement.querySelector('.agree')
   const preferencesButton = cookieConsentElement.querySelector('.setPreferences')
   const denyButton = cookieConsentElement.querySelector('.deny')
   let isPreferencesOpen = false
 
-  // prettier-ignore
-  ;(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer',GTM_ID);
-
-  if (getCookie('cookie-consent') === null) {
-    gtag('consent', 'default', {
-      functionality_storage: 'denied',
-      security_storage: 'denied',
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied',
-      analytics_storage: 'denied',
-      personalization_storage: 'denied',
-      conversion_api: 'denied',
-      advanced_matching: 'denied',
-    })
+  // Show banner or initialize tracking based on consent state
+  if (!storedConsent) {
     cookieConsentElement.setAttribute('aria-hidden', 'false')
   } else {
-    gtag('consent', 'default', JSON.parse(getCookie('cookie-consent')))
+    // Initialize tracking with stored consent
+    const selection = selectionFromConsent(storedConsent)
+    ;(async () => {
+      setAnalyticsReady(false)
+      try {
+        await initializeTracking(selection)
+      } finally {
+        setAnalyticsReady(true)
+      }
+    })()
   }
 
+  // Event listeners
   acceptAllButton.addEventListener('click', () => {
-    setConsent({
+    handleConsentApply({
       necessary: true,
       marketing: true,
       analytics: true,
@@ -415,6 +689,7 @@ const groups = [
       advanced_matching: true,
     })
   })
+
   preferencesButton.addEventListener('click', () => {
     if (!isPreferencesOpen) {
       cookieConsentElement.querySelector('.header [data-header-initial]').style.display = 'none'
@@ -422,7 +697,7 @@ const groups = [
       cookieConsentElement.querySelector('.settings').style.removeProperty('display')
       isPreferencesOpen = true
     } else {
-      setConsent({
+      handleConsentApply({
         necessary: cookieConsentElement.querySelector('input[id="necessary"]').checked,
         marketing: cookieConsentElement.querySelector('input[id="marketing"]').checked,
         analytics: cookieConsentElement.querySelector('input[id="analytics"]').checked,
@@ -432,8 +707,9 @@ const groups = [
       })
     }
   })
+
   denyButton.addEventListener('click', () => {
-    setConsent({
+    handleConsentApply({
       necessary: false,
       marketing: false,
       analytics: false,
@@ -443,6 +719,7 @@ const groups = [
     })
   })
 
+  // Marketing switch controls sub-switches
   const marketingSwitch = cookieConsentElement.querySelector('input[id="marketing"]')
   const subSwitches = cookieConsentElement.querySelectorAll('.sub-groups input[type="checkbox"]')
   let isMarketingSwitchTriggered = false
@@ -454,6 +731,7 @@ const groups = [
     })
     isMarketingSwitchTriggered = false
   })
+
   subSwitches.forEach((subSwitch) => {
     subSwitch.addEventListener('change', (e) => {
       if (!isMarketingSwitchTriggered && e.target.checked) {
@@ -462,21 +740,37 @@ const groups = [
     })
   })
 
+  // Reset consent button handler
   document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('reset-cookie-consent')?.addEventListener('click', () => {
-      document.cookie = 'cookie-consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC;'
-      gtag('consent', 'default', {
-        functionality_storage: 'denied',
-        security_storage: 'denied',
-        ad_storage: 'denied',
-        ad_user_data: 'denied',
-        ad_personalization: 'denied',
-        analytics_storage: 'denied',
-        personalization_storage: 'denied',
-        conversion_api: 'denied',
-        advanced_matching: 'denied',
-      })
+      document.cookie = `${COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+      window.gtag('consent', 'default', DENIED_CONSENT_MODE)
+      window.fbq && window.fbq('consent', 'revoke')
+      window.__metaPixelId = META_PIXEL_ID || null
+      window.__metaPixelAdvancedMatching = false
+      window.__analyticsReady = false
+      configuredGtagIds.clear()
       cookieConsentElement.setAttribute('aria-hidden', 'false')
+      // Reset preferences view
+      cookieConsentElement.querySelector('.header [data-header-initial]').style.removeProperty('display')
+      cookieConsentElement.querySelector('.header [data-header-settings]').style.display = 'none'
+      cookieConsentElement.querySelector('.settings').style.display = 'none'
+      isPreferencesOpen = false
+      // Reset all checkboxes
+      cookieConsentElement.querySelectorAll('input[type="checkbox"]:not([id="necessary"])').forEach((cb) => {
+        cb.checked = false
+      })
     })
+  })
+
+  // Listen for analytics user updates to refresh Meta Pixel advanced matching
+  document.addEventListener('analytics_user_updated', () => {
+    const consent = parseConsentCookie(getCookie(COOKIE_NAME))
+    if (consent && META_PIXEL_ID) {
+      const selection = selectionFromConsent(consent)
+      if (selection.advanced_matching) {
+        ensureMetaPixel(META_PIXEL_ID, selection)
+      }
+    }
   })
 </script>

@@ -50,6 +50,19 @@ const { index, sectionId, heading, paragraph, cta, hint, img, rating } = Astro.p
     grid-template-columns: 1fr 1.2fr;
     align-items: center;
     margin-top: 2rem;
+    position: relative;
+    &::before {
+      content: '';
+      width: 100%;
+      height: 1px;
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      background:
+        linear-gradient(var(--neutral-900, #000103), var(--neutral-900, #000103)) padding-box,
+        linear-gradient(25deg, rgba(6, 64, 64, 0) 21%, rgba(6, 64, 64, 0.6), rgba(21, 130, 130, 0.6)) border-box;
+      border-bottom: 1px solid rgba(255, 255, 255, 0);
+    }
     header {
       max-width: 34rem;
       padding: clamp(3rem, calc(4vw / 0.48), 8rem) 0;
@@ -148,10 +161,12 @@ const { index, sectionId, heading, paragraph, cta, hint, img, rating } = Astro.p
       margin: 0 auto;
     }
     @media (max-width: 40rem) {
-      .image-wrapper {
-        margin-bottom: 10rem;
-        .rating-box {
-          bottom: -5rem;
+      &:has(.rating-box) {
+        .image-wrapper {
+          margin-bottom: 10rem;
+          .rating-box {
+            bottom: -5rem;
+          }
         }
       }
     }

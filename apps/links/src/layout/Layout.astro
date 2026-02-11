@@ -3,6 +3,7 @@ import '@repo/shared/global.scss'
 import Head, { type HeadProps } from '@repo/shared/layout/Head.astro'
 import Toast from '@repo/ui/Toast/Toast.astro'
 import CookieConsent from '@repo/shared/layout/CookieConsent.astro'
+import Analytics from '@repo/shared/layout/Analytics.astro'
 import Header from './Header.astro'
 import Footer from './Footer.astro'
 import type { Language } from '@repo/shared/languages'
@@ -21,15 +22,15 @@ const lang = (Astro.params.lang as Language) || 'pl'
   <head>
     <Head {...props} lang={lang} />
     <slot name="Head" />
-    <script is:inline src="https://cdn.usefathom.com/script.js" data-site="PUUZZITA" defer></script>
   </head>
   <body>
+    <CookieConsent />
+    <Analytics />
     {!hideLayout && <Header lang={lang} />}
     <main id="main">
       <slot />
     </main>
     {!hideLayout && <Footer lang={lang} />}
     <Toast />
-    {!hideLayout && <CookieConsent lang={lang} />}
   </body>
 </html>
