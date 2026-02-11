@@ -61,6 +61,7 @@ const { index, sectionId, heading, paragraph, cta, withTabs, tabs, people } = As
 const Subheading = index === 0 ? 'h2' : 'h3'
 
 const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
+const isNotMainDomain = !Astro.url.origin.includes('://kryptonum.eu')
 ---
 
 <section class="TeamIntroduction" id={sectionId} data-with-tabs={withTabs.toString()}>
@@ -106,22 +107,41 @@ const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
         <ul>
         {[...people, ...people].map(({ slug, img, name, headline, formalHeadline }) => (
           <li class="person">
-            <a href={slug}>
-              <div class="img">
-                <Image {...img} sizes="186px" />
+            {isNotMainDomain ? (
+              <div>
+                <div class="img">
+                  <Image {...img} sizes="186px" />
+                </div>
+                <div class="content">
+                  <Subheading class="name">{name}</Subheading>
+                  {(withTabs && tabs) ? (
+                    <p class="headline">{formalHeadline}</p>
+                    <p class="headline" aria-hidden="true">
+                      {headline}
+                    </p>
+                  ) : (
+                    <p class="headline">{headline}</p>
+                  )}
+                </div>
               </div>
-              <div class="content">
-                <Subheading class="name">{name}</Subheading>
-                {(withTabs && tabs) ? (
-                  <p class="headline">{formalHeadline}</p>
-                  <p class="headline" aria-hidden="true">
-                    {headline}
-                  </p>
-                ) : (
-                  <p class="headline">{headline}</p>
-                )}
-              </div>
-            </a>
+            ) : (
+              <a href={slug}>
+                <div class="img">
+                  <Image {...img} sizes="186px" />
+                </div>
+                <div class="content">
+                  <Subheading class="name">{name}</Subheading>
+                  {(withTabs && tabs) ? (
+                    <p class="headline">{formalHeadline}</p>
+                    <p class="headline" aria-hidden="true">
+                      {headline}
+                    </p>
+                  ) : (
+                    <p class="headline">{headline}</p>
+                  )}
+                </div>
+              </a>
+            )}
           </li>
         ))}
         </ul>
@@ -255,7 +275,8 @@ const uniqueId = `TeamIntroduction-${crypto.randomUUID().slice(0, 5)}`
         .person {
           width: calc(clamp(170px, calc(186px / 7.68), 186px) + clamp(0.25rem, calc(0.5vw / 0.48), 0.5rem) * 2);
           flex-shrink: 0;
-          a {
+          a,
+          > div {
             display: block;
           }
           .img {

@@ -29,6 +29,7 @@ type Props = {
 const { index, sectionId, heading, list } = Astro.props
 
 const Subheading = index === 0 ? 'h2' : 'h3'
+const isNotMainDomain = !Astro.url.origin.includes('://kryptonum.eu')
 ---
 
 <section class="TeamSpotlight" id={sectionId}>
@@ -39,13 +40,23 @@ const Subheading = index === 0 ? 'h2' : 'h3'
     {
       list?.map(({ slug, img, name, headline }) => (
         <li class="item">
-          <a href={slug}>
-            <Image {...img} sizes="78px" class="gradient-thumbnail" />
+          {isNotMainDomain ? (
             <div>
-              <Subheading class="subheading">{name}</Subheading>
-              <p>{headline}</p>
+              <Image {...img} sizes="78px" class="gradient-thumbnail" />
+              <div>
+                <Subheading class="subheading">{name}</Subheading>
+                <p>{headline}</p>
+              </div>
             </div>
-          </a>
+          ) : (
+            <a href={slug}>
+              <Image {...img} sizes="78px" class="gradient-thumbnail" />
+              <div>
+                <Subheading class="subheading">{name}</Subheading>
+                <p>{headline}</p>
+              </div>
+            </a>
+          )}
         </li>
       ))
     }
@@ -69,7 +80,8 @@ const Subheading = index === 0 ? 'h2' : 'h3'
       gap: 1rem 2rem;
       margin-left: auto;
       .item {
-        a {
+        a,
+        > div {
           display: grid;
           grid-template-columns: auto 1fr;
           gap: 0.75rem;
