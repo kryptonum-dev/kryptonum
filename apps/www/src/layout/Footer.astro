@@ -42,7 +42,6 @@ const data = await sanityFetch<{
   links?: Array<{
     name: string
     slug: string
-    image?: ImageDataProps
   }>
   servicesCta?: ButtonDataProps
   contact: {
@@ -73,7 +72,6 @@ const data = await sanityFetch<{
       "links": *[_type == "global" && language == $language][0].footer.links[] {
         name,
         "slug": page->slug.current,
-        ${ImageDataQuery('image')}
       },
       "servicesCta": *[_type == "global" && language == $language][0].footer {
         ${ButtonDataQuery('servicesCta')}
@@ -110,7 +108,7 @@ const data = await sanityFetch<{
           <ul class='pillars'>
             {data.pillars.map(({ name, slug, icon }) => (
               <li>
-                <a href={slug}>
+                <a href={slug} class='pillar-item'>
                   <div class='pillar-icon'>{icon && <Image {...icon} sizes='1rem' />}</div>
                   <span class='pillar-name'>{name}</span>
                 </a>
@@ -129,11 +127,6 @@ const data = await sanityFetch<{
             {data.links.map((link) => (
               <li>
                 <a href={link.slug}>
-                  {link.image && (
-                    <div class='link-image'>
-                      <Image {...link.image} sizes='2rem' />
-                    </div>
-                  )}
                   <span>{link.name}</span>
                 </a>
               </li>
@@ -206,43 +199,60 @@ const data = await sanityFetch<{
         flex: 1 1 calc(50% - 0.625rem);
         min-width: max-content;
       }
-      li a {
+      li a.pillar-item {
         display: grid;
         grid-template-columns: auto 1fr;
         align-items: center;
         gap: 0.75rem;
-        padding: 0.625rem 0;
-        transition:
-          color 500ms var(--easing),
-          transform 500ms var(--easing);
+        padding: 0.5rem 0;
+        transition: color 500ms var(--easing);
         &:hover {
           color: var(--neutral-400, #c6cdcc);
-          transform: translateX(0.175rem); //
-          .pillar-icon {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-          }
+        }
+        &:focus-visible {
+          color: var(--neutral-400, #c6cdcc);
+        }
+        &:hover .pillar-icon,
+        &:focus-visible .pillar-icon,
+        &:hover .pillar-name,
+        &:focus-visible .pillar-name {
+          transform: translateX(0.175rem);
+        }
+        &:hover .pillar-name,
+        &:focus-visible .pillar-name {
+          color: var(--neutral-200, #f0f7f7);
         }
         .pillar-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 2.25rem;
-          height: 2.25rem;
-          border-radius: 0.5rem;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 50%;
+          border: 1px solid var(--primary-600, #042b2b);
+          background: var(--primary-gradient-900);
+          width: 2.5rem;
+          height: 2.5rem;
+          display: grid;
+          place-items: center;
+          flex-shrink: 0;
+          box-shadow: none;
           transition:
-            background 500ms var(--easing),
+            transform 500ms var(--easing),
             border-color 500ms var(--easing);
           img {
-            width: 1rem;
-            height: 1rem;
+            width: 1.125rem;
+            height: 1.125rem;
           }
         }
         .pillar-name {
-          font-size: var(--typography-body-l, 1rem);
+          font-size: var(--typography-body-xl, 1rem);
+          line-height: 1.4;
+          transition:
+            transform 500ms var(--easing),
+            color 500ms var(--easing);
         }
+      }
+      li a.pillar-item:hover .pillar-icon {
+        border-color: var(--primary-500, #064040);
+      }
+      li a.pillar-item:focus-visible .pillar-icon {
+        border-color: var(--primary-500, #064040);
       }
     }
   }
@@ -252,31 +262,65 @@ const data = await sanityFetch<{
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.5rem 1.25rem;
-      li a {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.5rem 0;
-        font-size: var(--typography-body-l, 1rem);
-        transition: color 500ms var(--easing);
-        &:hover {
-          color: var(--neutral-400, #c6cdcc);
-          .link-image {
-            border-color: rgba(255, 255, 255, 0.2);
-          }
-        }
-        .link-image {
-          flex-shrink: 0;
-          width: 2rem;
-          height: 2rem;
-          border-radius: 50%;
+      width: fit-content;
+      li {
+        min-width: 7rem;
+        a {
+          display: grid;
+          align-items: center;
           overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          transition: border-color 500ms var(--easing);
-          img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+          min-height: 2.75rem;
+          position: relative;
+          padding: 0.5rem 0;
+          font-size: var(--typography-body-xl, 1rem);
+          transition:
+            color 500ms var(--easing),
+            outline-color 500ms var(--easing);
+          span {
+            display: inline-block;
+            transition: transform 500ms 50ms var(--easing);
+          }
+          &:hover {
+            color: var(--neutral-400, #c6cdcc);
+            span {
+              transform: translateX(1.25rem);
+              transition-delay: 0ms;
+            }
+            &::before {
+              transform: translate(0, -50%);
+              transition-delay: 50ms;
+            }
+          }
+          &:focus-visible {
+            color: var(--neutral-400, #c6cdcc);
+            span {
+              transform: translateX(1.25rem);
+              transition-delay: 0ms;
+            }
+            &::before {
+              transform: translate(0, -50%);
+              transition-delay: 50ms;
+            }
+          }
+          &::before {
+            content: '';
+            width: 1rem;
+            height: 1rem;
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfNjg1Ml81MDApIiBkPSJNNy4yNDggNy41NzdjLjA0OC4wOTcgMCAuMTQ2LS4xNDIuMTQ2YTMuMDY0IDMuMDY0IDAgMCAxLS41NzktLjA3MSAyMS45ODUgMjEuOTg1IDAgMCAxLTEuNzI0LS43MjEgNi45MjUgNi45MjUgMCAwIDEtLjc5MiAxLjQzNyAxOS4wNDMgMTkuMDQzIDAgMCAwLTEuMDc0IDEuODcgMy41NzggMy41NzggMCAwIDAtLjQ0MiAxLjU3OSAxLjU4OCAxLjU4OCAwIDAgMCAuNTA0IDEuMTU0IDEuNTAzIDEuNTAzIDAgMCAwIDEuMDc4LjVjLjItLjAwMS4zOTgtLjA1LjU3NS0uMTQyYS41MTguNTE4IDAgMCAwIC4zNTgtLjIxNi44MzIuODMyIDAgMCAxIC4yMTctLjE0Mi42Mi42MiAwIDAgMSAuNDQyLjIxMi42NTkuNjU5IDAgMCAxIC4xNDYuNTc1Yy0uMDQ4LjMzNi0uMjg3LjUzLS43Mi41NzVhMi45OTggMi45OTggMCAwIDEtMi4wODMtLjc4NyAyLjc5OCAyLjc5OCAwIDAgMS0xLjIyLTIuMzA0Yy4wNzEtLjguMzk4LTEuNTU0LjkzMi0yLjE1M0gyLjU4YTEuMDEyIDEuMDEyIDAgMCAxLTEuMDgtMS4wMDggMS44NDggMS44NDggMCAwIDEgLjUwNS0xLjM2NyAxLjg2NiAxLjg2NiAwIDAgMSAxLjQzNy0uNDQyYy40NDIuMDQ5Ljc3LjA5OCAxLjAwOC4xNDJhMy41NzcgMy41NzcgMCAwIDAgLjQ0Mi0xLjU3OWMuMDItLjQwMy0uMDgtLjgwMy0uMjg3LTEuMTVhLjk2OC45NjggMCAwIDAtLjg4NS0uNDQyIDEuMDgzIDEuMDgzIDAgMCAwLS44NjIuNDQzLjM2My4zNjMgMCAwIDEtLjQ0Mi4xNDEgMS42MSAxLjYxIDAgMCAxLS43Mi0uMjg3IDEuMjYgMS4yNiAwIDAgMS0uMzU5LS42NDYgMS4xNzYgMS4xNzYgMCAwIDEgLjM1OC0uODYyIDEuMzI3IDEuMzI3IDAgMCAxIDEuMDA4LS4zNjMgMi41MTYgMi41MTYgMCAwIDEgMS43OTYgMS4wOGMuNTQ3LjYzNy44MyAxLjQ2Ljc5MSAyLjI5OGE0LjAzMyA0LjAzMyAwIDAgMS0uMzU4IDEuNTEzYy44MDYuMjU2IDEuNTgyLjU5NyAyLjMxNyAxLjAxN1ptLTIuOTQ1LS44NjNhNC4zOSA0LjM5IDAgMCAwLS43OTItLjA3IDEuMzYyIDEuMzYyIDAgMCAwLTEuMDA4LjM1OCAxLjA0OCAxLjA0OCAwIDAgMC0uMzU4LjcyYzAgLjM4NS4xNjguNTc1LjUwNC41NzUuNDc4LjA1Ljk1Ny0uMzU2IDEuNDM3LTEuMjJhLjQ0Mi40NDIgMCAwIDAgLjIxNy0uMzYzWk03Ljg0IDcuNzIzQzYuODM4IDcuMTk1IDYuMjg3IDYuNTI0IDYuMTg3IDUuNzFjLS4wNS0uNjE4LjEyOS0xLjIzMi41MDQtMS43MjVhMi41NjkgMi41NjkgMCAwIDEgMi4xNTctLjc5MWMxLjE4LjE0MSAyLjExNCAxLjA1IDIuODA0IDIuNzI4LjM4IDEuMDU4LjgzNSAxLjU4NiAxLjM2NiAxLjU4M2EuODMxLjgzMSAwIDAgMCAuODg0LS4zNThjLjE4NS0uMjIzLjI4Ny0uNTAzLjI4OC0uNzkyYTEuMTk0IDEuMTk0IDAgMCAwLS41NzUtMS4wNzkgMS4zNjIgMS4zNjIgMCAwIDAtLjg2Mi0uMjg3LjIwOC4yMDggMCAwIDEtLjE0Ni4wNy4xOS4xOSAwIDAgMS0uMTQyLS4wNyAxLjQ2MyAxLjQ2MyAwIDAgMS0uMjkxLS41NzUuNzA3LjcwNyAwIDAgMSAuMjE2LS41MDQuODg0Ljg4NCAwIDAgMSAuNzkyLS4yMTIgMS40MTUgMS40MTUgMCAwIDEgMS4wMDguODYyYy40MDQuODIyLjU1NyAxLjc0NS40NDIgMi42NTNhNS4zNSA1LjM1IDAgMCAxLTEuODY2IDMuNjY2IDUuNzQ4IDUuNzQ4IDAgMCAxLTMuNzQgMS40MzcgMy4zMTIgMy4zMTIgMCAwIDEtMi41MTctLjc5MiAyLjQ0IDIuNDQgMCAwIDEtLjc5MS0xLjcyNGMwLTEuMDUzLjY5NC0xLjY1NCAyLjA4Ny0xLjc5NWwuMDM1LS4yODNaIi8+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfbGluZWFyXzY4NTJfNTAwIiB4MT0iMTQuNDE5IiB4Mj0iLjU0OSIgeTE9IjEuNjY2IiB5Mj0iMi41OTYiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjMkREMjgyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOTBGNEU4Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PC9zdmc+);
+            background-repeat: no-repeat;
+            background-size: contain;
+            opacity: 0;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transition:
+              transform 500ms 0ms var(--easing),
+              opacity 300ms 0ms var(--easing);
+            transform: translate(-0.75rem, -50%);
+          }
+          &:hover::before,
+          &:focus-visible::before {
+            opacity: 1;
           }
         }
       }
