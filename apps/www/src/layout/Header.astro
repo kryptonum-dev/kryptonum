@@ -237,10 +237,10 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
         <div class='item-expand'>
           {
             data.pillars && data.pillars.length > 0 ? (
-              <div class='max-width pillars-layout'>
+              <div class='max-width pillars-layout' data-active-pillar='0'>
                 <div class='pillars-list'>
-                  {data.pillars.map(({ name, slug, description, icon }) => (
-                    <a href={slug} class='pillar-item'>
+                  {data.pillars.map(({ name, slug, description, icon }, index) => (
+                    <a href={slug} class='pillar-item' data-pillar-index={index}>
                       <div class='pillar-icon'>{icon && <Image {...icon} sizes='1.25rem' />}</div>
                       <div class='pillar-content'>
                         <span class='pillar-name'>{name}</span>
@@ -257,8 +257,10 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
                 </div>
                 <div class='pillars-preview'>
                   <div class='preview-images'>
-                    {data.pillars.map(({ img }) => (
-                      <Image {...img} sizes='(max-width: 69rem) 100vw, 32rem' />
+                    {data.pillars.map(({ slug, name, img }, index) => (
+                      <a href={slug} class='preview-link' aria-label={name} data-pillar-preview-link data-pillar-index={index}>
+                        <Image {...img} sizes='(max-width: 69rem) 100vw, 32rem' />
+                      </a>
                     ))}
                   </div>
                 </div>
@@ -702,7 +704,8 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
               .preview-images {
                 aspect-ratio: 32.75 / 18.4375;
                 position: relative;
-                img {
+                overflow: hidden;
+                .preview-link {
                   position: absolute;
                   left: 0;
                   top: 0;
@@ -711,22 +714,37 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
                   opacity: 0;
                   filter: blur(4px);
                   transform: scale(1.03);
+                  min-height: 0;
+                  pointer-events: none;
                   transition: none;
+                  display: block;
+                  cursor: pointer;
+                  &:hover {
+                    color: inherit;
+                  }
+                  img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition:
+                      transform 350ms var(--easing),
+                      filter 350ms var(--easing);
+                  }
+                  &:hover img,
+                  &:focus-visible img {
+                    transform: scale(1.025);
+                    filter: brightness(1.08);
+                  }
                 }
               }
             }
-            // Hover states for preview images (identical to caseStudies pattern)
-            &:not(:has(.pillar-item:hover)) .preview-images img:first-child,
-            &:has(.pillar-item:nth-child(1):hover) .preview-images img:nth-child(1),
-            &:has(.pillar-item:nth-child(1):focus) .preview-images img:nth-child(1),
-            &:has(.pillar-item:nth-child(2):hover) .preview-images img:nth-child(2),
-            &:has(.pillar-item:nth-child(2):focus) .preview-images img:nth-child(2),
-            &:has(.pillar-item:nth-child(3):hover) .preview-images img:nth-child(3),
-            &:has(.pillar-item:nth-child(3):focus) .preview-images img:nth-child(3),
-            &:has(.pillar-item:nth-child(4):hover) .preview-images img:nth-child(4),
-            &:has(.pillar-item:nth-child(4):focus) .preview-images img:nth-child(4) {
+            .pillars-layout[data-active-pillar='0'] .preview-images .preview-link:nth-child(1),
+            .pillars-layout[data-active-pillar='1'] .preview-images .preview-link:nth-child(2),
+            .pillars-layout[data-active-pillar='2'] .preview-images .preview-link:nth-child(3),
+            .pillars-layout[data-active-pillar='3'] .preview-images .preview-link:nth-child(4) {
               filter: blur(0);
               opacity: 1;
+              pointer-events: auto;
               transition:
                 filter 500ms var(--easing),
                 transform 500ms var(--easing);
@@ -1199,4 +1217,35 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeExpandItems()
   })
+
+  function initPillarPreviewState() {
+    const servicesExpand = header.querySelector('.item[data-tab="services"] .item-expand')
+    const pillarsLayout = servicesExpand?.querySelector('.pillars-layout') as HTMLElement | null
+    if (!pillarsLayout) return
+
+    const pillarItems = Array.from(pillarsLayout.querySelectorAll('.pillar-item')) as HTMLAnchorElement[]
+    const previewLinks = Array.from(pillarsLayout.querySelectorAll('[data-pillar-preview-link]')) as HTMLAnchorElement[]
+    if (pillarItems.length === 0 || previewLinks.length === 0) return
+
+    const setActivePillar = (index: number) => {
+      if (index < 0 || index >= previewLinks.length) return
+      pillarsLayout.setAttribute('data-active-pillar', String(index))
+      previewLinks.forEach((link, currentIndex) => {
+        const isActive = currentIndex === index
+        link.tabIndex = isActive ? 0 : -1
+        link.setAttribute('aria-hidden', isActive ? 'false' : 'true')
+      })
+    }
+
+    setActivePillar(0)
+
+    pillarItems.forEach((pillarItem) => {
+      const index = Number(pillarItem.getAttribute('data-pillar-index'))
+      if (!Number.isFinite(index)) return
+      pillarItem.addEventListener('mouseenter', () => setActivePillar(index))
+      pillarItem.addEventListener('focus', () => setActivePillar(index))
+    })
+  }
+
+  initPillarPreviewState()
 </script>
