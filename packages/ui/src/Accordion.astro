@@ -10,13 +10,13 @@ const { summary, ...props } = Astro.props
 
 <details {...props} data-expanded={props.open ? 'true' : 'false'}>
   <summary>
-    <p class="heading">{summary}</p>
-    <div class="icon" aria-hidden="true"><div></div><div></div></div>
+    <p class='heading'>{summary}</p>
+    <div class='icon' aria-hidden='true'><div></div><div></div></div>
   </summary>
-  <div class="content"><slot /></div>
+  <div class='content'><slot /></div>
 </details>
 
-<style lang="scss">
+<style lang='scss'>
   details {
     position: relative;
     &::before,

@@ -7,6 +7,33 @@ const name = 'StagesAccordion';
 const title = 'Stages Accordion';
 const icon = () => '🪗';
 
+const findObjectByKey = (value: unknown, key: string): Record<string, unknown> | null => {
+  if (!value) return null;
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      const found = findObjectByKey(entry, key);
+      if (found) return found;
+    }
+    return null;
+  }
+  if (typeof value !== 'object') return null;
+  const typedValue = value as Record<string, unknown>;
+  if (typedValue._key === key) return typedValue;
+  for (const child of Object.values(typedValue)) {
+    const found = findObjectByKey(child, key);
+    if (found) return found;
+  }
+  return null;
+};
+
+const getSectionImageModeFromContext = (context: { document?: unknown; path?: unknown[] }): 'single' | 'multiple' | undefined => {
+  const sectionKey = (context.path?.[1] as { _key?: string } | undefined)?._key;
+  if (!sectionKey) return undefined;
+  const section = findObjectByKey(context.document, sectionKey);
+  const imageMode = section?.imageMode;
+  return imageMode === 'multiple' ? 'multiple' : imageMode === 'single' ? 'single' : undefined;
+};
+
 export default defineField({
   name,
   type: 'object',
@@ -20,9 +47,24 @@ export default defineField({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'imageMode',
+      type: 'string',
+      title: 'Image Mode',
+      initialValue: 'single',
+      options: {
+        list: [
+          { title: 'One image', value: 'single' },
+          { title: 'Multiple images for each accordion', value: 'multiple' },
+        ],
+        layout: 'radio',
+      },
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'img',
       type: 'image',
       title: 'Image',
+      description: 'Default image. In multiple mode this is shown when all accordion items are closed.',
       validation: Rule => Rule.required(),
     }),
     defineField({
@@ -52,21 +94,37 @@ export default defineField({
               name: 'cta',
               type: 'cta',
               title: 'Call to Action (optional)',
-            })
+            }),
+            defineField({
+              name: 'openImg',
+              type: 'image',
+              title: 'Open State Image',
+              description: 'Required in multiple image mode',
+              hidden: (context) => getSectionImageModeFromContext(context) !== 'multiple',
+            }),
           ],
           preview: {
             select: {
+              media: 'openImg',
               title: 'title',
               content: 'content',
             },
-            prepare: ({ title, content }) => ({
+            prepare: ({ media, title, content }) => ({
+              media,
               title: title,
               subtitle: toPlainText(content),
             }),
           },
         })
       ],
-      validation: Rule => Rule.required(),
+      validation: Rule =>
+        Rule.required().custom((value, context) => {
+          const parent = context.parent as { imageMode?: 'single' | 'multiple' } | undefined;
+          if (parent?.imageMode !== 'multiple') return true;
+          const items = (value || []) as Array<{ openImg?: unknown }>;
+          const missingImages = items.some(item => !item?.openImg);
+          return missingImages ? 'Each accordion item must have an Open State Image in multiple image mode' : true;
+        }),
     }),
     defineField({
       name: 'annotation',
