@@ -7,11 +7,13 @@ import Accordion from '@repo/ui/Accordion.astro'
 export const StagesAccordion_Query = `
   _type == "StagesAccordion" => {
     ${PortableTextQuery('heading')}
+    imageMode,
     ${ImageDataQuery('img')}
     items[] {
       title,
       ${PortableTextQuery('content')}
       ${ButtonDataQuery('cta')}
+      ${ImageDataQuery('openImg')}
     },
     annotation {
       ${ImageDataQuery('icon')}
@@ -24,11 +26,13 @@ type Props = {
   index: number
   sectionId?: string
   heading: PortableTextValue
+  imageMode?: 'single' | 'multiple'
   img: ImageDataProps
   items: Array<{
     title: string
     content: PortableTextValue
     cta?: ButtonDataProps
+    openImg?: ImageDataProps
   }>
   annotation?: {
     icon: ImageDataProps
@@ -36,44 +40,68 @@ type Props = {
   }
 }
 
-const { index, sectionId, heading, img, items, annotation } = Astro.props
+const { index, sectionId, heading, imageMode, img, items, annotation } = Astro.props
+const isMultipleImageMode = imageMode === 'multiple'
 ---
 
-<section class="StagesAccordion" id={sectionId}>
+<section class='StagesAccordion' id={sectionId}>
   <header>
-    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class='heading h2' />
   </header>
-  <div class="column">
+  <div class='column'>
     <div>
-      <div class="list">
+      <div class='list'>
         {
           items.map(({ title, content, cta }) => (
             <Accordion summary={title}>
               <PortableText value={content} />
-              {cta && <Button {...cta} className="cta" />}
+              {cta && <Button {...cta} className='cta' />}
             </Accordion>
           ))
         }
       </div>
       {
         annotation && (
-          <div class="annotation">
-            <Image {...annotation.icon} sizes="20px" loading={index === 0 ? 'eager' : 'lazy'} />
+          <div class='annotation'>
+            <Image {...annotation.icon} sizes='20px' loading={index === 0 ? 'eager' : 'lazy'} />
             <PortableText value={annotation.text} />
           </div>
         )
       }
     </div>
-    <Image
-      {...img}
-      sizes="(max-width: 48rem) 100vw, (max-width: 69rem) 38rem, 60vw"
-      priority={index === 0}
-      class="img"
-    />
+    {
+      isMultipleImageMode ? (
+        <div class='img img-multiple' data-accordion-images>
+          <div class='layer' data-image-layer data-active='true'>
+            <Image
+              {...img}
+              sizes='(max-width: 48rem) 100vw, (max-width: 69rem) 38rem, 60vw'
+              priority={index === 0}
+            />
+          </div>
+          {items.map(({ openImg }, itemIndex) => (
+            <div class='layer' data-image-layer data-item-index={itemIndex + 1} data-active='false'>
+              <Image
+                {...(openImg || img)}
+                sizes='(max-width: 48rem) 100vw, (max-width: 69rem) 38rem, 60vw'
+                loading='lazy'
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <Image
+          {...img}
+          sizes='(max-width: 48rem) 100vw, (max-width: 69rem) 38rem, 60vw'
+          priority={index === 0}
+          class='img'
+        />
+      )
+    }
   </div>
 </section>
 
-<style lang="scss">
+<style lang='scss'>
   .StagesAccordion {
     padding: clamp(3rem, calc(5vw / 0.48), 6rem) 0;
     header {
@@ -113,9 +141,39 @@ const { index, sectionId, heading, img, items, annotation } = Astro.props
       }
       .img {
         position: sticky;
-        top: 3rem;
+        top: 5.25rem;
         border-radius: 0.25rem;
         border: 1px solid var(--neutral-800, #202025);
+      }
+      .img-multiple {
+        position: sticky;
+        top: 5.25rem;
+        overflow: hidden;
+        aspect-ratio: 16 / 10;
+        .layer {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          filter: blur(4px);
+          transform: scale(1.03);
+          transition: none;
+          &[data-active='true'] {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+            transition:
+              filter 500ms var(--easing),
+              transform 500ms var(--easing),
+              opacity 500ms var(--easing);
+          }
+          :global(img) {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+          }
+        }
       }
     }
     .annotation {
@@ -145,21 +203,45 @@ const { index, sectionId, heading, img, items, annotation } = Astro.props
 </style>
 
 <script>
-  document.querySelectorAll('.StagesAccordion').forEach((section) => {
-    let currentlyOpened: HTMLDetailsElement | null = null
-    const accordions = section.querySelectorAll('details')
+  document.querySelectorAll<HTMLElement>('.StagesAccordion').forEach((section) => {
+    const accordions = Array.from(section.querySelectorAll<HTMLDetailsElement>('.list details'))
+    const imageLayers = Array.from(section.querySelectorAll<HTMLElement>('[data-image-layer]'))
+
+    const setActiveImage = (activeIndex: number) => {
+      if (imageLayers.length === 0) return
+      imageLayers.forEach((layer, index) => {
+        layer.setAttribute('data-active', index === activeIndex ? 'true' : 'false')
+      })
+    }
+
+    const syncImage = () => {
+      const openIndex = accordions.findIndex((acc) => acc.getAttribute('data-expanded') === 'true')
+      setActiveImage(openIndex >= 0 ? openIndex + 1 : 0)
+    }
+
+    setActiveImage(0)
+
+    let isClosingOthers = false
+
     accordions.forEach((details) => {
-      details.addEventListener('toggle', () => {
-        if (details.open) {
-          currentlyOpened = details
-          accordions.forEach((otherDetails) => {
-            if (currentlyOpened !== otherDetails && otherDetails.open) {
-              otherDetails.querySelector('summary')?.click()
-            }
-          })
-        } else {
-          currentlyOpened = null
-        }
+      const summary = details.querySelector('summary')
+      summary?.addEventListener('click', () => {
+        // Skip "close others" logic when this click was triggered
+        // programmatically by another accordion's handler.
+        if (isClosingOthers) return
+
+        // Close any other open accordion (only-one-open behaviour)
+        isClosingOthers = true
+        accordions.forEach((otherDetails) => {
+          if (details !== otherDetails && otherDetails.getAttribute('data-expanded') === 'true') {
+            otherDetails.querySelector('summary')?.click()
+          }
+        })
+        isClosingOthers = false
+
+        // data-expanded is set synchronously by the Accordion component's
+        // click handler; read it on the next frame to get the final state.
+        requestAnimationFrame(syncImage)
       })
     })
   })
