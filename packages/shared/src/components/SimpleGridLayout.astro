@@ -5,6 +5,7 @@ import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 export const SimpleGridLayout_Query = `
   _type == "SimpleGridLayout" => {
     eyebrow,
+    themeColor,
     ${PortableTextQuery('heading')}
     ${PortableTextQuery('paragraph')}
     items[] {
@@ -19,6 +20,7 @@ type Props = {
   index: number
   sectionId?: string
   eyebrow?: string
+  themeColor?: 'green' | 'red'
   heading: PortableTextValue
   paragraph?: PortableTextValue
   items: Array<{
@@ -28,10 +30,10 @@ type Props = {
   }>
 }
 
-const { index, sectionId, eyebrow, heading, paragraph, items } = Astro.props
+const { index, sectionId, eyebrow, themeColor = 'green', heading, paragraph, items } = Astro.props
 ---
 
-<section class='SimpleGridLayout' id={sectionId}>
+<section class='SimpleGridLayout' data-theme={themeColor} id={sectionId}>
   <header>
     {
       eyebrow && (
@@ -158,12 +160,6 @@ const { index, sectionId, eyebrow, heading, paragraph, items } = Astro.props
       border: 1px solid var(--primary-500, #064040);
       border-radius: 0.75rem;
       background: linear-gradient(180deg, rgba(4, 43, 43, 0.15) 0%, rgba(2, 29, 29, 0.08) 100%);
-      transition: border-color 200ms var(--easing);
-
-      &:hover {
-        border-color: var(--primary-400, #0a5454);
-        background: linear-gradient(180deg, rgba(4, 43, 43, 0.25) 0%, rgba(2, 29, 29, 0.12) 100%);
-      }
 
       .icon-wrapper {
         width: clamp(2.5rem, calc(3vw / 0.48), 3rem);
@@ -226,6 +222,66 @@ const { index, sectionId, eyebrow, heading, paragraph, items } = Astro.props
               height: 0.25rem;
               border-radius: 50%;
               background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+            }
+          }
+        }
+      }
+    }
+
+    &[data-theme='red'] {
+      header {
+        .eyebrow {
+          background: none;
+          color: #da2b53;
+          -webkit-text-fill-color: currentColor;
+
+          .pulse-dot {
+            .pulse-ring,
+            .pulse-core {
+              background: var(--error-gradient-400, linear-gradient(266deg, #d44a84, #da2b53, #bf3a3a));
+            }
+          }
+        }
+
+        .heading {
+          color: var(--text-heading, #f0f7f7);
+
+          :global(strong) {
+            background: var(--error-gradient-400, linear-gradient(266deg, #d44a84, #da2b53, #bf3a3a));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          }
+        }
+      }
+
+      .card {
+        border-color: rgba(218, 43, 83, 0.34);
+        background: linear-gradient(180deg, rgba(56, 7, 19, 0.1) 0%, rgba(41, 0, 5, 0.06) 100%);
+
+        .icon-wrapper {
+          background: linear-gradient(135deg, rgba(56, 7, 19, 0.5) 0%, rgba(41, 0, 5, 0.36) 100%);
+          border-color: rgba(218, 43, 83, 0.4);
+
+          img {
+            filter: brightness(0) saturate(100%) invert(26%) sepia(96%) saturate(2312%) hue-rotate(321deg)
+              brightness(99%) contrast(92%);
+          }
+
+          :global(svg),
+          :global(svg *) {
+            color: #c64368;
+            fill: currentColor !important;
+            stroke: currentColor !important;
+          }
+        }
+
+        .card-paragraph {
+          :global(ul) {
+            :global(li) {
+              &::before {
+                background: var(--error-gradient-400, linear-gradient(266deg, #d44a84, #da2b53, #bf3a3a));
+              }
             }
           }
         }

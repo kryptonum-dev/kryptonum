@@ -2,8 +2,8 @@
   "name": "@repo/shared",
   "type": "module",
   "scripts": {
-    "dev": "astro sync && tsc --watch",
-    "build": "astro sync && tsc"
+    "dev": "astro sync && tsc --watch --noEmit",
+    "build": "astro sync && tsc --noEmit"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",

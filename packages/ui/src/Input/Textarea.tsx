@@ -1,8 +1,8 @@
 import { forwardRef } from 'react';
 
 const Textarea = forwardRef((props, ref) => {
-  const handleExpand = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const textarea = e.target;
+  const handleExpand = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const textarea = e.currentTarget;
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight + 2}px`;
   };
