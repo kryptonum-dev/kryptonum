@@ -30,6 +30,21 @@ export default defineField({
       title: 'Paragraph (optional)',
     }),
     defineField({
+      name: 'themeColor',
+      type: 'string',
+      title: 'Theme Color',
+      initialValue: 'green',
+      options: {
+        list: [
+          { title: 'Green', value: 'green' },
+          { title: 'Red', value: 'red' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'items',
       type: 'array',
       title: 'Grid Items',

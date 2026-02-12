@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "turbo build",
-    "dev": "dotenv -e .env.local -- turbo dev",
+    "dev": "dotenv -e .env.local -- turbo dev --filter=!@repo/emails",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

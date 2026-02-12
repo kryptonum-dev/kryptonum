@@ -14,6 +14,7 @@
     "resend": "^4.6.0"
   },
   "devDependencies": {
+    "@react-email/preview-server": "4.1.0",
     "react-email": "4.1.0"
   }
 }
