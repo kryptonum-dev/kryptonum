@@ -91,24 +91,25 @@
 
   function initCalEmbed() {
     // Preload script on hover over Cal.com links
-    document.addEventListener('mouseenter', (e) => {
-      const target = e.target as HTMLElement
-      const link = target.closest('a[href*="cal.com"]')
-      if (link) preloadCalScript()
-    }, { capture: true, passive: true })
+    document.addEventListener('mouseover', (e) => {
+      const target = e.target
+      if (!(target instanceof Element)) return
+      if (target.closest('a[href*="cal.com"]')) preloadCalScript()
+    }, { passive: true })
 
     // Also preload on touchstart for mobile
     document.addEventListener('touchstart', (e) => {
-      const target = e.target as HTMLElement
-      const link = target.closest('a[href*="cal.com"]')
-      if (link) preloadCalScript()
-    }, { capture: true, passive: true })
+      const target = e.target
+      if (!(target instanceof Element)) return
+      if (target.closest('a[href*="cal.com"]')) preloadCalScript()
+    }, { passive: true })
 
     // Intercept clicks on Cal.com links
     document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement
-      const link = target.closest('a[href*="cal.com"]') as HTMLAnchorElement | null
+      const target = e.target
+      if (!(target instanceof Element)) return
 
+      const link = target.closest('a[href*="cal.com"]') as HTMLAnchorElement | null
       if (!link) return
 
       const href = link.href
