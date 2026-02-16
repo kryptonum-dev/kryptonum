@@ -35,7 +35,23 @@ export const POST: APIRoute = async ({ request }) => {
   const origin = request.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
 
-  const { email, name, groupId, legal } = await request.json() as Props;
+  let email: string, name: string, groupId: string, legal: boolean;
+  
+  try {
+    const data = await request.json() as Props;
+    email = data.email;
+    name = data.name;
+    groupId = data.groupId;
+    legal = data.legal;
+  } catch (error) {
+    return new Response(JSON.stringify({
+      message: "Invalid request body",
+      success: false
+    }), {
+      status: 400,
+      headers: corsHeaders
+    });
+  }
 
   if (!REGEX.email.test(email) || !name || !groupId || !legal)
     return new Response(JSON.stringify({ message: "Missing required fields", success: false }), {
