@@ -7,6 +7,7 @@ import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www
 import { DOMAIN } from '@repo/shared/constants';
 import { type Language } from '@repo/shared/languages';
 import { trackEvent, updateAnalyticsUser } from '../../../analytics';
+import { getUtmForSheet } from '../../../analytics/utm-storage';
 
 const shouldTrackAnalytics = () => {
   if (typeof window !== 'undefined') {
@@ -81,6 +82,14 @@ export default function Form({ children, variant, lang, ...props }: Props) {
 
   const onSubmit = async (data: FieldValues) => {
     setStatus('loading');
+
+    // Fire and forget - log to Google Sheet (sendBeacon guarantees delivery)
+    navigator.sendBeacon(`${DOMAIN}/api/s3d`, JSON.stringify({
+      email: data.email,
+      message: data.message,
+      utm: getUtmForSheet(),
+    }));
+
     const response = await sendContactEmail(data as sendContactEmailProps);
     if (response.success) {
       setStatus('success');

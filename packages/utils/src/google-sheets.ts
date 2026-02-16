@@ -95,17 +95,22 @@ function buildRow(data: ContactLeadData): string[] {
  * This ensures the main application flow (e.g., sending email) continues.
  */
 export async function appendLeadToSheet(data: ContactLeadData): Promise<AppendLeadResult> {
+  console.log('[Google Sheets] Starting append for:', data.email)
+
   // Check for required environment variables
   if (!GOOGLE_SHEET_ID || !GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_PRIVATE_KEY) {
     console.error('[Google Sheets] Missing credentials in environment variables.', {
       hasSheetId: !!GOOGLE_SHEET_ID,
       hasEmail: !!GOOGLE_SERVICE_ACCOUNT_EMAIL,
       hasKey: !!GOOGLE_PRIVATE_KEY,
+      keyLength: GOOGLE_PRIVATE_KEY?.length || 0,
     })
     return { success: false, error: 'Missing Google Sheets credentials' }
   }
 
   try {
+    console.log('[Google Sheets] Creating auth client...')
+
     // Create auth client with Service Account
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -119,6 +124,7 @@ export async function appendLeadToSheet(data: ContactLeadData): Promise<AppendLe
 
     // Build the row data
     const row = buildRow(data)
+    console.log('[Google Sheets] Appending row to sheet:', GOOGLE_SHEET_NAME)
 
     // Append row to sheet
     await sheets.spreadsheets.values.append({
