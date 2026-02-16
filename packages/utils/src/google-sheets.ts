@@ -10,7 +10,7 @@
  * - GOOGLE_SHEET_NAME: (optional) Sheet name, defaults to "Sheet1"
  *
  * Sheet Structure:
- * | Status | Komentarz | Data | Email | Wiadomość | UTM |
+ * | Status | Komentarz | Data | Email | Wiadomość | UTM | Źródło |
  */
 
 import { google } from 'googleapis'
@@ -28,6 +28,7 @@ export type ContactLeadData = {
   email: string
   message: string
   utm?: string // All UTM params as formatted multiline text
+  source?: string // Domain where the form was submitted (e.g., "kryptonum.eu", "links.kryptonum.eu")
 }
 
 export type AppendLeadResult = {
@@ -72,7 +73,7 @@ function safeString(value: unknown): string {
 
 /**
  * Build a row array matching the Google Sheet column order:
- * 0: Status, 1: Komentarz, 2: Data, 3: Email, 4: Wiadomość, 5: UTM
+ * 0: Status, 1: Komentarz, 2: Data, 3: Email, 4: Wiadomość, 5: UTM, 6: Źródło
  */
 function buildRow(data: ContactLeadData): string[] {
   return [
@@ -82,6 +83,7 @@ function buildRow(data: ContactLeadData): string[] {
     safeString(data.email), // 3: Email
     safeString(data.message), // 4: Wiadomość
     safeString(data.utm), // 5: UTM
+    safeString(data.source), // 6: Źródło
   ]
 }
 
