@@ -3,14 +3,12 @@ export const prerender = false
 import type { APIRoute } from "astro";
 import { DOMAIN, REGEX } from "@repo/shared/constants";
 import { htmlToString } from "@repo/utils/html-to-string";
-import { appendLeadToSheet } from "@repo/utils/google-sheets";
 
 type RequestBody = {
   email: string
   message: string
   legal: boolean
   turnstileToken?: string
-  utm?: string
 }
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
@@ -50,7 +48,7 @@ export const POST: APIRoute = async ({ request }) => {
   const origin = request.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
 
-  let email: string, message: string, legal: boolean, turnstileToken: string | undefined, utm: string | undefined;
+  let email: string, message: string, legal: boolean, turnstileToken: string | undefined;
   
   try {
     const data = await request.json() as RequestBody;
@@ -58,7 +56,6 @@ export const POST: APIRoute = async ({ request }) => {
     message = data.message;
     legal = data.legal;
     turnstileToken = data.turnstileToken;
-    utm = data.utm;
   } catch {
     return new Response(JSON.stringify({
       message: "Invalid request body",
@@ -143,12 +140,6 @@ export const POST: APIRoute = async ({ request }) => {
         headers: corsHeaders
       });
     }
-
-    // Append to Google Sheets (non-blocking, graceful failure)
-    // This runs after email is sent successfully and won't affect the response
-    appendLeadToSheet({ email, message, utm }).catch(() => {
-      // Error already logged inside appendLeadToSheet
-    });
 
     return new Response(JSON.stringify({
       message: "Successfully sent message",
