@@ -2,14 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useForm, type FieldValues } from 'react-hook-form';
 import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
-import { REGEX } from '@repo/shared/constants';
+import { REGEX, DOMAIN, TURNSTILE_SITE_KEY } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www/pages/api/contact/sendContactEmail';
-import { DOMAIN } from '@repo/shared/constants';
 import { type Language } from '@repo/shared/languages';
 import { trackEvent, updateAnalyticsUser } from '../../../analytics';
 import { getUtmForSheet } from '../../../analytics/utm-storage';
-
-const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string;
 
 declare global {
   interface Window {

@@ -60,3 +60,5 @@ export const REGEX: { email: RegExp; phone: RegExp; string: RegExp } = {
  * @type {number[]}
  */
 export const EASING: number[] = [0.6, -0.15, 0.27, 1.15];
+
+export const TURNSTILE_SITE_KEY: string = "0x4AAAAAACMBUyp7IalZNTGl";
