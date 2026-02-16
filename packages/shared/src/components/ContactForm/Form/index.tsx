@@ -9,9 +9,7 @@ import { type Language } from '@repo/shared/languages';
 import { trackEvent, updateAnalyticsUser } from '../../../analytics';
 import { getUtmForSheet } from '../../../analytics/utm-storage';
 
-// Test key: '1x00000000000000000000AA' (always passes)
-// Production key from env: PUBLIC_TURNSTILE_SITE_KEY
-const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string;
 
 declare global {
   interface Window {
