@@ -8,13 +8,9 @@ type RequestBody = {
   email: string
   message: string
   legal: boolean
-  turnstileToken?: string
 }
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
-// TODO: revert after testing - use test secret key to match test sitekey
-const TURNSTILE_SECRET_KEY = '1x0000000000000000000000000000000AA';
-// const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || import.meta.env.TURNSTILE_SECRET_KEY;
 
 const isAllowedOrigin = (origin: string | null): boolean => {
   if (!origin) return false;
@@ -50,14 +46,13 @@ export const POST: APIRoute = async ({ request }) => {
   const origin = request.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
 
-  let email: string, message: string, legal: boolean, turnstileToken: string | undefined;
+  let email: string, message: string, legal: boolean;
   
   try {
     const data = await request.json() as RequestBody;
     email = data.email;
     message = data.message;
     legal = data.legal;
-    turnstileToken = data.turnstileToken;
   } catch {
     return new Response(JSON.stringify({
       message: "Invalid request body",
@@ -66,33 +61,6 @@ export const POST: APIRoute = async ({ request }) => {
       status: 400,
       headers: corsHeaders
     });
-  }
-
-  // Verify Turnstile token (if provided)
-  if (turnstileToken) {
-    try {
-      const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          secret: TURNSTILE_SECRET_KEY,
-          response: turnstileToken,
-        }),
-      });
-      const turnstileResult = await turnstileResponse.json() as { success: boolean };
-
-      if (!turnstileResult.success) {
-        return new Response(JSON.stringify({
-          message: "Verification failed",
-          success: false
-        }), {
-          status: 403,
-          headers: corsHeaders
-        });
-      }
-    } catch {
-      console.error('[Contact] Turnstile verification error');
-    }
   }
 
   if (!REGEX.email.test(email) || !message || !legal) {

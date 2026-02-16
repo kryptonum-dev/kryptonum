@@ -1,15 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, type FieldValues } from 'react-hook-form';
 import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
-import { REGEX, DOMAIN, TURNSTILE_SITE_KEY } from '@repo/shared/constants';
+import { REGEX, DOMAIN } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www/pages/api/contact/sendContactEmail';
 import { type Language } from '@repo/shared/languages';
 import { trackEvent, updateAnalyticsUser } from '../../../analytics';
 import { getUtmForSheet } from '../../../analytics/utm-storage';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-const win = window as any;
 
 const shouldTrackAnalytics = () => {
   if (typeof window !== 'undefined') {
@@ -48,10 +45,6 @@ const translations = {
 export default function Form({ children, variant, lang, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [step, setStep] = useState<1 | 2>(1);
-  const turnstileToken = useRef<string>('');
-  const turnstileWidgetId = useRef<string | null>(null);
-  const turnstileRef = useRef<HTMLDivElement>(null);
-  const turnstileResolve = useRef<((token: string) => void) | null>(null);
   const {
     register,
     handleSubmit,
@@ -62,71 +55,7 @@ export default function Form({ children, variant, lang, ...props }: Props) {
   } = useForm({ mode: 'onTouched' });
 
   useEffect(() => {
-    const renderWidget = () => {
-      if (!win.turnstile || !turnstileRef.current || turnstileWidgetId.current) return;
-      turnstileWidgetId.current = win.turnstile.render(turnstileRef.current, {
-        sitekey: TURNSTILE_SITE_KEY,
-        execution: 'execute',
-        callback: (token: string) => {
-          turnstileToken.current = token;
-          if (turnstileResolve.current) {
-            turnstileResolve.current(token);
-            turnstileResolve.current = null;
-          }
-        },
-        'expired-callback': () => {
-          turnstileToken.current = '';
-        },
-        'error-callback': () => {
-          turnstileToken.current = '';
-          if (turnstileResolve.current) {
-            turnstileResolve.current('');
-            turnstileResolve.current = null;
-          }
-        },
-      });
-    };
-
-    if (win.turnstile) {
-      renderWidget();
-    } else {
-      const existing = document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]');
-      if (!existing) {
-        const script = document.createElement('script');
-        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        script.async = true;
-        script.addEventListener('load', () => {
-          if (win.turnstile?.ready) {
-            win.turnstile.ready(renderWidget);
-          } else {
-            renderWidget();
-          }
-        });
-        document.head.appendChild(script);
-      } else {
-        const poll = setInterval(() => {
-          if (win.turnstile) { clearInterval(poll); renderWidget(); }
-        }, 50);
-        setTimeout(() => clearInterval(poll), 10000);
-      }
-    }
-
-    return () => {
-      if (turnstileWidgetId.current && win.turnstile) {
-        win.turnstile.remove(turnstileWidgetId.current);
-        turnstileWidgetId.current = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const tryAgain = () => {
-      setStatus('idle');
-      if (win.turnstile && turnstileWidgetId.current) {
-        win.turnstile.reset(turnstileWidgetId.current);
-        turnstileToken.current = '';
-      }
-    };
+    const tryAgain = () => setStatus('idle');
     document.addEventListener('Contact-TryAgain', tryAgain);
     if (variant === 'form-with-person') {
       const nextStep = async () => {
@@ -151,24 +80,8 @@ export default function Form({ children, variant, lang, ...props }: Props) {
     return () => document.removeEventListener('Contact-TryAgain', tryAgain);
   }, []);
 
-  const executeTurnstile = useCallback((): Promise<string> => {
-    if (!win.turnstile || !turnstileWidgetId.current) return Promise.resolve('');
-    return new Promise<string>((resolve) => {
-      turnstileResolve.current = resolve;
-      win.turnstile.execute(turnstileRef.current);
-      setTimeout(() => {
-        if (turnstileResolve.current === resolve) {
-          turnstileResolve.current = null;
-          resolve(turnstileToken.current || '');
-        }
-      }, 3000);
-    });
-  }, []);
-
   const onSubmit = async (data: FieldValues) => {
     setStatus('loading');
-
-    const token = await executeTurnstile();
 
     // Fire and forget - log to Google Sheet
     fetch(`${DOMAIN}/api/s3d`, {
@@ -183,10 +96,7 @@ export default function Form({ children, variant, lang, ...props }: Props) {
       keepalive: true,
     }).catch(() => {});
 
-    const response = await sendContactEmail({
-      ...data as sendContactEmailProps,
-      turnstileToken: token,
-    });
+    const response = await sendContactEmail(data as sendContactEmailProps);
     if (response.success) {
       setStatus('success');
       reset();
@@ -215,12 +125,6 @@ export default function Form({ children, variant, lang, ...props }: Props) {
     } else {
       setStatus('error');
       if (typeof fathom !== 'undefined') fathom.trackEvent('contactForm_error');
-    }
-
-    // Reset for next submission (tokens are single-use)
-    if (win.turnstile && turnstileWidgetId.current) {
-      win.turnstile.reset(turnstileWidgetId.current);
-      turnstileToken.current = '';
     }
   };
 
@@ -286,7 +190,6 @@ export default function Form({ children, variant, lang, ...props }: Props) {
           </Checkbox>
         </>
       )}
-      <div ref={turnstileRef} />
       {children}
     </form>
   )

@@ -60,6 +60,3 @@ export const REGEX: { email: RegExp; phone: RegExp; string: RegExp } = {
  * @type {number[]}
  */
 export const EASING: number[] = [0.6, -0.15, 0.27, 1.15];
-
-// TODO: revert after testing - using Cloudflare's invisible "always passes" test key
-export const TURNSTILE_SITE_KEY: string = "1x00000000000000000000BB";

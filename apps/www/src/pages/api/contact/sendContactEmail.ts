@@ -4,15 +4,14 @@ export type Props = {
   email: string
   message: string
   legal: boolean
-  turnstileToken?: string
 }
 
-export async function sendContactEmail({ email, message, legal, turnstileToken }: Props): Promise<{ success: boolean }> {
+export async function sendContactEmail({ email, message, legal }: Props): Promise<{ success: boolean }> {
   try {
     const response = await fetch(`${DOMAIN}/api/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, message, legal, turnstileToken }),
+      body: JSON.stringify({ email, message, legal }),
     });
     
     if (!response.ok) {
@@ -21,7 +20,6 @@ export async function sendContactEmail({ email, message, legal, turnstileToken }
     
     return await response.json();
   } catch (error) {
-    // Catch network errors, CORS errors, and JSON parsing errors
     console.error('Contact form submission error:', error);
     return { success: false };
   }
