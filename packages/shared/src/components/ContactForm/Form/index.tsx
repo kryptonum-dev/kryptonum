@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm, type FieldValues } from 'react-hook-form';
 import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
@@ -8,6 +8,25 @@ import { DOMAIN } from '@repo/shared/constants';
 import { type Language } from '@repo/shared/languages';
 import { trackEvent, updateAnalyticsUser } from '../../../analytics';
 import { getUtmForSheet } from '../../../analytics/utm-storage';
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (container: string | HTMLElement, options: {
+        sitekey: string;
+        callback: (token: string) => void;
+        'error-callback'?: () => void;
+        'expired-callback'?: () => void;
+        size?: 'normal' | 'compact' | 'invisible';
+        theme?: 'light' | 'dark' | 'auto';
+      }) => string;
+      reset: (widgetId: string) => void;
+      remove: (widgetId: string) => void;
+    };
+  }
+}
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
 const shouldTrackAnalytics = () => {
   if (typeof window !== 'undefined') {
@@ -46,6 +65,9 @@ const translations = {
 export default function Form({ children, variant, lang, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [step, setStep] = useState<1 | 2>(1);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -54,6 +76,47 @@ export default function Form({ children, variant, lang, ...props }: Props) {
     trigger,
     setFocus,
   } = useForm({ mode: 'onTouched' });
+
+  // Initialize Turnstile widget
+  useEffect(() => {
+    const initTurnstile = () => {
+      if (window.turnstile && turnstileRef.current && !widgetIdRef.current) {
+        widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: (token: string) => setTurnstileToken(token),
+          'error-callback': () => setTurnstileToken(null),
+          'expired-callback': () => setTurnstileToken(null),
+          size: 'invisible',
+        });
+      }
+    };
+
+    // If turnstile script is already loaded
+    if (window.turnstile) {
+      initTurnstile();
+    } else {
+      // Load turnstile script
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+      script.async = true;
+      script.onload = initTurnstile;
+      document.head.appendChild(script);
+    }
+
+    return () => {
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.remove(widgetIdRef.current);
+        widgetIdRef.current = null;
+      }
+    };
+  }, []);
+
+  const resetTurnstile = useCallback(() => {
+    if (widgetIdRef.current && window.turnstile) {
+      window.turnstile.reset(widgetIdRef.current);
+      setTurnstileToken(null);
+    }
+  }, []);
 
   useEffect(() => {
     const tryAgain = () => setStatus('idle');
@@ -129,10 +192,14 @@ export default function Form({ children, variant, lang, ...props }: Props) {
       setStatus('error');
       if (typeof fathom !== 'undefined') fathom.trackEvent('contactForm_error');
     }
+    // Reset turnstile for next submission attempt
+    resetTurnstile();
   };
 
   return (
     <form {...props} onSubmit={handleSubmit(onSubmit)} data-status={status} data-variant={variant} data-step={variant === 'form-with-person' ? step : undefined}>
+      {/* Invisible Turnstile widget container */}
+      <div ref={turnstileRef} style={{ display: 'none' }} />
       {variant === 'form-with-list' && (
         <>
           <Input
