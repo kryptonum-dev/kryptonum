@@ -23,6 +23,7 @@ export type MetaEventName =
   | 'Contact'
   | 'ViewCart'
   | 'CompleteRegistration'
+  | 'Schedule'
   | 'PageScroll'
   | 'TimeOnPage'
   | 'Form'
@@ -97,6 +98,12 @@ export type MetaEventParamsMap = {
     content_ids?: string[]
   }
   CompleteRegistration: Record<string, never>
+  Schedule: {
+    content_name?: string
+    content_category?: string
+    value?: number
+    currency?: string
+  }
   PageScroll: {
     percent_scrolled?: number
   }

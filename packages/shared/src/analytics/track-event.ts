@@ -40,6 +40,7 @@ const META_STANDARD_EVENTS = new Set<MetaEventName>([
   'Lead',
   'Contact',
   'CompleteRegistration',
+  'Schedule',
   'ViewCart',
 ])
 

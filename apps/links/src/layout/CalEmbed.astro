@@ -1,0 +1,169 @@
+---
+/**
+ * CalEmbed.astro
+ *
+ * This component intercepts clicks on Cal.com external links and opens them
+ * as embedded popups instead of navigating away from the page.
+ *
+ * Benefits:
+ * - Users stay on your domain (better for Meta Ads conversion tracking)
+ * - Facebook Pixel can track the booking completion
+ * - UTM parameters are preserved throughout the funnel
+ * - Better UX - no page redirect
+ *
+ * Performance optimizations:
+ * - DNS prefetch and preconnect for Cal.com domains
+ * - Preload embed script on hover (before click)
+ */
+---
+
+<!-- DNS prefetch and preconnect for faster Cal.com loading -->
+<link rel="dns-prefetch" href="https://cal.com" />
+<link rel="dns-prefetch" href="https://app.cal.com" />
+<link rel="preconnect" href="https://cal.com" crossorigin />
+<link rel="preconnect" href="https://app.cal.com" crossorigin />
+
+<!-- Cal.com Embed SDK -->
+<script is:inline>
+  (function (C, A, L) {
+    let p = function (a, ar) { a.q.push(ar); };
+    let d = C.document;
+    C.Cal = C.Cal || function () {
+      let cal = C.Cal;
+      let ar = arguments;
+      if (!cal.loaded) {
+        cal.ns = {};
+        cal.q = cal.q || [];
+        d.head.appendChild(d.createElement("script")).src = A;
+        cal.loaded = true;
+      }
+      if (ar[0] === L) {
+        const api = function () { p(api, arguments); };
+        const namespace = ar[1];
+        api.q = api.q || [];
+        if (typeof namespace === "string") {
+          cal.ns[namespace] = cal.ns[namespace] || api;
+          p(cal.ns[namespace], ar);
+          p(cal, ["initNamespace", namespace]);
+        } else p(cal, ar);
+        return;
+      }
+      p(cal, ar);
+    };
+  })(window, "https://app.cal.com/embed/embed.js", "init");
+
+  Cal("init", { origin: "https://cal.com" });
+
+  // Configure Cal.com UI defaults
+  Cal("ui", {
+    theme: "dark",
+    styles: {
+      branding: { brandColor: "#2DD282" }
+    },
+    hideEventTypeDetails: false,
+    layout: "month_view"
+  });
+</script>
+
+<!-- Intercept Cal.com links and open as popup -->
+<script>
+  import { trackEvent } from '@repo/shared/analytics'
+
+  declare global {
+    interface Window {
+      Cal?: ((action: string, options?: unknown) => void) & { loaded?: boolean }
+    }
+  }
+
+  let calScriptPreloaded = false
+
+  // Preload Cal.com script on hover (before click) for faster popup
+  function preloadCalScript() {
+    if (calScriptPreloaded || window.Cal?.loaded) return
+    calScriptPreloaded = true
+
+    const link = document.createElement('link')
+    link.rel = 'preload'
+    link.as = 'script'
+    link.href = 'https://app.cal.com/embed/embed.js'
+    document.head.appendChild(link)
+  }
+
+  function initCalEmbed() {
+    // Preload script on hover over Cal.com links
+    document.addEventListener('mouseenter', (e) => {
+      const target = e.target as HTMLElement
+      const link = target.closest('a[href*="cal.com"]')
+      if (link) preloadCalScript()
+    }, { capture: true, passive: true })
+
+    // Also preload on touchstart for mobile
+    document.addEventListener('touchstart', (e) => {
+      const target = e.target as HTMLElement
+      const link = target.closest('a[href*="cal.com"]')
+      if (link) preloadCalScript()
+    }, { capture: true, passive: true })
+
+    // Intercept clicks on Cal.com links
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement
+      const link = target.closest('a[href*="cal.com"]') as HTMLAnchorElement | null
+
+      if (!link) return
+
+      const href = link.href
+
+      // Only intercept cal.com booking links
+      if (!href.includes('cal.com/')) return
+
+      e.preventDefault()
+      e.stopPropagation()
+
+      // Extract the calLink path from the full URL
+      // e.g., https://cal.com/michal-chrapek/15min?utm_... -> michal-chrapek/15min
+      const url = new URL(href)
+      const calLink = url.pathname.slice(1) // Remove leading slash
+
+      // Preserve query params for tracking
+      const queryString = url.search
+
+      // Open Cal.com popup
+      if (window.Cal) {
+        window.Cal("modal", {
+          calLink: calLink + queryString,
+          config: {
+            layout: "month_view",
+            theme: "dark"
+          }
+        })
+
+        // Track the popup open event for analytics
+        trackEvent({
+          meta: {
+            eventName: 'Schedule',
+            params: {
+              content_name: calLink,
+              content_category: 'booking',
+            }
+          },
+          ga4: {
+            eventName: 'generate_lead',
+            params: {
+              form_name: calLink,
+            }
+          }
+        })
+      } else {
+        // Fallback: open in new tab if Cal SDK failed to load
+        window.open(href, '_blank', 'noopener,noreferrer')
+      }
+    })
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCalEmbed)
+  } else {
+    initCalEmbed()
+  }
+</script>
