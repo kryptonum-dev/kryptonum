@@ -9,7 +9,9 @@ import { type Language } from '@repo/shared/languages';
 import { trackEvent, updateAnalyticsUser } from '../../../analytics';
 import { getUtmForSheet } from '../../../analytics/utm-storage';
 
-const TURNSTILE_SITE_KEY = "0x4AAAAAACMBUyp7IalZNTGl";
+// Test key: '1x00000000000000000000AA' (always passes)
+// Production key from env: PUBLIC_TURNSTILE_SITE_KEY
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
 
 declare global {
   interface Window {
@@ -78,7 +80,8 @@ export default function Form({ children, variant, lang, ...props }: Props) {
         callback: (token: string) => { turnstileToken.current = token; },
         'expired-callback': () => { turnstileToken.current = ''; },
         'error-callback': () => { turnstileToken.current = ''; },
-        theme: 'dark',
+        appearance: 'interaction-only',
+        retry: 'auto',
       });
     };
 
