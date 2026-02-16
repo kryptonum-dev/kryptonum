@@ -1,33 +1,56 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDependencies": [
+    "**/.env.*local"
+  ],
   "globalEnv": [
     "SANITY_API_TOKEN",
     "MAILERLITE_API_KEY",
     "RESEND_API_KEY",
     "STRIPE_SECRET_KEY",
-    "STRIPE_CHECKOUT_SESSION_COMPLETED_SECRET"
+    "STRIPE_CHECKOUT_SESSION_COMPLETED_SECRET",
+    "PUBLIC_TURNSTILE_SITE_KEY",
+    "TURNSTILE_SECRET_KEY",
+    "GOOGLE_SHEET_ID",
+    "GOOGLE_SERVICE_ACCOUNT_EMAIL",
+    "GOOGLE_PRIVATE_KEY"
   ],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".vercel/**", "dist/**"],
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".vercel/**",
+        "dist/**"
+      ],
       "cache": false
     },
     "@apps/www#build": {
-      "outputs": [".vercel/**", "dist/**"],
+      "outputs": [
+        ".vercel/**",
+        "dist/**"
+      ],
       "cache": false
     },
     "@apps/learn#build": {
-      "outputs": [".vercel/**", "dist/**"],
+      "outputs": [
+        ".vercel/**",
+        "dist/**"
+      ],
       "cache": false
     },
     "@apps/links#build": {
-      "outputs": [".vercel/**", "dist/**"],
+      "outputs": [
+        ".vercel/**",
+        "dist/**"
+      ],
       "cache": false
     },
     "@apps/sanity#build": {
-      "outputs": ["dist/**"]
+      "outputs": [
+        "dist/**"
+      ]
     },
     "@repo/shared#build": {
       "outputs": []
@@ -39,7 +62,9 @@
       "outputs": []
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": [
+        "^lint"
+      ]
     },
     "dev": {
       "cache": false,

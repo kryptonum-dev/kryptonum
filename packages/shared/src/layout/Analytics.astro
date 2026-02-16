@@ -7,11 +7,13 @@
  * - Tracks PageView on initial load and client-side navigation
  * - Tracks Contact events (mailto: and tel: link clicks)
  * - Supports both Meta Pixel and GA4
+ * - Captures UTM parameters and referrer for lead tracking
  */
 ---
 
 <script>
   import { trackEvent } from '../analytics/track-event'
+  import { captureUtmData } from '../analytics/utm-storage'
 
   let previousUrl: string | null = null
 
@@ -76,8 +78,9 @@
     })
   }
 
-  // Track initial page view
+  // Track initial page view and capture UTM
   trackPageView()
+  captureUtmData()
 
   // Track contact clicks
   document.addEventListener('click', handleContactClick, { capture: true })
@@ -85,6 +88,7 @@
   // Handle Astro View Transitions (client-side navigation)
   document.addEventListener('astro:page-load', () => {
     trackPageView()
+    captureUtmData()
   })
 
   // Alternative: handle popstate for manual history navigation
