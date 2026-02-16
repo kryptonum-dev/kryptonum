@@ -12,7 +12,9 @@ type RequestBody = {
 }
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
-const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || import.meta.env.TURNSTILE_SECRET_KEY;
+// TODO: revert after testing - use test secret key to match test sitekey
+const TURNSTILE_SECRET_KEY = '1x0000000000000000000000000000000AA';
+// const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || import.meta.env.TURNSTILE_SECRET_KEY;
 
 const isAllowedOrigin = (origin: string | null): boolean => {
   if (!origin) return false;
