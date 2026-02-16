@@ -147,6 +147,7 @@ export default function Form({ children, variant, lang, ...props }: Props) {
         email: data.email,
         message: data.message,
         utm: getUtmForSheet(),
+        source: typeof window !== 'undefined' ? window.location.hostname : '',
       }),
       keepalive: true,
     }).catch(() => {
