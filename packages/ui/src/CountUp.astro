@@ -13,22 +13,27 @@ const value = await Astro.slots.render('default')
 <script>
   const DURATION = 2500
 
-  // Matches numbers with thousand separators (1,500,000 or 1 500 000) as a single token,
-  // while still splitting truly separate numbers (e.g. "od 10 do 50%" → "10" and "50").
-  // The key: thousand separators require exactly 3 digits after each separator.
-  const NUMBER_PATTERN = /(\d{1,3}(?:[,\s]\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)/
+  // 1) European decimal (e.g. 18,03) – comma + 1–2 decimal digits
+  // 2) Thousands (e.g. 1,500,000 or 1 500 000)
+  // 3) Plain number with optional dot decimals (e.g. 18.03 or 42)
+  const NUMBER_PATTERN = /(\d+,\d{1,2}(?=\D|$)|\d{1,3}(?:[,\s]\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)/
 
   const easeOutQuint = (x: number) => 1 - Math.pow(1 - x, 5)
 
   function parseNumericValue(str: string) {
-    let separator = ''
+    let thousandsSeparator = ''
+    let decimalSeparator = '.'
     let clean = str
 
-    if (/\d,\d{3}/.test(str)) {
-      separator = ','
+    // European decimal comma (e.g. 18,03)
+    if (/^\d+,\d{1,2}$/.test(str.trim())) {
+      decimalSeparator = ','
+      clean = str.replace(',', '.')
+    } else if (/\d,\d{3}/.test(str)) {
+      thousandsSeparator = ','
       clean = str.replace(/,/g, '')
     } else if (/\d\s\d{3}/.test(str)) {
-      separator = ' '
+      thousandsSeparator = ' '
       clean = str.replace(/\s/g, '')
     }
 
@@ -36,20 +41,21 @@ const value = await Astro.slots.render('default')
     const decMatch = clean.match(/\.(\d+)$/)
     const decimals = decMatch ? decMatch[1].length : 0
 
-    return { value: isNaN(value) ? 0 : value, separator, decimals }
+    return { value: isNaN(value) ? 0 : value, thousandsSeparator, decimalSeparator, decimals }
   }
 
-  function formatNumber(num: number, separator: string, decimals: number): string {
+  function formatNumber(num: number, thousandsSeparator: string, decimalSeparator: string, decimals: number): string {
     const str = decimals > 0 ? num.toFixed(decimals) : Math.floor(num).toString()
-    if (!separator) return str
     const [intPart, decPart] = str.split('.')
-    const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, separator)
-    return decPart !== undefined ? `${grouped}.${decPart}` : grouped
+    const grouped = thousandsSeparator
+      ? intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator)
+      : intPart
+    return decPart !== undefined ? `${grouped}${decimalSeparator}${decPart}` : grouped
   }
 
   function animateNumber(element: HTMLElement): void {
     const originalText = element.textContent || '0'
-    const { value, separator, decimals } = parseNumericValue(originalText)
+    const { value, thousandsSeparator, decimalSeparator, decimals } = parseNumericValue(originalText)
     if (value === 0) return
 
     let start: number
@@ -59,7 +65,7 @@ const value = await Astro.slots.render('default')
       const current = easeOutQuint(progress) * value
 
       if (progress < 1) {
-        element.textContent = formatNumber(current, separator, decimals)
+        element.textContent = formatNumber(current, thousandsSeparator, decimalSeparator, decimals)
         requestAnimationFrame(step)
       } else {
         element.textContent = originalText
