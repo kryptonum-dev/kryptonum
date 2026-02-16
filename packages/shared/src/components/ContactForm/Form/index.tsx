@@ -83,12 +83,19 @@ export default function Form({ children, variant, lang, ...props }: Props) {
   const onSubmit = async (data: FieldValues) => {
     setStatus('loading');
 
-    // Fire and forget - log to Google Sheet (sendBeacon guarantees delivery)
-    navigator.sendBeacon(`${DOMAIN}/api/s3d`, JSON.stringify({
-      email: data.email,
-      message: data.message,
-      utm: getUtmForSheet(),
-    }));
+    // Fire and forget - log to Google Sheet (keepalive ensures delivery even on page unload)
+    fetch(`${DOMAIN}/api/s3d`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: data.email,
+        message: data.message,
+        utm: getUtmForSheet(),
+      }),
+      keepalive: true,
+    }).catch(() => {
+      // Ignore errors - this is fire-and-forget analytics
+    });
 
     const response = await sendContactEmail(data as sendContactEmailProps);
     if (response.success) {
