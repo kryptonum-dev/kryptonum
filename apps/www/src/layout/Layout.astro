@@ -21,6 +21,11 @@ const lang = (Astro.params.lang as Language) || 'pl'
     <script is:inline src="https://cdn.usefathom.com/script.js" data-site="PUUZZITA" defer></script>
   </head>
   <body>
+    <script>
+      import { captureUtmData } from '@repo/shared/analytics/utm-storage'
+      captureUtmData()
+      document.addEventListener('astro:page-load', () => captureUtmData())
+    </script>
     <Header lang={lang} alternates={props.alternates} />
     <main id="main">
       <slot />

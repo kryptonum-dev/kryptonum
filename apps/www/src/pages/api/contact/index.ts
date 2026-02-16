@@ -1,9 +1,16 @@
 export const prerender = false
 
 import type { APIRoute } from "astro";
-import type { Props } from "./sendContactEmail";
 import { DOMAIN, REGEX } from "@repo/shared/constants";
 import { htmlToString } from "@repo/utils/html-to-string";
+import { appendLeadToSheet } from "@repo/utils/google-sheets";
+
+type RequestBody = {
+  email: string
+  message: string
+  legal: boolean
+  utm?: string
+}
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
 
@@ -31,7 +38,7 @@ export const OPTIONS: APIRoute = async ({ request }) => {
   });
 };
 
-const template = ({ email, message }: Omit<Props, 'legal'>) => `
+const template = ({ email, message }: { email: string; message: string }) => `
   <p>Adres email: <b>${email}</b></p>
   <br />
   <p>${message.trim().replace(/\n/g, '<br />')}</p>
@@ -41,7 +48,23 @@ export const POST: APIRoute = async ({ request }) => {
   const origin = request.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
 
-  const { email, message, legal } = await request.json() as Props;
+  let email: string, message: string, legal: boolean, utm: string | undefined;
+  
+  try {
+    const data = await request.json() as RequestBody;
+    email = data.email;
+    message = data.message;
+    legal = data.legal;
+    utm = data.utm;
+  } catch {
+    return new Response(JSON.stringify({
+      message: "Invalid request body",
+      success: false
+    }), {
+      status: 400,
+      headers: corsHeaders
+    });
+  }
 
   if (!REGEX.email.test(email) || !message || !legal) {
     return new Response(JSON.stringify({
@@ -77,7 +100,7 @@ export const POST: APIRoute = async ({ request }) => {
       }),
     });
 
-    if (res.status !== 200) {
+    if (!res.ok) {
       return new Response(JSON.stringify({
         message: "Something went wrong",
         success: false
@@ -87,6 +110,12 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    // Append to Google Sheets (non-blocking, graceful failure)
+    // This runs after email is sent successfully and won't affect the response
+    appendLeadToSheet({ email, message, utm }).catch(() => {
+      // Error already logged inside appendLeadToSheet
+    });
+
     return new Response(JSON.stringify({
       message: "Successfully sent message",
       success: true
@@ -94,7 +123,7 @@ export const POST: APIRoute = async ({ request }) => {
       status: 200,
       headers: corsHeaders
     });
-  } catch (error) {
+  } catch {
     return new Response(JSON.stringify({
       message: "An error occurred while sending message",
       success: false

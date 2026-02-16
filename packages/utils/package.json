@@ -13,6 +13,10 @@
     "./hash": "./src/hash.ts",
     "./metadata.fetch": "./src/metadata.fetch.ts",
     "./html-to-string": "./src/html-to-string.ts",
-    "./get-cookie": "./src/get-cookie.ts"
+    "./get-cookie": "./src/get-cookie.ts",
+    "./google-sheets": "./src/google-sheets.ts"
+  },
+  "dependencies": {
+    "googleapis": "^144.0.0"
   }
 }
