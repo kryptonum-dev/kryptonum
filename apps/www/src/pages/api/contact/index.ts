@@ -66,35 +66,31 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  // Verify Turnstile token
-  if (!turnstileToken) {
-    return new Response(JSON.stringify({
-      message: "Verification required",
-      success: false
-    }), {
-      status: 400,
-      headers: corsHeaders
-    });
-  }
+  // Verify Turnstile token (if provided)
+  if (turnstileToken) {
+    try {
+      const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          secret: TURNSTILE_SECRET_KEY,
+          response: turnstileToken,
+        }),
+      });
+      const turnstileResult = await turnstileResponse.json() as { success: boolean };
 
-  const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      secret: TURNSTILE_SECRET_KEY,
-      response: turnstileToken,
-    }),
-  });
-  const turnstileResult = await turnstileResponse.json() as { success: boolean };
-
-  if (!turnstileResult.success) {
-    return new Response(JSON.stringify({
-      message: "Verification failed",
-      success: false
-    }), {
-      status: 403,
-      headers: corsHeaders
-    });
+      if (!turnstileResult.success) {
+        return new Response(JSON.stringify({
+          message: "Verification failed",
+          success: false
+        }), {
+          status: 403,
+          headers: corsHeaders
+        });
+      }
+    } catch {
+      console.error('[Contact] Turnstile verification error');
+    }
   }
 
   if (!REGEX.email.test(email) || !message || !legal) {
