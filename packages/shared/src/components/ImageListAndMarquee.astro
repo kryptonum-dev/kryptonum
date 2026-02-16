@@ -115,7 +115,7 @@ const { sectionId, theme, marqueeString, img, list, paragraph } = Astro.props
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) rotate(-2deg);
+        transform: translate3d(-50%, -50%, 0) rotate(-2deg);
         margin: 0 auto;
         max-width: 160rem;
         overflow: hidden;
@@ -129,10 +129,10 @@ const { sectionId, theme, marqueeString, img, list, paragraph } = Astro.props
           }
           @keyframes ImageListAndMarquee-marquee {
             0% {
-              transform: translateX(0);
+              transform: translate3d(0, 0, 0);
             }
             100% {
-              transform: translateX(-50%);
+              transform: translate3d(-50%, 0, 0);
             }
           }
           .marquee-item {
