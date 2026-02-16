@@ -117,8 +117,10 @@ export default function Form({ children, variant, lang, ...props }: Props) {
     if (variant === 'form-with-person') {
       const nextStep = async () => {
         const isMessageValid = await trigger('message');
-        if (isMessageValid) setStep(2);
-        requestAnimationFrame(() => setFocus('email'));
+        if (isMessageValid) {
+          setStep(2);
+          requestAnimationFrame(() => setFocus('email'));
+        }
       }
       const prevStep = () => {
         setStep(1);
