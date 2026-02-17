@@ -27,12 +27,12 @@ const privacyPolicyUrl = `${DOMAIN}${privacyPolicySlug}`
 
 const translations = {
   pl: {
-    heading: 'Korzystając ze strony zgadzasz się na użycie ciasteczek',
+    heading: 'Szanujemy Twoją prywatność',
     description:
-      'Korzystamy z cookie i podobnych technologii, by analizować ruch na stronie, dopasować ją do Ciebie i wyświetlać trafniejsze reklamy.',
+      'Korzystamy z cookie i podobnych technologii, by analizować ruch na stronie, dopasować ją do Ciebie i wyświetlać trafniejsze reklamy. Wybierz, które cookies chcesz zaakceptować.',
     learnMore: 'Dowiedz się więcej',
-    settingsHeading: 'Ustawienia cookies',
-    settingsDescription: 'Korzystając ze strony zgadzasz się na użycie tych ciasteczek.',
+    settingsHeading: 'Dostosuj ustawienia cookies',
+    settingsDescription: 'Wybierz, które kategorie cookies chcesz włączyć.',
     necessary: {
       name: 'Niezbędne',
       description:
@@ -66,18 +66,18 @@ const translations = {
       },
     },
     buttons: {
-      deny: 'Odmowa',
-      setPreferences: 'Ustaw preferencje',
-      agreeAll: 'Zgoda na wszystkie',
+      deny: 'Tylko niezbędne',
+      setPreferences: 'Dostosuj',
+      agreeAll: 'Akceptuję wszystkie',
     },
   },
   en: {
-    heading: 'By using the website, you agree to the use of cookies',
+    heading: 'We respect your privacy',
     description:
-      'We use cookies and similar technologies to analyze website traffic, tailor it to you, and display more relevant ads.',
+      'We use cookies and similar technologies to analyze website traffic, tailor it to you, and display more relevant ads. Choose which cookies you want to accept.',
     learnMore: 'Learn more',
-    settingsHeading: 'Cookie settings',
-    settingsDescription: 'By using the website, you agree to the use of these cookies.',
+    settingsHeading: 'Customize cookie settings',
+    settingsDescription: 'Choose which cookie categories you want to enable.',
     necessary: {
       name: 'Necessary',
       description:
@@ -111,8 +111,8 @@ const translations = {
       },
     },
     buttons: {
-      deny: 'Deny',
-      setPreferences: 'Set preferences',
+      deny: 'Only necessary',
+      setPreferences: 'Customize',
       agreeAll: 'Accept all',
     },
   },
@@ -231,8 +231,8 @@ const groups = [
       }
     </div>
     <div class="actions">
-      <button class="deny">{t.buttons.deny}</button>
       <button class="setPreferences">{t.buttons.setPreferences}</button>
+      <button class="deny">{t.buttons.deny}</button>
       <Button className="agree" theme="primary">{t.buttons.agreeAll}</Button>
     </div>
   </section>
@@ -268,7 +268,7 @@ const groups = [
     border-radius: 0.25rem;
     border: 1px solid var(--neutral-800, #202025);
     background: var(--neutral-900, #000103);
-    max-width: 48rem;
+    max-width: 40rem;
     display: flex;
     flex-direction: column;
     gap: clamp(1.5rem, calc(2rem / 0.48), 2rem);
@@ -314,24 +314,30 @@ const groups = [
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 1rem 1.5rem;
+    gap: 0.75rem 1.5rem;
     button {
-      font-size: var(--typography-body-m, 0.875rem);
-      min-height: 2.75rem;
       transition: color 300ms;
       &:hover {
         color: var(--neutral-400, #c6cdcc);
       }
-      &:last-child {
-        margin-left: auto;
-      }
+    }
+    .setPreferences,
+    .deny {
+      font-size: var(--typography-body-s, 0.75rem);
+      min-height: 2.25rem;
+    }
+    :global(.agree) {
+      margin-left: auto;
     }
     @media (max-width: 53rem) {
-      button {
+      :global(.agree) {
+        order: -1;
+        width: 100%;
+        margin-left: 0;
+      }
+      .setPreferences,
+      .deny {
         flex-grow: 1;
-        &:last-child {
-          width: 100%;
-        }
       }
     }
   }
