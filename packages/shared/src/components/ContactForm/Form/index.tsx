@@ -224,6 +224,8 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             })}
             errors={errors}
             type='tel'
+            inputMode='tel'
+            autoComplete='tel'
             placeholder={t.phonePlaceholder}
           />
           <Select
@@ -243,6 +245,8 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             })}
             errors={errors}
             type='email'
+            inputMode='email'
+            autoComplete='email'
           />
           <Checkbox
             register={register('legal', {
