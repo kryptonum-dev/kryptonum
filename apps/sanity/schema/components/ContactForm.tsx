@@ -29,10 +29,50 @@ export default defineField({
             value: 'form-with-person',
             title: 'Form with person',
           },
+          {
+            value: 'form-lead',
+            title: 'Form lead (phone + dropdown)',
+          },
         ],
       },
       initialValue: 'form-with-list',
       validation: Rule => Rule.required(),
+    }),
+    defineField({
+      name: 'dropdownLabel',
+      type: 'string',
+      title: 'Dropdown label',
+      description: 'Label displayed above the dropdown (e.g. "Industry", "Budget")',
+      hidden: ({ parent }) => parent?.variant !== 'form-lead',
+      validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: string })?.variant;
+        if (variant === 'form-lead' && !value) return 'Dropdown label is required';
+        return true;
+      }),
+    }),
+    defineField({
+      name: 'dropdownPlaceholder',
+      type: 'string',
+      title: 'Dropdown placeholder',
+      description: 'Placeholder text for the dropdown (e.g. "Select industry")',
+      hidden: ({ parent }) => parent?.variant !== 'form-lead',
+      validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: string })?.variant;
+        if (variant === 'form-lead' && !value) return 'Dropdown placeholder is required';
+        return true;
+      }),
+    }),
+    defineField({
+      name: 'dropdownOptions',
+      type: 'array',
+      title: 'Dropdown options',
+      of: [{ type: 'string' }],
+      hidden: ({ parent }) => parent?.variant !== 'form-lead',
+      validation: Rule => Rule.custom((value, context) => {
+        const variant = (context.parent as { variant: string })?.variant;
+        if (variant === 'form-lead' && (!value || value.length < 2)) return 'At least 2 options are required';
+        return true;
+      }),
     }),
     defineField({
       name: 'isReference',
@@ -46,8 +86,8 @@ export default defineField({
       initialValue: true,
       hidden: ({ parent }) => parent?.variant === 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
-        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
-        if (variant === 'form-with-person' && value === undefined) return 'That field is required';
+        const variant = (context.parent as { variant: string })?.variant;
+        if ((variant === 'form-with-person' || variant === 'form-lead') && value === undefined) return 'That field is required';
         return true;
       }),
     }),
@@ -68,9 +108,9 @@ export default defineField({
       },
       hidden: ({ parent }) => parent?.variant === 'form-with-list' || !parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
-        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
+        const variant = (context.parent as { variant: string })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
-        if (variant === 'form-with-person' && isReference && !value) return 'Person reference is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead') && isReference && !value) return 'Person reference is required';
         return true;
       }),
     }),
@@ -80,9 +120,9 @@ export default defineField({
       title: 'Image',
       hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
-        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
+        const variant = (context.parent as { variant: string })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
-        if (variant === 'form-with-person' && !isReference && !value) return 'Image is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead') && !isReference && !value) return 'Image is required';
         return true;
       }),
     }),
@@ -92,8 +132,8 @@ export default defineField({
       title: 'Text',
       hidden: ({ parent }) => parent?.variant === 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
-        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
-        if (variant === 'form-with-person' && !value) return 'Email text is required';
+        const variant = (context.parent as { variant: string })?.variant;
+        if ((variant === 'form-with-person' || variant === 'form-lead') && !value) return 'Email text is required';
         return true;
       }),
       fieldset: 'email',
@@ -117,8 +157,8 @@ export default defineField({
       title: 'Text',
       hidden: ({ parent }) => parent?.variant === 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
-        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
-        if (variant === 'form-with-person' && !value) return 'Tel text is required';
+        const variant = (context.parent as { variant: string })?.variant;
+        if ((variant === 'form-with-person' || variant === 'form-lead') && !value) return 'Tel text is required';
         return true;
       }),
       fieldset: 'tel',
@@ -177,10 +217,10 @@ export default defineField({
           },
         })
       ],
-      hidden: ({ parent }) => parent?.variant === 'form-with-person',
+      hidden: ({ parent }) => parent?.variant !== 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
-        const variant = (context.parent as { variant: 'form-with-list' | 'form-with-person' })?.variant;
-        if (variant === 'form-with-list' && !value) return 'Paragraph is required';
+        const variant = (context.parent as { variant: string })?.variant;
+        if (variant === 'form-with-list' && !value) return 'List is required';
         return true;
       }),
     }),

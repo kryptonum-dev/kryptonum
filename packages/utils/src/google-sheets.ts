@@ -10,7 +10,7 @@
  * - GOOGLE_SHEET_NAME: (optional) Sheet name, defaults to "Sheet1"
  *
  * Sheet Structure:
- * | Status | Komentarz | Data | Email | Wiadomość | UTM | Źródło |
+ * | Status | Komentarz | Data | Numer telefonu | Email | Branża | Wiadomość | UTM | Źródło |
  */
 
 import { google } from 'googleapis'
@@ -26,9 +26,11 @@ const GOOGLE_PRIVATE_KEY = (process.env.GOOGLE_PRIVATE_KEY || import.meta.env.GO
 
 export type ContactLeadData = {
   email: string
-  message: string
+  message?: string
   utm?: string // All UTM params as formatted multiline text
-  source?: string // Domain where the form was submitted (e.g., "kryptonum.eu", "links.kryptonum.eu")
+  source?: string // Full URL path where the form was submitted (e.g., "l.kryptonum.eu/pl/marketing-produkcja-b2b")
+  phone?: string
+  dropdown?: string
 }
 
 export type AppendLeadResult = {
@@ -73,17 +75,19 @@ function safeString(value: unknown): string {
 
 /**
  * Build a row array matching the Google Sheet column order:
- * 0: Status, 1: Komentarz, 2: Data, 3: Email, 4: Wiadomość, 5: UTM, 6: Źródło
+ * 0: Status, 1: Komentarz, 2: Data, 3: Numer telefonu, 4: Email, 5: Branża, 6: Wiadomość, 7: UTM, 8: Źródło
  */
 function buildRow(data: ContactLeadData): string[] {
   return [
     'NOWY', // 0: Status
     '', // 1: Komentarz (empty for manual input)
     formatDate(new Date()), // 2: Data
-    safeString(data.email), // 3: Email
-    safeString(data.message), // 4: Wiadomość
-    safeString(data.utm), // 5: UTM
-    safeString(data.source), // 6: Źródło
+    safeString(data.phone), // 3: Numer telefonu
+    safeString(data.email), // 4: Email
+    safeString(data.dropdown), // 5: Branża
+    safeString(data.message), // 6: Wiadomość
+    safeString(data.utm), // 7: UTM
+    safeString(data.source), // 8: Źródło
   ]
 }
 

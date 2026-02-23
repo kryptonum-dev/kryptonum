@@ -6,8 +6,10 @@ import { htmlToString } from "@repo/utils/html-to-string";
 
 type RequestBody = {
   email: string
-  message: string
+  message?: string
   legal: boolean
+  phone?: string
+  dropdown?: string
 }
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
@@ -36,23 +38,31 @@ export const OPTIONS: APIRoute = async ({ request }) => {
   });
 };
 
-const template = ({ email, message }: { email: string; message: string }) => `
-  <p>Adres email: <b>${email}</b></p>
-  <br />
-  <p>${message.trim().replace(/\n/g, '<br />')}</p>
-`;
+const template = ({ email, message, phone, dropdown }: { email: string; message?: string; phone?: string; dropdown?: string }) => {
+  const parts: string[] = [];
+  parts.push(`<p>Adres email: <b>${email}</b></p>`);
+  if (phone) parts.push(`<p>Telefon: <b>${phone}</b></p>`);
+  if (dropdown) parts.push(`<p>Branża: <b>${dropdown}</b></p>`);
+  if (message) {
+    parts.push('<br />');
+    parts.push(`<p>${message.trim().replace(/\n/g, '<br />')}</p>`);
+  }
+  return parts.join('\n');
+};
 
 export const POST: APIRoute = async ({ request }) => {
   const origin = request.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
 
-  let email: string, message: string, legal: boolean;
+  let email: string, message: string | undefined, legal: boolean, phone: string | undefined, dropdown: string | undefined;
   
   try {
     const data = await request.json() as RequestBody;
     email = data.email;
     message = data.message;
     legal = data.legal;
+    phone = data.phone;
+    dropdown = data.dropdown;
   } catch {
     return new Response(JSON.stringify({
       message: "Invalid request body",
@@ -63,7 +73,8 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  if (!REGEX.email.test(email) || !message || !legal) {
+  const hasMessageOrPhone = !!message || !!phone;
+  if (!REGEX.email.test(email) || !hasMessageOrPhone || !legal) {
     return new Response(JSON.stringify({
       message: "Missing required fields",
       success: false
@@ -73,7 +84,22 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const htmlTemplate = template({ email, message });
+  if (phone && !REGEX.phone.test(phone)) {
+    return new Response(JSON.stringify({
+      message: "Invalid phone number",
+      success: false
+    }), {
+      status: 400,
+      headers: corsHeaders
+    });
+  }
+
+  const isLeadForm = !!phone;
+  const subject = isLeadForm
+    ? `Lead z formularza kontaktowego | Kryptonum`
+    : `Wiadomość z formularza kontaktowego | Kryptonum`;
+
+  const htmlTemplate = template({ email, message, phone, dropdown });
   const textTemplate = htmlToString(htmlTemplate);
 
   try {
@@ -88,7 +114,7 @@ export const POST: APIRoute = async ({ request }) => {
         to: 'michal@kryptonum.eu',
         bcc: ['ola@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@kryptonum.eu'],
         reply_to: email,
-        subject: `Wiadomość z formularza kontaktowego | Kryptonum`,
+        subject,
         html: htmlTemplate,
         text: textTemplate,
         headers: {

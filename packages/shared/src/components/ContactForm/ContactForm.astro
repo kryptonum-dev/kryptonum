@@ -8,7 +8,7 @@ import { type Language } from '@repo/shared/languages'
 export type Props = {
   index: number
   sectionId?: string
-  variant: 'form-with-list' | 'form-with-person'
+  variant: 'form-with-list' | 'form-with-person' | 'form-lead'
   img: ImageDataProps
   emailText: string
   email: string
@@ -20,6 +20,9 @@ export type Props = {
     icon: ImageDataProps
     label: PortableTextValue
   }>
+  dropdownOptions?: string[]
+  dropdownLabel?: string
+  dropdownPlaceholder?: string
   state: {
     success: {
       heading: PortableTextValue
@@ -44,7 +47,7 @@ export const ContactForm_Query = `
     variant,
     "img": select(isReference => personReference -> ${ImageDataQuery('img')} ${ImageDataQuery('img')}),
     emailText,
-    "email": select(variant == "form-with-person" => select(isReference => personReference -> email, email), *[_type == "global"][0].email),
+    "email": select(variant == "form-with-person" || variant == "form-lead" => select(isReference => personReference -> email, email), *[_type == "global"][0].email),
     telText,
     "tel": coalesce(tel, personReference -> tel),
     ${PortableTextQuery('heading')}
@@ -53,6 +56,9 @@ export const ContactForm_Query = `
       ${ImageDataQuery('icon')}
       ${PortableTextQuery('label')}
     },
+    dropdownOptions,
+    dropdownLabel,
+    dropdownPlaceholder,
     state {
       success {
         ${PortableTextQuery('heading')}
@@ -86,7 +92,7 @@ const translations = {
 } as const
 const t = translations[lang]
 
-const { index, sectionId, variant, img, emailText, email, telText, tel, heading, paragraph, list, state } = Astro.props
+const { index, sectionId, variant, img, emailText, email, telText, tel, heading, paragraph, list, dropdownOptions, dropdownLabel, dropdownPlaceholder, state } = Astro.props
 ---
 
 <section class="ContactForm" id={sectionId} data-variant={variant}>
@@ -134,6 +140,34 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
           </div>
         </div>
         <FormWrapper state={state} variant={variant} email={email} />
+      </div>
+    )
+  }
+  {
+    variant === 'form-lead' && (
+      <div class="wrapper">
+        <header>
+          <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
+          {paragraph && <PortableText value={paragraph} />}
+        </header>
+        <div class="avatar-wrapper">
+          <Image {...img} sizes="64px" class="gradient-thumbnail" />
+          <div class="person">
+            <div class="email">
+              <p class="label-text">{emailText}</p>
+              <a href={`mailto:${email}`}>{email}</a>
+              <Copy data={email} successMessage={t.copyEmailSuccess} />
+            </div>
+            {tel && (
+              <div class="tel">
+                <p class="label-text">{telText}</p>
+                <a href={`tel:${tel}`}>{tel}</a>
+                <Copy data={tel} successMessage={t.copyTelSuccess} />
+              </div>
+            )}
+          </div>
+        </div>
+        <FormWrapper state={state} variant={variant} email={email} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} />
       </div>
     )
   }
@@ -198,7 +232,8 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
         }
       }
     }
-    &[data-variant='form-with-person'] {
+    &[data-variant='form-with-person'],
+    &[data-variant='form-lead'] {
       .wrapper {
         grid-template-areas: 'header form' 'avatar form';
         header {

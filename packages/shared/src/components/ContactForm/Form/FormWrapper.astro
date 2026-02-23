@@ -12,6 +12,9 @@ type Props = {
   state: ContactFormProps['state']
   variant: ContactFormProps['variant']
   email: ContactFormProps['email']
+  dropdownOptions?: string[]
+  dropdownLabel?: string
+  dropdownPlaceholder?: string
 }
 
 const lang = (Astro.params.lang as Language) || 'pl'
@@ -20,6 +23,7 @@ const translations = {
     copyEmailSuccess: 'Pomyślnie skopiowano adres e-mail',
     copyTelSuccess: 'Pomyślnie skopiowano numer telefonu',
     submit: 'Porozmawiajmy o biznesie',
+    submitLead: 'Umów rozmowę',
     tryAgain: 'Spróbuj ponownie',
     secureData: 'Twoje dane są bezpieczne',
     nextStep: 'Przejdź dalej',
@@ -29,6 +33,7 @@ const translations = {
     copyEmailSuccess: 'Successfully copied email address',
     copyTelSuccess: 'Successfully copied phone number',
     submit: 'Let\'s talk about business',
+    submitLead: 'Schedule a call',
     tryAgain: 'Try again',
     secureData: 'Your data is secure',
     nextStep: 'Next step',
@@ -37,17 +42,17 @@ const translations = {
 }
 const t = translations[lang]
 
-const { state, variant, email } = Astro.props
+const { state, variant, email, dropdownOptions, dropdownLabel, dropdownPlaceholder } = Astro.props
 
 const svgId = Math.random().toString(36).slice(2)
 ---
 
-<Form className="Form" variant={variant} lang={lang} client:load>
+<Form className="Form" variant={variant} lang={lang} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} client:load>
   <div class="submit-wrapper">
     <div class="wrapper">
       {variant === 'form-with-list' && <Button type="submit" className="submit-button">{t.submit}</Button>}
       {
-        variant === 'form-with-person' && (
+        (variant === 'form-with-person' || variant === 'form-lead') && (
           <button class="prev-step" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" fill="none" viewBox="0 0 13 10">
               <path stroke="#F0F7F7" stroke-linecap="round" stroke-linejoin="round" d="M11.835 5H1.168m0 0 4-4m-4 4 4 4"/>
@@ -57,7 +62,7 @@ const svgId = Math.random().toString(36).slice(2)
           <Button type="button" className="next-step">
             {t.nextStep}
           </Button>
-          <Button type="submit" className="submit-button">{t.submit}</Button>
+          <Button type="submit" className="submit-button">{variant === 'form-lead' ? t.submitLead : t.submit}</Button>
         )
       }
     </div>
@@ -401,6 +406,39 @@ const svgId = Math.random().toString(36).slice(2)
         }
       }
     }
+    &[data-variant='form-lead'] {
+      :global(> label) {
+        transition: filter 500ms var(--easing);
+        will-change: filter;
+      }
+      &[data-step='1'] {
+        :global(> label:nth-child(3)),
+        :global(> label:nth-child(4)) {
+          filter: blur(8px);
+          visibility: hidden;
+          position: absolute;
+        }
+        .submit-wrapper {
+          .submit-button,
+          .prev-step {
+            display: none;
+          }
+        }
+      }
+      &[data-step='2'] {
+        :global(> label:nth-child(1)),
+        :global(> label:nth-child(2)) {
+          filter: blur(8px);
+          visibility: hidden;
+          position: absolute;
+        }
+        .submit-wrapper {
+          .next-step {
+            display: none;
+          }
+        }
+      }
+    }
   }
 </style>
 
@@ -409,7 +447,7 @@ const svgId = Math.random().toString(36).slice(2)
     section.querySelector<HTMLButtonElement>('.tryAgain')!.addEventListener('click', () => {
       document.dispatchEvent(new CustomEvent('Contact-TryAgain'))
     })
-    if (section.dataset.variant === 'form-with-person') {
+    if (section.dataset.variant === 'form-with-person' || section.dataset.variant === 'form-lead') {
       section.querySelector<HTMLButtonElement>('.next-step')!.addEventListener('click', () => {
         document.dispatchEvent(new CustomEvent('Contact-NextStep'))
       })
