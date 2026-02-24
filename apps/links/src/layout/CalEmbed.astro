@@ -63,12 +63,37 @@
     hideEventTypeDetails: false,
     layout: "month_view"
   });
+
+  // Track booking completion (not just popup open)
+  Cal("on", {
+    action: "bookingSuccessful",
+    callback: function(e) {
+      var detail = e.detail || {};
+      var data = detail.data || {};
+      var calLink = (data.eventType && data.eventType.slug) || "";
+      if (window.trackEvent) {
+        window.trackEvent({
+          meta: {
+            eventName: "Schedule",
+            params: {
+              content_name: calLink,
+              content_category: "booking",
+            }
+          },
+          ga4: {
+            eventName: "generate_lead",
+            params: {
+              form_name: calLink,
+            }
+          }
+        });
+      }
+    }
+  });
 </script>
 
 <!-- Intercept Cal.com links and open as popup -->
 <script>
-  import { trackEvent } from '@repo/shared/analytics'
-
   declare global {
     interface Window {
       Cal?: ((action: string, options?: unknown) => void) & { loaded?: boolean }
@@ -135,23 +160,6 @@
           config: {
             layout: "month_view",
             theme: "dark"
-          }
-        })
-
-        // Track the popup open event for analytics
-        trackEvent({
-          meta: {
-            eventName: 'Schedule',
-            params: {
-              content_name: calLink,
-              content_category: 'booking',
-            }
-          },
-          ga4: {
-            eventName: 'generate_lead',
-            params: {
-              form_name: calLink,
-            }
           }
         })
       } else {
