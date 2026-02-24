@@ -1,10 +1,5 @@
 {
   "name": "@repo/utils",
-  "type": "module",
-  "scripts": {
-    "dev": "tsc --watch",
-    "build": "tsc"
-  },
   "exports": {
     "./sanity.fetch": "./src/sanity.fetch.ts",
     "./is-production-deployment": "./src/is-production-deployment.ts",
@@ -14,9 +9,11 @@
     "./metadata.fetch": "./src/metadata.fetch.ts",
     "./html-to-string": "./src/html-to-string.ts",
     "./get-cookie": "./src/get-cookie.ts",
-    "./google-sheets": "./src/google-sheets.ts"
+    "./notion": "./src/notion.ts"
   },
-  "dependencies": {
-    "googleapis": "^144.0.0"
-  }
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "type": "module"
 }

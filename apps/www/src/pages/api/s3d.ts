@@ -1,6 +1,6 @@
 export const prerender = false
 
-import { appendLeadToSheet, type ContactLeadData } from '@repo/utils/google-sheets'
+import { appendLeadToNotion, type ContactLeadData } from '@repo/utils/notion'
 import type { APIRoute } from 'astro'
 import { DOMAIN } from '@repo/shared/constants'
 
@@ -45,7 +45,7 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(null, { status: 400, headers: corsHeaders })
     }
 
-    await appendLeadToSheet(data)
+    await appendLeadToNotion(data)
     return new Response(null, { status: 204, headers: corsHeaders })
   } catch (error) {
     console.error('[S3D] Error:', error)

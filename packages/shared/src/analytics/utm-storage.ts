@@ -8,7 +8,7 @@
  * - Captures UTM params from URL on page load
  * - Falls back to document.referrer when no UTM present
  * - Overwrites existing data when new UTM params are detected
- * - Formats data for Google Sheets integration
+ * - Formats data for lead tracking (Notion)
  */
 
 const UTM_COOKIE_NAME = 'kryptonum_utm'
@@ -266,7 +266,7 @@ export function captureUtmData(): UtmData | null {
 }
 
 /**
- * Format UTM data as multiline string for Google Sheets.
+ * Format UTM data as multiline string for lead tracking.
  *
  * Example output:
  * utm_source=google
@@ -298,7 +298,7 @@ export function formatUtmForSheet(data: UtmData | null): string {
 }
 
 /**
- * Convenience function: load UTM from storage and format for Google Sheets.
+ * Convenience function: load UTM from storage and format for lead tracking.
  */
 export function getUtmForSheet(): string {
   return formatUtmForSheet(loadUtmData())
