@@ -197,6 +197,17 @@ const isMultipleImageMode = imageMode === 'multiple'
           position: static;
           order: -1;
         }
+        .img-multiple {
+          position: static;
+          order: -1;
+          .layer {
+            position: relative;
+            inset: auto;
+            &:not([data-active='true']) {
+              display: none;
+            }
+          }
+        }
       }
     }
   }
