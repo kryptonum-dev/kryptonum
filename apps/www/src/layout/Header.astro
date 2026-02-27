@@ -451,6 +451,7 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
     top: 0;
     width: 100%;
     z-index: 9;
+    will-change: transform;
     height: clamp(3.875rem, calc(4.75vw / 0.48), 4.75rem);
     border-bottom: 1px solid var(--primary-500, #064040);
     font-size: var(--typography-body-m, 0.875rem);

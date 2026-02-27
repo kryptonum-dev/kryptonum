@@ -73,11 +73,7 @@ const isMultipleImageMode = imageMode === 'multiple'
       isMultipleImageMode ? (
         <div class='img img-multiple' data-accordion-images>
           <div class='layer' data-image-layer data-active='true'>
-            <Image
-              {...img}
-              sizes='(max-width: 48rem) 100vw, (max-width: 69rem) 38rem, 60vw'
-              priority={index === 0}
-            />
+            <Image {...img} sizes='(max-width: 48rem) 100vw, (max-width: 69rem) 38rem, 60vw' priority={index === 0} />
           </div>
           {items.map(({ openImg }, itemIndex) => (
             <div class='layer' data-image-layer data-item-index={itemIndex + 1} data-active='false'>
@@ -102,6 +98,19 @@ const isMultipleImageMode = imageMode === 'multiple'
 </section>
 
 <style lang='scss'>
+  @keyframes layerIn {
+    from {
+      opacity: 0;
+      filter: blur(4px);
+      transform: scale(1.03);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1);
+    }
+  }
+
   .StagesAccordion {
     padding: clamp(3rem, calc(5vw / 0.48), 6rem) 0;
     header {
@@ -154,17 +163,9 @@ const isMultipleImageMode = imageMode === 'multiple'
           position: absolute;
           inset: 0;
           opacity: 0;
-          filter: blur(4px);
-          transform: scale(1.03);
-          transition: none;
           &[data-active='true'] {
-            opacity: 1;
-            filter: blur(0);
-            transform: scale(1);
-            transition:
-              filter 500ms var(--easing),
-              transform 500ms var(--easing),
-              opacity 500ms var(--easing);
+            z-index: 1;
+            animation: layerIn 600ms var(--easing) forwards;
           }
           :global(img) {
             display: block;
@@ -198,14 +199,16 @@ const isMultipleImageMode = imageMode === 'multiple'
           order: -1;
         }
         .img-multiple {
-          position: static;
+          display: grid;
+          grid-template: 1fr / 1fr;
           order: -1;
+          position: relative;
+          top: auto;
           .layer {
-            position: relative;
+            grid-area: 1 / 1;
+            position: static;
             inset: auto;
-            &:not([data-active='true']) {
-              display: none;
-            }
+            opacity: 0;
           }
         }
       }

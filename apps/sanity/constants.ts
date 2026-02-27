@@ -14,8 +14,8 @@ export const DOMAIN: string = "https://kryptonum.eu";
  * @type {Record<string, string>}
  */
 export const PREVIEW_DOMAINS: Record<string, string> = {
-  // Main domain (default)
-  main: process.env.SANITY_STUDIO_PREVIEW_DOMAIN ?? DOMAIN,
+  // Main domain (default) — falls back to dev Vercel deployment for Studio previews
+  main: process.env.SANITY_STUDIO_PREVIEW_DOMAIN ?? "https://kryptonum-git-dev-kryptonum.vercel.app",
   // Links subdomain for Links_Page and LandingPage_Collection
   links: process.env.SANITY_STUDIO_PREVIEW_LINKS_DOMAIN ?? "https://l.kryptonum.eu",
   // Learn subdomain for ShopProduct_Collection
