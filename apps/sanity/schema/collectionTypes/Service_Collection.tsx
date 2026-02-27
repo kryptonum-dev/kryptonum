@@ -23,12 +23,13 @@ export default defineType({
     ...defineSlugForDocument({
       slugify: async (slug, _, context) => {
         const language = (context.parent as { language: string })?.language ?? 'pl';
-        return `/${language}/uslugi/${slugify(slug)}`
+        const basePath = language === 'en' ? '/en/services/' : `/${language}/uslugi/`;
+        return `${basePath}${slugify(slug)}`
       },
       validate: Rule => [
         Rule.custom(async (value, context) => {
           const language = (context.parent as { language: string })?.language ?? 'pl';
-          const requiredPrefix = `/${language}/uslugi/`;
+          const requiredPrefix = language === 'en' ? '/en/services/' : `/${language}/uslugi/`;
           if (!value?.current?.startsWith(requiredPrefix)) {
             return `The slug should start with ${requiredPrefix}`;
           }

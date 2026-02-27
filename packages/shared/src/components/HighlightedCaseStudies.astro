@@ -362,7 +362,13 @@ const Subheading = index === 0 ? 'h2' : 'h3'
         color: var(--neutral-400, #c6cdcc);
         font-size: var(--typography-body-xl, 1rem);
         text-align: left;
+        width: fit-content;
+        justify-self: end;
         grid-column: 2;
+
+        p {
+          width: fit-content;
+        }
       }
 
       :global(a) {

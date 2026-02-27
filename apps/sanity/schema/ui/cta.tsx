@@ -128,7 +128,7 @@ export default defineType({
       let subtitle = '';
       if (linkType === 'external') subtitle = external;
       else if (linkType === 'internal') subtitle = internal;
-      else if (linkType === 'anchor') subtitle = `#${anchor}`;
+      else if (linkType === 'anchor') subtitle = `${anchor}`;
 
       return {
         title: `${title}`,
