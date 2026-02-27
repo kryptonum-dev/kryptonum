@@ -5,7 +5,12 @@ import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
 export const SimpleGridLayout_Query = `
   _type == "SimpleGridLayout" => {
     eyebrow,
-    themeColor,
+    "themeColor": select(
+      themeColor in ["green", "red"] => themeColor,
+      isRed == true => "red",
+      red == true => "red",
+      "green"
+    ),
     ${PortableTextQuery('heading')}
     ${PortableTextQuery('paragraph')}
     items[] {

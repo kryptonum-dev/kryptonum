@@ -45,14 +45,17 @@ const t = translations[lang]
 const { state, variant, email, dropdownOptions, dropdownLabel, dropdownPlaceholder } = Astro.props
 
 const svgId = Math.random().toString(36).slice(2)
+const isFormWithList = variant === 'form-with-list'
+const isLeadForm = String(variant) === 'form-lead'
+const isMultiStepForm = !isFormWithList
 ---
 
 <Form className="Form" variant={variant} lang={lang} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} client:load>
   <div class="submit-wrapper">
     <div class="wrapper">
-      {variant === 'form-with-list' && <Button type="submit" className="submit-button">{t.submit}</Button>}
+      {isFormWithList && <Button type="submit" className="submit-button">{t.submit}</Button>}
       {
-        (variant === 'form-with-person' || variant === 'form-lead') && (
+        isMultiStepForm && (
           <button class="prev-step" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" fill="none" viewBox="0 0 13 10">
               <path stroke="#F0F7F7" stroke-linecap="round" stroke-linejoin="round" d="M11.835 5H1.168m0 0 4-4m-4 4 4 4"/>
@@ -62,7 +65,7 @@ const svgId = Math.random().toString(36).slice(2)
           <Button type="button" className="next-step">
             {t.nextStep}
           </Button>
-          <Button type="submit" className="submit-button">{variant === 'form-lead' ? t.submitLead : t.submit}</Button>
+          <Button type="submit" className="submit-button">{isLeadForm ? t.submitLead : t.submit}</Button>
         )
       }
     </div>
