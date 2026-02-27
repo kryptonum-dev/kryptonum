@@ -15,10 +15,10 @@ export const DOMAIN: string = "https://kryptonum.eu";
  */
 export const PREVIEW_DOMAINS: Record<string, string> = {
   // Main domain (default)
-  main: process.env.SANITY_STUDIO_PREVIEW_DOMAIN ?? "",
+  main: process.env.SANITY_STUDIO_PREVIEW_DOMAIN ?? DOMAIN,
   // Links subdomain for Links_Page and LandingPage_Collection
-  links: process.env.SANITY_STUDIO_PREVIEW_LINKS_DOMAIN ?? "",
+  links: process.env.SANITY_STUDIO_PREVIEW_LINKS_DOMAIN ?? "https://l.kryptonum.eu",
   // Learn subdomain for ShopProduct_Collection
-  learn: process.env.SANITY_STUDIO_PREVIEW_LEARN_DOMAIN ?? ""
+  learn: process.env.SANITY_STUDIO_PREVIEW_LEARN_DOMAIN ?? "https://learn.kryptonum.eu"
 } as const;
 
