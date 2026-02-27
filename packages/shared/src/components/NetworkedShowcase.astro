@@ -105,8 +105,14 @@ const {
   video,
 } = Astro.props
 
-// Compute tags data for rendering (normalize both formats)
-const tagsData = tagsAsLinks && linkedTags ? linkedTags : (tags?.map((tag) => ({ name: tag, slug: undefined })) ?? [])
+// Compute tags data for rendering (normalize both formats) and drop empty items.
+const tagsData = (tagsAsLinks
+  ? (linkedTags ?? [])
+      .map((tag) => ({ name: tag.name?.trim() ?? '', slug: tag.slug }))
+      .filter((tag) => tag.name.length > 0)
+  : (tags ?? [])
+      .map((tag) => ({ name: tag?.trim() ?? '', slug: undefined }))
+      .filter((tag) => tag.name.length > 0))
 
 const reviewUrl = _scrollToSectionId ?? googleData.url
 
