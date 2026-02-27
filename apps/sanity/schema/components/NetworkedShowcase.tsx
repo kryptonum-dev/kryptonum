@@ -28,10 +28,9 @@ export default defineField({
       title: 'Tags',
       description: 'Plain text labels displayed in the animated slider.',
       hidden: ({ parent }) => parent?.tagsAsLinks === true,
-      validation: Rule => Rule.custom((value, context) => {
+      validation: Rule => Rule.custom((_, context) => {
         const tagsAsLinks = (context.parent as { tagsAsLinks?: boolean })?.tagsAsLinks;
         if (tagsAsLinks) return true;
-        if (!value || value.length < 3) return 'Add at least 3 tags';
         return true;
       }),
     }),
@@ -41,10 +40,9 @@ export default defineField({
       title: 'Tags',
       description: 'Tags displayed in the animated slider. Each tag can optionally link to an internal page.',
       hidden: ({ parent }) => parent?.tagsAsLinks !== true,
-      validation: Rule => Rule.custom((value, context) => {
+      validation: Rule => Rule.custom((_, context) => {
         const tagsAsLinks = (context.parent as { tagsAsLinks?: boolean })?.tagsAsLinks;
         if (!tagsAsLinks) return true;
-        if (!value || value.length < 3) return 'Add at least 3 tags';
         return true;
       }),
       of: [
