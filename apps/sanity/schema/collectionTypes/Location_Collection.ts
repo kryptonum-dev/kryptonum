@@ -5,6 +5,28 @@ import { slugify } from "@repo/utils/slugify";
 const name = 'Location_Collection';
 const title = 'Location Collection';
 const icon = () => '📌';
+const RESERVED_LOCATION_SLUGS: Record<string, string[]> = {
+  pl: [
+    'uslugi',
+    'blog',
+    'portfolio',
+    'kontakt',
+    'zespol',
+    'regulamin',
+    'polityka-prywatnosci',
+    'produkty-cyfrowe',
+  ],
+  en: [
+    'services',
+    'blog',
+    'portfolio',
+    'contact',
+    'team',
+    'terms',
+    'privacy-policy',
+    'digital-products',
+  ],
+};
 
 export default defineType({
   name: name,
@@ -21,33 +43,28 @@ export default defineType({
     }),
     ...defineSlugForDocument({
       slugify: async (slug, _, context) => {
-        const servicePageRef = (context.parent as { servicePage: { _ref: string } })?.servicePage?._ref;
-        if (servicePageRef) {
-          const client = context.getClient({ apiVersion: '2024-11-12' })
-          const servicePageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: servicePageRef })
-          return `${servicePageSlug}/${slugify(slug)}`
-        }
         const language = (context.parent as { language: string })?.language ?? 'pl';
         return `/${language}/${slugify(slug)}`
       },
       validate: Rule => [
-        Rule.custom(async (value, context) => {
-          const servicePageRef = (context.parent as { servicePage: { _ref: string } })?.servicePage?._ref;
-          if (!servicePageRef) {
-            return 'The service page is required for Location Page.';
+        Rule.custom((value, context) => {
+          const language = (context.parent as { language: string })?.language ?? 'pl';
+          const requiredPrefix = `/${language}/`;
+          if (!value?.current?.startsWith(requiredPrefix)) {
+            return `The slug should start with ${requiredPrefix}`;
           }
-
-          const client = context.getClient({ apiVersion: '2024-11-12' })
-          const servicePageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: servicePageRef })
-          if (!value?.current?.startsWith(servicePageSlug)) {
-            return 'Slug should start with the slug of the service page.';
+          if (!new RegExp(`^/${language}/[^/]+$`).test(value.current)) {
+            return `The location URL must use a single top-level segment, e.g. ${requiredPrefix}warszawa`;
           }
-
+          const rawSlug = value.current.replace(requiredPrefix, '');
+          if ((RESERVED_LOCATION_SLUGS[language] || []).includes(rawSlug)) {
+            return `Slug "${rawSlug}" is reserved. Pick a different location slug.`;
+          }
           return true;
         }).required(),
         Rule.custom((value, context) => {
           const name = (context.parent as { name: string })?.name;
-          if (!value?.current?.includes(slugify(name))) {
+          if (!value?.current?.endsWith(slugify(name))) {
             return 'That slug doesn\'t match the name. Verify if it\'s correct.';
           }
           return true;
@@ -57,20 +74,19 @@ export default defineType({
     defineField({
       name: 'servicePage',
       type: 'reference',
-      title: 'Reference to a Service Page',
-      description: 'A location page always have to be a direct subpage of a service page.',
+      title: 'Related Service (Optional)',
+      description: 'Optional relation for navigation context. URL is always top-level: /{language}/{location}.',
       to: [{ type: 'Service_Collection' }],
       options: {
         disableNew: true,
         filter: ({ document }) => {
           const language = (document as { language?: string })?.language;
           return {
-            filter: 'language == $lang',
+            filter: 'language == $lang && coalesce(isArchived, false) != true',
             params: { lang: language }
           }
         }
       },
-      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'isArchived',

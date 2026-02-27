@@ -1,0 +1,84 @@
+---
+import Layout from '@layout/Layout.astro'
+import sanityFetch from '@repo/utils/sanity.fetch'
+import metadataFetch from '@repo/utils/metadata.fetch'
+import Breadcrumbs from '@repo/ui/Breadcrumbs.astro'
+import Components, { Components_Query, type ComponentsProps } from '@repo/shared/components/index.astro'
+import type { Language } from '@repo/shared/languages'
+
+export type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
+const RESERVED_LOCATION_SEGMENTS: Record<Language, string[]> = {
+  pl: ['uslugi', 'blog', 'portfolio', 'kontakt', 'zespol', 'regulamin', 'polityka-prywatnosci', 'produkty-cyfrowe'],
+  en: ['services', 'blog', 'portfolio', 'contact', 'team', 'terms', 'privacy-policy', 'digital-products'],
+}
+
+interface Props extends FetchDataReturn {
+  lang: Language
+  slug: string
+}
+
+export async function fetchData(lang: Language, slug: string) {
+  const page = await sanityFetch<{
+    name: string
+    servicePage?: {
+      name: string
+      slug: string
+    }
+    components: ComponentsProps
+  }>({
+    query: `
+      *[
+        _type == 'Location_Collection'
+        && coalesce(isArchived, false) != true
+        && slug.current == $slug
+        && language == $language
+      ][0] {
+        name,
+        servicePage -> {
+          name,
+          "slug": slug.current
+        },
+        ${Components_Query}
+      }
+    `,
+    params: { language: lang, slug },
+  })
+  if (!page) return null
+  const metadata = await metadataFetch(slug)
+  return { page, metadata }
+}
+
+export async function staticPaths() {
+  const pages = await sanityFetch<{ slug: string; language: Language }[]>({
+    query: `
+      *[
+        _type == 'Location_Collection'
+        && coalesce(isArchived, false) != true
+      ][] {
+        "slug": slug.current,
+        language
+      }
+    `,
+  })
+  return pages
+    ?.filter(({ slug, language }) => {
+      if (!new RegExp(`^/${language}/[^/]+$`).test(slug)) return false
+      const segment = slug.replace(`/${language}/`, '')
+      return !RESERVED_LOCATION_SEGMENTS[language].includes(segment)
+    })
+    .map(({ slug, language }) => ({
+      params: { lang: language, location: slug.replace(`/${language}/`, '') },
+    }))
+}
+
+const { page, metadata, slug } = Astro.props
+const breadcrumbs = [
+  ...(page.servicePage ? [{ name: page.servicePage.name, path: page.servicePage.slug }] : []),
+  { name: page.name, path: slug },
+]
+---
+
+<Layout {...metadata}>
+  <Breadcrumbs data={breadcrumbs} />
+  <Components data={page.components} />
+</Layout>
