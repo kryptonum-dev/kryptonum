@@ -11,7 +11,7 @@ export const GET: APIRoute = async () => {
     .toBuffer();
   const icoBuffer = ico.encode([processedFavicon]);
 
-  return new Response(icoBuffer, {
+  return new Response(new Uint8Array(icoBuffer), {
     headers: { "Content-Type": "image/x-icon" },
   });
 };

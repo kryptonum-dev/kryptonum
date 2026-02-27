@@ -1,0 +1,278 @@
+---
+import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/ui/portable-text'
+import Image, { ImageDataQuery, type ImageDataProps } from '@repo/ui/Image'
+
+export const TwoColumnImageList_Query = `
+  _type == "TwoColumnImageList" => {
+    ${PortableTextQuery('heading')}
+    ${PortableTextQuery('paragraph')}
+    columns[] {
+      ${ImageDataQuery('image')}
+      ${PortableTextQuery('heading')}
+      ${PortableTextQuery('description')}
+    },
+  },
+`
+
+type Props = {
+  index: number
+  sectionId?: string
+  heading: PortableTextValue
+  paragraph?: PortableTextValue
+  columns: Array<{
+    image: ImageDataProps
+    heading: PortableTextValue
+    description: PortableTextValue
+  }>
+}
+
+const { index, sectionId, heading, paragraph, columns } = Astro.props
+
+const Subheading = index === 0 ? 'h2' : 'h3'
+---
+
+<section class='TwoColumnImageList' id={sectionId} data-animate>
+  <div class='layout'>
+    <header class='sticky-header'>
+      <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class='heading h2' />
+      {paragraph && <PortableText value={paragraph} class='paragraph' />}
+    </header>
+
+    <ul class='blocks'>
+      {
+        columns?.map(({ image, heading: colHeading, description }, i) => (
+          <li class='block' data-block-index={i}>
+            <div class='image-container'>
+              <div class='image-wrapper'>
+                <Image
+                  {...image}
+                  sizes='(max-width: 56rem) 100vw, 900px'
+                  loading={index === 0 && i === 0 ? 'eager' : 'lazy'}
+                />
+              </div>
+            </div>
+
+            <div class='content'>
+              <PortableText value={colHeading} heading={Subheading} class='block-heading' />
+              <PortableText value={description} class='description' />
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  function initTwoColumnImageList() {
+    const sections = document.querySelectorAll<HTMLElement>('.TwoColumnImageList[data-animate]')
+
+    sections.forEach((section) => {
+      const blocks = section.querySelectorAll<HTMLElement>('.block')
+
+      // Intersection Observer for reveal animations
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible')
+              // Don't unobserve - keep it visible once shown
+            }
+          })
+        },
+        {
+          threshold: 0.15,
+          rootMargin: '0px 0px -10% 0px',
+        }
+      )
+
+      blocks.forEach((block) => observer.observe(block))
+    })
+  }
+
+  // Run on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTwoColumnImageList)
+  } else {
+    initTwoColumnImageList()
+  }
+
+  // Run after Astro page transitions
+  document.addEventListener('astro:after-swap', initTwoColumnImageList)
+</script>
+
+<style lang='scss'>
+  .TwoColumnImageList {
+    padding: clamp(4rem, calc(6vw / 0.48), 8rem) 0;
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: clamp(3rem, calc(5vw / 0.48), 6rem);
+      align-items: start;
+    }
+
+    @media (max-width: 56rem) {
+      .layout {
+        grid-template-columns: 1fr;
+        gap: clamp(2rem, calc(3vw / 0.48), 3rem);
+      }
+    }
+
+    // ===== STICKY HEADER =====
+    .sticky-header {
+      position: sticky;
+      top: 123px;
+
+      @media (max-width: 56rem) {
+        position: relative;
+        top: 0;
+      }
+
+      .heading {
+        margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+      }
+
+      .paragraph {
+        color: var(--neutral-400, #c6cdcc);
+        font-size: var(--typography-body-m, 0.875rem);
+        line-height: 1.7;
+      }
+    }
+
+    // ===== BLOCKS =====
+    .blocks {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(3rem, calc(5vw / 0.48), 6rem);
+    }
+
+    .block {
+      position: relative;
+
+      // Animation - start visible, enhance with JS
+      opacity: 1;
+      transform: translateY(0);
+      transition:
+        opacity 700ms var(--easing, cubic-bezier(0.08, 0.82, 0.17, 1)),
+        transform 700ms var(--easing, cubic-bezier(0.08, 0.82, 0.17, 1));
+
+      // When JS is available, start hidden
+      &:not(.is-visible) {
+        @media (prefers-reduced-motion: no-preference) {
+          opacity: 0;
+          transform: translateY(3rem);
+        }
+      }
+
+      // Floating number
+      .block-number {
+        position: absolute;
+        top: -1.5rem;
+        left: -0.5rem;
+        font-size: clamp(5rem, calc(8vw / 0.48), 10rem);
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: -0.05em;
+        color: transparent;
+        background: linear-gradient(180deg, rgba(6, 64, 64, 0.5) 0%, rgba(6, 64, 64, 0) 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        pointer-events: none;
+        user-select: none;
+        z-index: 0;
+
+        @media (max-width: 36rem) {
+          font-size: clamp(4rem, calc(6vw / 0.48), 6rem);
+          left: -0.25rem;
+          top: -1rem;
+        }
+      }
+
+      // Image
+      .image-container {
+        position: relative;
+        margin-bottom: clamp(1.5rem, calc(2vw / 0.48), 2rem);
+        z-index: 1;
+      }
+
+      .image-wrapper {
+        position: relative;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: var(--primary-700, #021d1d);
+        border: 1px solid var(--primary-500, #064040);
+
+        :global(img) {
+          width: 100%;
+          height: auto;
+          display: block;
+        }
+      }
+
+      // Content
+      .content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .block-heading {
+        font-size: var(--typography-body-2xl, 1.25rem);
+        font-weight: 400;
+        line-height: 1.4;
+        margin-bottom: clamp(0.75rem, calc(1vw / 0.48), 1.25rem);
+      }
+
+      .description {
+        font-size: var(--typography-body-m, 0.875rem);
+        color: var(--neutral-400, #c6cdcc);
+        line-height: 1.75;
+        max-width: 40rem;
+
+        :global(ul) {
+          list-style-type: none;
+          padding-left: 0;
+          display: flex;
+          flex-direction: column;
+          gap: clamp(0.5rem, calc(0.75vw / 0.48), 0.75rem);
+        }
+
+        :global(li) {
+          padding-left: 1.25rem;
+          position: relative;
+
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5em;
+            width: 0.375rem;
+            height: 0.375rem;
+            border-radius: 50%;
+            background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+          }
+        }
+
+        :global(p:not(:last-child)) {
+          margin-bottom: 0.75rem;
+        }
+
+        :global(strong) {
+          color: var(--neutral-200, #f0f7f7);
+        }
+
+        :global(a) {
+          color: var(--neutral-200, #f0f7f7);
+          text-decoration: underline;
+          text-decoration-color: rgba(45, 210, 130, 0.5);
+          text-underline-offset: 3px;
+          transition: text-decoration-color 200ms ease;
+
+          &:hover {
+            text-decoration-color: #2dd282;
+          }
+        }
+      }
+    }
+  }
+</style>

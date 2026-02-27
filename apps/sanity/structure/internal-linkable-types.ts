@@ -15,6 +15,7 @@ export const InternalLinkableTypes: { type: string }[] = [
   { type: 'Shop_Page' },
   { type: 'TeamMember_Collection' },
   { type: 'CaseStudy_Collection' },
+  { type: 'Services_Page' },
   { type: 'Service_Collection' },
   { type: 'Location_Collection' },
   { type: 'BlogPost_Collection' },

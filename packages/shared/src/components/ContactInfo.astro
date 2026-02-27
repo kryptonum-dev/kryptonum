@@ -53,22 +53,22 @@ const t = translations[lang]
 const { sectionId, img, emailText, email, telText, tel, address } = Astro.props
 ---
 
-<section class="ContactInfo" id={sectionId}>
-  <div class="avatar-wrapper">
-    <Image {...img} sizes="64px" class="gradient-thumbnail" />
-    <div class="person">
-      <div class="email">
-        <p class="label-text">{emailText}</p>
-        <div class="copy-wrapper">
+<section class='ContactInfo' id={sectionId}>
+  <div class='avatar-wrapper'>
+    <Image {...img} sizes='64px' class='gradient-thumbnail' />
+    <div class='person'>
+      <div class='email'>
+        <p class='label-text'>{emailText}</p>
+        <div class='copy-wrapper'>
           <a href={`mailto:${email}`}>{email}</a>
           <Copy data={email} successMessage={t.copyEmailSuccess} />
         </div>
       </div>
       {
         tel && (
-          <div class="tel">
-            <p class="label-text">{telText}</p>
-            <div class="copy-wrapper">
+          <div class='tel'>
+            <p class='label-text'>{telText}</p>
+            <div class='copy-wrapper'>
               <a href={`tel:${tel}`}>{tel}</a>
               <Copy data={tel} successMessage={t.copyTelSuccess} />
             </div>
@@ -77,31 +77,31 @@ const { sectionId, img, emailText, email, telText, tel, address } = Astro.props
       }
     </div>
   </div>
-  <div class="avatar-wrapper address">
-    <Image {...address.img} sizes="64px" class="gradient-thumbnail" />
+  <div class='avatar-wrapper address'>
+    <Image {...address.img} sizes='64px' class='gradient-thumbnail' />
     <div>
-      <p class="label-text">{address.text}</p>
-      <div class="copy-wrapper">
+      <p class='label-text'>{address.text}</p>
+      <div class='copy-wrapper'>
         <p>{address.addressText}</p>
-        <a href={address.mapLink} target="_blank" rel="noopener noreferrer" class="CopyToClipboard">
+        <a href={address.mapLink} target='_blank' rel='noopener noreferrer' class='CopyToClipboard'>
           <span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" fill="none">
-              <path fill="#1A73E8" d="M7.78.266a5.573 5.573 0 0 0-5.974 1.73l2.637 2.213L7.781.266Z"></path>
+            <svg xmlns='http://www.w3.org/2000/svg' width='12' height='16' fill='none'>
+              <path fill='#1A73E8' d='M7.78.266a5.573 5.573 0 0 0-5.974 1.73l2.637 2.213L7.781.266Z'></path>
               <path
-                fill="#EA4335"
-                d="M1.806 1.996A5.581 5.581 0 0 0 .5 5.576c0 1.052.206 1.899.556 2.66L4.443 4.21 1.806 1.996Z">
+                fill='#EA4335'
+                d='M1.806 1.996A5.581 5.581 0 0 0 .5 5.576c0 1.052.206 1.899.556 2.66L4.443 4.21 1.806 1.996Z'>
               </path>
               <path
-                fill="#4285F4"
-                d="M6.088 3.446a2.137 2.137 0 0 1 1.633 3.52S9.4 4.958 11.046 3.01A5.571 5.571 0 0 0 7.781.266L4.443 4.208c.4-.46.98-.762 1.645-.762Z">
+                fill='#4285F4'
+                d='M6.088 3.446a2.137 2.137 0 0 1 1.633 3.52S9.4 4.958 11.046 3.01A5.571 5.571 0 0 0 7.781.266L4.443 4.208c.4-.46.98-.762 1.645-.762Z'>
               </path>
               <path
-                fill="#FBBC04"
-                d="M6.088 7.714a2.137 2.137 0 0 1-2.141-2.14c0-.52.181-1.004.496-1.367L1.057 8.234c.58 1.282 1.548 2.322 2.54 3.616L7.72 6.952c-.399.472-.98.762-1.632.762Z">
+                fill='#FBBC04'
+                d='M6.088 7.714a2.137 2.137 0 0 1-2.141-2.14c0-.52.181-1.004.496-1.367L1.057 8.234c.58 1.282 1.548 2.322 2.54 3.616L7.72 6.952c-.399.472-.98.762-1.632.762Z'>
               </path>
               <path
-                fill="#34A853"
-                d="M7.647 13.207c1.863-2.915 4.027-4.233 4.027-7.62 0-.93-.23-1.801-.629-2.575l-7.45 8.84c.315.411.642.883.956 1.367 1.137 1.753.822 2.793 1.548 2.793.726 0 .411-1.052 1.548-2.805Z">
+                fill='#34A853'
+                d='M7.647 13.207c1.863-2.915 4.027-4.233 4.027-7.62 0-.93-.23-1.801-.629-2.575l-7.45 8.84c.315.411.642.883.956 1.367 1.137 1.753.822 2.793 1.548 2.793.726 0 .411-1.052 1.548-2.805Z'>
               </path>
             </svg>
             {t.checkMap}
@@ -112,7 +112,7 @@ const { sectionId, img, emailText, email, telText, tel, address } = Astro.props
   </div>
 </section>
 
-<style lang="scss">
+<style lang='scss'>
   .ContactInfo {
     padding: clamp(2rem, calc(3vw / 0.48), 4rem) 0;
     display: flex;

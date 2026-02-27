@@ -58,6 +58,9 @@ import ImageListAndMarquee from "./components/ImageListAndMarquee";
 import SimpleGridGallery from "./components/SimpleGridGallery";
 import HighlightsGrid from "./components/HighlightsGrid";
 import TestimonialsMasonry from "./components/TestimonialsMasonry";
+import SimpleGridLayout from "./components/SimpleGridLayout";
+import TwoColumnImageList from "./components/TwoColumnImageList";
+import HighlightedCaseStudies from "./components/HighlightedCaseStudies";
 
 export default defineType({
   name: 'components',
@@ -123,6 +126,9 @@ export default defineType({
     SimpleGridGallery,
     HighlightsGrid,
     TestimonialsMasonry,
+    SimpleGridLayout,
+    TwoColumnImageList,
+    HighlightedCaseStudies,
   ],
   options: {
     insertMenu: {

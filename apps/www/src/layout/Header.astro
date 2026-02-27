@@ -25,14 +25,18 @@ const data = await sanityFetch<{
     }
   }
   cta: ButtonDataProps
+  pillars?: Array<{
+    name: string
+    slug: string
+    description?: string
+    icon: ImageDataProps
+    img: ImageDataProps
+  }>
+  servicesHubCta?: ButtonDataProps
   services: Array<{
     name: string
     slug: string
     icon: ImageDataProps
-    list: Array<{
-      name: string
-      slug: string
-    }>
   }>
   caseStudies: {
     name: string
@@ -62,7 +66,10 @@ const data = await sanityFetch<{
   }
 }>({
   query: `
-    *[_type == "global" && language == $language][0].nav {
+    coalesce(
+      *[_type == "navbar" && language == $language][0],
+      *[_type == "global" && language == $language][0].nav
+    ) {
       annotation {
         "icon": icon.asset -> url,
         text,
@@ -72,19 +79,32 @@ const data = await sanityFetch<{
         },
       },
       ${ButtonDataQuery('cta')}
-      "services": *[_type == "Service_Collection" && !defined(mainPage) && language == $language] | order(_createdAt asc) {
+      "pillars": pillars[]-> {
+        name,
+        "slug": slug.current,
+        description,
+        ${ImageDataQuery('icon')}
+        ${ImageDataQuery('img')}
+      },
+      ${ButtonDataQuery('servicesHubCta')}
+      "services": *[
+        _type == "Service_Collection"
+        && language == $language
+        && coalesce(isArchived, false) != true
+      ] | order(name asc) {
         name,
         "slug": slug.current,
         ${ImageDataQuery('icon')}
-        "list": *[_type == "Service_Collection" && mainPage._ref == ^._id && language == $language] | order(_createdAt asc) {
-          name,
-          "slug": slug.current,
-        },
       },
       "caseStudies": *[_type == "Portfolio_Page" && language == $language][0] {
         name,
         "slug": slug.current,
         "list": coalesce(
+          *[_type == "navbar" && language == $language][0].caseStudies[] -> {
+            name,
+            "slug": slug.current,
+            ${ImageDataQuery('img')}
+          },
           *[_type == "global" && language == $language][0].nav.caseStudies[] -> {
             name,
             "slug": slug.current,
@@ -122,25 +142,25 @@ const data = await sanityFetch<{
 const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotation.icon) : null
 ---
 
-<a class="skip-link" href="#main">{t('skipLink')}</a>
+<a class='skip-link' href='#main'>{t('skipLink')}</a>
 {
   data?.annotation && (
-    <aside class="annotation-banner" id="annotation-banner" aria-labelledby="annotation-text">
-      <div class="max-width">
-        <div class="content">
+    <aside class='annotation-banner' id='annotation-banner' aria-labelledby='annotation-text'>
+      <div class='max-width'>
+        <div class='content'>
           {svgContent ? <Fragment set:html={svgContent} /> : null}
           <p>
-            <span id="annotation-text">{data.annotation.text}</span>
+            <span id='annotation-text'>{data.annotation.text}</span>
             {data.annotation?.link && (
-              <a href={data.annotation.link.url} target="_blank" rel="noopener" class="link">
+              <a href={data.annotation.link.url} target='_blank' rel='noopener' class='link'>
                 {data.annotation.link.text}
               </a>
             )}
           </p>
         </div>
-        <button type="button" aria-label="Zamknij informację" aria-controls="annotation-banner">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
-            <path stroke="#F0F7F7" stroke-linecap="round" d="M15.835 4.167 4.168 15.833m0-11.667 11.666 11.667" />
+        <button type='button' aria-label='Zamknij informację' aria-controls='annotation-banner'>
+          <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 20 20'>
+            <path stroke='#F0F7F7' stroke-linecap='round' d='M15.835 4.167 4.168 15.833m0-11.667 11.666 11.667' />
           </svg>
         </button>
       </div>
@@ -148,111 +168,138 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
   )
 }
 
-<object style="display: none;">
-  <svg id="chevron-down" xmlns="http://www.w3.org/2000/svg" width="17" height="16" fill="none">
-    <path stroke="#C6CDCC" stroke-linecap="round" stroke-linejoin="round" d="M13.165 6 8.5 10 3.832 6"></path>
+<object style='display: none;'>
+  <svg id='chevron-down' xmlns='http://www.w3.org/2000/svg' width='17' height='16' fill='none'>
+    <path stroke='#C6CDCC' stroke-linecap='round' stroke-linejoin='round' d='M13.165 6 8.5 10 3.832 6'></path>
   </svg>
 </object>
 
-<header class="header" data-element="LayoutHeader">
-  <div class="max-width">
-    <a href={`/${lang}`} aria-label="Strona główna" class="logo">
-      <svg xmlns="http://www.w3.org/2000/svg" width="112" height="24" fill="none" viewBox="0 0 112 24">
+<header class='header' data-element='LayoutHeader'>
+  <div class='max-width'>
+    <a href={`/${lang}`} aria-label='Strona główna' class='logo'>
+      <svg xmlns='http://www.w3.org/2000/svg' width='112' height='24' fill='none' viewBox='0 0 112 24'>
         <title>Kryptonum</title>
         <path
-          fill="url(#paint0_linear_6830_21701)"
-          d="M15.57 12a4.41 4.41 0 0 1-.778 2.495 4.725 4.725 0 0 1-2.083 1.68v7.663H8.893v-7.665a4.72 4.72 0 0 1-2.083-1.68A4.406 4.406 0 0 1 6.031 12c0-.886.271-1.753.78-2.494a4.72 4.72 0 0 1 2.082-1.68V.163h3.816v7.663c.85.354 1.575.938 2.083 1.68.508.742.779 1.609.779 2.495Z">
+          fill='url(#paint0_linear_6830_21701)'
+          d='M15.57 12a4.41 4.41 0 0 1-.778 2.495 4.725 4.725 0 0 1-2.083 1.68v7.663H8.893v-7.665a4.72 4.72 0 0 1-2.083-1.68A4.406 4.406 0 0 1 6.031 12c0-.886.271-1.753.78-2.494a4.72 4.72 0 0 1 2.082-1.68V.163h3.816v7.663c.85.354 1.575.938 2.083 1.68.508.742.779 1.609.779 2.495Z'>
         </path>
         <path
-          fill="url(#paint1_linear_6830_21701)"
-          d="M22.42 0v5.464l-3.986 3.804-1.907-1.821-1.229 1.172c-.28-.338-.6-.644-.954-.911L22.419 0Z">
+          fill='url(#paint1_linear_6830_21701)'
+          d='M22.42 0v5.464l-3.986 3.804-1.907-1.821-1.229 1.172c-.28-.338-.6-.644-.954-.911L22.419 0Z'>
         </path>
         <path
-          fill="url(#paint2_linear_6830_21701)"
-          d="m18.437 14.732 3.985 3.804V24l-8.074-7.708c.354-.266.674-.572.954-.91l1.228 1.171 1.907-1.821Z">
+          fill='url(#paint2_linear_6830_21701)'
+          d='m18.437 14.732 3.985 3.804V24l-8.074-7.708c.354-.266.674-.572.954-.91l1.228 1.171 1.907-1.821Z'>
         </path>
         <path
-          fill="#F0F7F7"
-          d="M5.078 12a5.278 5.278 0 0 0 1.227 3.38l-5.043 4.815v-5.463L3.17 12.91v-1.822L1.262 9.268V3.804L6.305 8.62a5.277 5.277 0 0 0-1.227 3.38ZM35.28 17.5l-4.592-5.088V17.5h-1.456V6.348h1.456v5.168l4.608-5.168h1.84l-5.056 5.584 5.104 5.568H35.28Zm4.346-7.344c.256-.501.619-.89 1.088-1.168.48-.277 1.062-.416 1.744-.416v1.504h-.384c-1.632 0-2.448.885-2.448 2.656V17.5H38.17V8.732h1.456v1.424Zm11.905-1.424-5.28 12.896h-1.504l1.728-4.224-3.536-8.672h1.616l2.752 7.104 2.72-7.104h1.504Zm2.28 1.616c.288-.501.714-.917 1.28-1.248.575-.341 1.242-.512 2-.512a4.06 4.06 0 0 1 2.111.56c.64.373 1.142.901 1.505 1.584.362.672.544 1.456.544 2.352 0 .885-.182 1.675-.544 2.368a4.004 4.004 0 0 1-1.505 1.616 3.974 3.974 0 0 1-2.111.576c-.747 0-1.409-.165-1.985-.496-.565-.341-.997-.763-1.296-1.264v5.776h-1.456V8.732h1.456v1.616Zm5.952 2.736c0-.661-.134-1.237-.4-1.728a2.754 2.754 0 0 0-1.088-1.12 2.946 2.946 0 0 0-1.489-.384 2.91 2.91 0 0 0-1.488.4c-.448.256-.81.635-1.087 1.136-.267.49-.4 1.061-.4 1.712 0 .661.133 1.243.4 1.744.277.49.64.87 1.087 1.136.46.256.955.384 1.488.384.544 0 1.04-.128 1.489-.384a2.864 2.864 0 0 0 1.087-1.136c.267-.501.4-1.088.4-1.76Zm4.38-3.152V15.1c0 .427.09.73.272.912.181.17.496.256.944.256h1.072V17.5h-1.312c-.81 0-1.419-.187-1.824-.56-.405-.373-.608-.987-.608-1.84V9.932h-1.136v-1.2h1.136V6.524h1.456v2.208h2.288v1.2h-2.288Zm7.236 7.712a4.534 4.534 0 0 1-2.24-.56 4.07 4.07 0 0 1-1.568-1.584c-.373-.693-.56-1.493-.56-2.4 0-.896.192-1.685.576-2.368a4.01 4.01 0 0 1 1.6-1.584c.672-.373 1.424-.56 2.256-.56.832 0 1.584.187 2.256.56a3.93 3.93 0 0 1 1.584 1.568c.395.683.592 1.477.592 2.384 0 .907-.203 1.707-.608 2.4a4.118 4.118 0 0 1-1.616 1.584c-.682.373-1.44.56-2.272.56Zm0-1.28c.523 0 1.013-.123 1.472-.368a2.748 2.748 0 0 0 1.104-1.104c.288-.49.432-1.088.432-1.792s-.138-1.301-.416-1.792c-.277-.49-.64-.853-1.088-1.088a2.983 2.983 0 0 0-1.456-.368c-.533 0-1.024.123-1.472.368-.437.235-.79.597-1.056 1.088-.267.49-.4 1.088-.4 1.792 0 .715.128 1.317.384 1.808.267.49.619.859 1.056 1.104.438.235.918.352 1.44.352Zm10.042-7.792c1.067 0 1.931.325 2.592.976.662.64.992 1.568.992 2.784V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.437-.47-1.034-.704-1.791-.704-.768 0-1.382.24-1.84.72-.449.48-.672 1.179-.672 2.096V17.5H77.15V8.732h1.456V9.98a2.903 2.903 0 0 1 1.168-1.04 3.698 3.698 0 0 1 1.647-.368Zm13.099.16V17.5h-1.456v-1.296c-.277.448-.667.8-1.168 1.056a3.598 3.598 0 0 1-1.632.368c-.683 0-1.296-.139-1.84-.416a3.184 3.184 0 0 1-1.296-1.28c-.31-.565-.464-1.253-.464-2.064V8.732h1.44v4.944c0 .864.219 1.53.656 2 .437.459 1.034.688 1.792.688.778 0 1.392-.24 1.84-.72.448-.48.672-1.179.672-2.096V8.732h1.456Zm12.362-.16c.683 0 1.291.144 1.824.432.534.277.955.699 1.264 1.264.31.565.464 1.253.464 2.064V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.426-.47-1.008-.704-1.744-.704-.757 0-1.36.245-1.808.736-.448.48-.672 1.179-.672 2.096V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.426-.47-1.008-.704-1.744-.704-.757 0-1.36.245-1.808.736-.448.48-.672 1.179-.672 2.096V17.5h-1.456V8.732h1.456v1.264a2.89 2.89 0 0 1 1.152-1.056 3.562 3.562 0 0 1 1.616-.368c.736 0 1.387.165 1.952.496.566.33.987.816 1.264 1.456a2.88 2.88 0 0 1 1.216-1.44 3.585 3.585 0 0 1 1.888-.512Z">
+          fill='#F0F7F7'
+          d='M5.078 12a5.278 5.278 0 0 0 1.227 3.38l-5.043 4.815v-5.463L3.17 12.91v-1.822L1.262 9.268V3.804L6.305 8.62a5.277 5.277 0 0 0-1.227 3.38ZM35.28 17.5l-4.592-5.088V17.5h-1.456V6.348h1.456v5.168l4.608-5.168h1.84l-5.056 5.584 5.104 5.568H35.28Zm4.346-7.344c.256-.501.619-.89 1.088-1.168.48-.277 1.062-.416 1.744-.416v1.504h-.384c-1.632 0-2.448.885-2.448 2.656V17.5H38.17V8.732h1.456v1.424Zm11.905-1.424-5.28 12.896h-1.504l1.728-4.224-3.536-8.672h1.616l2.752 7.104 2.72-7.104h1.504Zm2.28 1.616c.288-.501.714-.917 1.28-1.248.575-.341 1.242-.512 2-.512a4.06 4.06 0 0 1 2.111.56c.64.373 1.142.901 1.505 1.584.362.672.544 1.456.544 2.352 0 .885-.182 1.675-.544 2.368a4.004 4.004 0 0 1-1.505 1.616 3.974 3.974 0 0 1-2.111.576c-.747 0-1.409-.165-1.985-.496-.565-.341-.997-.763-1.296-1.264v5.776h-1.456V8.732h1.456v1.616Zm5.952 2.736c0-.661-.134-1.237-.4-1.728a2.754 2.754 0 0 0-1.088-1.12 2.946 2.946 0 0 0-1.489-.384 2.91 2.91 0 0 0-1.488.4c-.448.256-.81.635-1.087 1.136-.267.49-.4 1.061-.4 1.712 0 .661.133 1.243.4 1.744.277.49.64.87 1.087 1.136.46.256.955.384 1.488.384.544 0 1.04-.128 1.489-.384a2.864 2.864 0 0 0 1.087-1.136c.267-.501.4-1.088.4-1.76Zm4.38-3.152V15.1c0 .427.09.73.272.912.181.17.496.256.944.256h1.072V17.5h-1.312c-.81 0-1.419-.187-1.824-.56-.405-.373-.608-.987-.608-1.84V9.932h-1.136v-1.2h1.136V6.524h1.456v2.208h2.288v1.2h-2.288Zm7.236 7.712a4.534 4.534 0 0 1-2.24-.56 4.07 4.07 0 0 1-1.568-1.584c-.373-.693-.56-1.493-.56-2.4 0-.896.192-1.685.576-2.368a4.01 4.01 0 0 1 1.6-1.584c.672-.373 1.424-.56 2.256-.56.832 0 1.584.187 2.256.56a3.93 3.93 0 0 1 1.584 1.568c.395.683.592 1.477.592 2.384 0 .907-.203 1.707-.608 2.4a4.118 4.118 0 0 1-1.616 1.584c-.682.373-1.44.56-2.272.56Zm0-1.28c.523 0 1.013-.123 1.472-.368a2.748 2.748 0 0 0 1.104-1.104c.288-.49.432-1.088.432-1.792s-.138-1.301-.416-1.792c-.277-.49-.64-.853-1.088-1.088a2.983 2.983 0 0 0-1.456-.368c-.533 0-1.024.123-1.472.368-.437.235-.79.597-1.056 1.088-.267.49-.4 1.088-.4 1.792 0 .715.128 1.317.384 1.808.267.49.619.859 1.056 1.104.438.235.918.352 1.44.352Zm10.042-7.792c1.067 0 1.931.325 2.592.976.662.64.992 1.568.992 2.784V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.437-.47-1.034-.704-1.791-.704-.768 0-1.382.24-1.84.72-.449.48-.672 1.179-.672 2.096V17.5H77.15V8.732h1.456V9.98a2.903 2.903 0 0 1 1.168-1.04 3.698 3.698 0 0 1 1.647-.368Zm13.099.16V17.5h-1.456v-1.296c-.277.448-.667.8-1.168 1.056a3.598 3.598 0 0 1-1.632.368c-.683 0-1.296-.139-1.84-.416a3.184 3.184 0 0 1-1.296-1.28c-.31-.565-.464-1.253-.464-2.064V8.732h1.44v4.944c0 .864.219 1.53.656 2 .437.459 1.034.688 1.792.688.778 0 1.392-.24 1.84-.72.448-.48.672-1.179.672-2.096V8.732h1.456Zm12.362-.16c.683 0 1.291.144 1.824.432.534.277.955.699 1.264 1.264.31.565.464 1.253.464 2.064V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.426-.47-1.008-.704-1.744-.704-.757 0-1.36.245-1.808.736-.448.48-.672 1.179-.672 2.096V17.5h-1.44v-4.96c0-.875-.218-1.541-.656-2-.426-.47-1.008-.704-1.744-.704-.757 0-1.36.245-1.808.736-.448.48-.672 1.179-.672 2.096V17.5h-1.456V8.732h1.456v1.264a2.89 2.89 0 0 1 1.152-1.056 3.562 3.562 0 0 1 1.616-.368c.736 0 1.387.165 1.952.496.566.33.987.816 1.264 1.456a2.88 2.88 0 0 1 1.216-1.44 3.585 3.585 0 0 1 1.888-.512Z'>
         </path>
         <defs>
           <linearGradient
-            id="paint0_linear_6830_21701"
-            x1="15.392"
-            x2="5.43"
-            y1=".162"
-            y2=".417"
-            gradientUnits="userSpaceOnUse">
-            <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+            id='paint0_linear_6830_21701'
+            x1='15.392'
+            x2='5.43'
+            y1='.162'
+            y2='.417'
+            gradientUnits='userSpaceOnUse'>
+            <stop stop-color='#2DD282'></stop><stop offset='1' stop-color='#90F4E8'></stop>
           </linearGradient>
           <linearGradient
-            id="paint1_linear_6830_21701"
-            x1="22.268"
-            x2="13.855"
-            y1="0"
-            y2=".467"
-            gradientUnits="userSpaceOnUse">
-            <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+            id='paint1_linear_6830_21701'
+            x1='22.268'
+            x2='13.855'
+            y1='0'
+            y2='.467'
+            gradientUnits='userSpaceOnUse'>
+            <stop stop-color='#2DD282'></stop><stop offset='1' stop-color='#90F4E8'></stop>
           </linearGradient>
           <linearGradient
-            id="paint2_linear_6830_21701"
-            x1="22.271"
-            x2="13.859"
-            y1="14.732"
-            y2="15.199"
-            gradientUnits="userSpaceOnUse">
-            <stop stop-color="#2DD282"></stop><stop offset="1" stop-color="#90F4E8"></stop>
+            id='paint2_linear_6830_21701'
+            x1='22.271'
+            x2='13.859'
+            y1='14.732'
+            y2='15.199'
+            gradientUnits='userSpaceOnUse'>
+            <stop stop-color='#2DD282'></stop><stop offset='1' stop-color='#90F4E8'></stop>
           </linearGradient>
         </defs>
       </svg>
     </a>
-    <nav class="nav">
-      <div class="item" data-tab="services">
+    <nav class='nav'>
+      <div class='item' data-tab='services'>
         <button
-          type="button"
-          class="item-button"
-          aria-current={data.services.some(({ slug }) => pathname.includes(slug)) ? 'page' : undefined}>
+          type='button'
+          class='item-button'
+          aria-current={data.pillars?.some(({ slug }) => pathname.includes(slug)) ||
+          data.services.some(({ slug }) => pathname.includes(slug))
+            ? 'page'
+            : undefined}>
           <span>{t('header.services')}</span>
-          <svg width="17" height="16"><use href="#chevron-down"></use></svg>
+          <svg width='17' height='16'><use href='#chevron-down'></use></svg>
         </button>
-        <div class="item-expand">
-          <div class="max-width">
-            {
-              data.services.map(({ name, slug, icon, list }) => (
-                <div>
-                  <a href={slug} class="title">
-                    {icon && (
-                      <div class="icon">
-                        <Image {...icon} sizes="20px" />
+        <div class='item-expand'>
+          {
+            data.pillars && data.pillars.length > 0 ? (
+              <div class='max-width pillars-layout' data-active-pillar='0'>
+                <div class='pillars-list'>
+                  {data.pillars.map(({ name, slug, description, icon }, index) => (
+                    <a href={slug} class='pillar-item' data-pillar-index={index}>
+                      <div class='pillar-icon'>{icon && <Image {...icon} sizes='1.25rem' />}</div>
+                      <div class='pillar-content'>
+                        <span class='pillar-name'>{name}</span>
+                        {description && <span class='pillar-description'>{description}</span>}
                       </div>
-                    )}
-                    {name}
-                  </a>
-                  <ul>
-                    {list.map(({ name, slug }) => (
-                      <li>
-                        <a href={slug}>{name}</a>
-                      </li>
-                    ))}
-                  </ul>
+                    </a>
+                  ))}
+                  {data.servicesHubCta && (
+                    <>
+                      <div class='pillars-divider' />
+                      <Button {...data.servicesHubCta} theme='secondary' className='pillars-hub-cta' />
+                    </>
+                  )}
                 </div>
-              ))
-            }
-          </div>
+                <div class='pillars-preview'>
+                  <div class='preview-images'>
+                    {data.pillars.map(({ slug, name, img }, index) => (
+                      <a href={slug} class='preview-link' aria-label={name} data-pillar-preview-link data-pillar-index={index}>
+                        <Image {...img} sizes='(max-width: 69rem) 100vw, 32rem' />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div class='max-width'>
+                {data.services.map(({ name, slug, icon }) => (
+                  <div>
+                    <a href={slug} class='title'>
+                      {icon && (
+                        <div class='icon'>
+                          <Image {...icon} sizes='20px' />
+                        </div>
+                      )}
+                      {name}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )
+          }
         </div>
       </div>
-      <div class="item" data-tab="caseStudies">
+      <div class='item' data-tab='caseStudies'>
         <button
-          type="button"
-          class="item-button"
+          type='button'
+          class='item-button'
           aria-current={pathname.includes(data.caseStudies.slug) ? 'page' : undefined}>
           <span>{data.caseStudies.name}</span>
-          <svg width="17" height="16"><use href="#chevron-down"></use></svg>
+          <svg width='17' height='16'><use href='#chevron-down'></use></svg>
         </button>
-        <div class="item-expand">
-          <div class="max-width">
-            <div class="img">
-              {data.caseStudies.list.map(({ img }) => <Image {...img} sizes="45vw" />)}
+        <div class='item-expand'>
+          <div class='max-width'>
+            <div class='img'>
+              {data.caseStudies.list.map(({ img }) => <Image {...img} sizes='45vw' />)}
             </div>
             <div>
               <ul>
@@ -266,57 +313,65 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
                   ))
                 }
               </ul>
-              <Button href={data.caseStudies.slug} theme="secondary" className="cta">{t('header.caseStudies')}</Button>
+              <Button href={data.caseStudies.slug} theme='secondary' className='cta'>{t('header.caseStudies')}</Button>
             </div>
           </div>
         </div>
       </div>
-      <div class="item" data-tab="about">
-        <button type="button" class="item-button" aria-current={pathname.includes(data.team.slug) ? 'page' : undefined}>
+      <div class='item' data-tab='about'>
+        <button type='button' class='item-button' aria-current={pathname.includes(data.team.slug) ? 'page' : undefined}>
           <span>{data.team.name}</span>
-          <svg width="17" height="16"><use href="#chevron-down"></use></svg>
+          <svg width='17' height='16'><use href='#chevron-down'></use></svg>
         </button>
-        <div class="item-expand">
-          <div class="max-width">
+        <div class='item-expand'>
+          <div class='max-width'>
             <ul>
               {
                 data.team.list.map(({ name, slug, img }) => (
                   <li>
                     <a href={slug}>
-                      <Image {...img} sizes="78px" class="gradient-thumbnail" />
+                      <Image {...img} sizes='78px' class='gradient-thumbnail' />
                       {name}
                     </a>
                   </li>
                 ))
               }
             </ul>
-            <Button href={data.team.slug} theme="secondary" className="cta">{t('header.about')}</Button>
+            <Button href={data.team.slug} theme='secondary' className='cta'>{t('header.about')}</Button>
           </div>
         </div>
       </div>
-      <a href={data.blog.slug} class="item-button" aria-current={pathname === data.blog.slug ? 'page' : undefined}>
+      <a href={data.blog.slug} class='item-button' aria-current={pathname === data.blog.slug ? 'page' : undefined}>
         <span>{data.blog.name}</span>
       </a>
       <!-- <a href={data.shop.slug} class="item-button" aria-current={pathname === data.shop.slug ? 'page' : undefined}>
         <span>{data.shop.name}</span>
       </a> -->
-      <Button {...data.cta} className="nav-cta" />
-      {shouldShowLanguageSwitcher && <LanguageSwitcher lang={lang} alternates={alternates} class="nav-language-switcher" />}
+      <Button {...data.cta} className='nav-cta' />
+      {
+        shouldShowLanguageSwitcher && (
+          <LanguageSwitcher lang={lang} alternates={alternates} class='nav-language-switcher' />
+        )
+      }
     </nav>
-    <button type="button" class="menu-button">
+    <button type='button' class='menu-button'>
       <span>Menu</span>
-      <div class="icon">
+      <div class='icon'>
         <div></div>
         <div></div>
       </div>
     </button>
-    <Button {...data.cta} className="header-cta" />
-    {shouldShowLanguageSwitcher && <LanguageSwitcher lang={lang} alternates={alternates} class="header-language-switcher" />}
+    <Button {...data.cta} className='header-cta' />
+    {
+      shouldShowLanguageSwitcher && (
+        <LanguageSwitcher lang={lang} alternates={alternates} class='header-language-switcher' />
+      )
+    }
   </div>
 </header>
-<div class="overlay" aria-hidden="true"></div>
+<div class='overlay' aria-hidden='true'></div>
 
-<style lang="scss">
+<style lang='scss'>
   .skip-link {
     position: fixed;
     top: 2.5rem;
@@ -544,7 +599,8 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
                 color: var(--neutral-400, #c6cdcc);
               }
             }
-            .max-width {
+            // Legacy 4-column layout (fallback when pillars not configured)
+            .max-width:not(.pillars-layout) {
               display: grid;
               grid-template-columns: 1fr 1fr 1fr 1fr;
               gap: 1.25rem;
@@ -575,6 +631,121 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
               margin-left: 3.5rem;
               display: grid;
               gap: 0.25rem;
+            }
+            // New pillar-first layout
+            .pillars-layout {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: clamp(3rem, calc(5vw / 0.48), 5rem);
+              align-items: flex-start;
+            }
+            .pillars-list {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 0.75rem clamp(1.5rem, calc(2.5rem / 0.48), 2.5rem);
+            }
+            .pillar-item {
+              display: grid;
+              grid-template-columns: auto 1fr;
+              align-items: flex-start;
+              gap: 0.75rem;
+              padding: 0.5rem 0;
+              transition:
+                color 500ms var(--easing),
+                transform 500ms var(--easing);
+              &:hover {
+                color: var(--neutral-400, #c6cdcc);
+                transform: translateX(0.175rem);
+              }
+            }
+            .pillar-icon {
+              border-radius: 50%;
+              border: 1px solid var(--primary-600, #042b2b);
+              background: var(--primary-gradient-900);
+              width: 2.5rem;
+              height: 2.5rem;
+              display: grid;
+              place-items: center;
+              flex-shrink: 0;
+              img {
+                width: 1.125rem;
+                height: 1.125rem;
+              }
+            }
+            .pillar-content {
+              display: flex;
+              flex-direction: column;
+              gap: 0.125rem;
+              padding-top: 0.1875rem;
+            }
+            .pillar-name {
+              font-size: var(--typography-body-xl, 1rem);
+              line-height: 1.4;
+            }
+            .pillar-description {
+              font-size: var(--typography-body-s, 0.875rem);
+              color: var(--neutral-500, #75758a);
+              line-height: 1.5;
+            }
+            .pillars-divider {
+              grid-column: 1 / -1;
+              height: 1px;
+              background-color: var(--primary-500, #064040);
+              margin: 0.5rem 0;
+            }
+            .pillars-hub-cta {
+              grid-column: 1 / -1;
+              width: fit-content;
+            }
+            .pillars-preview {
+              .preview-images {
+                aspect-ratio: 32.75 / 18.4375;
+                position: relative;
+                overflow: hidden;
+                .preview-link {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  right: 0;
+                  bottom: 0;
+                  opacity: 0;
+                  filter: blur(4px);
+                  transform: scale(1.03);
+                  min-height: 0;
+                  pointer-events: none;
+                  transition: none;
+                  display: block;
+                  cursor: pointer;
+                  &:hover {
+                    color: inherit;
+                  }
+                  img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition:
+                      transform 350ms var(--easing),
+                      filter 350ms var(--easing);
+                  }
+                  &:hover img,
+                  &:focus-visible img {
+                    transform: scale(1.025);
+                    filter: brightness(1.08);
+                  }
+                }
+              }
+            }
+            .pillars-layout[data-active-pillar='0'] .preview-images .preview-link:nth-child(1),
+            .pillars-layout[data-active-pillar='1'] .preview-images .preview-link:nth-child(2),
+            .pillars-layout[data-active-pillar='2'] .preview-images .preview-link:nth-child(3),
+            .pillars-layout[data-active-pillar='3'] .preview-images .preview-link:nth-child(4) {
+              filter: blur(0);
+              opacity: 1;
+              pointer-events: auto;
+              transition:
+                filter 500ms var(--easing),
+                transform 500ms var(--easing);
+              transform: scale(1);
             }
           }
         }
@@ -835,7 +1006,7 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
           }
           &[data-tab='services'] {
             .item-expand {
-              .max-width {
+              .max-width:not(.pillars-layout) {
                 grid-template-columns: 1fr;
               }
               .title {
@@ -846,6 +1017,32 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
               }
               ul {
                 margin-left: unset;
+              }
+              // Mobile pillar layout
+              .pillars-layout {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+              }
+              .pillars-list {
+                grid-template-columns: 1fr;
+                gap: 0.25rem;
+              }
+              .pillars-preview {
+                display: none;
+              }
+              .pillar-item {
+                padding: 0.5rem 0;
+              }
+              .pillar-icon {
+                width: 2rem;
+                height: 2rem;
+                order: 1;
+              }
+              .pillar-content {
+                order: 0;
+              }
+              .pillars-divider {
+                margin: 1.5rem 0 0.5rem;
               }
             }
           }
@@ -1017,4 +1214,35 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeExpandItems()
   })
+
+  function initPillarPreviewState() {
+    const servicesExpand = header.querySelector('.item[data-tab="services"] .item-expand')
+    const pillarsLayout = servicesExpand?.querySelector('.pillars-layout') as HTMLElement | null
+    if (!pillarsLayout) return
+
+    const pillarItems = Array.from(pillarsLayout.querySelectorAll('.pillar-item')) as HTMLAnchorElement[]
+    const previewLinks = Array.from(pillarsLayout.querySelectorAll('[data-pillar-preview-link]')) as HTMLAnchorElement[]
+    if (pillarItems.length === 0 || previewLinks.length === 0) return
+
+    const setActivePillar = (index: number) => {
+      if (index < 0 || index >= previewLinks.length) return
+      pillarsLayout.setAttribute('data-active-pillar', String(index))
+      previewLinks.forEach((link, currentIndex) => {
+        const isActive = currentIndex === index
+        link.tabIndex = isActive ? 0 : -1
+        link.setAttribute('aria-hidden', isActive ? 'false' : 'true')
+      })
+    }
+
+    setActivePillar(0)
+
+    pillarItems.forEach((pillarItem) => {
+      const index = Number(pillarItem.getAttribute('data-pillar-index'))
+      if (!Number.isFinite(index)) return
+      pillarItem.addEventListener('mouseenter', () => setActivePillar(index))
+      pillarItem.addEventListener('focus', () => setActivePillar(index))
+    })
+  }
+
+  initPillarPreviewState()
 </script>

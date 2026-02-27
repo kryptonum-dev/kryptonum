@@ -5,7 +5,16 @@ import Button, { ButtonDataQuery, type ButtonDataProps } from '@repo/ui/Button'
 
 export const NetworkedShowcase_Query = `
   _type == "NetworkedShowcase" => {
-    tags[],
+    tagsAsLinks,
+    tagsAsLinks != true => {
+      tags[],
+    },
+    tagsAsLinks == true => {
+      linkedTags[] {
+        name,
+        "slug": page->slug.current,
+      },
+    },
     status,
     ${PortableTextQuery('heading')}
     ${PortableTextQuery('paragraph')}
@@ -16,18 +25,46 @@ export const NetworkedShowcase_Query = `
       rating,
       url,
     },
-    pages[] -> {
-      ${ImageDataQuery('img')}
-      name,
-      "slug": slug.current,
+    showVideo,
+    showVideo != true => {
+      pages[] -> {
+        ${ImageDataQuery('img')}
+        name,
+        "slug": slug.current,
+      },
+    },
+    showVideo == true => {
+      video {
+        "playbackId": asset.asset->playbackId,
+        useVideoThumbnail,
+        "thumbnailPlaybackId": thumbnailVideo.asset->playbackId,
+        "poster": poster.asset->url,
+      },
     },
   },
 `
 
+// Linked tag item (name + optional internal link)
+type LinkedTagItem = {
+  name: string
+  slug?: string
+}
+
+// Video data for hero video mode
+type VideoData = {
+  playbackId: string
+  useVideoThumbnail?: boolean
+  thumbnailPlaybackId?: string
+  poster?: string
+}
+
 type Props = {
   index: number
   sectionId?: string
+  // Tags: either plain strings OR linked items (based on tagsAsLinks)
+  tagsAsLinks?: boolean
   tags?: string[]
+  linkedTags?: LinkedTagItem[]
   status?: string
   heading: PortableTextValue
   paragraph: PortableTextValue
@@ -38,17 +75,23 @@ type Props = {
     rating: number
     url: string
   }
-  pages: {
+  // Right column: either pages OR video (based on showVideo)
+  showVideo?: boolean
+  pages?: {
     img: ImageDataProps
     name: string
     slug: string
   }[]
+  video?: VideoData
 }
 
 const {
   index,
   sectionId,
+  // Tags
+  tagsAsLinks = false,
   tags,
+  linkedTags,
   status,
   heading,
   paragraph,
@@ -56,11 +99,18 @@ const {
   showRating,
   scrollToSectionId: _scrollToSectionId,
   googleData,
+  // Right column
+  showVideo = false,
   pages,
+  video,
 } = Astro.props
+
+// Compute tags data for rendering (normalize both formats)
+const tagsData = tagsAsLinks && linkedTags ? linkedTags : (tags?.map((tag) => ({ name: tag, slug: undefined })) ?? [])
 
 const reviewUrl = _scrollToSectionId ?? googleData.url
 
+// Generate CSS keyframes for tags vertical slider animation
 const generateTagsAnimation = (elements: number) => {
   let keyframesCSS = `@keyframes NetworkedShowcase_Tags {`
   Array.from({ length: elements }).forEach((_, index) => {
@@ -76,76 +126,96 @@ const generateTagsAnimation = (elements: number) => {
   keyframesCSS += `}`
   return keyframesCSS
 }
+
+// Check if any tags have links (for styling purposes)
+const hasLinkedTags = tagsData.some((tag) => tag.slug)
 ---
 
-<section class="NetworkedShowcase" id={sectionId}>
+<section class='NetworkedShowcase' id={sectionId} data-has-linked-tags={hasLinkedTags}>
   <header>
     {
-      (tags || status) && (
-        <div class="wrapper">
-          {tags && (
-            <div class="tags">
-              <div class="tags-slider" style={`animation: NetworkedShowcase_Tags ${tags.length * 1.5}s infinite;`}>
-                {tags.map((tag) => (
-                  <p>{tag}</p>
-                ))}
-                <p aria-hidden="true">{tags[0]}</p>
+      (tagsData.length > 0 || status) && (
+        <div class='wrapper'>
+          {tagsData.length > 0 && (
+            <div class='tags'>
+              <div class='tags-slider' style={`animation: NetworkedShowcase_Tags ${tagsData.length * 1.5}s infinite;`}>
+                {tagsData.map((tag) =>
+                  tag.slug ? (
+                    <a href={tag.slug} class='tag-item' data-linked='true'>
+                      {tag.name}
+                    </a>
+                  ) : (
+                    <p class='tag-item' data-linked='false'>
+                      {tag.name}
+                    </p>
+                  )
+                )}
+                {/* Duplicate first item for seamless loop */}
+                {tagsData[0]?.slug ? (
+                  <a href={tagsData[0].slug} class='tag-item' data-linked='true' aria-hidden='true'>
+                    {tagsData[0].name}
+                  </a>
+                ) : (
+                  <p class='tag-item' data-linked='false' aria-hidden='true'>
+                    {tagsData[0]?.name}
+                  </p>
+                )}
               </div>
-              <Fragment set:html={`<style>${generateTagsAnimation(tags.length + 1)}</style>`} />
+              <Fragment set:html={`<style>${generateTagsAnimation(tagsData.length + 1)}</style>`} />
             </div>
           )}
-          {status && <p class="status">{status}</p>}
+          {status && <p class='status'>{status}</p>}
         </div>
       )
     }
-    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h1" />
-    <PortableText value={paragraph} class="paragraph" />
-    <div class="cta-wrapper">
+    <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class='heading h1' />
+    <PortableText value={paragraph} class='paragraph' />
+    <div class='cta-wrapper'>
       {ctas?.map((cta) => <Button {...cta} />)}
       {
         showRating && (
           <a
-            class="rating"
+            class='rating'
             href={reviewUrl}
             {...(!_scrollToSectionId && {
               target: '_blank',
               rel: 'noopener',
               ariaLabel: 'Sprawdź opinie w Google',
             })}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="none" viewBox="0 0 17 17">
+            <svg xmlns='http://www.w3.org/2000/svg' width='17' height='17' fill='none' viewBox='0 0 17 17'>
               <path
-                fill="#4280EF"
-                d="M16.496 8.692c0-.54-.053-1.096-.142-1.618H8.656v3.079h4.41a3.625 3.625 0 0 1-1.636 2.417l2.63 2c1.547-1.409 2.436-3.461 2.436-5.878Z"
+                fill='#4280EF'
+                d='M16.496 8.692c0-.54-.053-1.096-.142-1.618H8.656v3.079h4.41a3.625 3.625 0 0 1-1.636 2.417l2.63 2c1.547-1.409 2.436-3.461 2.436-5.878Z'
               />
               <path
-                fill="#34A353"
-                d="M8.656 16.482c2.204 0 4.053-.713 5.404-1.93l-2.63-1.983c-.73.487-1.672.765-2.774.765-2.133 0-3.929-1.409-4.587-3.287l-2.702 2.035c1.387 2.695 4.196 4.4 7.29 4.4Z"
+                fill='#34A353'
+                d='M8.656 16.482c2.204 0 4.053-.713 5.404-1.93l-2.63-1.983c-.73.487-1.672.765-2.774.765-2.133 0-3.929-1.409-4.587-3.287l-2.702 2.035c1.387 2.695 4.196 4.4 7.29 4.4Z'
               />
               <path
-                fill="#F6B704"
-                d="M4.077 10.031a4.75 4.75 0 0 1 0-3.06L1.374 4.917a7.838 7.838 0 0 0 0 7.165l2.703-2.052Z"
+                fill='#F6B704'
+                d='M4.077 10.031a4.75 4.75 0 0 1 0-3.06L1.374 4.917a7.838 7.838 0 0 0 0 7.165l2.703-2.052Z'
               />
               <path
-                fill="#E54335"
-                d="M8.656 3.681a4.507 4.507 0 0 1 3.129 1.2l2.329-2.296C12.638 1.23 10.683.5 8.656.516c-3.093 0-5.902 1.705-7.289 4.4L4.07 6.969c.658-1.896 2.454-3.287 4.587-3.287Z"
+                fill='#E54335'
+                d='M8.656 3.681a4.507 4.507 0 0 1 3.129 1.2l2.329-2.296C12.638 1.23 10.683.5 8.656.516c-3.093 0-5.902 1.705-7.289 4.4L4.07 6.969c.658-1.896 2.454-3.287 4.587-3.287Z'
               />
             </svg>
             <span>{googleData.rating.toFixed(1)}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 13 13" class="star">
+            <svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='none' viewBox='0 0 13 13' class='star'>
               <path
-                fill="url(#paint0_linear_6320_10332)"
-                d="M5.077 3.204C5.71 2.068 6.027 1.5 6.5 1.5c.473 0 .79.568 1.423 1.704l.164.294c.18.323.27.484.41.59.14.107.316.147.665.226l.318.072c1.23.278 1.845.417 1.991.888.147.47-.273.96-1.111 1.941l-.217.254c-.238.278-.357.418-.41.59-.055.172-.037.358 0 .73l.032.338c.127 1.308.19 1.962-.193 2.253-.383.29-.958.026-2.11-.504l-.298-.138c-.327-.15-.49-.226-.664-.226-.173 0-.337.076-.664.226l-.298.138c-1.152.53-1.727.795-2.11.504-.383-.29-.32-.945-.193-2.253l.032-.338c.037-.372.055-.558 0-.73-.053-.172-.172-.312-.41-.59l-.217-.254c-.838-.98-1.258-1.47-1.111-1.941.146-.47.76-.61 1.99-.888l.319-.072c.35-.079.524-.119.664-.225.14-.107.23-.268.41-.59l.165-.295Z"
+                fill='url(#paint0_linear_6320_10332)'
+                d='M5.077 3.204C5.71 2.068 6.027 1.5 6.5 1.5c.473 0 .79.568 1.423 1.704l.164.294c.18.323.27.484.41.59.14.107.316.147.665.226l.318.072c1.23.278 1.845.417 1.991.888.147.47-.273.96-1.111 1.941l-.217.254c-.238.278-.357.418-.41.59-.055.172-.037.358 0 .73l.032.338c.127 1.308.19 1.962-.193 2.253-.383.29-.958.026-2.11-.504l-.298-.138c-.327-.15-.49-.226-.664-.226-.173 0-.337.076-.664.226l-.298.138c-1.152.53-1.727.795-2.11.504-.383-.29-.32-.945-.193-2.253l.032-.338c.037-.372.055-.558 0-.73-.053-.172-.172-.312-.41-.59l-.217-.254c-.838-.98-1.258-1.47-1.111-1.941.146-.47.76-.61 1.99-.888l.319-.072c.35-.079.524-.119.664-.225.14-.107.23-.268.41-.59l.165-.295Z'
               />
               <defs>
                 <linearGradient
-                  id="paint0_linear_6320_10332"
-                  x1="11.313"
-                  x2=".905"
-                  y1="1.5"
-                  y2="2.163"
-                  gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#2DD282" />
-                  <stop offset="1" stop-color="#90F4E8" />
+                  id='paint0_linear_6320_10332'
+                  x1='11.313'
+                  x2='.905'
+                  y1='1.5'
+                  y2='2.163'
+                  gradientUnits='userSpaceOnUse'>
+                  <stop stop-color='#2DD282' />
+                  <stop offset='1' stop-color='#90F4E8' />
                 </linearGradient>
               </defs>
             </svg>
@@ -154,46 +224,284 @@ const generateTagsAnimation = (elements: number) => {
       }
     </div>
   </header>
-  <div class="pages">
-    <ul>
-      {
-        pages.map(({ img, name, slug }) => (
-          <li>
-            <a href={slug} class="item">
-              <Image {...img} sizes="128px" loading={index === 0 ? 'eager' : 'lazy'} />
-              <p>{name}</p>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="130"
-      height="282"
-      fill="none"
-      viewBox="0 0 130 282"
-      class="decoration">
-      <path
-        stroke="#042B2B"
-        stroke-miterlimit="10"
-        d="M130.001 76.96h-15.647a5.135 5.135 0 0 0-3.637 1.513 5.173 5.173 0 0 0-1.506 3.65v54.625a5.173 5.173 0 0 1-1.506 3.65 5.135 5.135 0 0 1-3.637 1.512h-5.027a5.133 5.133 0 0 0-3.636 1.512 5.172 5.172 0 0 0-1.507 3.65v51.877c0 1.369.542 2.682 1.507 3.65a5.133 5.133 0 0 0 3.636 1.512h30.96M64.763.82h-56.3a5.133 5.133 0 0 0-3.636 1.512 5.172 5.172 0 0 0-1.507 3.65v130.699c0 1.369.542 2.682 1.507 3.65a5.133 5.133 0 0 0 3.636 1.512h23.142c1.364 0 2.672.544 3.637 1.512a5.172 5.172 0 0 1 1.506 3.65v129.047c0 1.369.542 2.682 1.506 3.65a5.133 5.133 0 0 0 3.637 1.512h22.846"
-        style="animation-delay: 1300ms">
-      </path>
-      <path
-        stroke="#042B2B"
-        stroke-miterlimit="10"
-        d="M122.544 76.96H41.932a5.134 5.134 0 0 0-3.637 1.513 5.172 5.172 0 0 0-1.506 3.65v64.885"
-        style="animation-delay: 1300ms">
-      </path>
-      <circle cx="3" cy="30.5" r="3" fill="#042B2B" style="animation-delay: 1500ms"></circle>
-      <circle cx="37" cy="125.5" r="3" fill="#042B2B" style="animation-delay: 1600ms"></circle>
-      <circle cx="94" cy="184.5" r="3" fill="#042B2B" style="animation-delay: 1700ms"></circle>
-    </svg>
-  </div>
+  {showVideo && video ? (
+    <div class='video-showcase' tabindex='0' aria-label='Odtwórz wideo'>
+      <svg xmlns='http://www.w3.org/2000/svg' class='decoration' width='130' height='480' viewBox='0 0 130 480' fill='none' aria-hidden='true'>
+        <path stroke='#042B2B' stroke-miterlimit='10' d='M65 0v35a5 5 0 0 1-5 5H10a5 5 0 0 0-5 5v140a5 5 0 0 0 5 5h25a5 5 0 0 1 5 5v45a5 5 0 0 0 5 5h85' />
+        <path stroke='#042B2B' stroke-miterlimit='10' d='M35 120h60a5 5 0 0 1 5 5v15a5 5 0 0 0 5 5h25' />
+        <path stroke='#042B2B' stroke-miterlimit='10' d='M40 245v150a5 5 0 0 0 5 5h85' />
+        <circle cx='65' cy='3' r='3' fill='#042B2B' style='animation-delay: 1400ms' />
+        <circle cx='5' cy='100' r='3' fill='#042B2B' style='animation-delay: 1500ms' />
+        <circle cx='35' cy='190' r='3' fill='#042B2B' style='animation-delay: 1600ms' />
+        <circle cx='40' cy='320' r='3' fill='#042B2B' style='animation-delay: 1700ms' />
+      </svg>
+      
+      <div class='video-frame' data-loaded='false'>
+        {video.useVideoThumbnail && video.thumbnailPlaybackId && (
+          <div class='loading-placeholder'>
+            <img src={`https://image.mux.com/${video.thumbnailPlaybackId}/thumbnail.webp?width=160&height=284&fit_mode=crop`} alt='' loading='eager' />
+          </div>
+        )}
+        {video.useVideoThumbnail && video.thumbnailPlaybackId ? (
+          <mux-player playback-id={video.thumbnailPlaybackId} muted autoplay loop disable-cookies disable-tracking class='thumbnail-video' style='--controls: none;' />
+        ) : (
+          <img src={video.poster || `https://image.mux.com/${video.playbackId}/thumbnail.webp?width=640&height=1138&fit_mode=crop`} alt='' class='thumbnail-image' loading='eager' />
+        )}
+        <div class='vignette-overlay'></div>
+        <div class='hover-overlay'></div>
+        <div class='play-button'>
+          <div class='play-icon'>
+            <svg viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M8 5v14l11-7z' /></svg>
+          </div>
+          <span class='play-text'>Odtwórz</span>
+        </div>
+        {(video.playbackId || video.thumbnailPlaybackId) && (
+          <mux-player playback-id={video.playbackId || video.thumbnailPlaybackId} disable-cookies disable-tracking primary-color='#fff' accent-color='#2DD282' class='inline-full-video' />
+        )}
+      </div>
+      
+      <svg xmlns='http://www.w3.org/2000/svg' class='decoration-right' width='140' height='340' viewBox='0 0 140 340' fill='none' aria-hidden='true'>
+        <path stroke='#042B2B' stroke-miterlimit='10' d='M0 55h50a5 5 0 0 0 5-5V28a5 5 0 0 1 5-5h55a5 5 0 0 0 5-5V0' />
+        <path stroke='#042B2B' stroke-miterlimit='10' d='M0 125h70a5 5 0 0 0 5-5v-28a5 5 0 0 1 5-5h35' />
+        <path stroke='#042B2B' stroke-miterlimit='10' d='M0 195h85a5 5 0 0 1 5 5v20a5 5 0 0 0 5 5h28' />
+        <path stroke='#042B2B' stroke-miterlimit='10' d='M0 280h35a5 5 0 0 1 5 5v35a5 5 0 0 0 5 5h42' />
+        <circle cx='120' cy='3' r='2.5' fill='#042B2B' />
+        <circle cx='115' cy='87' r='2' fill='#042B2B' />
+        <circle cx='123' cy='225' r='2.5' fill='#042B2B' />
+        <circle cx='87' cy='325' r='2' fill='#042B2B' />
+      </svg>
+      
+    </div>
+  ) : (
+    <div class='pages'>
+      <ul>
+        {
+          pages?.map(({ img, name, slug }) => (
+            <li>
+              <a href={slug} class='item'>
+                <Image {...img} sizes='128px' loading={index === 0 ? 'eager' : 'lazy'} />
+                <p>{name}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='130'
+        height='282'
+        fill='none'
+        viewBox='0 0 130 282'
+        class='decoration'>
+        <path
+          stroke='#042B2B'
+          stroke-miterlimit='10'
+          d='M130.001 76.96h-15.647a5.135 5.135 0 0 0-3.637 1.513 5.173 5.173 0 0 0-1.506 3.65v54.625a5.173 5.173 0 0 1-1.506 3.65 5.135 5.135 0 0 1-3.637 1.512h-5.027a5.133 5.133 0 0 0-3.636 1.512 5.172 5.172 0 0 0-1.507 3.65v51.877c0 1.369.542 2.682 1.507 3.65a5.133 5.133 0 0 0 3.636 1.512h30.96M64.763.82h-56.3a5.133 5.133 0 0 0-3.636 1.512 5.172 5.172 0 0 0-1.507 3.65v130.699c0 1.369.542 2.682 1.507 3.65a5.133 5.133 0 0 0 3.636 1.512h23.142c1.364 0 2.672.544 3.637 1.512a5.172 5.172 0 0 1 1.506 3.65v129.047c0 1.369.542 2.682 1.506 3.65a5.133 5.133 0 0 0 3.637 1.512h22.846'
+          style='animation-delay: 1300ms'>
+        </path>
+        <path
+          stroke='#042B2B'
+          stroke-miterlimit='10'
+          d='M122.544 76.96H41.932a5.134 5.134 0 0 0-3.637 1.513 5.172 5.172 0 0 0-1.506 3.65v64.885'
+          style='animation-delay: 1300ms'>
+        </path>
+        <circle cx='3' cy='30.5' r='3' fill='#042B2B' style='animation-delay: 1500ms'></circle>
+        <circle cx='37' cy='125.5' r='3' fill='#042B2B' style='animation-delay: 1600ms'></circle>
+        <circle cx='94' cy='184.5' r='3' fill='#042B2B' style='animation-delay: 1700ms'></circle>
+      </svg>
+    </div>
+  )}
 </section>
 
-<style lang="scss">
+{/* Video Modal - uses playbackId if available, falls back to thumbnailPlaybackId */}
+{showVideo && video && (video.playbackId || video.thumbnailPlaybackId) && (
+  <div class='NetworkedShowcase-VideoModal' id='networked-showcase-video-modal' data-open='false' aria-hidden='true' inert>
+    <div class='backdrop'></div>
+    <div class='modal-content'>
+      <div class='video-container'>
+        <mux-player
+          playback-id={video.playbackId || video.thumbnailPlaybackId}
+          disable-cookies
+          disable-tracking
+          primary-color='#fff'
+          accent-color='#2DD282'
+        />
+      </div>
+      <button class='close-btn' type='button' aria-label='Zamknij wideo'>
+        <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' aria-hidden='true'>
+          <path d='M18 6L6 18M6 6l12 12' />
+        </svg>
+      </button>
+    </div>
+  </div>
+)}
+
+{/* Mux Player import */}
+{showVideo && video && (
+  <script>
+    // Lazy load mux-player when video showcase is in view
+    const muxObserver = new IntersectionObserver(
+      async (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            await import('@mux/mux-player');
+            muxObserver.disconnect();
+            
+            // Wait for mux-player to be defined, then listen for video load
+            customElements.whenDefined('mux-player').then(() => {
+              const videoFrame = document.querySelector('.NetworkedShowcase .video-frame');
+              const muxPlayer = videoFrame?.querySelector('mux-player') as any;
+              
+              if (muxPlayer) {
+                // Listen for when video is ready to play
+                const markLoaded = () => {
+                  videoFrame?.setAttribute('data-loaded', 'true');
+                };
+                
+                // Check if already loaded
+                if (muxPlayer.readyState >= 2) {
+                  markLoaded();
+                } else {
+                  muxPlayer.addEventListener('canplay', markLoaded, { once: true });
+                  // Fallback: mark as loaded after a short delay
+                  setTimeout(markLoaded, 2000);
+                }
+              }
+            });
+          }
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    const videoShowcase = document.querySelector('.NetworkedShowcase .video-showcase');
+    if (videoShowcase) muxObserver.observe(videoShowcase);
+  </script>
+)}
+
+{/* Video interaction script */}
+{showVideo && video && (
+  <script>
+    function initNetworkedShowcaseVideo() {
+      const showcase = document.querySelector('.NetworkedShowcase .video-showcase') as HTMLDivElement | null;
+      if (!showcase) return;
+      
+      const videoFrame = showcase.querySelector('.video-frame') as HTMLDivElement | null;
+      if (!videoFrame) return;
+      
+      const isMobile = () => window.innerWidth <= 544;
+      
+      const handlePlay = () => {
+        if (isMobile()) playInline();
+        else openVideoModal();
+      };
+      
+      const playInline = () => {
+        const inlineVideo = videoFrame.querySelector('.inline-full-video') as HTMLElement | null;
+        if (!inlineVideo) return;
+        if (videoFrame.getAttribute('data-playing-inline') === 'true') return;
+        
+        videoFrame.setAttribute('data-playing-inline', 'true');
+        (inlineVideo as any).muted = false;
+        if ('play' in inlineVideo) (inlineVideo as any).play().catch(() => {});
+        
+        const handleEnded = () => {
+          videoFrame.removeAttribute('data-playing-inline');
+          (inlineVideo as any).muted = true;
+          (inlineVideo as any).currentTime = 0;
+        };
+        inlineVideo.removeEventListener('ended', handleEnded);
+        inlineVideo.addEventListener('ended', handleEnded, { once: true });
+      };
+      
+      videoFrame.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('.inline-full-video')) return;
+        handlePlay();
+      });
+      
+      showcase.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handlePlay(); }
+      });
+      
+      const handleResize = () => {
+        const isNowDesktop = window.innerWidth > 544;
+        const isPlayingInline = videoFrame.getAttribute('data-playing-inline') === 'true';
+        
+        if (isNowDesktop && isPlayingInline) {
+          const inlineVideo = videoFrame.querySelector('.inline-full-video') as HTMLElement | null;
+          if (inlineVideo) {
+            if ('pause' in inlineVideo) (inlineVideo as any).pause();
+            (inlineVideo as any).muted = true;
+            (inlineVideo as any).currentTime = 0;
+          }
+          videoFrame.removeAttribute('data-playing-inline');
+        }
+      };
+      window.addEventListener('resize', handleResize);
+    }
+    
+    function openVideoModal() {
+      const modal = document.getElementById('networked-showcase-video-modal') as HTMLDivElement | null;
+      if (!modal) return;
+      
+      const muxPlayer = modal.querySelector('mux-player') as HTMLElement | null;
+      const backdrop = modal.querySelector('.backdrop') as HTMLDivElement | null;
+      const closeBtn = modal.querySelector('.close-btn') as HTMLButtonElement | null;
+      
+      modal.removeAttribute('inert');
+      modal.setAttribute('data-open', 'true');
+      modal.setAttribute('aria-hidden', 'false');
+      document.documentElement.style.overflow = 'hidden';
+      closeBtn?.focus();
+      
+      setTimeout(() => {
+        if (muxPlayer) {
+          (muxPlayer as any).muted = false;
+          if ('play' in muxPlayer) (muxPlayer as any).play().catch(() => {});
+        }
+      }, 150);
+      
+      const closeModal = () => {
+        modal.setAttribute('data-open', 'false');
+        modal.setAttribute('aria-hidden', 'true');
+        modal.setAttribute('inert', '');
+        document.documentElement.style.overflow = '';
+        if (muxPlayer && 'pause' in muxPlayer) (muxPlayer as any).pause();
+        backdrop?.removeEventListener('click', closeModal);
+        closeBtn?.removeEventListener('click', closeModal);
+        document.removeEventListener('keydown', handleKeydown);
+        window.removeEventListener('resize', handleResizeToMobile);
+        const videoFrame = document.querySelector('.NetworkedShowcase .video-showcase') as HTMLElement | null;
+        videoFrame?.focus();
+      };
+      
+      const handleResizeToMobile = () => {
+        if (window.innerWidth <= 544 && modal.getAttribute('data-open') === 'true') closeModal();
+      };
+      
+      window.addEventListener('resize', handleResizeToMobile);
+      
+      const handleKeydown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') { closeModal(); return; }
+        if (e.key === 'Tab') {
+          const focusableElements = [closeBtn, muxPlayer].filter(Boolean) as HTMLElement[];
+          const firstEl = focusableElements[0];
+          const lastEl = focusableElements[focusableElements.length - 1];
+          if (e.shiftKey && document.activeElement === firstEl) { e.preventDefault(); lastEl?.focus(); }
+          else if (!e.shiftKey && document.activeElement === lastEl) { e.preventDefault(); firstEl?.focus(); }
+        }
+      };
+      
+      backdrop?.addEventListener('click', closeModal);
+      closeBtn?.addEventListener('click', closeModal);
+      document.addEventListener('keydown', handleKeydown);
+    }
+    
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initNetworkedShowcaseVideo);
+    else initNetworkedShowcaseVideo();
+  </script>
+)}
+
+<style lang='scss'>
   .NetworkedShowcase {
     padding: clamp(4rem, calc(5vw / 0.48), 6rem) 0;
     display: grid;
@@ -214,11 +522,25 @@ const generateTagsAnimation = (elements: number) => {
           .tags-slider {
             display: inline-flex;
             flex-direction: column;
-            p {
+
+            .tag-item {
               height: 1.5rem;
               display: grid;
               place-items: center;
+              text-decoration: none;
+              color: inherit;
+              border-radius: 4px;
+              padding: 0 0.25rem;
+              margin: 0 -0.25rem;
+
+              &[data-linked='true'] {
+                cursor: pointer;
+                transition: color 300ms var(--easing);
+                outline: none;
+                &:hover, &:focus { color: var(--neutral-400, #c6cdcc); }
+              }
             }
+            &:has(.tag-item:focus) { animation-play-state: paused !important; }
           }
         }
         .status {
@@ -472,6 +794,12 @@ const generateTagsAnimation = (elements: number) => {
           }
         }
       }
+      
+      // Reduce padding/gap when video is shown (single column layout)
+      &:has(.video-showcase) {
+        padding-bottom: clamp(2rem, calc(3vw / 0.48), 3rem);
+        gap: clamp(2rem, calc(3vw / 0.48), 3rem);
+      }
     }
     @media (max-width: 43rem) {
       header {
@@ -491,6 +819,419 @@ const generateTagsAnimation = (elements: number) => {
           left: -11%;
         }
       }
+    }
+    
+    .video-showcase {
+      position: relative;
+      outline: none;
+      
+      &:focus-visible .video-frame {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7);
+      }
+      
+      &::before {
+        content: '';
+        display: block;
+        width: 100%;
+        max-width: 23.5rem;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        background-color: var(--primary-900, #001414);
+        mix-blend-mode: plus-lighter;
+        filter: blur(64px);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate3d(-50%, -50%, 0);
+        z-index: -1;
+        animation: NetworkedShowcase_Glow 800ms var(--easing) both;
+      }
+      
+      // Decoration SVG - positioned exactly like in .pages
+      .decoration {
+        width: auto;
+        height: 85%;
+        position: absolute;
+        top: 50%;
+        left: -6%;
+        transform: translate(0, -50%);
+        z-index: -1;
+        
+        path {
+          &:nth-of-type(1) { stroke-dasharray: 450; stroke-dashoffset: 450; animation: NetworkedShowcase_VideoPath 1300ms var(--easing) both; }
+          &:nth-of-type(2) { stroke-dasharray: 130; stroke-dashoffset: 130; animation: NetworkedShowcase_VideoPath 1000ms 400ms var(--easing) both; }
+          &:nth-of-type(3) { stroke-dasharray: 250; stroke-dashoffset: 250; animation: NetworkedShowcase_VideoPath 1100ms 600ms var(--easing) both; }
+        }
+        
+        @keyframes NetworkedShowcase_VideoPath { to { stroke-dashoffset: 0; } }
+        
+        circle { transform-origin: center; transform-box: fill-box; animation: NetworkedShowcase_VideoNode 800ms var(--easing) both; }
+        
+        @keyframes NetworkedShowcase_VideoNode { from { transform: scale(0); } to { transform: scale(1); } }
+      }
+      
+      .video-frame {
+        position: relative;
+        aspect-ratio: 9 / 16;
+        max-width: 320px;
+        margin-left: 15%;
+        border-radius: 4px;
+        overflow: hidden;
+        background:
+          linear-gradient(266deg, #0b0f0d, #011310, #001f1b) padding-box,
+          linear-gradient(266deg, #05432d66, #05503566, #1f6644, #11353133) border-box;
+        border: 1px solid transparent;
+        z-index: 1;
+        animation: NetworkedShowcase_VideoFrameIn 1600ms var(--easing) both;
+        
+        @keyframes NetworkedShowcase_VideoFrameIn {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        
+        &::before {
+          content: '';
+          height: 100%;
+          aspect-ratio: 1/1;
+          background-color: var(--primary-500, #064040);
+          filter: blur(48px);
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate3d(-50%, 0%, 0);
+          z-index: -1;
+          transition: opacity 800ms var(--easing), transform 800ms var(--easing);
+          opacity: 0;
+        }
+        
+        video,
+        .thumbnail-image,
+        mux-player:not(.inline-full-video) {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: transform 600ms var(--easing);
+          --media-object-fit: cover;
+        }
+        
+        .inline-full-video {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+          z-index: -1;
+          border-radius: 8px;
+          --media-object-fit: cover;
+          transition: opacity 300ms var(--easing);
+          @media (min-width: 34.0625rem) { display: none !important; }
+        }
+        
+        &[data-playing-inline='true'] {
+          cursor: default;
+          .inline-full-video { opacity: 1; z-index: 10; }
+          .thumbnail-video, mux-player:not(.inline-full-video), .vignette-overlay, .hover-overlay, .loading-placeholder, .play-button {
+            opacity: 0;
+            pointer-events: none;
+          }
+        }
+        
+        .loading-placeholder {
+          position: absolute;
+          inset: 0;
+          z-index: 2;
+          overflow: hidden;
+          pointer-events: none;
+          transition: opacity 800ms var(--easing);
+          
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(20px) saturate(0.7) brightness(0.6);
+            transform: scale(1.1);
+          }
+          
+          &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 20%, rgba(45, 210, 130, 0.03) 40%, rgba(45, 210, 130, 0.06) 50%, rgba(45, 210, 130, 0.03) 60%, transparent 80%);
+            animation: NetworkedShowcase_LoadingShimmer 2s ease-in-out infinite;
+          }
+        }
+        
+        @keyframes NetworkedShowcase_LoadingShimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        &[data-loaded='true'] .loading-placeholder { opacity: 0; pointer-events: none; }
+        
+        .vignette-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          pointer-events: none;
+          background: 
+            radial-gradient(ellipse at 0% 0%, rgba(0, 0, 0, 0.4) 0%, transparent 50%),
+            radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.4) 0%, transparent 50%),
+            radial-gradient(ellipse at 0% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 50%),
+            radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 50%),
+            linear-gradient(to right, rgba(0, 0, 0, 0.25) 0%, transparent 15%, transparent 85%, rgba(0, 0, 0, 0.25) 100%),
+            linear-gradient(to top, rgba(0, 5, 5, 0.5) 0%, transparent 40%);
+          transition: opacity 600ms var(--easing);
+        }
+        
+        .hover-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, rgba(0, 1, 3, 0.6) 0%, rgba(0, 1, 3, 0.2) 40%, transparent 70%);
+          opacity: 0;
+          transition: opacity 500ms var(--easing);
+          z-index: 1;
+          pointer-events: none;
+        }
+        
+        .play-button {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.75rem;
+          z-index: 2;
+          pointer-events: none;
+        }
+        
+        .play-icon {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          background: rgba(45, 210, 130, 0.25);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid rgba(45, 210, 130, 0.4);
+          display: grid;
+          place-items: center;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          transition: transform 500ms var(--easing), box-shadow 500ms var(--easing), background 400ms var(--easing), border-color 400ms var(--easing);
+          
+          svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--neutral-100, #f0f7f7);
+            transition: transform 300ms var(--easing), fill 300ms var(--easing);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+          }
+        }
+        
+        .play-text {
+          font-size: var(--typography-body-s, 0.75rem);
+          color: var(--neutral-200, #f0f7f7);
+          letter-spacing: 0.15em;
+          font-weight: 500;
+          opacity: 0;
+          transform: translateY(8px);
+          transition: opacity 400ms var(--easing), transform 400ms var(--easing);
+        }
+        
+        &:hover {
+          cursor: pointer;
+          &::before { opacity: 1; transform: translate3d(-50%, -50%, 0); }
+          video, .thumbnail-image, mux-player:not(.inline-full-video) { transform: scale(1.02); }
+          .vignette-overlay { opacity: 0.6; }
+          .hover-overlay { opacity: 1; }
+          .play-icon {
+            transform: scale(1.15);
+            background: var(--primary-gradient-400);
+            border-color: transparent;
+            box-shadow: 0 8px 32px rgba(45, 210, 130, 0.5), 0 0 48px rgba(45, 210, 130, 0.25);
+            svg { transform: scale(1.1); fill: var(--neutral-900, #000103); filter: none; }
+          }
+          .play-text { opacity: 1; transform: translateY(0); }
+        }
+        
+        &:active {
+          .play-icon { transform: scale(0.95); }
+          video, .thumbnail-image, mux-player:not(.inline-full-video) { transform: scale(1); }
+        }
+      }
+      
+      .decoration-right {
+        position: absolute;
+        top: 50%;
+        left: calc(15% + 320px);
+        transform: translateY(-50%);
+        height: 70%;
+        width: auto;
+        z-index: -1;
+        opacity: 0.8;
+        
+        path {
+          &:nth-of-type(1) { stroke-dasharray: 175; stroke-dashoffset: 175; animation: NetworkedShowcase_RightPath 1000ms 600ms var(--easing) both; }
+          &:nth-of-type(2) { stroke-dasharray: 140; stroke-dashoffset: 140; animation: NetworkedShowcase_RightPath 850ms 850ms var(--easing) both; }
+          &:nth-of-type(3) { stroke-dasharray: 145; stroke-dashoffset: 145; animation: NetworkedShowcase_RightPath 900ms 1000ms var(--easing) both; }
+          &:nth-of-type(4) { stroke-dasharray: 120; stroke-dashoffset: 120; animation: NetworkedShowcase_RightPath 750ms 1150ms var(--easing) both; }
+        }
+        
+        circle {
+          transform-origin: center;
+          transform-box: fill-box;
+          animation: NetworkedShowcase_RightNode 800ms var(--easing) both;
+          &:nth-of-type(1) { animation-delay: 1600ms; }
+          &:nth-of-type(2) { animation-delay: 1700ms; }
+          &:nth-of-type(3), &:nth-of-type(4) { animation-delay: 1900ms; }
+        }
+      }
+      
+      @keyframes NetworkedShowcase_RightPath { to { stroke-dashoffset: 0; } }
+      @keyframes NetworkedShowcase_RightNode { from { transform: scale(0); } to { transform: scale(1); } }
+    }
+    
+    @media (max-width: 62rem) {
+      .video-showcase {
+        max-width: 100%;
+        margin: 3rem auto 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(340px * 16 / 9);
+        
+        &::before { left: 50%; transform: translate3d(-50%, -50%, 0); max-width: 28rem; }
+        .video-frame { max-width: 340px; margin-left: 0; aspect-ratio: 9 / 16; }
+        .decoration { left: auto; right: calc(50% + 170px + 10px); height: 75%; }
+        .decoration-right { opacity: 0.7; left: calc(50% + 170px + 10px); height: 65%; }
+      }
+    }
+
+    @media (max-width: 43rem) {
+      .video-showcase {
+        .decoration { right: calc(50% + 150px + 5px); transform: translateY(-50%) scale(0.85); }
+        .decoration-right { left: calc(50% + 150px + 5px); transform: translateY(-50%) scale(0.85); }
+      }
+    }
+
+    @media (max-width: 38rem) {
+      .video-showcase {
+        .decoration { right: calc(50% + 150px + 5px); transform: translateY(-50%) scale(0.75); }
+        .decoration-right { left: calc(50% + 130px + 5px); transform: translateY(-50%) scale(0.55); }
+      }
+    }
+    
+    @media (max-width: 34rem) {
+      .video-showcase {
+        width: 100%;
+        margin: 2rem 0 0;
+        &::before { display: none; }
+        .decoration, .decoration-right { display: none; }
+        
+        .video-frame {
+          max-width: 100%;
+          width: 100%;
+          margin-left: 0;
+          aspect-ratio: 9 / 16;
+          border-radius: 8px;
+          
+          &[data-playing-inline='true'] {
+            .play-button { opacity: 0; pointer-events: none; }
+            .vignette-overlay, .hover-overlay, .loading-placeholder { opacity: 0; }
+            .inline-full-video { opacity: 1; z-index: 5; }
+          }
+          
+          .play-icon { width: 56px; height: 56px; svg { width: 22px; height: 22px; } }
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 34rem) {
+    .NetworkedShowcase-VideoModal { display: none !important; }
+  }
+  
+  .NetworkedShowcase-VideoModal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    
+    &[data-open='true'] {
+      pointer-events: auto;
+      .backdrop { opacity: 1; }
+      .modal-content { opacity: 1; transform: scale(1); }
+      .close-btn { opacity: 1; transform: scale(1); }
+    }
+    
+    .backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 1, 3, 0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 300ms var(--easing);
+    }
+    
+    .modal-content {
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transform: scale(0.85);
+      transition: opacity 350ms var(--easing), transform 400ms var(--easing);
+    }
+    
+    .video-container {
+      position: relative;
+      width: min(500px, 85vw, calc(90vh * 9 / 16));
+      height: min(calc(500px * 16 / 9), calc(85vw * 16 / 9), 90vh);
+      aspect-ratio: 9 / 16;
+      border-radius: 12px;
+      overflow: hidden;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        border: 1px solid var(--neutral-600, rgb(74, 74, 87));
+        z-index: 5;
+        pointer-events: none;
+      }
+      
+      mux-player { width: 100%; height: 100%; display: block; --media-object-fit: cover; }
+    }
+    
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: opacity 250ms var(--easing), transform 250ms var(--easing), background-color 200ms var(--easing);
+      
+      &:hover, &:focus { background: rgba(0, 0, 0, 0.8); transform: scale(1.1); outline: none; }
+      &:focus-visible { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); }
+      svg { width: 16px; height: 16px; stroke: #fff; }
+    }
+    
+    @media (max-width: 34rem) {
+      .video-container { width: min(92vw, calc(85vh * 9 / 16)); height: min(calc(92vw * 16 / 9), 85vh); }
     }
   }
 </style>

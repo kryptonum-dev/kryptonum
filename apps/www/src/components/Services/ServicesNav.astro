@@ -4,7 +4,11 @@ import PortableText, { PortableTextQuery, type PortableTextValue } from '@repo/u
 
 export const ServicesNav_Query = `
   "ServicesNav": {
-    "links": *[_type == 'Service_Collection' && slug.current match $baseServicePath + '*'] | order(_createdAt asc) {
+    "links": *[
+      _type == 'Service_Collection'
+      && coalesce(isArchived, false) != true
+      && slug.current match $baseServicePath + '*'
+    ] | order(_createdAt asc) {
       name,
       "slug": slug.current,
       ${ImageDataQuery('img')}

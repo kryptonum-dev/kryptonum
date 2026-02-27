@@ -1,0 +1,1185 @@
+{
+  "mainRedirects": [
+    {
+      "source": "/",
+      "destination": "/pl",
+      "isPermanent": true
+    },
+    {
+      "source": "/01",
+      "destination": "/pl",
+      "isPermanent": true
+    },
+    {
+      "source": "/aneta",
+      "destination": "/pl/zespol/aneta",
+      "isPermanent": true
+    },
+    {
+      "source": "/bartek",
+      "destination": "/pl/zespol/bartek",
+      "isPermanent": true
+    },
+    {
+      "source": "/blog",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/blog/jak-zdobyc-pierwszego-klienta",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/blog/strony-internetowe-na-lata",
+      "destination": "/pl/blog/o-czym-pamietac-podczas-tworzenia-stron-internetowych",
+      "isPermanent": true
+    },
+    {
+      "source": "/co-to-jest-remarketing",
+      "destination": "/pl/blog/co-to-jest-remarketing",
+      "isPermanent": true
+    },
+    {
+      "source": "/cyberataki-przyklady-i-rodzaje-atakow-hakerskich-cyberbezpieczenstwo",
+      "destination": "/pl/blog/cyberataki-przyklady-i-rodzaje-atakow-hakerskich-cyberbezpieczenstwo",
+      "isPermanent": true
+    },
+    {
+      "source": "/czym-jest-branding-i-marketing-oraz-czym-sie-roznia",
+      "destination": "/pl/blog/czym-jest-branding-i-marketing-oraz-czym-sie-roznia",
+      "isPermanent": true
+    },
+    {
+      "source": "/czym-jest-q-commerce-m-commerce-re-commerce-rodzaje-e-commerce",
+      "destination": "/pl/blog/czym-jest-q-commerce-m-commerce-re-commerce-rodzaje-e-commerce",
+      "isPermanent": true
+    },
+    {
+      "source": "/czym-jest-system-zarzadzania-trescia-strony-www",
+      "destination": "/pl/blog/czym-jest-system-zarzadzania-trescia-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/business-strategy",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/business-strategy/market-analysis–interviews",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/business-strategy/strategic-workshops",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/design-branding",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/design-branding/ui-ux-audit",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/design-branding/visual-identity-and-logo",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/design-branding/visual-workshops",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/design-branding/web-design",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/marketing-seo",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/marketing-seo/marketing-strategy",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/marketing-seo/performance-marketing",
+      "destination": "/pl/uslugi/performance-marketing",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/marketing-seo/seo",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/marketing-seo/social-media-management",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/web-development",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/web-development/bespoke-e-commerce-development",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/web-development/bespoke-websites-development",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/en/web-development/wordpress-websites-development",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/faq",
+      "destination": "/pl/kontakt",
+      "isPermanent": true
+    },
+    {
+      "source": "/ile-kosztuje-identyfikacja-wizualna-firmy",
+      "destination": "/pl/blog/ile-kosztuje-identyfikacja-wizualna-firmy",
+      "isPermanent": true
+    },
+    {
+      "source": "/jak-wybrac-agencje",
+      "destination": "/pl/blog/jak-wybrac-agencje",
+      "isPermanent": true
+    },
+    {
+      "source": "/jak-zwiekszyc-wspolczynnik-konwersji-w-sklepie-internetowym-i-na-stronie-optymalizacja-konwersji",
+      "destination": "/pl/blog/jak-zwiekszyc-wspolczynnik-konwersji-w-sklepie-internetowym-i-na-stronie-optymalizacja-konwersji",
+      "isPermanent": true
+    },
+    {
+      "source": "/jakie-sa-etapy-tworzenia-strony-internetowej",
+      "destination": "/pl/blog/jakie-sa-etapy-tworzenia-strony-internetowej",
+      "isPermanent": true
+    },
+    {
+      "source": "/jakie-sa-typy-i-rodzaje-agencji-reklamowych-i-innych",
+      "destination": "/pl/blog/jakie-sa-typy-i-rodzaje-agencji-reklamowych-i-innych",
+      "isPermanent": true
+    },
+    {
+      "source": "/kim-jest-web-developer-czym-sie-zajmuje",
+      "destination": "/pl/blog/kim-jest-web-developer-czym-sie-zajmuje",
+      "isPermanent": true
+    },
+    {
+      "source": "/kontakt",
+      "destination": "/pl/kontakt",
+      "isPermanent": true
+    },
+    {
+      "source": "/kuba",
+      "destination": "/pl/zespol/kuba",
+      "isPermanent": true
+    },
+    {
+      "source": "/michal",
+      "destination": "/pl/zespol/michal",
+      "isPermanent": true
+    },
+    {
+      "source": "/mvp-maximum-i-minimum-viable-product-and-mmf",
+      "destination": "/pl/blog/mvp-maximum-i-minimum-viable-product-and-mmf",
+      "isPermanent": true
+    },
+    {
+      "source": "/o-nas",
+      "destination": "/pl/zespol",
+      "isPermanent": true
+    },
+    {
+      "source": "/oferta",
+      "destination": "/pl",
+      "isPermanent": true
+    },
+    {
+      "source": "/onas",
+      "destination": "/pl/zespol",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/akademia",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/akademia/cala-prawda-o-mezczyznach",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/akademia/czego-pragna-kobiety",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/akademia/efekt-czystej-ekspozycji",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/akademia/kategoria/biznes",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/akademia/kategoria/design",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/akademia/kategoria/programowanie",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/akademia/kategoria/ui-ux",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/akademia/tlumaczenie-stron-internetowych",
+      "destination": "/pl/blog",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-bialystok",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-czestochowa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-gdansk",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-katowice",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-kielce",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-krakow",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-lodz",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-lublin",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-poznan",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-radom",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-rzeszow",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-sosnowiec",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-szczecin",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-warszawa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/aplikacje-internetowe-wroclaw",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/biznes-strategia",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/biznes-strategia/warsztaty-strategiczne",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/biznes-strategia/wywiady-poglebione-analiza-rynku",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/blog/2",
+      "destination": "/pl/blog/strona/2",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/blog/agencja-interaktywna-kreatywna-reklamowa-marketingowa-czym-sie-roznia",
+      "destination": "/pl/blog/jakie-sa-typy-i-rodzaje-agencji-reklamowych-i-innych",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/blog/co-to-jest-remarketing-i-na-czym-polega-kampania-remarketingowa",
+      "destination": "/pl/blog/co-to-jest-remarketing",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/blog/idealny-brief-dla-agencji",
+      "destination": "/pl/blog/jak-napisac-dobry-brief",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/branding",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/design-branding",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/design-branding/audyt-ui-ux",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/design-branding/identyfikacja-wizualna-logo",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/design-branding/identyfikacja-wizualna-logo/warszawa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/design-branding/projektowanie-stron-internetowych",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/design-branding/warsztaty-wizualne",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design-audyt-ux-ui",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design-identyfikacja-wizualna-marki",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design-projektowanie-logo",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design/audyt-ux-ui",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design/branding",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design/identyfikacja-wizualna-marki",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design/projektowanie-logo",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design/projektowanie-ui",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/grafika-design/projektowanie-ux",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/identyfikacja-wizualna-warszawa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/kto-powinien-zlecic-prace-agencji-interaktywnej",
+      "destination": "/pl/blog/wspolpraca-z-agencja-interaktywna",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/mapa-strony",
+      "destination": "/pl",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/marketing-360",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/marketing-seo",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/marketing-seo/performance-marketing",
+      "destination": "/pl/uslugi/performance-marketing",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/marketing-seo/prowadzenie-social-media",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/marketing-seo/seo-pozycjonowanie-stron-internetowych",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/marketing-seo/strategia-marketingowa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/opieka-agencyjna-www-serwis-utrzymanie-zabezpieczenie",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/portfolio/auto-welt",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/portfolio/baldur",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/portfolio/ministerstwo-srodowiska",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/portfolio/szymon-lach",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-bialystok",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-bydgoszcz",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-czestochowa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-gdansk",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-katowice",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-kielce",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-krakow",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-lodz",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-lublin",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-poznan",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-radom",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-rzeszow",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-sosnowiec",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-szczecin",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-warszawa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/aplikacje-internetowe-wroclaw",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-sklepy-internetowe",
+      "destination": "/pl/uslugi/dedykowane-sklepy-internetowe",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-sklepy-internetowe/krakow",
+      "destination": "/pl/uslugi/dedykowane-sklepy-internetowe",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-sklepy-internetowe/warszawa",
+      "destination": "/pl/uslugi/dedykowane-sklepy-internetowe",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/bialystok",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/bydgoszcz",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/gorzow-wielkopolski",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/kielce",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/krakow",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/lublin",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/olsztyn",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/opole",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/radom",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/rzeszow",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/strony-internetowe-czestochowa",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/strony-internetowe-gdansk",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/strony-internetowe-katowice",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/strony-internetowe-lodz",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/strony-internetowe-poznan",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/szczecin",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/torun",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/warszawa",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/wroclaw",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/dedykowane-strony-www/zielona-gora",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-bialystok",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-bydgoszcz",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-czestochowa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-gdansk",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-gorzow-wielkopolski",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-katowice",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-kielce",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-krakow",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-lublin",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-olsztyn",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-opole",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-poznan",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-radom",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-rzeszow",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-sosnowiec",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-szczecin",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-torun",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-warszawa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-wroclaw",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/software-house-zielona-gora",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/programowanie/strony-www-wordpress",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/sklepy-internetowe-krakow",
+      "destination": "/pl/uslugi/dedykowane-sklepy-internetowe",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/sklepy-internetowe-warszawa",
+      "destination": "/pl/uslugi/dedykowane-sklepy-internetowe",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-bialystok",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-bydgoszcz",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-czestochowa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-gdansk",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-gorzow-wielkopolski",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-katowice",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-kielce",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-krakow",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-lodz",
+      "destination": "/pl/programowanie/software-house-lodz",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-lublin",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-olsztyn",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-poznan",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-radom",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-rzeszow",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-sosnowiec",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-szczecin",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-torun",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-warszawa",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-wroclaw",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/software-house-zielona-gora",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-bialystok",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-bydgoszcz",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-czestochowa",
+      "destination": "/pl/programowanie/dedykowane-strony-www/czestochowa",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-gdansk",
+      "destination": "/pl/programowanie/dedykowane-strony-www/gdansk",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-gorzow-wielkopolski",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-katowice",
+      "destination": "/pl/programowanie/dedykowane-strony-www/katowice",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-kielce",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-krakow",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-lodz",
+      "destination": "/pl/programowanie/dedykowane-strony-www/lodz",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-lublin",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-opole",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-poznan",
+      "destination": "/pl/programowanie/dedykowane-strony-www/poznan",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-radom",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-rzeszow",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-szczecin",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-torun",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-warszawa",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-wroclaw",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/strony-internetowe-zielona-gora",
+      "destination": "/pl/uslugi/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/uslugi/marketing-dla-administracji-publicznej",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/warsztaty-discovery",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/warsztaty-discoveryZ",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/web-development",
+      "destination": "/pl/programowanie/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/web-development-sklepy-internetowe",
+      "destination": "/pl/programowanie/dedykowane-sklepy-internetowe",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/web-development-strony-internetowe",
+      "destination": "/pl/programowanie/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/web-development/aplikacje-internetowe",
+      "destination": "/pl/uslugi",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/web-development/sklepy-internetowe",
+      "destination": "/pl/programowanie/dedykowane-sklepy-internetowe",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/web-development/strony-internetowe",
+      "destination": "/pl/programowanie/dedykowane-strony-www",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/zespol/bogdan",
+      "destination": "/pl/zespol",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/zespol/damian",
+      "destination": "/pl/zespol",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/zespol/maciek",
+      "destination": "/pl/zespol",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/zespol/marcin",
+      "destination": "/pl/zespol",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/zespol/patrycja",
+      "destination": "/pl/zespol",
+      "isPermanent": true
+    },
+    {
+      "source": "/pl/zespol/przemek",
+      "destination": "/pl/zespol",
+      "isPermanent": true
+    },
+    {
+      "source": "/projekty",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/projekty/9m13",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/projekty/altwork",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/projekty/cargem",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/projekty/centrum-korekty",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/projekty/dwa-slowa",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/projekty/xminer",
+      "destination": "/pl/portfolio",
+      "isPermanent": true
+    },
+    {
+      "source": "/przemek",
+      "destination": "/pl/zespol",
+      "isPermanent": true
+    },
+    {
+      "source": "/przygotowanie-zdjec-na-strone-internetowa",
+      "destination": "/pl/blog/przygotowanie-zdjec-na-strone-internetowa",
+      "isPermanent": true
+    },
+    {
+      "source": "/tworzenie-aplikacji-low-code-i-no-code",
+      "destination": "/pl/blog/tworzenie-aplikacji-low-code-i-no-code",
+      "isPermanent": true
+    },
+    {
+      "source": "/user-flow-design",
+      "destination": "/pl/blog/user-flow-design",
+      "isPermanent": true
+    },
+    {
+      "source": "/wymiary-zdjec-i-grafik-na-social-media-w-2023-roku",
+      "destination": "/pl/blog/wymiary-zdjec-i-grafik-na-social-media-w-2023-roku",
+      "isPermanent": true
+    },
+    {
+      "source": "/zrobic-samemu-czy-zlecic-agencji",
+      "destination": "/pl/blog/zrobic-samemu-czy-zlecic-agencji",
+      "isPermanent": true
+    }
+  ],
+  "learnRedirects": []
+}

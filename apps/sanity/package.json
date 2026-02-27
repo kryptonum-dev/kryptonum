@@ -9,6 +9,7 @@
     "start": "sanity start",
     "build": "sanity build",
     "deploy": "sanity deploy",
+    "deploy:staging": "SANITY_STUDIO_HOST=kryptonum-staging sanity deploy",
     "deploy-graphql": "sanity graphql deploy"
   },
   "keywords": [
@@ -16,21 +17,22 @@
   ],
   "dependencies": {
     "@repo/utils": "workspace:*",
-    "@sanity/assist": "^5.0.2",
-    "@sanity/document-internationalization": "4.1.0",
-    "@sanity/orderable-document-list": "^1.4.0",
-    "@sanity/vision": "^4.13.0",
+    "@sanity/assist": "^5.0.4",
+    "@sanity/document-internationalization": "^4.1.1",
+    "@sanity/orderable-document-list": "^1.5.0",
     "@sanity/ui": "^3.1.11",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "sanity": "^4.13.0",
-    "sanity-plugin-iframe-pane": "^4.0.0",
+    "@sanity/vision": "^5.9.0",
+    "lucide-react": "^0.575.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "sanity": "^5.9.0",
+    "sanity-plugin-iframe-pane": "^5.0.5",
     "sanity-plugin-media-i18n": "^2.3.6",
-    "sanity-plugin-mux-input": "^2.11.0",
+    "sanity-plugin-mux-input": "^2.14.0",
     "styled-components": "^6.1.19"
   },
   "devDependencies": {
-    "@sanity/eslint-config-studio": "^5.0.2",
-    "@types/react": "^19.2.2"
+    "@sanity/eslint-config-studio": "^6.0.0",
+    "@types/react": "^19.2.10"
   }
 }
