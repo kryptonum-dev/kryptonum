@@ -6,7 +6,16 @@ import { DOMAIN } from "@repo/shared/constants";
 
 const slugs = await sanityFetch<string[]>({
   query: `
-    *[defined(slug.current) && string::startsWith(slug.current, "/pl") && _type != "NotFound_Page" && _type != "Shop_Page" && _type != "ShopProduct_Collection" && _type != "ShopThankYou_Page" && _type != "LandingPage_Collection"].slug.current
+    *[
+      defined(slug.current)
+      && string::startsWith(slug.current, "/pl")
+      && coalesce(isArchived, false) != true
+      && _type != "NotFound_Page"
+      && _type != "Shop_Page"
+      && _type != "ShopProduct_Collection"
+      && _type != "ShopThankYou_Page"
+      && _type != "LandingPage_Collection"
+    ].slug.current
   `,
 })
 

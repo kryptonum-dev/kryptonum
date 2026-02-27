@@ -65,6 +65,14 @@ export default defineType({
       validation: Rule => Rule.max(120).warning('Keep it under 120 characters for best display'),
     }),
     defineField({
+      name: 'isArchived',
+      type: 'boolean',
+      title: 'Archived',
+      description: 'Archive this service to hide it from active Studio lists.',
+      initialValue: false,
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'components',
       type: 'components',
       title: 'Page Components',

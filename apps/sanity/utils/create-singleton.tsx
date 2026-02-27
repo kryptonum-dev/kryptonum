@@ -2,7 +2,7 @@ import type { StructureBuilder } from 'sanity/structure'
 import { schemaTypes } from "../structure/schema-types";
 import { Preview } from './preview';
 import type { LucideIcon } from "lucide-react";
-import { Eye, Pencil } from "lucide-react";
+import { EditIcon, EyeOpenIcon } from "@sanity/icons";
 
 type SingletonOptions = {
   title?: string;
@@ -20,12 +20,12 @@ export const createSingleton = (S: StructureBuilder, name: string, config?: Sing
   const isInternationalized = fields.some(field => field.name === 'language')
 
   const views = [
-    S.view.form().title('Editor').icon(Pencil),
+    S.view.form().title('Editor').icon(EditIcon),
     ...(documentPreview ? [
       S.view
         .component(Preview)
         .title('Preview')
-        .icon(Eye)
+        .icon(EyeOpenIcon)
     ] : [])
   ]
 

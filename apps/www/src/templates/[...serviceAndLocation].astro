@@ -33,7 +33,12 @@ export async function fetchData(lang: Language, slug: string) {
     components: ComponentsProps
   }>({
     query: `
-      *[(_type == 'Service_Collection' || _type == 'Location_Collection') && slug.current == $slug && language == $language][0] {
+      *[
+        (_type == 'Service_Collection' || _type == 'Location_Collection')
+        && coalesce(isArchived, false) != true
+        && slug.current == $slug
+        && language == $language
+      ][0] {
         _type,
         name,
         mainPage -> {
@@ -61,7 +66,10 @@ export async function fetchData(lang: Language, slug: string) {
 export async function staticPaths() {
   const pages = await sanityFetch<{ slug: string; language: Language }[]>({
     query: `
-      *[_type == 'Service_Collection' || _type == 'Location_Collection'][] {
+      *[
+        (_type == 'Service_Collection' || _type == 'Location_Collection')
+        && coalesce(isArchived, false) != true
+      ][] {
         "slug": slug.current,
         language,
       }

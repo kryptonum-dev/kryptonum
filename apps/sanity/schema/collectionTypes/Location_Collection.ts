@@ -73,6 +73,14 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'isArchived',
+      type: 'boolean',
+      title: 'Archived',
+      description: 'Archive this location page to hide it from active Studio lists.',
+      initialValue: false,
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'components',
       type: 'components',
       title: 'Page Components',

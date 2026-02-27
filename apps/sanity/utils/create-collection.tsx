@@ -4,11 +4,12 @@ import { Preview } from "./preview";
 import { LANGUAGES } from "../structure/languages";
 import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
 import type { LucideIcon } from "lucide-react";
-import { Eye, Pencil } from "lucide-react";
+import { EditIcon, EyeOpenIcon } from "@sanity/icons";
 
 type CollectionOptions = {
   title?: string;
   icon?: LucideIcon;
+  languageFilter?: string;
 };
 
 export const createCollection = (
@@ -26,14 +27,16 @@ export const createCollection = (
   const documentPreview = schemaOptions?.documentPreview ?? false
   const isInternationalized = fields.some(field => field.name === 'language')
   const isOrderable = name === 'CaseStudy_Collection' && context
+  const languageFilter = options?.languageFilter
+  const languageFilterSuffix = languageFilter ? ` && ${languageFilter}` : ''
 
   const views = [
-    S.view.form().title('Editor').icon(Pencil),
+    S.view.form().title('Editor').icon(EditIcon),
     ...(documentPreview ? [
       S.view
         .component(Preview)
         .title('Preview')
-        .icon(Eye)
+        .icon(EyeOpenIcon)
     ] : [])
   ]
 
@@ -50,7 +53,7 @@ export const createCollection = (
               orderableDocumentListDeskItem({
                 type: name,
                 title: `${title} (${lang.title})`,
-                filter: `_type == "${name}" && language == "${lang.id}"`,
+                filter: `_type == "${name}" && language == "${lang.id}"${languageFilterSuffix}`,
                 params: { lang: lang.id },
                 id: `orderable-${name}-${lang.id}`,
                 S,
@@ -68,7 +71,7 @@ export const createCollection = (
                   .child(
                     S.documentTypeList(name)
                       .title(`${title} (${lang.title})`)
-                      .filter('_type == $type && language == $lang')
+                      .filter(`_type == $type && language == $lang${languageFilterSuffix}`)
                       .params({ type: name, lang: lang.id })
                       .apiVersion('2024-12-31')
                       .child(documentId =>

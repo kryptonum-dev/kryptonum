@@ -37,10 +37,6 @@ const data = await sanityFetch<{
     name: string
     slug: string
     icon: ImageDataProps
-    list: Array<{
-      name: string
-      slug: string
-    }>
   }>
   caseStudies: {
     name: string
@@ -91,14 +87,14 @@ const data = await sanityFetch<{
         ${ImageDataQuery('img')}
       },
       ${ButtonDataQuery('servicesHubCta')}
-      "services": *[_type == "Service_Collection" && !defined(mainPage) && language == $language] | order(_createdAt asc) {
+      "services": *[
+        _type == "Service_Collection"
+        && language == $language
+        && coalesce(isArchived, false) != true
+      ] | order(name asc) {
         name,
         "slug": slug.current,
         ${ImageDataQuery('icon')}
-        "list": *[_type == "Service_Collection" && mainPage._ref == ^._id && language == $language] | order(_createdAt asc) {
-          name,
-          "slug": slug.current,
-        },
       },
       "caseStudies": *[_type == "Portfolio_Page" && language == $language][0] {
         name,
@@ -275,7 +271,7 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
               </div>
             ) : (
               <div class='max-width'>
-                {data.services.map(({ name, slug, icon, list }) => (
+                {data.services.map(({ name, slug, icon }) => (
                   <div>
                     <a href={slug} class='title'>
                       {icon && (
@@ -285,13 +281,6 @@ const svgContent = data?.annotation?.icon ? await imageToInlineSvg(data.annotati
                       )}
                       {name}
                     </a>
-                    <ul>
-                      {list.map(({ name, slug }) => (
-                        <li>
-                          <a href={slug}>{name}</a>
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 ))}
               </div>

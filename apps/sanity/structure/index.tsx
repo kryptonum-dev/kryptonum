@@ -22,6 +22,7 @@ import {
   FileSearch,
   GalleryHorizontalEnd,
   PackageSearch,
+  Archive,
   ShoppingBag,
   Settings2,
   Waypoints,
@@ -45,7 +46,11 @@ export const structure: StructureResolver = (S, context) =>
             .title("Services")
             .items([
               createSingleton(S, "Services_Page", { title: "Services Hub", icon: FolderKanban }),
-              createCollection(S, "Service_Collection", context, { title: "Service Pages", icon: BriefcaseBusiness }),
+              createCollection(S, "Service_Collection", context, {
+                title: "Service Pages",
+                icon: BriefcaseBusiness,
+                languageFilter: "coalesce(isArchived, false) != true",
+              }),
             ])
         ),
       S.listItem()
@@ -57,7 +62,11 @@ export const structure: StructureResolver = (S, context) =>
             .id("locations-list")
             .title("Locations")
             .items([
-              createCollection(S, "Location_Collection", context, { title: "Location Pages", icon: MapPinned }),
+              createCollection(S, "Location_Collection", context, {
+                title: "Location Pages",
+                icon: MapPinned,
+                languageFilter: "coalesce(isArchived, false) != true",
+              }),
             ])
         ),
       S.divider(),
@@ -139,6 +148,27 @@ export const structure: StructureResolver = (S, context) =>
               createSingleton(S, "TermsAndConditions_Page", { title: "Terms and Conditions", icon: Scale }),
               createSingleton(S, "redirects", { title: "Redirects", icon: Link2 }),
               createSingleton(S, "Links_Page", { title: "Links Page", icon: Waypoints }),
+              S.listItem()
+                .id("archive-folder")
+                .title("Archive")
+                .icon(Archive)
+                .child(
+                  S.list()
+                    .id("archive-list")
+                    .title("Archive")
+                    .items([
+                      createCollection(S, "Service_Collection", context, {
+                        title: "Archived Service Pages",
+                        icon: BriefcaseBusiness,
+                        languageFilter: "coalesce(isArchived, false) == true",
+                      }),
+                      createCollection(S, "Location_Collection", context, {
+                        title: "Archived Location Pages",
+                        icon: MapPinned,
+                        languageFilter: "coalesce(isArchived, false) == true",
+                      }),
+                    ])
+                ),
             ])
         ),
     ])

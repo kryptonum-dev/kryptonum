@@ -273,12 +273,12 @@ export default defineType({
                 const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
                 if (selectedIds.length > 0) {
                   return {
-                    filter: 'language == $lang && !defined(mainPage) && !(_id in $selectedIds) && !(_id in path("drafts.**"))',
+                    filter: 'language == $lang && !(_id in $selectedIds) && !(_id in path("drafts.**"))',
                     params: { lang: language, selectedIds }
                   }
                 }
                 return {
-                  filter: 'language == $lang && !defined(mainPage) && !(_id in path("drafts.**"))',
+                  filter: 'language == $lang && !(_id in path("drafts.**"))',
                   params: { lang: language }
                 }
               }
@@ -320,12 +320,12 @@ export default defineType({
                 const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
                 if (selectedIds.length > 0) {
                   return {
-                    filter: 'language == $lang && !defined(mainPage) && !(_id in $selectedIds) && !(_id in path("drafts.**"))',
+                    filter: 'language == $lang && !(_id in $selectedIds) && !(_id in path("drafts.**"))',
                     params: { lang: language, selectedIds }
                   }
                 }
                 return {
-                  filter: 'language == $lang && !defined(mainPage) && !(_id in path("drafts.**"))',
+                  filter: 'language == $lang && !(_id in path("drafts.**"))',
                   params: { lang: language }
                 }
               }
