@@ -7,10 +7,6 @@ import Components, { Components_Query, type ComponentsProps } from '@repo/shared
 import type { Language } from '@repo/shared/languages'
 
 export type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
-const RESERVED_LOCATION_SEGMENTS: Record<Language, string[]> = {
-  pl: ['uslugi', 'blog', 'portfolio', 'kontakt', 'zespol', 'regulamin', 'polityka-prywatnosci', 'produkty-cyfrowe'],
-  en: ['services', 'blog', 'portfolio', 'contact', 'team', 'terms', 'privacy-policy', 'digital-products'],
-}
 
 interface Props extends FetchDataReturn {
   lang: Language
@@ -61,11 +57,7 @@ export async function staticPaths() {
     `,
   })
   return pages
-    ?.filter(({ slug, language }) => {
-      if (!new RegExp(`^/${language}/[^/]+$`).test(slug)) return false
-      const segment = slug.replace(`/${language}/`, '')
-      return !RESERVED_LOCATION_SEGMENTS[language].includes(segment)
-    })
+    ?.filter(({ slug, language }) => new RegExp(`^/${language}/[^/]+$`).test(slug))
     .map(({ slug, language }) => ({
       params: { lang: language, location: slug.replace(`/${language}/`, '') },
     }))

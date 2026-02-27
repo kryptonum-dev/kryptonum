@@ -75,7 +75,7 @@ export default defineField({
                 filter: ({ document }) => {
                   const language = (document as { language?: string })?.language;
                   return {
-                    filter: 'defined(slug.current) && language == $lang',
+                    filter: 'defined(slug.current) && language == $lang && (_type != "Service_Collection" || coalesce(isArchived, false) != true)',
                     params: { lang: language }
                   }
                 }
@@ -168,7 +168,7 @@ export default defineField({
               const language = (document as { language?: string })?.language;
               const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
               return {
-                filter: '!(_id in $selectedIds) && !(_id in path("drafts.**")) && language == $lang',
+                filter: '!(_id in $selectedIds) && !(_id in path("drafts.**")) && language == $lang && coalesce(isArchived, false) != true',
                 params: { selectedIds, lang: language }
               }
             }
@@ -181,6 +181,8 @@ export default defineField({
         if (showVideo) return true;
         if (!value || value.length < 4) return 'Select exactly 4 service pages';
         if (value.length > 4) return 'Maximum 4 service pages allowed';
+        const ids = value.map((item: { _ref?: string }) => item?._ref).filter(Boolean);
+        if (new Set(ids).size !== ids.length) return 'Each service can be selected only once';
         return true;
       }),
     }),

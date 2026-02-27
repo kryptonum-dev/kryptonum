@@ -36,7 +36,6 @@ const data = await sanityFetch<{
   pillars?: Array<{
     name: string
     slug: string
-    description?: string
     icon: ImageDataProps
   }>
   links?: Array<{
@@ -63,14 +62,11 @@ const data = await sanityFetch<{
 }>({
   query: `
     {
-      "pillars": coalesce(
-        *[_type == "footer" && language == $language][0].pillars[]->,
-        *[_type == "global" && language == $language][0].footer.pillars[]->
-      ) {
+      "pillars": *[_type == "footer" && language == $language][0].pillars[] -> {
         name,
         "slug": slug.current,
-        description,
         ${ImageDataQuery('icon')}
+        
       },
       "links": coalesce(
         *[_type == "footer" && language == $language][0].links,
@@ -105,6 +101,7 @@ const data = await sanityFetch<{
   `,
   params: { language: lang },
 })
+const pillars = (data.pillars || []).filter((pillar) => pillar?.name && pillar?.slug)
 ---
 
 <footer class='footer max-width'>
@@ -113,9 +110,9 @@ const data = await sanityFetch<{
     <div class='services'>
       <h2 class='heading'>{t.services}</h2>
       {
-        data.pillars && data.pillars.length > 0 && (
+        pillars.length > 0 && (
           <ul class='pillars'>
-            {data.pillars.map(({ name, slug, icon }) => (
+            {pillars.map(({ name, slug, icon }) => (
               <li>
                 <a href={slug} class='pillar-item'>
                   <div class='pillar-icon'>{icon && <Image {...icon} sizes='1rem' />}</div>
@@ -200,15 +197,15 @@ const data = await sanityFetch<{
   .services {
     grid-column: 1;
     .pillars {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem 1.25rem;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.875rem 1.5rem;
       margin-bottom: clamp(1rem, calc(1.5vw / 0.48), 1.5rem);
       li {
-        flex: 1 1 calc(50% - 0.625rem);
-        min-width: max-content;
+        min-width: 0;
       }
       li a.pillar-item {
+        max-width: 16rem;
         display: grid;
         grid-template-columns: auto 1fr;
         align-items: center;
@@ -250,8 +247,11 @@ const data = await sanityFetch<{
           }
         }
         .pillar-name {
-          font-size: var(--typography-body-xl, 1rem);
+          display: block;
+          min-width: 0;
+          font-size: var(--typography-body-m, 0.875rem);
           line-height: 1.4;
+          white-space: normal;
           transition:
             transform 500ms var(--easing),
             color 500ms var(--easing);
@@ -435,7 +435,7 @@ const data = await sanityFetch<{
     }
     @media (max-width: 36rem) {
       grid-template-columns: 1fr 6.25rem;
-      align-items: flex-start;
+      align-items: center;
       .legal {
         margin-top: 1rem;
       }
@@ -471,8 +471,8 @@ const data = await sanityFetch<{
     .contact {
       grid-column: 1;
     }
-    .services .pillars li {
-      flex: 1 1 100%;
+    .services .pillars {
+      grid-template-columns: 1fr;
     }
   }
   :global(body:has(.ScrollToNextPage)) {

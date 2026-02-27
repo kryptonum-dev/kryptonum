@@ -273,12 +273,12 @@ export default defineType({
                 const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
                 if (selectedIds.length > 0) {
                   return {
-                    filter: 'language == $lang && !(_id in $selectedIds) && !(_id in path("drafts.**"))',
+                    filter: 'language == $lang && coalesce(isArchived, false) != true && !(_id in $selectedIds) && !(_id in path("drafts.**"))',
                     params: { lang: language, selectedIds }
                   }
                 }
                 return {
-                  filter: 'language == $lang && !(_id in path("drafts.**"))',
+                  filter: 'language == $lang && coalesce(isArchived, false) != true && !(_id in path("drafts.**"))',
                   params: { lang: language }
                 }
               }
@@ -320,12 +320,12 @@ export default defineType({
                 const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
                 if (selectedIds.length > 0) {
                   return {
-                    filter: 'language == $lang && !(_id in $selectedIds) && !(_id in path("drafts.**"))',
+                    filter: 'language == $lang && coalesce(isArchived, false) != true && !(_id in $selectedIds) && !(_id in path("drafts.**"))',
                     params: { lang: language, selectedIds }
                   }
                 }
                 return {
-                  filter: 'language == $lang && !(_id in path("drafts.**"))',
+                  filter: 'language == $lang && coalesce(isArchived, false) != true && !(_id in path("drafts.**"))',
                   params: { lang: language }
                 }
               }
@@ -352,15 +352,6 @@ export default defineType({
                 validation: Rule => Rule.required(),
               }),
               defineField({
-                name: 'image',
-                type: 'image',
-                title: 'Circle Image',
-                description: 'Optional circular image (e.g., person avatar, icon). Recommended size: 40x40px or larger.',
-                options: {
-                  hotspot: true,
-                },
-              }),
-              defineField({
                 name: 'page',
                 type: 'reference',
                 title: 'Internal Page',
@@ -380,13 +371,12 @@ export default defineType({
               select: {
                 title: 'name',
                 subtitle: 'page.title',
-                media: 'image',
               },
-              prepare({ title, subtitle, media }) {
+              prepare({ title, subtitle }) {
                 return {
                   title,
                   subtitle,
-                  media: media || (() => '🔗'),
+                  media: () => '🔗',
                 }
               },
             },

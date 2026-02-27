@@ -78,46 +78,6 @@ export default defineType({
       title: 'Page Components',
     }),
     defineField({
-      name: 'servicesNav',
-      type: 'object',
-      title: 'Services Navigation',
-      fields: [
-        defineField({
-          name: 'heading',
-          type: 'Heading',
-          title: 'Heading',
-          validation: Rule => Rule.required(),
-        }),
-      ],
-      initialValue: {
-        "heading": [
-          {
-            "_key": "8a96c5a61792",
-            "children": [
-              {
-                "_key": "72e2454f7822",
-                "_type": "span",
-                "marks": [],
-                "text": "❧ Inni ludzie sprawdzali też "
-              },
-              {
-                "_type": "span",
-                "marks": [
-                  "strong"
-                ],
-                "_key": "ddd311511421",
-                "text": "te usługi"
-              }
-            ],
-            "markDefs": [],
-            "_type": "block",
-            "style": "normal"
-          }
-        ]
-      },
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
       name: 'seo',
       type: 'seo',
       title: 'SEO',

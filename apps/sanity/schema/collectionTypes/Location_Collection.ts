@@ -5,28 +5,6 @@ import { slugify } from "@repo/utils/slugify";
 const name = 'Location_Collection';
 const title = 'Location Collection';
 const icon = () => '📌';
-const RESERVED_LOCATION_SLUGS: Record<string, string[]> = {
-  pl: [
-    'uslugi',
-    'blog',
-    'portfolio',
-    'kontakt',
-    'zespol',
-    'regulamin',
-    'polityka-prywatnosci',
-    'produkty-cyfrowe',
-  ],
-  en: [
-    'services',
-    'blog',
-    'portfolio',
-    'contact',
-    'team',
-    'terms',
-    'privacy-policy',
-    'digital-products',
-  ],
-};
 
 export default defineType({
   name: name,
@@ -56,12 +34,36 @@ export default defineType({
           if (!new RegExp(`^/${language}/[^/]+$`).test(value.current)) {
             return `The location URL must use a single top-level segment, e.g. ${requiredPrefix}warszawa`;
           }
-          const rawSlug = value.current.replace(requiredPrefix, '');
-          if ((RESERVED_LOCATION_SLUGS[language] || []).includes(rawSlug)) {
-            return `Slug "${rawSlug}" is reserved. Pick a different location slug.`;
-          }
           return true;
         }).required(),
+        Rule.custom(async (value, context) => {
+          if (!value?.current) return true;
+
+          const client = context.getClient({ apiVersion: '2024-11-12' });
+          const documentId = (context.document?._id || '').replace(/^drafts\./, '');
+          const existing = await client.fetch<{ _id: string; _type: string } | null>(
+            `*[
+              !(_id in [$draftId, $publishedId]) &&
+              !(_id in path("drafts.**")) &&
+              defined(slug.current) &&
+              slug.current == $slug
+            ][0]{
+              _id,
+              _type
+            }`,
+            {
+              slug: value.current,
+              draftId: `drafts.${documentId}`,
+              publishedId: documentId,
+            }
+          );
+
+          if (existing) {
+            return `Slug "${value.current}" is already used by a published ${existing._type} document.`;
+          }
+
+          return true;
+        }),
         Rule.custom((value, context) => {
           const name = (context.parent as { name: string })?.name;
           if (!value?.current?.endsWith(slugify(name))) {
