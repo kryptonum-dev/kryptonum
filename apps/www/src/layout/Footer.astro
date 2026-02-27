@@ -63,17 +63,26 @@ const data = await sanityFetch<{
 }>({
   query: `
     {
-      "pillars": *[_type == "global" && language == $language][0].footer.pillars[]-> {
+      "pillars": coalesce(
+        *[_type == "footer" && language == $language][0].pillars[]->,
+        *[_type == "global" && language == $language][0].footer.pillars[]->
+      ) {
         name,
         "slug": slug.current,
         description,
         ${ImageDataQuery('icon')}
       },
-      "links": *[_type == "global" && language == $language][0].footer.links[] {
+      "links": coalesce(
+        *[_type == "footer" && language == $language][0].links,
+        *[_type == "global" && language == $language][0].footer.links
+      )[] {
         name,
         "slug": page->slug.current,
       },
-      "servicesCta": *[_type == "global" && language == $language][0].footer {
+      "servicesCta": coalesce(
+        *[_type == "footer" && language == $language][0],
+        *[_type == "global" && language == $language][0].footer
+      ) {
         ${ButtonDataQuery('servicesCta')}
       }.servicesCta,
       "contact": *[_type == "global" && language == $language][0] {

@@ -181,7 +181,8 @@ export default defineType({
     defineField({
       name: 'nav',
       type: 'object',
-      title: 'Navigation',
+      title: 'Navigation (Legacy)',
+      hidden: true,
       fields: [
         defineField({
           name: 'annotation',
@@ -301,7 +302,8 @@ export default defineType({
     defineField({
       name: 'footer',
       type: 'object',
-      title: 'Footer',
+      title: 'Footer (Legacy)',
+      hidden: true,
       fields: [
         defineField({
           name: 'pillars',

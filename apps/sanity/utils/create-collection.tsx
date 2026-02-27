@@ -3,32 +3,44 @@ import { schemaTypes } from "../structure/schema-types";
 import { Preview } from "./preview";
 import { LANGUAGES } from "../structure/languages";
 import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
+import type { LucideIcon } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 
-export const createCollection = (S: StructureBuilder, name: string, context?: StructureResolverContext) => {
-  const { title, icon, options, fields = [] } = schemaTypes.find(item => item.name === name) as {
+type CollectionOptions = {
+  title?: string;
+  icon?: LucideIcon;
+};
+
+export const createCollection = (
+  S: StructureBuilder,
+  name: string,
+  context?: StructureResolverContext,
+  options?: CollectionOptions
+) => {
+  const { title, icon, options: schemaOptions, fields = [] } = schemaTypes.find(item => item.name === name) as {
     title: string,
-    icon: React.ReactNode,
+    icon?: React.ComponentType,
     options: { documentPreview?: boolean },
     fields?: Array<{ name: string, type: string }>
   };
-  const documentPreview = options?.documentPreview ?? false
+  const documentPreview = schemaOptions?.documentPreview ?? false
   const isInternationalized = fields.some(field => field.name === 'language')
   const isOrderable = name === 'CaseStudy_Collection' && context
 
   const views = [
-    S.view.form().title('Editor').icon(() => '🖋️'),
+    S.view.form().title('Editor').icon(Pencil),
     ...(documentPreview ? [
       S.view
         .component(Preview)
         .title('Preview')
-        .icon(() => '👀')
+        .icon(Eye)
     ] : [])
   ]
 
   return S.listItem()
     .id(name)
-    .title(title)
-    .icon(icon)
+    .title(options?.title ?? title)
+    .icon(options?.icon ?? icon)
     .child(
       isInternationalized && isOrderable
         ? S.list()
@@ -52,7 +64,7 @@ export const createCollection = (S: StructureBuilder, name: string, context?: St
               LANGUAGES.map(lang =>
                 S.listItem()
                   .title(`${title} (${lang.title})`)
-                  .icon(icon)
+                  .icon(options?.icon ?? icon)
                   .child(
                     S.documentTypeList(name)
                       .title(`${title} (${lang.title})`)

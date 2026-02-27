@@ -22,6 +22,7 @@
     "@sanity/orderable-document-list": "^1.5.0",
     "@sanity/ui": "^3.1.11",
     "@sanity/vision": "^5.9.0",
+    "lucide-react": "^0.575.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "sanity": "^5.9.0",

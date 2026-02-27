@@ -1,10 +1,11 @@
 import { defineField, defineType } from "sanity";
 import { slugify } from "@repo/utils/slugify";
 import { defineSlugForDocument } from "../../utils/define-slug-for-document";
+import { BriefcaseBusiness } from "lucide-react";
 
 const name = 'Service_Collection';
 const title = 'Service Collection';
-const icon = () => '💼';
+const icon = BriefcaseBusiness;
 
 export default defineType({
   name: name,
@@ -22,30 +23,14 @@ export default defineType({
     ...defineSlugForDocument({
       slugify: async (slug, _, context) => {
         const language = (context.parent as { language: string })?.language ?? 'pl';
-        const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
-        const mainPageRef = (context.parent as { mainPage: { _ref: string } })?.mainPage?._ref;
-
-        if (hasMainPage && mainPageRef) {
-          const client = context.getClient({ apiVersion: '2024-11-12' })
-          const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef }, { perspective: 'previewDrafts' })
-          return `${mainPageSlug}/${slugify(slug)}`
-        }
-        return `/${language}/${slugify(slug)}`
+        return `/${language}/uslugi/${slugify(slug)}`
       },
       validate: Rule => [
         Rule.custom(async (value, context) => {
           const language = (context.parent as { language: string })?.language ?? 'pl';
-          const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
-          const mainPageRef = (context.parent as { mainPage: { _ref: string } })?.mainPage?._ref;
-
-          if (hasMainPage && mainPageRef) {
-            const client = context.getClient({ apiVersion: '2024-11-12' })
-            const mainPageSlug = await client.fetch(`*[_id == $ref][0].slug.current`, { ref: mainPageRef }, { perspective: 'previewDrafts' })
-            if (!value?.current?.startsWith(mainPageSlug)) {
-              return 'Slug should start with the slug of the main page.';
-            }
-          } else if (!value?.current?.startsWith(`/${language}/`)) {
-            return `The slug should start with /${language}/`;
+          const requiredPrefix = `/${language}/uslugi/`;
+          if (!value?.current?.startsWith(requiredPrefix)) {
+            return `The slug should start with ${requiredPrefix}`;
           }
           return true;
         }).required(),
@@ -59,47 +44,11 @@ export default defineType({
       ]
     }),
     defineField({
-      name: 'hasMainPage',
-      type: 'boolean',
-      title: 'Has main page?',
-      description: 'Tick that if this page has a main page.',
-      validation: Rule => Rule.required(),
-      initialValue: false,
-    }),
-    defineField({
-      name: 'mainPage',
-      type: 'reference',
-      title: 'Main page',
-      description: 'Add main page for that service page. If selected, then it will be automatically structured as subpage.',
-      to: [{ type: 'Service_Collection' }],
-      options: {
-        disableNew: true,
-        filter: ({ document }) => {
-          const language = (document as { language?: string })?.language;
-          return {
-            filter: 'language == $lang',
-            params: { lang: language }
-          }
-        }
-      },
-      hidden: ({ parent }) => !parent?.hasMainPage,
-      validation: Rule => Rule.custom((value, context) => {
-        const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
-        if (hasMainPage && !value) return 'Main page is required.';
-        return true;
-      }),
-    }),
-    defineField({
       name: 'icon',
       type: 'image',
       title: 'Icon',
       description: 'Icon is used to identify the service. It will be used in Footer. It have to be an SVG.',
-      hidden: ({ parent }) => parent?.hasMainPage,
-      validation: Rule => Rule.custom((value, context) => {
-        const hasMainPage = (context.parent as { hasMainPage: boolean })?.hasMainPage;
-        if (!hasMainPage && !value) return 'Icon is required.';
-        return true;
-      }),
+      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'img',

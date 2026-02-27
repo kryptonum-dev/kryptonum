@@ -13,6 +13,9 @@ import TermsAndConditions_Page from '../schema/singleTypes/Legal/TermsAndConditi
 import NotFound_Page from '../schema/singleTypes/NotFound_Page';
 import Shop_Page from '../schema/singleTypes/Shop_Page';
 import ShopThankYou_Page from '../schema/singleTypes/ShopThankYou_Page';
+import Services_Page from '../schema/singleTypes/Services_Page';
+import navbar from '../schema/singleTypes/navbar';
+import footer from '../schema/singleTypes/footer';
 
 const singleTypes = [
   global,
@@ -29,6 +32,9 @@ const singleTypes = [
   NotFound_Page,
   Shop_Page,
   ShopThankYou_Page,
+  Services_Page,
+  navbar,
+  footer,
 ];
 
 // Collections Types

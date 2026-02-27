@@ -70,7 +70,10 @@ const data = await sanityFetch<{
   }
 }>({
   query: `
-    *[_type == "global" && language == $language][0].nav {
+    coalesce(
+      *[_type == "navbar" && language == $language][0],
+      *[_type == "global" && language == $language][0].nav
+    ) {
       annotation {
         "icon": icon.asset -> url,
         text,
@@ -101,6 +104,11 @@ const data = await sanityFetch<{
         name,
         "slug": slug.current,
         "list": coalesce(
+          *[_type == "navbar" && language == $language][0].caseStudies[] -> {
+            name,
+            "slug": slug.current,
+            ${ImageDataQuery('img')}
+          },
           *[_type == "global" && language == $language][0].nav.caseStudies[] -> {
             name,
             "slug": slug.current,
