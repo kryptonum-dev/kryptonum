@@ -1,7 +1,8 @@
 import { defineCliConfig } from 'sanity/cli'
 
 const studioHost = process.env.SANITY_STUDIO_HOST || 'kryptonum';
-const isStaging = studioHost === 'kryptonum-staging';
+const stagingAppId = process.env.SANITY_STUDIO_STAGING_APP_ID;
+const productionAppId = process.env.SANITY_STUDIO_PRODUCTION_APP_ID ?? 'vsofytliubmw5ltwl91fii9m';
 
 export default defineCliConfig({
   api: {
@@ -10,7 +11,6 @@ export default defineCliConfig({
   },
   studioHost: studioHost,
   deployment: {
-    // Different app IDs for different studio hosts
-    appId: isStaging ? 'dkhnqp27a111zv00vkuw5nh1' : undefined,
+    appId: studioHost === 'kryptonum-staging' ? stagingAppId : productionAppId,
   },
 })
