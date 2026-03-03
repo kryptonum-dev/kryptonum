@@ -71,22 +71,49 @@
       var detail = e.detail || {};
       var data = detail.data || {};
       var calLink = (data.eventType && data.eventType.slug) || "";
+      var booking = data.booking || {};
+      var attendee = (booking.attendees && booking.attendees[0]) || {};
+      var responses = booking.responses || {};
+
+      // Extract user identity from attendee / responses fields
+      var email = (responses.email && responses.email.value) || attendee.email || "";
+      var phone = (responses.attendeePhoneNumber && responses.attendeePhoneNumber.value) || "";
+      var fullName = (responses.name && responses.name.value) || attendee.name || "";
+      var nameParts = fullName.trim().split(/\s+/);
+      var firstName = nameParts[0] || "";
+      var lastName = nameParts.slice(1).join(" ") || "";
+
+      var user = {};
+      if (email) user.email = email;
+      if (phone) user.phone = phone;
+      if (firstName) user.first_name = firstName;
+      if (lastName) user.last_name = lastName;
+      var hasUser = Object.keys(user).length > 0;
+
       if (window.trackEvent) {
-        window.trackEvent({
-          meta: {
-            eventName: "Schedule",
-            params: {
-              content_name: calLink,
-              content_category: "booking",
+        window.trackEvent(Object.assign(
+          {
+            meta: {
+              eventName: "Schedule",
+              params: { content_name: calLink, content_category: "booking" }
+            },
+            ga4: {
+              eventName: "generate_lead",
+              params: { form_name: calLink }
             }
           },
-          ga4: {
-            eventName: "generate_lead",
-            params: {
-              form_name: calLink,
+          hasUser && { user: user }
+        ));
+
+        window.trackEvent(Object.assign(
+          {
+            meta: {
+              eventName: "Lead",
+              params: { form_name: calLink, content_name: calLink }
             }
-          }
-        });
+          },
+          hasUser && { user: user }
+        ));
       }
     }
   });
