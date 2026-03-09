@@ -15,16 +15,17 @@ export async function getFormIntegrationConfig(formId: string): Promise<FormInte
   if (cached && Date.now() - cached.ts < CACHE_TTL_MS) return cached.data
 
   const result = await client.fetch<FormIntegrationConfig | null>(
-    `*[defined(components[_type == "ContactForm" && _key == $formId])]{
-      "cfg": components[_type == "ContactForm" && _key == $formId][0]{
+    `*[count(components[_type == "ContactForm" && _key == $formId]) > 0][0]
+      .components[_type == "ContactForm" && _key == $formId][0]{
         recipientEmail,
         recipientBcc,
         notionDatabaseId,
         slackWebhookUrl
-      }
-    }.cfg[0]`,
+      }`,
     { formId },
   )
+
+  console.log(`[FormConfig] formId=${formId}, result:`, JSON.stringify(result))
 
   const config = result ?? {}
   configCache.set(formId, { data: config, ts: Date.now() })
