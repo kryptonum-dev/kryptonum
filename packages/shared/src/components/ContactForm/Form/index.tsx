@@ -16,7 +16,7 @@ const shouldTrackAnalytics = () => {
   return false;
 };
 
-type Variant = 'form-with-list' | 'form-with-person' | 'form-lead' | 'form-influencer';
+type Variant = 'form-with-list' | 'form-with-person' | 'form-lead';
 
 type Props = {
   children: React.ReactNode,
@@ -25,10 +25,6 @@ type Props = {
   dropdownOptions?: string[]
   dropdownLabel?: string
   dropdownPlaceholder?: string
-  recipientEmail?: string
-  recipientBcc?: string[]
-  notionDatabaseId?: string
-  slackWebhookUrl?: string
 } & React.FormHTMLAttributes<HTMLFormElement>
 
 const translations = {
@@ -45,18 +41,6 @@ const translations = {
     phoneRequired: 'Numer telefonu jest wymagany',
     phoneInvalid: 'Niepoprawny numer telefonu',
     dropdownRequired: 'To pole jest wymagane',
-    nameLabel: 'Imię i nazwisko',
-    nameRequired: 'Imię i nazwisko jest wymagane',
-    totalFollowersLabel: 'Łączna liczba obserwujących',
-    totalFollowersPlaceholder: 'np. 50k TikTok, 12k Instagram',
-    totalFollowersRequired: 'Liczba obserwujących jest wymagana',
-    socialMediaLinksLabel: 'Linki do profili social media',
-    socialMediaLinksPlaceholder: 'Wklej linki do swoich profili (każdy w nowej linii)',
-    socialMediaLinksRequired: 'Linki do profili są wymagane',
-    publishedVideosLabel: 'Ile opublikowanych wideo',
-    publishedVideosRequired: 'To pole jest wymagane',
-    exampleVideoLabel: 'Przykładowy film lub link',
-    exampleVideoPlaceholder: 'https://',
   },
   en: {
     emailRequired: 'Email is required',
@@ -71,26 +55,12 @@ const translations = {
     phoneRequired: 'Phone number is required',
     phoneInvalid: 'Invalid phone number',
     dropdownRequired: 'This field is required',
-    nameLabel: 'Full name',
-    nameRequired: 'Full name is required',
-    totalFollowersLabel: 'Total followers',
-    totalFollowersPlaceholder: 'e.g. 50k TikTok, 12k Instagram',
-    totalFollowersRequired: 'Total followers count is required',
-    socialMediaLinksLabel: 'Social media profile links',
-    socialMediaLinksPlaceholder: 'Paste links to your profiles (each on a new line)',
-    socialMediaLinksRequired: 'Social media links are required',
-    publishedVideosLabel: 'Published videos',
-    publishedVideosRequired: 'This field is required',
-    exampleVideoLabel: 'Example video or link',
-    exampleVideoPlaceholder: 'https://',
   },
 }
 
-const hasMultiStep = (variant: Variant) => variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer';
+const hasMultiStep = (variant: Variant) => variant === 'form-with-person' || variant === 'form-lead';
 
-const publishedVideosOptions = ['0-10', '10-30', '30-100', '100+'];
-
-export default function Form({ children, variant, lang, dropdownOptions, dropdownLabel, dropdownPlaceholder, recipientEmail, recipientBcc, notionDatabaseId, slackWebhookUrl, ...props }: Props) {
+export default function Form({ children, variant, lang, dropdownOptions, dropdownLabel, dropdownPlaceholder, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [step, setStep] = useState<1 | 2>(1);
   const {
@@ -109,22 +79,16 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
       const nextStep = async () => {
         const fieldsToValidate = variant === 'form-lead'
           ? (['phone', 'dropdown'] as const)
-          : variant === 'form-influencer'
-            ? (['fullName', 'email'] as const)
-            : (['message'] as const);
+          : (['message'] as const);
         const isValid = await trigger(fieldsToValidate as unknown as string[]);
         if (isValid) {
           setStep(2);
-          requestAnimationFrame(() => setFocus(variant === 'form-influencer' ? 'totalFollowers' : 'email'));
+          requestAnimationFrame(() => setFocus('email'));
         }
       }
       const prevStep = () => {
         setStep(1);
-        requestAnimationFrame(() => setFocus(
-          variant === 'form-lead' ? 'phone'
-            : variant === 'form-influencer' ? 'fullName'
-              : 'message'
-        ));
+        requestAnimationFrame(() => setFocus(variant === 'form-lead' ? 'phone' : 'message'));
       }
       document.addEventListener('Contact-NextStep', nextStep);
       document.addEventListener('Contact-PrevStep', prevStep);
@@ -148,24 +112,13 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
         message: data.message,
         phone: data.phone,
         dropdown: data.dropdown,
-        fullName: data.fullName,
-        totalFollowers: data.totalFollowers,
-        socialMediaLinks: data.socialMediaLinks,
-        publishedVideos: data.publishedVideos,
-        exampleVideo: data.exampleVideo,
-        notionDatabaseId,
-        slackWebhookUrl,
         utm: getUtmForSheet(),
         source: typeof window !== 'undefined' ? window.location.hostname + window.location.pathname : '',
       }),
       keepalive: true,
     }).catch(() => {});
 
-    const response = await sendContactEmail({
-      ...data,
-      recipientEmail,
-      recipientBcc,
-    } as sendContactEmailProps);
+    const response = await sendContactEmail(data as sendContactEmailProps);
     if (response.success) {
       setStatus('success');
       reset();
@@ -294,69 +247,6 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             type='email'
             inputMode='email'
             autoComplete='email'
-          />
-          <Checkbox
-            register={register('legal', {
-              required: { value: true, message: t.legalRequired },
-            })}
-            errors={errors}
-          >
-            {t.legal}
-          </Checkbox>
-        </>
-      )}
-      {variant === 'form-influencer' && (
-        <>
-          <Input
-            label={t.nameLabel}
-            register={register('fullName', {
-              required: { value: true, message: t.nameRequired },
-            })}
-            errors={errors}
-            autoComplete='name'
-          />
-          <Input
-            label='Email'
-            register={register('email', {
-              required: { value: true, message: t.emailRequired },
-              pattern: { value: REGEX.email, message: t.emailInvalid },
-            })}
-            errors={errors}
-            type='email'
-            inputMode='email'
-            autoComplete='email'
-          />
-          <Input
-            label={t.totalFollowersLabel}
-            register={register('totalFollowers', {
-              required: { value: true, message: t.totalFollowersRequired },
-            })}
-            errors={errors}
-            placeholder={t.totalFollowersPlaceholder}
-          />
-          <Input
-            label={t.socialMediaLinksLabel}
-            register={register('socialMediaLinks', {
-              required: { value: true, message: t.socialMediaLinksRequired },
-            })}
-            isTextarea={true}
-            errors={errors}
-            placeholder={t.socialMediaLinksPlaceholder}
-          />
-          <Select
-            label={t.publishedVideosLabel}
-            options={publishedVideosOptions}
-            register={register('publishedVideos', {
-              required: { value: true, message: t.publishedVideosRequired },
-            })}
-            errors={errors}
-          />
-          <Input
-            label={t.exampleVideoLabel}
-            register={register('exampleVideo')}
-            errors={errors}
-            type='url'
-            placeholder={t.exampleVideoPlaceholder}
           />
           <Checkbox
             register={register('legal', {

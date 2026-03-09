@@ -9,8 +9,7 @@
     "./metadata.fetch": "./src/metadata.fetch.ts",
     "./html-to-string": "./src/html-to-string.ts",
     "./get-cookie": "./src/get-cookie.ts",
-    "./notion": "./src/notion.ts",
-    "./slack": "./src/slack.ts"
+    "./notion": "./src/notion.ts"
   },
   "scripts": {
     "dev": "tsc --watch",

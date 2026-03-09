@@ -26,12 +26,6 @@ export type ContactLeadData = {
   source?: string
   phone?: string
   dropdown?: string
-  fullName?: string
-  totalFollowers?: string
-  socialMediaLinks?: string
-  publishedVideos?: string
-  exampleVideo?: string
-  notionDatabaseId?: string
 }
 
 export type AppendLeadResult = {
@@ -40,22 +34,19 @@ export type AppendLeadResult = {
 }
 
 export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendLeadResult> {
-  const databaseId = data.notionDatabaseId || NOTION_LEADS_DATABASE_ID
-
   console.log('[Notion] Starting append for:', data.email)
 
-  if (!NOTION_API_KEY || !databaseId) {
+  if (!NOTION_API_KEY || !NOTION_LEADS_DATABASE_ID) {
     console.error('[Notion] Missing credentials.', {
       hasApiKey: !!NOTION_API_KEY,
-      hasDatabaseId: !!databaseId,
+      hasDatabaseId: !!NOTION_LEADS_DATABASE_ID,
     })
     return { success: false, error: 'Missing Notion credentials' }
   }
 
   try {
-    const titleContent = data.fullName || data.email
     const properties: Record<string, unknown> = {
-      'Name': { title: [{ text: { content: titleContent } }] },
+      'Name': { title: [{ text: { content: data.email } }] },
       'Status': { select: { name: 'Nowy' } },
       'Data': { date: { start: new Date().toISOString() } },
       'Email': { email: data.email },
@@ -78,18 +69,6 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
         url: data.source.startsWith('http') ? data.source : `https://${data.source}`,
       }
     }
-    if (data.totalFollowers) {
-      properties['Obserwujący'] = { rich_text: [{ text: { content: data.totalFollowers.slice(0, 2000) } }] }
-    }
-    if (data.socialMediaLinks) {
-      properties['Social Media'] = { rich_text: [{ text: { content: data.socialMediaLinks.slice(0, 2000) } }] }
-    }
-    if (data.publishedVideos) {
-      properties['Opublikowane wideo'] = { select: { name: data.publishedVideos } }
-    }
-    if (data.exampleVideo) {
-      properties['Przykładowy film'] = { url: data.exampleVideo }
-    }
 
     const response = await fetch(`${NOTION_API_URL}/pages`, {
       method: 'POST',
@@ -99,7 +78,7 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        parent: { database_id: databaseId },
+        parent: { database_id: NOTION_LEADS_DATABASE_ID },
         properties,
       }),
     })

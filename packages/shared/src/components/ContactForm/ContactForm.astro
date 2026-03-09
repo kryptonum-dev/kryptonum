@@ -8,7 +8,7 @@ import { type Language } from '@repo/shared/languages'
 export type Props = {
   index: number
   sectionId?: string
-  variant: 'form-with-list' | 'form-with-person' | 'form-lead' | 'form-influencer'
+  variant: 'form-with-list' | 'form-with-person' | 'form-lead'
   img: ImageDataProps
   emailText: string
   email: string
@@ -23,10 +23,6 @@ export type Props = {
   dropdownOptions?: string[]
   dropdownLabel?: string
   dropdownPlaceholder?: string
-  recipientEmail?: string
-  recipientBcc?: string[]
-  notionDatabaseId?: string
-  slackWebhookUrl?: string
   state: {
     success: {
       heading: PortableTextValue
@@ -63,10 +59,6 @@ export const ContactForm_Query = `
     dropdownOptions,
     dropdownLabel,
     dropdownPlaceholder,
-    recipientEmail,
-    recipientBcc,
-    notionDatabaseId,
-    slackWebhookUrl,
     state {
       success {
         ${PortableTextQuery('heading')}
@@ -100,7 +92,7 @@ const translations = {
 } as const
 const t = translations[lang]
 
-const { index, sectionId, variant, img, emailText, email, telText, tel, heading, paragraph, list, dropdownOptions, dropdownLabel, dropdownPlaceholder, recipientEmail, recipientBcc, notionDatabaseId, slackWebhookUrl, state } = Astro.props
+const { index, sectionId, variant, img, emailText, email, telText, tel, heading, paragraph, list, dropdownOptions, dropdownLabel, dropdownPlaceholder, state } = Astro.props
 ---
 
 <section class="ContactForm" id={sectionId} data-variant={variant}>
@@ -119,7 +111,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             </li>
           ))}
         </ul>
-        <FormWrapper state={state} variant={variant} email={email} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} />
+        <FormWrapper state={state} variant={variant} email={email} />
       </div>
     )
   }
@@ -147,7 +139,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             )}
           </div>
         </div>
-        <FormWrapper state={state} variant={variant} email={email} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} />
+        <FormWrapper state={state} variant={variant} email={email} />
       </div>
     )
   }
@@ -175,18 +167,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             )}
           </div>
         </div>
-        <FormWrapper state={state} variant={variant} email={email} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} />
-      </div>
-    )
-  }
-  {
-    variant === 'form-influencer' && (
-      <div class="wrapper">
-        <header>
-          <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
-          {paragraph && <PortableText value={paragraph} />}
-        </header>
-        <FormWrapper state={state} variant={variant} email={recipientEmail || 'kontakt@kryptonum.eu'} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} />
+        <FormWrapper state={state} variant={variant} email={email} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} />
       </div>
     )
   }
@@ -248,23 +229,6 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             padding-top: 2rem;
             border-top: 1px solid var(--primary-500, #064040);
           }
-        }
-      }
-    }
-    &[data-variant='form-influencer'] {
-      .wrapper {
-        grid-template-columns: 1fr;
-        max-width: 38rem;
-        margin: 0 auto;
-        grid-template-areas: 'header' 'form';
-        header {
-          grid-area: header;
-          .heading {
-            margin-bottom: 1rem;
-          }
-        }
-        :global(.Form) {
-          grid-area: form;
         }
       }
     }

@@ -10,13 +10,6 @@ type RequestBody = {
   legal: boolean
   phone?: string
   dropdown?: string
-  fullName?: string
-  totalFollowers?: string
-  socialMediaLinks?: string
-  publishedVideos?: string
-  exampleVideo?: string
-  recipientEmail?: string
-  recipientBcc?: string[]
 }
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
@@ -45,31 +38,14 @@ export const OPTIONS: APIRoute = async ({ request }) => {
   });
 };
 
-type TemplateData = {
-  email: string
-  message?: string
-  phone?: string
-  dropdown?: string
-  fullName?: string
-  totalFollowers?: string
-  socialMediaLinks?: string
-  publishedVideos?: string
-  exampleVideo?: string
-}
-
-const template = (data: TemplateData) => {
+const template = ({ email, message, phone, dropdown }: { email: string; message?: string; phone?: string; dropdown?: string }) => {
   const parts: string[] = [];
-  if (data.fullName) parts.push(`<p>Imię i nazwisko: <b>${data.fullName}</b></p>`);
-  parts.push(`<p>Adres email: <b>${data.email}</b></p>`);
-  if (data.phone) parts.push(`<p>Telefon: <b>${data.phone}</b></p>`);
-  if (data.dropdown) parts.push(`<p>Branża: <b>${data.dropdown}</b></p>`);
-  if (data.totalFollowers) parts.push(`<p>Łączna liczba obserwujących: <b>${data.totalFollowers}</b></p>`);
-  if (data.socialMediaLinks) parts.push(`<p>Social media:<br/>${data.socialMediaLinks.trim().replace(/\n/g, '<br />')}</p>`);
-  if (data.publishedVideos) parts.push(`<p>Opublikowane wideo: <b>${data.publishedVideos}</b></p>`);
-  if (data.exampleVideo) parts.push(`<p>Przykładowy film: <a href="${data.exampleVideo}">${data.exampleVideo}</a></p>`);
-  if (data.message) {
+  parts.push(`<p>Adres email: <b>${email}</b></p>`);
+  if (phone) parts.push(`<p>Telefon: <b>${phone}</b></p>`);
+  if (dropdown) parts.push(`<p>Branża: <b>${dropdown}</b></p>`);
+  if (message) {
     parts.push('<br />');
-    parts.push(`<p>${data.message.trim().replace(/\n/g, '<br />')}</p>`);
+    parts.push(`<p>${message.trim().replace(/\n/g, '<br />')}</p>`);
   }
   return parts.join('\n');
 };
@@ -78,10 +54,15 @@ export const POST: APIRoute = async ({ request }) => {
   const origin = request.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
 
-  let body: RequestBody;
-
+  let email: string, message: string | undefined, legal: boolean, phone: string | undefined, dropdown: string | undefined;
+  
   try {
-    body = await request.json() as RequestBody;
+    const data = await request.json() as RequestBody;
+    email = data.email;
+    message = data.message;
+    legal = data.legal;
+    phone = data.phone;
+    dropdown = data.dropdown;
   } catch {
     return new Response(JSON.stringify({
       message: "Invalid request body",
@@ -92,11 +73,8 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const { email, message, legal, phone, dropdown, fullName, totalFollowers, socialMediaLinks, publishedVideos, exampleVideo, recipientEmail, recipientBcc } = body;
-
-  const isInfluencerForm = !!fullName;
-  const hasRequiredContent = !!message || !!phone || isInfluencerForm;
-  if (!REGEX.email.test(email) || !hasRequiredContent || !legal) {
+  const hasMessageOrPhone = !!message || !!phone;
+  if (!REGEX.email.test(email) || !hasMessageOrPhone || !legal) {
     return new Response(JSON.stringify({
       message: "Missing required fields",
       success: false
@@ -116,17 +94,13 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const subject = isInfluencerForm
-    ? `Nowe zgłoszenie influencera | Kryptonum`
-    : phone
-      ? `Lead z formularza kontaktowego | Kryptonum`
-      : `Wiadomość z formularza kontaktowego | Kryptonum`;
+  const isLeadForm = !!phone;
+  const subject = isLeadForm
+    ? `Lead z formularza kontaktowego | Kryptonum`
+    : `Wiadomość z formularza kontaktowego | Kryptonum`;
 
-  const htmlTemplate = template({ email, message, phone, dropdown, fullName, totalFollowers, socialMediaLinks, publishedVideos, exampleVideo });
+  const htmlTemplate = template({ email, message, phone, dropdown });
   const textTemplate = htmlToString(htmlTemplate);
-
-  const defaultTo = 'michal@kryptonum.eu';
-  const defaultBcc = ['ola@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@kryptonum.eu'];
 
   try {
     const res = await fetch(`https://api.resend.com/emails`, {
@@ -137,8 +111,8 @@ export const POST: APIRoute = async ({ request }) => {
       },
       body: JSON.stringify({
         from: 'Formularz kontaktowy | Kryptonum <formularz@send.kryptonum.eu>',
-        to: recipientEmail || defaultTo,
-        ...(recipientBcc?.length ? { bcc: recipientBcc } : { bcc: defaultBcc }),
+        to: 'michal@kryptonum.eu',
+        bcc: ['ola@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@kryptonum.eu'],
         reply_to: email,
         subject,
         html: htmlTemplate,
