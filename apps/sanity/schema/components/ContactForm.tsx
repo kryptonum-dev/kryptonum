@@ -33,6 +33,10 @@ export default defineField({
             value: 'form-lead',
             title: 'Form lead (phone + dropdown)',
           },
+          {
+            value: 'form-influencer',
+            title: 'Form influencer',
+          },
         ],
       },
       initialValue: 'form-with-list',
@@ -84,7 +88,7 @@ export default defineField({
         </>
       ),
       initialValue: true,
-      hidden: ({ parent }) => parent?.variant === 'form-with-list',
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer',
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
         if ((variant === 'form-with-person' || variant === 'form-lead') && value === undefined) return 'That field is required';
@@ -106,7 +110,7 @@ export default defineField({
           }
         }
       },
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || !parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer' || !parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
@@ -118,7 +122,7 @@ export default defineField({
       name: 'img',
       type: 'image',
       title: 'Image',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer' || parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
@@ -130,7 +134,7 @@ export default defineField({
       name: 'emailText',
       type: 'string',
       title: 'Text',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list',
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer',
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
         if ((variant === 'form-with-person' || variant === 'form-lead') && !value) return 'Email text is required';
@@ -142,7 +146,7 @@ export default defineField({
       name: 'email',
       type: 'string',
       title: 'Email Adress',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer' || parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
         const isReference = (context.parent as { isReference: boolean })?.isReference;
         if (isReference) return true;
@@ -155,7 +159,7 @@ export default defineField({
       name: 'telText',
       type: 'string',
       title: 'Text',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list',
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer',
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
         if ((variant === 'form-with-person' || variant === 'form-lead') && !value) return 'Tel text is required';
@@ -167,7 +171,7 @@ export default defineField({
       name: 'tel',
       type: 'string',
       title: 'Phone number',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer' || parent?.isReference,
       fieldset: 'tel',
     }),
     defineField({
@@ -454,6 +458,40 @@ export default defineField({
       },
       validation: Rule => Rule.required(),
     }),
+    defineField({
+      name: 'recipientEmail',
+      type: 'string',
+      title: 'Recipient Email',
+      description: 'Override the default email recipient for this form. Leave empty to use the default (michal@kryptonum.eu).',
+      validation: Rule => Rule.custom((value) => {
+        if (value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) return 'Invalid email address';
+        return true;
+      }),
+      fieldset: 'integrations',
+    }),
+    defineField({
+      name: 'recipientBcc',
+      type: 'array',
+      title: 'Recipient BCC',
+      description: 'Override the default BCC recipients. Leave empty to use defaults.',
+      of: [{ type: 'string' }],
+      fieldset: 'integrations',
+    }),
+    defineField({
+      name: 'notionDatabaseId',
+      type: 'string',
+      title: 'Notion Database ID',
+      description: 'Override the default Notion leads database. Paste the ID of the target Notion database.',
+      fieldset: 'integrations',
+    }),
+    defineField({
+      name: 'slackWebhookUrl',
+      type: 'url',
+      title: 'Slack Webhook URL',
+      description: 'If set, a Slack notification will be sent to this webhook on form submission.',
+      validation: Rule => Rule.uri({ scheme: ['https'] }),
+      fieldset: 'integrations',
+    }),
     ...sectionId,
   ],
   fieldsets: [
@@ -464,6 +502,14 @@ export default defineField({
     {
       name: 'tel',
       title: 'Telephone',
+    },
+    {
+      name: 'integrations',
+      title: 'Integration Settings',
+      options: {
+        collapsible: true,
+        collapsed: true,
+      },
     },
   ],
   preview: {

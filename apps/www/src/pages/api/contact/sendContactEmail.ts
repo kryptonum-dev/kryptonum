@@ -6,20 +6,27 @@ export type Props = {
   legal: boolean
   phone?: string
   dropdown?: string
+  fullName?: string
+  totalFollowers?: string
+  socialMediaLinks?: string
+  publishedVideos?: string
+  exampleVideo?: string
+  recipientEmail?: string
+  recipientBcc?: string[]
 }
 
-export async function sendContactEmail({ email, message, legal, phone, dropdown }: Props): Promise<{ success: boolean }> {
+export async function sendContactEmail(data: Props): Promise<{ success: boolean }> {
   try {
     const response = await fetch(`${DOMAIN}/api/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, message, legal, phone, dropdown }),
+      body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
       return { success: false };
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Contact form submission error:', error);
