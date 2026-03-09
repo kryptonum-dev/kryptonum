@@ -25,10 +25,7 @@ type Props = {
   dropdownOptions?: string[]
   dropdownLabel?: string
   dropdownPlaceholder?: string
-  recipientEmail?: string
-  recipientBcc?: string[]
-  notionDatabaseId?: string
-  slackWebhookUrl?: string
+  formId?: string
 } & React.FormHTMLAttributes<HTMLFormElement>
 
 const translations = {
@@ -47,7 +44,7 @@ const translations = {
     dropdownRequired: 'To pole jest wymagane',
     nameLabel: 'Imię i nazwisko',
     nameRequired: 'Imię i nazwisko jest wymagane',
-    totalFollowersLabel: 'Łączna liczba obserwujących',
+    totalFollowersLabel: 'Liczba obserwujących',
     totalFollowersPlaceholder: 'np. 50k TikTok, 12k Instagram',
     totalFollowersRequired: 'Liczba obserwujących jest wymagana',
     socialMediaLinksLabel: 'Linki do profili social media',
@@ -90,7 +87,7 @@ const hasMultiStep = (variant: Variant) => variant === 'form-with-person' || var
 
 const publishedVideosOptions = ['0-10', '10-30', '30-100', '100+'];
 
-export default function Form({ children, variant, lang, dropdownOptions, dropdownLabel, dropdownPlaceholder, recipientEmail, recipientBcc, notionDatabaseId, slackWebhookUrl, ...props }: Props) {
+export default function Form({ children, variant, lang, dropdownOptions, dropdownLabel, dropdownPlaceholder, formId, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [step, setStep] = useState<1 | 2>(1);
   const {
@@ -153,8 +150,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
         socialMediaLinks: data.socialMediaLinks,
         publishedVideos: data.publishedVideos,
         exampleVideo: data.exampleVideo,
-        notionDatabaseId,
-        slackWebhookUrl,
+        formId,
         utm: getUtmForSheet(),
         source: typeof window !== 'undefined' ? window.location.hostname + window.location.pathname : '',
       }),
@@ -163,8 +159,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
 
     const response = await sendContactEmail({
       ...data,
-      recipientEmail,
-      recipientBcc,
+      formId,
     } as sendContactEmailProps);
     if (response.success) {
       setStatus('success');

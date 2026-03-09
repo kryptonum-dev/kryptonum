@@ -10,7 +10,8 @@
     "./html-to-string": "./src/html-to-string.ts",
     "./get-cookie": "./src/get-cookie.ts",
     "./notion": "./src/notion.ts",
-    "./slack": "./src/slack.ts"
+    "./slack": "./src/slack.ts",
+    "./form-config": "./src/form-config.ts"
   },
   "scripts": {
     "dev": "tsc --watch",

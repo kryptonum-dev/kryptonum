@@ -11,8 +11,7 @@ export type Props = {
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
-  recipientEmail?: string
-  recipientBcc?: string[]
+  formId?: string
 }
 
 export async function sendContactEmail(data: Props): Promise<{ success: boolean }> {

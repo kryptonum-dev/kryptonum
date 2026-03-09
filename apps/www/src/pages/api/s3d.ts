@@ -2,6 +2,7 @@ export const prerender = false
 
 import { appendLeadToNotion, type ContactLeadData } from '@repo/utils/notion'
 import { sendSlackNotification } from '@repo/utils/slack'
+import { getFormIntegrationConfig } from '@repo/utils/form-config'
 import type { APIRoute } from 'astro'
 import { DOMAIN } from '@repo/shared/constants'
 
@@ -89,15 +90,20 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(null, { status: 403, headers: corsHeaders })
     }
 
-    const { slackWebhookUrl, ...leadData } = parsed as ContactLeadData & { slackWebhookUrl?: string }
+    const { formId, ...leadData } = parsed as ContactLeadData & { formId?: string }
     if (!leadData.email) {
       return new Response(null, { status: 400, headers: corsHeaders })
     }
 
+    const config = formId ? await getFormIntegrationConfig(formId) : {}
+    if (config.notionDatabaseId) {
+      leadData.notionDatabaseId = config.notionDatabaseId
+    }
+
     await appendLeadToNotion(leadData)
 
-    if (slackWebhookUrl) {
-      sendSlackNotification(slackWebhookUrl, leadData).catch((err) =>
+    if (config.slackWebhookUrl) {
+      sendSlackNotification(config.slackWebhookUrl, leadData).catch((err) =>
         console.error('[S3D] Slack notification failed:', err)
       )
     }

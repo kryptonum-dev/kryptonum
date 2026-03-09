@@ -15,10 +15,7 @@ type Props = {
   dropdownOptions?: string[]
   dropdownLabel?: string
   dropdownPlaceholder?: string
-  recipientEmail?: string
-  recipientBcc?: string[]
-  notionDatabaseId?: string
-  slackWebhookUrl?: string
+  formId?: string
 }
 
 const lang = (Astro.params.lang as Language) || 'pl'
@@ -48,7 +45,7 @@ const translations = {
 }
 const t = translations[lang]
 
-const { state, variant, email, dropdownOptions, dropdownLabel, dropdownPlaceholder, recipientEmail, recipientBcc, notionDatabaseId, slackWebhookUrl } = Astro.props
+const { state, variant, email, dropdownOptions, dropdownLabel, dropdownPlaceholder, formId } = Astro.props
 
 const svgId = Math.random().toString(36).slice(2)
 const isFormWithList = variant === 'form-with-list'
@@ -57,7 +54,7 @@ const isInfluencerForm = String(variant) === 'form-influencer'
 const isMultiStepForm = !isFormWithList
 ---
 
-<Form className="Form" variant={variant} lang={lang} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} client:load>
+<Form className="Form" variant={variant} lang={lang} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} formId={formId} client:load>
   <div class="submit-wrapper">
     <div class="wrapper">
       {isFormWithList && <Button type="submit" className="submit-button">{t.submit}</Button>}

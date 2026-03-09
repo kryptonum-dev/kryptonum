@@ -23,10 +23,7 @@ export type Props = {
   dropdownOptions?: string[]
   dropdownLabel?: string
   dropdownPlaceholder?: string
-  recipientEmail?: string
-  recipientBcc?: string[]
-  notionDatabaseId?: string
-  slackWebhookUrl?: string
+  formId?: string
   state: {
     success: {
       heading: PortableTextValue
@@ -51,7 +48,7 @@ export const ContactForm_Query = `
     variant,
     "img": select(isReference => personReference -> ${ImageDataQuery('img')} ${ImageDataQuery('img')}),
     emailText,
-    "email": select(variant == "form-with-person" || variant == "form-lead" => select(isReference => personReference -> email, email), *[_type == "global"][0].email),
+    "email": select(variant == "form-with-person" || variant == "form-lead" || variant == "form-influencer" => select(isReference => personReference -> email, email), *[_type == "global"][0].email),
     telText,
     "tel": coalesce(tel, personReference -> tel),
     ${PortableTextQuery('heading')}
@@ -63,10 +60,7 @@ export const ContactForm_Query = `
     dropdownOptions,
     dropdownLabel,
     dropdownPlaceholder,
-    recipientEmail,
-    recipientBcc,
-    notionDatabaseId,
-    slackWebhookUrl,
+    "formId": _key,
     state {
       success {
         ${PortableTextQuery('heading')}
@@ -100,7 +94,7 @@ const translations = {
 } as const
 const t = translations[lang]
 
-const { index, sectionId, variant, img, emailText, email, telText, tel, heading, paragraph, list, dropdownOptions, dropdownLabel, dropdownPlaceholder, recipientEmail, recipientBcc, notionDatabaseId, slackWebhookUrl, state } = Astro.props
+const { index, sectionId, variant, img, emailText, email, telText, tel, heading, paragraph, list, dropdownOptions, dropdownLabel, dropdownPlaceholder, formId, state } = Astro.props
 ---
 
 <section class="ContactForm" id={sectionId} data-variant={variant}>
@@ -119,7 +113,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             </li>
           ))}
         </ul>
-        <FormWrapper state={state} variant={variant} email={email} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} />
+        <FormWrapper state={state} variant={variant} email={email} formId={formId} />
       </div>
     )
   }
@@ -147,7 +141,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             )}
           </div>
         </div>
-        <FormWrapper state={state} variant={variant} email={email} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} />
+        <FormWrapper state={state} variant={variant} email={email} formId={formId} />
       </div>
     )
   }
@@ -175,7 +169,7 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
             )}
           </div>
         </div>
-        <FormWrapper state={state} variant={variant} email={email} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} />
+        <FormWrapper state={state} variant={variant} email={email} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} formId={formId} />
       </div>
     )
   }
@@ -186,7 +180,24 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
           <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading" />
           {paragraph && <PortableText value={paragraph} />}
         </header>
-        <FormWrapper state={state} variant={variant} email={recipientEmail || 'kontakt@kryptonum.eu'} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} />
+        <div class="avatar-wrapper">
+          <Image {...img} sizes="64px" class="gradient-thumbnail" />
+          <div class="person">
+            <div class="email">
+              <p class="label-text">{emailText}</p>
+              <a href={`mailto:${email}`}>{email}</a>
+              <Copy data={email} successMessage={t.copyEmailSuccess} />
+            </div>
+            {tel && (
+              <div class="tel">
+                <p class="label-text">{telText}</p>
+                <a href={`tel:${tel}`}>{tel}</a>
+                <Copy data={tel} successMessage={t.copyTelSuccess} />
+              </div>
+            )}
+          </div>
+        </div>
+        <FormWrapper state={state} variant={variant} email={email} formId={formId} />
       </div>
     )
   }
@@ -251,25 +262,9 @@ const { index, sectionId, variant, img, emailText, email, telText, tel, heading,
         }
       }
     }
-    &[data-variant='form-influencer'] {
-      .wrapper {
-        grid-template-columns: 1fr;
-        max-width: 38rem;
-        margin: 0 auto;
-        grid-template-areas: 'header' 'form';
-        header {
-          grid-area: header;
-          .heading {
-            margin-bottom: 1rem;
-          }
-        }
-        :global(.Form) {
-          grid-area: form;
-        }
-      }
-    }
     &[data-variant='form-with-person'],
-    &[data-variant='form-lead'] {
+    &[data-variant='form-lead'],
+    &[data-variant='form-influencer'] {
       .wrapper {
         grid-template-areas: 'header form' 'avatar form';
         header {

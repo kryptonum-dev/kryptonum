@@ -3,6 +3,7 @@ export const prerender = false
 import type { APIRoute } from "astro";
 import { DOMAIN, REGEX } from "@repo/shared/constants";
 import { htmlToString } from "@repo/utils/html-to-string";
+import { getFormIntegrationConfig } from "@repo/utils/form-config";
 
 type RequestBody = {
   email: string
@@ -15,8 +16,7 @@ type RequestBody = {
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
-  recipientEmail?: string
-  recipientBcc?: string[]
+  formId?: string
 }
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
@@ -92,7 +92,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const { email, message, legal, phone, dropdown, fullName, totalFollowers, socialMediaLinks, publishedVideos, exampleVideo, recipientEmail, recipientBcc } = body;
+  const { email, message, legal, phone, dropdown, fullName, totalFollowers, socialMediaLinks, publishedVideos, exampleVideo, formId } = body;
 
   const isInfluencerForm = !!fullName;
   const hasRequiredContent = !!message || !!phone || isInfluencerForm;
@@ -125,6 +125,7 @@ export const POST: APIRoute = async ({ request }) => {
   const htmlTemplate = template({ email, message, phone, dropdown, fullName, totalFollowers, socialMediaLinks, publishedVideos, exampleVideo });
   const textTemplate = htmlToString(htmlTemplate);
 
+  const config = formId ? await getFormIntegrationConfig(formId) : {};
   const defaultTo = 'michal@kryptonum.eu';
   const defaultBcc = ['ola@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@kryptonum.eu'];
 
@@ -137,8 +138,8 @@ export const POST: APIRoute = async ({ request }) => {
       },
       body: JSON.stringify({
         from: 'Formularz kontaktowy | Kryptonum <formularz@send.kryptonum.eu>',
-        to: recipientEmail || defaultTo,
-        ...(recipientBcc?.length ? { bcc: recipientBcc } : { bcc: defaultBcc }),
+        to: config.recipientEmail || defaultTo,
+        ...(config.recipientBcc?.length ? { bcc: config.recipientBcc } : { bcc: defaultBcc }),
         reply_to: email,
         subject,
         html: htmlTemplate,

@@ -88,10 +88,10 @@ export default defineField({
         </>
       ),
       initialValue: true,
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer',
+      hidden: ({ parent }) => parent?.variant === 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
-        if ((variant === 'form-with-person' || variant === 'form-lead') && value === undefined) return 'That field is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && value === undefined) return 'That field is required';
         return true;
       }),
     }),
@@ -110,11 +110,11 @@ export default defineField({
           }
         }
       },
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer' || !parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || !parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
-        if ((variant === 'form-with-person' || variant === 'form-lead') && isReference && !value) return 'Person reference is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && isReference && !value) return 'Person reference is required';
         return true;
       }),
     }),
@@ -122,11 +122,11 @@ export default defineField({
       name: 'img',
       type: 'image',
       title: 'Image',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer' || parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
-        if ((variant === 'form-with-person' || variant === 'form-lead') && !isReference && !value) return 'Image is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && !isReference && !value) return 'Image is required';
         return true;
       }),
     }),
@@ -134,10 +134,10 @@ export default defineField({
       name: 'emailText',
       type: 'string',
       title: 'Text',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer',
+      hidden: ({ parent }) => parent?.variant === 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
-        if ((variant === 'form-with-person' || variant === 'form-lead') && !value) return 'Email text is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && !value) return 'Email text is required';
         return true;
       }),
       fieldset: 'email',
@@ -146,7 +146,7 @@ export default defineField({
       name: 'email',
       type: 'string',
       title: 'Email Adress',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer' || parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
       validation: Rule => Rule.custom((value, context) => {
         const isReference = (context.parent as { isReference: boolean })?.isReference;
         if (isReference) return true;
@@ -159,10 +159,10 @@ export default defineField({
       name: 'telText',
       type: 'string',
       title: 'Text',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer',
+      hidden: ({ parent }) => parent?.variant === 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
-        if ((variant === 'form-with-person' || variant === 'form-lead') && !value) return 'Tel text is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && !value) return 'Tel text is required';
         return true;
       }),
       fieldset: 'tel',
@@ -171,7 +171,7 @@ export default defineField({
       name: 'tel',
       type: 'string',
       title: 'Phone number',
-      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.variant === 'form-influencer' || parent?.isReference,
+      hidden: ({ parent }) => parent?.variant === 'form-with-list' || parent?.isReference,
       fieldset: 'tel',
     }),
     defineField({
