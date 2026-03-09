@@ -15,6 +15,10 @@ type Props = {
   dropdownOptions?: string[]
   dropdownLabel?: string
   dropdownPlaceholder?: string
+  recipientEmail?: string
+  recipientBcc?: string[]
+  notionDatabaseId?: string
+  slackWebhookUrl?: string
 }
 
 const lang = (Astro.params.lang as Language) || 'pl'
@@ -24,6 +28,7 @@ const translations = {
     copyTelSuccess: 'Pomyślnie skopiowano numer telefonu',
     submit: 'Porozmawiajmy o biznesie',
     submitLead: 'Umów rozmowę',
+    submitInfluencer: 'Wyślij zgłoszenie',
     tryAgain: 'Spróbuj ponownie',
     secureData: 'Twoje dane są bezpieczne',
     nextStep: 'Przejdź dalej',
@@ -34,6 +39,7 @@ const translations = {
     copyTelSuccess: 'Successfully copied phone number',
     submit: 'Let\'s talk about business',
     submitLead: 'Schedule a call',
+    submitInfluencer: 'Submit application',
     tryAgain: 'Try again',
     secureData: 'Your data is secure',
     nextStep: 'Next step',
@@ -42,15 +48,16 @@ const translations = {
 }
 const t = translations[lang]
 
-const { state, variant, email, dropdownOptions, dropdownLabel, dropdownPlaceholder } = Astro.props
+const { state, variant, email, dropdownOptions, dropdownLabel, dropdownPlaceholder, recipientEmail, recipientBcc, notionDatabaseId, slackWebhookUrl } = Astro.props
 
 const svgId = Math.random().toString(36).slice(2)
 const isFormWithList = variant === 'form-with-list'
 const isLeadForm = String(variant) === 'form-lead'
+const isInfluencerForm = String(variant) === 'form-influencer'
 const isMultiStepForm = !isFormWithList
 ---
 
-<Form className="Form" variant={variant} lang={lang} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} client:load>
+<Form className="Form" variant={variant} lang={lang} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} recipientEmail={recipientEmail} recipientBcc={recipientBcc} notionDatabaseId={notionDatabaseId} slackWebhookUrl={slackWebhookUrl} client:load>
   <div class="submit-wrapper">
     <div class="wrapper">
       {isFormWithList && <Button type="submit" className="submit-button">{t.submit}</Button>}
@@ -65,7 +72,7 @@ const isMultiStepForm = !isFormWithList
           <Button type="button" className="next-step">
             {t.nextStep}
           </Button>
-          <Button type="submit" className="submit-button">{isLeadForm ? t.submitLead : t.submit}</Button>
+          <Button type="submit" className="submit-button">{isInfluencerForm ? t.submitInfluencer : isLeadForm ? t.submitLead : t.submit}</Button>
         )
       }
     </div>
@@ -442,6 +449,38 @@ const isMultiStepForm = !isFormWithList
         }
       }
     }
+    &[data-variant='form-influencer'] {
+      :global(> label) {
+        transition: filter 500ms var(--easing);
+        will-change: filter;
+      }
+      &[data-step='1'] {
+        :global(> label:nth-child(n+3)) {
+          filter: blur(8px);
+          visibility: hidden;
+          position: absolute;
+        }
+        .submit-wrapper {
+          .submit-button,
+          .prev-step {
+            display: none;
+          }
+        }
+      }
+      &[data-step='2'] {
+        :global(> label:nth-child(1)),
+        :global(> label:nth-child(2)) {
+          filter: blur(8px);
+          visibility: hidden;
+          position: absolute;
+        }
+        .submit-wrapper {
+          .next-step {
+            display: none;
+          }
+        }
+      }
+    }
   }
 </style>
 
@@ -450,7 +489,7 @@ const isMultiStepForm = !isFormWithList
     section.querySelector<HTMLButtonElement>('.tryAgain')!.addEventListener('click', () => {
       document.dispatchEvent(new CustomEvent('Contact-TryAgain'))
     })
-    if (section.dataset.variant === 'form-with-person' || section.dataset.variant === 'form-lead') {
+    if (section.dataset.variant === 'form-with-person' || section.dataset.variant === 'form-lead' || section.dataset.variant === 'form-influencer') {
       section.querySelector<HTMLButtonElement>('.next-step')!.addEventListener('click', () => {
         document.dispatchEvent(new CustomEvent('Contact-NextStep'))
       })
