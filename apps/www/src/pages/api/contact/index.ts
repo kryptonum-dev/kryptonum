@@ -139,7 +139,9 @@ export const POST: APIRoute = async ({ request }) => {
       body: JSON.stringify({
         from: 'Formularz kontaktowy | Kryptonum <formularz@send.kryptonum.eu>',
         to: config.recipientEmail || defaultTo,
-        ...(config.recipientBcc?.length ? { bcc: config.recipientBcc } : { bcc: defaultBcc }),
+        ...(config.recipientEmail
+          ? (config.recipientBcc?.length ? { bcc: config.recipientBcc } : {})
+          : { bcc: defaultBcc }),
         reply_to: email,
         subject,
         html: htmlTemplate,
