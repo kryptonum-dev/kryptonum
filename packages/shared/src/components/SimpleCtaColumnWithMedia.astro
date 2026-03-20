@@ -27,9 +27,33 @@ type Props = {
 }
 
 const { index, sectionId, heading, paragraph, cta, isVideo, video, image } = Astro.props
+
+const isPortraitAspectRatio = (aspectRatio?: string) => {
+  if (!aspectRatio) return false
+
+  const parts = aspectRatio
+    .trim()
+    .split(/[:x/]/i)
+    .map((part) => Number(part.trim()))
+
+  if (
+    parts.length === 2 &&
+    Number.isFinite(parts[0]) &&
+    Number.isFinite(parts[1]) &&
+    parts[0] > 0 &&
+    parts[1] > 0
+  ) {
+    return parts[0] < parts[1]
+  }
+
+  const numericRatio = Number(aspectRatio)
+  return Number.isFinite(numericRatio) && numericRatio > 0 ? numericRatio < 1 : false
+}
+
+const mediaLayout = isVideo && isPortraitAspectRatio(video?.aspectRatio) ? 'portrait-video' : 'default'
 ---
 
-<section class="SimpleCtaColumnWithMedia" id={sectionId}>
+<section class="SimpleCtaColumnWithMedia" id={sectionId} data-media-layout={mediaLayout}>
   <header>
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="h2" />
     <PortableText value={paragraph} class="paragraph" />
@@ -49,8 +73,13 @@ const { index, sectionId, heading, paragraph, cta, isVideo, video, image } = Ast
     padding: clamp(4rem, calc(5vw / 0.48), 6rem) 0;
     display: grid;
     grid-template-columns: 1fr 1.2fr;
-    gap: clamp(2rem, calc(5vw / 0.48), 8rem);
+    gap: clamp(2rem, calc(4vw / 0.48), 6rem);
     align-items: center;
+    &[data-media-layout='portrait-video'] {
+      grid-template-columns: 3fr 2fr;
+      max-width: 60rem;
+      margin: 0 auto;
+    }
     header {
       .paragraph {
         margin: 1rem 0 3rem;
