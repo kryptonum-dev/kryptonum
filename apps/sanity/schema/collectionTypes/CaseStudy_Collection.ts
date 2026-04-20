@@ -72,11 +72,29 @@ export default defineType({
           options: {
             filter: ({ parent, document }) => {
               const language = (document as { language?: string })?.language;
-              const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
-              return {
-                filter: '!(_id in $selectedIds) && !(_id in path("drafts.**")) && language == $lang',
-                params: { selectedIds, lang: language }
+              const selectedIds = Array.isArray(parent)
+                ? (parent as { _ref?: string }[])
+                    .filter(item => item?._ref)
+                    .map(item => item._ref as string)
+                : [];
+
+              const conditions = ['!(_id in path("drafts.**"))'];
+              const params: Record<string, unknown> = {};
+
+              if (selectedIds.length > 0) {
+                conditions.push('!(_id in $selectedIds)');
+                params.selectedIds = selectedIds;
               }
+
+              if (language) {
+                conditions.push('language == $lang');
+                params.lang = language;
+              }
+
+              return {
+                filter: conditions.join(' && '),
+                params,
+              };
             }
           }
         }),
