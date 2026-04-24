@@ -40,6 +40,7 @@ type CalWebhookPayload = {
     organizer?: { name?: string; email?: string }
     attendees?: Array<{ email?: string; name?: string }>
     responses?: Record<string, { value?: string }>
+    metadata?: Record<string, string>
   }
 }
 
@@ -58,11 +59,13 @@ function calPayloadToLead(payload: CalWebhookPayload['payload']): ContactLeadDat
   const title = payload.title || payload.type || 'Spotkanie'
   const startTime = payload.startTime ? new Date(payload.startTime).toLocaleString('pl-PL') : ''
   const message = `Cal.com: ${title}${startTime ? ` – ${startTime}` : ''}`
+  const notionDatabaseId = payload.metadata?.notionDatabaseId
   return {
     email,
     message,
     source: 'Cal.com',
     ...(phone && { phone }),
+    ...(notionDatabaseId && { notionDatabaseId }),
   }
 }
 

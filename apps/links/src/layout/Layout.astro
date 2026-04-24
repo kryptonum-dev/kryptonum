@@ -11,9 +11,10 @@ import type { Language } from '@repo/shared/languages'
 
 type Props = Omit<HeadProps, 'lang'> & {
   hideLayout?: boolean
+  notionDatabaseId?: string
 }
 
-const { hideLayout = false, ...props } = Astro.props
+const { hideLayout = false, notionDatabaseId, ...props } = Astro.props
 
 const lang = (Astro.params.lang as Language) || 'pl'
 ---
@@ -32,7 +33,7 @@ const lang = (Astro.params.lang as Language) || 'pl'
       <slot />
     </main>
     {!hideLayout && <Footer lang={lang} />}
-    <CalEmbed />
+    <CalEmbed notionDatabaseId={notionDatabaseId} />
     <Toast />
   </body>
 </html>

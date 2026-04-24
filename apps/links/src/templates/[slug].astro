@@ -17,10 +17,12 @@ export async function fetchData(lang: Language, slug: string) {
   const page = await sanityFetch<{
     name: string
     components: ComponentsProps
+    notionDatabaseId?: string
   }>({
     query: `
       *[_type == "LandingPage_Collection" && slug.current == $slug && language == $language][0] {
         name,
+        "notionDatabaseId": components[_type == "ContactForm" && defined(notionDatabaseId)][0].notionDatabaseId,
         ${Components_Query}
       }
     `,
@@ -52,7 +54,7 @@ const { page, metadata, slug } = Astro.props
 const breadcrumbs = [{ name: page.name, path: slug }]
 ---
 
-<Layout {...metadata}>
+<Layout {...metadata} notionDatabaseId={page.notionDatabaseId}>
   <Breadcrumbs data={breadcrumbs} isHidden={true} />
   <Components data={page.components} />
 </Layout>
