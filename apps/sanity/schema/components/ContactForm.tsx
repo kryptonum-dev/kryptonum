@@ -34,6 +34,10 @@ export default defineField({
             title: 'Form lead (phone + dropdown)',
           },
           {
+            value: 'form-creator',
+            title: 'Form creator (social link + followers)',
+          },
+          {
             value: 'form-influencer',
             title: 'Form influencer',
           },
@@ -91,7 +95,7 @@ export default defineField({
       hidden: ({ parent }) => parent?.variant === 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
-        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && value === undefined) return 'That field is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-creator' || variant === 'form-influencer') && value === undefined) return 'That field is required';
         return true;
       }),
     }),
@@ -114,7 +118,7 @@ export default defineField({
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
-        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && isReference && !value) return 'Person reference is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-creator' || variant === 'form-influencer') && isReference && !value) return 'Person reference is required';
         return true;
       }),
     }),
@@ -126,7 +130,7 @@ export default defineField({
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
         const isReference = (context.parent as { isReference: boolean })?.isReference;
-        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && !isReference && !value) return 'Image is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-creator' || variant === 'form-influencer') && !isReference && !value) return 'Image is required';
         return true;
       }),
     }),
@@ -137,7 +141,7 @@ export default defineField({
       hidden: ({ parent }) => parent?.variant === 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
-        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && !value) return 'Email text is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-creator' || variant === 'form-influencer') && !value) return 'Email text is required';
         return true;
       }),
       fieldset: 'email',
@@ -162,7 +166,7 @@ export default defineField({
       hidden: ({ parent }) => parent?.variant === 'form-with-list',
       validation: Rule => Rule.custom((value, context) => {
         const variant = (context.parent as { variant: string })?.variant;
-        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer') && !value) return 'Tel text is required';
+        if ((variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-creator' || variant === 'form-influencer') && !value) return 'Tel text is required';
         return true;
       }),
       fieldset: 'tel',

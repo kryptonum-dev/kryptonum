@@ -50,6 +50,7 @@ const { state, variant, email, dropdownOptions, dropdownLabel, dropdownPlacehold
 const svgId = Math.random().toString(36).slice(2)
 const isFormWithList = variant === 'form-with-list'
 const isLeadForm = String(variant) === 'form-lead'
+const isCreatorForm = String(variant) === 'form-creator'
 const isInfluencerForm = String(variant) === 'form-influencer'
 const isMultiStepForm = !isFormWithList
 ---
@@ -69,7 +70,7 @@ const isMultiStepForm = !isFormWithList
           <Button type="button" className="next-step">
             {t.nextStep}
           </Button>
-          <Button type="submit" className="submit-button">{isInfluencerForm ? t.submitInfluencer : isLeadForm ? t.submitLead : t.submit}</Button>
+          <Button type="submit" className="submit-button">{isInfluencerForm ? t.submitInfluencer : (isLeadForm || isCreatorForm) ? t.submitLead : t.submit}</Button>
         )
       }
     </div>
@@ -446,6 +447,37 @@ const isMultiStepForm = !isFormWithList
         }
       }
     }
+    &[data-variant='form-creator'] {
+      :global(> label) {
+        transition: filter 500ms var(--easing);
+        will-change: filter;
+      }
+      &[data-step='1'] {
+        :global(> label:nth-child(n+3)) {
+          filter: blur(8px);
+          visibility: hidden;
+          position: absolute;
+        }
+        .submit-wrapper {
+          .submit-button,
+          .prev-step {
+            display: none;
+          }
+        }
+      }
+      &[data-step='2'] {
+        :global(> label:nth-child(-n+2)) {
+          filter: blur(8px);
+          visibility: hidden;
+          position: absolute;
+        }
+        .submit-wrapper {
+          .next-step {
+            display: none;
+          }
+        }
+      }
+    }
     &[data-variant='form-influencer'] {
       :global(> label) {
         transition: filter 500ms var(--easing);
@@ -486,7 +518,7 @@ const isMultiStepForm = !isFormWithList
     section.querySelector<HTMLButtonElement>('.tryAgain')!.addEventListener('click', () => {
       document.dispatchEvent(new CustomEvent('Contact-TryAgain'))
     })
-    if (section.dataset.variant === 'form-with-person' || section.dataset.variant === 'form-lead' || section.dataset.variant === 'form-influencer') {
+    if (section.dataset.variant === 'form-with-person' || section.dataset.variant === 'form-lead' || section.dataset.variant === 'form-creator' || section.dataset.variant === 'form-influencer') {
       section.querySelector<HTMLButtonElement>('.next-step')!.addEventListener('click', () => {
         document.dispatchEvent(new CustomEvent('Contact-NextStep'))
       })

@@ -31,9 +31,13 @@ function buildSlackBlocks(data: ContactLeadData): SlackBlock[] {
 
   if (data.socialMediaLinks) {
     blocks.push({ type: 'divider' })
+    const link = data.socialMediaLinks.trim()
+    const formatted = !link.includes('\n')
+      ? `<${link.startsWith('http') ? link : `https://${link}`}|${link}>`
+      : link
     blocks.push({
       type: 'section',
-      text: { type: 'mrkdwn', text: `*Social media:*\n${data.socialMediaLinks}` },
+      text: { type: 'mrkdwn', text: `*Social media:*\n${formatted}` },
     })
   }
 

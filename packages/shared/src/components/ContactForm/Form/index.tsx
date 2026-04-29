@@ -16,7 +16,7 @@ const shouldTrackAnalytics = () => {
   return false;
 };
 
-type Variant = 'form-with-list' | 'form-with-person' | 'form-lead' | 'form-influencer';
+type Variant = 'form-with-list' | 'form-with-person' | 'form-lead' | 'form-creator' | 'form-influencer';
 
 type Props = {
   children: React.ReactNode,
@@ -50,6 +50,11 @@ const translations = {
     socialMediaLinksLabel: 'Linki do profili social media',
     socialMediaLinksPlaceholder: 'Wklej linki do swoich profili (każdy w nowej linii)',
     socialMediaLinksRequired: 'Linki do profili są wymagane',
+    socialMediaLinkLabel: 'Link do Twojego profilu',
+    socialMediaLinkPlaceholder: 'np. instagram.com/twojprofil',
+    socialMediaLinkRequired: 'Link do profilu jest wymagany',
+    followersLabel: 'Ile masz obserwujących?',
+    followersRequired: 'To pole jest wymagane',
     publishedVideosLabel: 'Ile opublikowanych wideo',
     publishedVideosRequired: 'To pole jest wymagane',
     exampleVideoLabel: 'Przykładowy film lub link',
@@ -76,6 +81,11 @@ const translations = {
     socialMediaLinksLabel: 'Social media profile links',
     socialMediaLinksPlaceholder: 'Paste links to your profiles (each on a new line)',
     socialMediaLinksRequired: 'Social media links are required',
+    socialMediaLinkLabel: 'Link to your profile',
+    socialMediaLinkPlaceholder: 'e.g. instagram.com/yourprofile',
+    socialMediaLinkRequired: 'Profile link is required',
+    followersLabel: 'How many followers do you have?',
+    followersRequired: 'This field is required',
     publishedVideosLabel: 'Published videos',
     publishedVideosRequired: 'This field is required',
     exampleVideoLabel: 'Example video or link',
@@ -83,9 +93,10 @@ const translations = {
   },
 }
 
-const hasMultiStep = (variant: Variant) => variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-influencer';
+const hasMultiStep = (variant: Variant) => variant === 'form-with-person' || variant === 'form-lead' || variant === 'form-creator' || variant === 'form-influencer';
 
 const publishedVideosOptions = ['0-10', '10-30', '30-100', '100+'];
+const followersOptions = ['Poniżej 50 000', '50 000 – 100 000', '100 000 – 300 000', '300 000 – 500 000', '500 000+'];
 
 export default function Form({ children, variant, lang, dropdownOptions, dropdownLabel, dropdownPlaceholder, formId, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -106,9 +117,11 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
       const nextStep = async () => {
         const fieldsToValidate = variant === 'form-lead'
           ? (['phone', 'dropdown'] as const)
-          : variant === 'form-influencer'
-            ? (['fullName', 'email'] as const)
-            : (['message'] as const);
+          : variant === 'form-creator'
+            ? (['socialMediaLinks', 'totalFollowers'] as const)
+            : variant === 'form-influencer'
+              ? (['fullName', 'email'] as const)
+              : (['message'] as const);
         const isValid = await trigger(fieldsToValidate as unknown as string[]);
         if (isValid) {
           setStep(2);
@@ -119,8 +132,9 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
         setStep(1);
         requestAnimationFrame(() => setFocus(
           variant === 'form-lead' ? 'phone'
-            : variant === 'form-influencer' ? 'fullName'
-              : 'message'
+            : variant === 'form-creator' ? 'socialMediaLinks'
+              : variant === 'form-influencer' ? 'fullName'
+                : 'message'
         ));
       }
       document.addEventListener('Contact-NextStep', nextStep);
@@ -289,6 +303,57 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             type='email'
             inputMode='email'
             autoComplete='email'
+          />
+          <Checkbox
+            register={register('legal', {
+              required: { value: true, message: t.legalRequired },
+            })}
+            errors={errors}
+          >
+            {t.legal}
+          </Checkbox>
+        </>
+      )}
+      {variant === 'form-creator' && (
+        <>
+          <Input
+            label={t.socialMediaLinkLabel}
+            register={register('socialMediaLinks', {
+              required: { value: true, message: t.socialMediaLinkRequired },
+            })}
+            errors={errors}
+            placeholder={t.socialMediaLinkPlaceholder}
+          />
+          <Select
+            label={t.followersLabel}
+            options={followersOptions}
+            register={register('totalFollowers', {
+              required: { value: true, message: t.followersRequired },
+            })}
+            errors={errors}
+          />
+          <Input
+            label='Email'
+            register={register('email', {
+              required: { value: true, message: t.emailRequired },
+              pattern: { value: REGEX.email, message: t.emailInvalid },
+            })}
+            errors={errors}
+            type='email'
+            inputMode='email'
+            autoComplete='email'
+          />
+          <Input
+            label={t.phoneLabel}
+            register={register('phone', {
+              required: { value: true, message: t.phoneRequired },
+              pattern: { value: REGEX.phone, message: t.phoneInvalid },
+            })}
+            errors={errors}
+            type='tel'
+            inputMode='tel'
+            autoComplete='tel'
+            placeholder={t.phonePlaceholder}
           />
           <Checkbox
             register={register('legal', {
