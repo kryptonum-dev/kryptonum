@@ -99,7 +99,7 @@ const publishedVideosOptions = ['0-10', '10-30', '30-100', '100+'];
 const followersOptions = ['Poniżej 50 000', '50 000 – 100 000', '100 000 – 300 000', '300 000 – 500 000', '500 000+'];
 
 export default function Form({ children, variant, lang, dropdownOptions, dropdownLabel, dropdownPlaceholder, formId, ...props }: Props) {
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'rejected'>('idle');
   const [step, setStep] = useState<1 | 2>(1);
   const {
     register,
@@ -149,6 +149,11 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
   }, []);
 
   const onSubmit = async (data: FieldValues) => {
+    if (variant === 'form-creator' && data.totalFollowers === 'Poniżej 50 000') {
+      setStatus('rejected');
+      return;
+    }
+
     setStatus('loading');
 
     fetch(`${DOMAIN}/api/s3d`, {
@@ -326,6 +331,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
           />
           <Select
             label={t.followersLabel}
+            placeholder="500 000+"
             options={followersOptions}
             register={register('totalFollowers', {
               required: { value: true, message: t.followersRequired },

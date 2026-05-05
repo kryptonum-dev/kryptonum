@@ -130,6 +130,38 @@ const isMultiStepForm = !isFormWithList
       <div class="glow"></div>
     </a>
   </div>
+  <div class="RejectedState">
+    <div class="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none" viewBox="0 0 25 24">
+        <circle cx="12.5" cy="12" r="10" stroke={`url(#ContactForm-Rejected-${svgId})`}></circle>
+        <path stroke={`url(#ContactForm-Rejected1-${svgId})`} stroke-linejoin="round" d="m9 12.5 2 2 5-5"></path>
+        <defs>
+          <linearGradient
+            id={`ContactForm-Rejected-${svgId}`}
+            x1="22.125"
+            x2="1.311"
+            y1="2"
+            y2="3.326"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop>
+            <stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient>
+          <linearGradient
+            id={`ContactForm-Rejected1-${svgId}`}
+            x1="15.869"
+            x2="8.612"
+            y1="9.5"
+            y2="10.147"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2DD282"></stop>
+            <stop offset="1" stop-color="#90F4E8"></stop>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <p class="h2 heading">Dziękujemy za zainteresowanie!</p>
+    <p class="paragraph">Na ten moment współpracujemy z twórcami z minimum 50&nbsp;000 obserwujących. Jak Twoja społeczność urośnie — wróć do nas.</p>
+  </div>
   <div class="ErrorState">
     <div class="icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -226,6 +258,7 @@ const isMultiStepForm = !isFormWithList
       display: none;
     }
     .SuccessState,
+    .RejectedState,
     .ErrorState {
       display: none;
       padding: clamp(1.5rem, calc(2vw / 0.48), 2rem);
@@ -340,6 +373,12 @@ const isMultiStepForm = !isFormWithList
         }
       }
     }
+    .RejectedState {
+      background: var(--primary-gradient-900);
+      .icon {
+        background-color: var(--primary-600, #042b2b);
+      }
+    }
     .ErrorState {
       border: 1px solid var(--error-600, #380713);
       background: var(--error-gradient-900);
@@ -360,6 +399,7 @@ const isMultiStepForm = !isFormWithList
       }
     }
     &[data-status='success'],
+    &[data-status='rejected'],
     &[data-status='error'] {
       :global(> label),
       .submit-wrapper {
@@ -373,6 +413,11 @@ const isMultiStepForm = !isFormWithList
     }
     &[data-status='success'] {
       .SuccessState {
+        display: block;
+      }
+    }
+    &[data-status='rejected'] {
+      .RejectedState {
         display: block;
       }
     }
