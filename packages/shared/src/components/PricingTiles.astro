@@ -61,7 +61,7 @@ const Subheading = index === 0 ? 'h2' : 'h3'
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h2" />
     <PortableText value={paragraph} class="paragraph" />
   </header>
-  <div class="tiles">
+  <div class="tiles" data-single={items.length === 1}>
     {
       items.map(({ name, price, oldPrice, cta, featuresTitle, features, thumbnails, isHighlighted, highlight }) => (
         <article class="tile" data-highlighted={isHighlighted}>
@@ -221,6 +221,10 @@ const Subheading = index === 0 ? 'h2' : 'h3'
       position: relative;
       @media (max-width: 56rem) {
         grid-template-columns: 1fr;
+      }
+      &[data-single='true'] {
+        grid-template-columns: 1fr;
+        max-width: 32rem;
       }
       &::before {
         content: '';
