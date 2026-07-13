@@ -51,10 +51,11 @@ $background: var(--neutral-900, #000103);
       linear-gradient($background, $background) padding-box,
       var(--primary-gradient-400) border-box;
     border: 1px solid var(--neutral-500, #75758a);
-    transition: border-color 500ms var(--easing);
+    transition:
+      border-color 500ms var(--easing),
+      transform 500ms var(--easing);
     display: grid;
     place-items: center;
-    transition: border-color 500ms var(--easing);
     position: relative;
     overflow: hidden;
     &::before {

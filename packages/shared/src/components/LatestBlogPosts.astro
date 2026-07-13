@@ -122,11 +122,22 @@ const hasShowMore = posts.length > 6
 
       if (!showMoreBtn || !showLessBtn || !lowerList || !wrapper) return
 
+      // Settle the state based on data-expanded once the height transition
+      // finishes. Stays correct when rapid clicks retarget the transition.
+      lowerList.addEventListener('transitionend', (event) => {
+        if (event.target !== lowerList || event.propertyName !== 'height') return
+        lowerList.style.height = ''
+      })
+
       showMoreBtn.addEventListener('click', () => {
         wrapper.setAttribute('data-expanded', 'true')
         lowerList.setAttribute('data-expanded', 'true')
         lowerList.removeAttribute('inert')
         if (gradientOverlay) gradientOverlay.setAttribute('data-visible', 'false')
+        // When re-expanding mid-collapse, keep the current height so the
+        // transition reverses smoothly instead of jumping.
+        if (!lowerList.style.height) lowerList.style.height = '5rem'
+        requestAnimationFrame(() => (lowerList.style.height = lowerList.scrollHeight + 'px'))
       })
 
       showLessBtn.addEventListener('click', () => {
@@ -134,6 +145,8 @@ const hasShowMore = posts.length > 6
         lowerList.setAttribute('data-expanded', 'false')
         lowerList.setAttribute('inert', '')
         if (gradientOverlay) gradientOverlay.setAttribute('data-visible', 'true')
+        lowerList.style.height = lowerList.scrollHeight + 'px'
+        requestAnimationFrame(() => (lowerList.style.height = '5rem'))
 
         const middleList = section.querySelector('.posts-list-middle')
         if (middleList) {
@@ -204,11 +217,11 @@ const hasShowMore = posts.length > 6
 
     .posts-list-lower {
       position: relative;
-      max-height: 5rem;
+      height: 5rem;
       overflow: hidden;
       opacity: 0.6;
       transition:
-        max-height 400ms var(--easing),
+        height 400ms var(--easing),
         transform 400ms var(--easing),
         opacity 400ms var(--easing);
       pointer-events: none;
@@ -224,7 +237,7 @@ const hasShowMore = posts.length > 6
       }
 
       &[data-expanded='true'] {
-        max-height: 625rem;
+        height: auto;
         transform: translateY(0);
         opacity: 1;
         pointer-events: auto;

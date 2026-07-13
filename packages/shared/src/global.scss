@@ -155,7 +155,7 @@ body {
 html {
   scroll-behavior: smooth;
   @media (prefers-reduced-motion) {
-    scroll-behavior: none;
+    scroll-behavior: auto;
   }
   &.no-scroll {
     overflow: hidden;

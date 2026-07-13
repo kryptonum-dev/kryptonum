@@ -257,7 +257,9 @@ const isNotMainDomain = !Astro.url.origin.includes('://kryptonum.eu')
       }
       .marquee {
         width: fit-content;
-        animation: MarqueePillSection-marquee 10s linear infinite;
+        @media (prefers-reduced-motion: no-preference) {
+          animation: MarqueePillSection-marquee 10s linear infinite;
+        }
         @keyframes MarqueePillSection-marquee {
           0% {
             transform: translate3d(0px, 0px, 0px);

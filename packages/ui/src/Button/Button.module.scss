@@ -1,4 +1,4 @@
-$opacity-transition: 800ms var(--easing);
+$opacity-transition: opacity 800ms var(--easing);
 .Button {
   font-size: var(--typography-body-m, 14px);
   position: relative;
@@ -10,7 +10,7 @@ $opacity-transition: 800ms var(--easing);
   align-items: center;
   min-height: 3rem;
   padding: 0.625rem clamp(1rem, calc(1rem + 1vw / 0.48), 2rem);
-  transition: transform 500ms var(--easing);
+  transition: transform 200ms var(--easing);
   @media (max-width: 31rem) {
     width: 100%;
   }
@@ -117,6 +117,6 @@ $opacity-transition: 800ms var(--easing);
   }
   &:active {
     transition: none;
-    transform: scale(0.99);
+    transform: scale(0.97);
   }
 }

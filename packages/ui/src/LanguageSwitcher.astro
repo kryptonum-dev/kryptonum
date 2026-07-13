@@ -97,11 +97,16 @@ const { lang, alternates = [], ...props } = Astro.props
       background: var(--primary-600, #042b2b);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 0.5rem;
-      transition: transform 500ms var(--easing);
+      transform-origin: top;
+      transition:
+        opacity 200ms var(--easing),
+        transform 200ms var(--easing),
+        visibility 200ms var(--easing);
       &[hidden] {
         display: block;
         visibility: hidden;
-        transform: translateY(-0.125rem);
+        opacity: 0;
+        transform: scale(0.97);
       }
       .language-option {
         display: flex;

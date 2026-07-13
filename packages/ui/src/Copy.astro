@@ -35,7 +35,7 @@ const t = translations[lang]
     height: 2rem;
     position: relative;
     font-size: var(--typography-body-m, 0.875rem);
-    transition: transform 500ms var(--easing);
+    transition: transform 200ms var(--easing);
     &::before {
       $tap-incremnet: 0.4375rem;
       content: '';
@@ -87,7 +87,7 @@ const t = translations[lang]
     }
     &:active {
       transition: none;
-      transform: scale(0.98);
+      transform: scale(0.97);
       span {
         &::before {
           transform: translate(-50%, 50%) scale(2);

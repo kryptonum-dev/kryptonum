@@ -381,7 +381,7 @@ const page = await sanityFetch<{
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem 1rem;
-    transition: transform 500ms var(--easing);
+    transition: transform 200ms var(--easing);
     position: relative;
     z-index: 2;
     .blur {
@@ -419,7 +419,7 @@ const page = await sanityFetch<{
     }
     &:active {
       transition: none;
-      transform: scale(0.99);
+      transform: scale(0.97);
       .blur {
         &::before {
           transform: translate3d(-50%, -50%, 0) scale(2);

@@ -34,7 +34,9 @@ const Element = slug ? 'a' : 'button'
     }
     border-radius: 2.75rem;
     border: 1px solid var(--neutral-500);
-    transition: transform 500ms var(--easing);
+    transition:
+      transform 500ms var(--easing),
+      border-color 500ms var(--easing);
     &:hover {
       border-color: var(--neutral-200, #f0f7f7);
     }
