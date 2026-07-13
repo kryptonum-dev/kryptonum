@@ -123,33 +123,31 @@ const { summary, ...props } = Astro.props
     const content = details.querySelector<HTMLDivElement>('.content')
     const summary = details.querySelector<HTMLDivElement>('summary')
     if (!content || !summary) return
+    // Single persistent listener (instead of stacked `once` listeners) that
+    // settles the state based on data-expanded once the height transition
+    // finishes. Stays correct when rapid clicks retarget the transition.
+    content.addEventListener('transitionend', (event) => {
+      if (event.target !== content) return
+      if (details.getAttribute('data-expanded') === 'false') details.open = false
+      content.style.height = ''
+    })
     summary.addEventListener('click', (event) => {
       event.preventDefault()
-      if (details.open) {
+      // Branch on data-expanded (set synchronously) instead of details.open,
+      // which stays true until the closing transition ends — clicks during
+      // that window used to re-run the close branch and get swallowed.
+      if (details.getAttribute('data-expanded') === 'true') {
+        details.setAttribute('data-expanded', 'false')
         content.style.height = content.scrollHeight + 'px'
         requestAnimationFrame(() => (content.style.height = '0px'))
-        details.setAttribute('data-expanded', 'false')
-        content.addEventListener(
-          'transitionend',
-          () => {
-            details.open = false
-            content.style.height = ''
-          },
-          { once: true }
-        )
       } else {
         details.setAttribute('data-expanded', 'true')
         details.open = true
         const startHeight = content.scrollHeight + 'px'
-        content.style.height = '0px'
+        // When re-opening mid-close, keep the current height so the
+        // transition reverses smoothly instead of jumping to 0.
+        if (!content.style.height) content.style.height = '0px'
         requestAnimationFrame(() => (content.style.height = startHeight))
-        content.addEventListener(
-          'transitionend',
-          () => {
-            content.style.height = ''
-          },
-          { once: true }
-        )
       }
     })
   })

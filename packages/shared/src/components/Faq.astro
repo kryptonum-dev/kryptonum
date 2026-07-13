@@ -220,20 +220,23 @@ const t = translations[lang]
 <script>
   const ITEMS_PER_LOAD = 10
   document.querySelectorAll('.Faq').forEach((section) => {
-    let currentlyOpened: HTMLDetailsElement | null = null
     const accordions = section.querySelectorAll('details')
+    let isClosingOthers = false
     accordions.forEach((details) => {
-      details.addEventListener('toggle', () => {
-        if (details.open) {
-          currentlyOpened = details
-          accordions.forEach((otherDetails) => {
-            if (currentlyOpened !== otherDetails && otherDetails.open) {
-              otherDetails.querySelector('summary')?.click()
-            }
-          })
-        } else {
-          currentlyOpened = null
-        }
+      details.querySelector('summary')?.addEventListener('click', () => {
+        // Skip "close others" logic when this click was triggered
+        // programmatically by another accordion's handler.
+        if (isClosingOthers) return
+        isClosingOthers = true
+        accordions.forEach((otherDetails) => {
+          // data-expanded is set synchronously by the Accordion component's
+          // click handler, unlike details.open which lags until the closing
+          // transition ends.
+          if (details !== otherDetails && otherDetails.getAttribute('data-expanded') === 'true') {
+            otherDetails.querySelector('summary')?.click()
+          }
+        })
+        isClosingOthers = false
       })
     })
 
