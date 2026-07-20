@@ -5,6 +5,12 @@ import Button from '@repo/ui/Button'
 import { DOMAIN } from '@repo/shared/constants'
 import { type Language } from '@repo/shared/languages'
 
+type Props = {
+  autoGrantConsent?: boolean
+}
+
+const { autoGrantConsent = false } = Astro.props
+
 const lang = (Astro.params.lang as Language) || 'pl'
 
 const { GA4_ID, META_PIXEL_ID, privacyPolicySlug } = await sanityFetch<{
@@ -166,77 +172,79 @@ const groups = [
     />
   </noscript>
 )}
-<aside class="cookie-consent" aria-hidden="true">
-  <section class="content">
-    <header class="header">
-      <div data-header-initial>
-        <h2 class="heading">{t.heading}</h2>
-        <p class="description">
-          {t.description}&nbsp;
-          <a href={privacyPolicyUrl} target="_blank" rel="noopener" class="link">
-            {t.learnMore}
-          </a>
-        </p>
+{!autoGrantConsent && (
+  <aside class="cookie-consent" aria-hidden="true">
+    <section class="content">
+      <header class="header">
+        <div data-header-initial>
+          <h2 class="heading">{t.heading}</h2>
+          <p class="description">
+            {t.description}&nbsp;
+            <a href={privacyPolicyUrl} target="_blank" rel="noopener" class="link">
+              {t.learnMore}
+            </a>
+          </p>
+        </div>
+        <div data-header-settings style="display: none">
+          <h3 class="heading">{t.settingsHeading}</h3>
+          <p class="description">
+            {t.settingsDescription}&nbsp;
+            <a href={privacyPolicyUrl} target="_blank" rel="noopener" class="link">
+              {t.learnMore}
+            </a>
+          </p>
+        </div>
+      </header>
+      <div class="settings" style="display: none" data-lenis-prevent>
+        {
+          groups.map(({ id, name, description, subGroups }) => (
+            <div class="group" data-group={id}>
+              <label for={id} style={{ ...(id === 'necessary' && { cursor: 'not-allowed' }) }}>
+                <Switch
+                  {...(id === 'necessary' && {
+                    style: { cursor: 'not-allowed' },
+                  })}
+                  inputProps={{
+                    id,
+                    ...(id === 'necessary' && {
+                      disabled: true,
+                      checked: true,
+                    }),
+                  }}
+                  class="switch"
+                />
+                <p>{name}</p>
+                <p class="description">{description}</p>
+              </label>
+              {subGroups && (
+                <div class="sub-groups">
+                  {subGroups.map((subGroup) => (
+                    <label for={subGroup.id} class="sub-group">
+                      <Switch
+                        inputProps={{
+                          id: subGroup.id,
+                          'data-parent': id,
+                        }}
+                        class="switch"
+                      />
+                      <p>{subGroup.name}</p>
+                      <p class="description">{subGroup.description}</p>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        }
       </div>
-      <div data-header-settings style="display: none">
-        <h3 class="heading">{t.settingsHeading}</h3>
-        <p class="description">
-          {t.settingsDescription}&nbsp;
-          <a href={privacyPolicyUrl} target="_blank" rel="noopener" class="link">
-            {t.learnMore}
-          </a>
-        </p>
+      <div class="actions">
+        <button class="setPreferences">{t.buttons.setPreferences}</button>
+        <button class="deny">{t.buttons.deny}</button>
+        <Button className="agree" theme="primary">{t.buttons.agreeAll}</Button>
       </div>
-    </header>
-    <div class="settings" style="display: none" data-lenis-prevent>
-      {
-        groups.map(({ id, name, description, subGroups }) => (
-          <div class="group" data-group={id}>
-            <label for={id} style={{ ...(id === 'necessary' && { cursor: 'not-allowed' }) }}>
-              <Switch
-                {...(id === 'necessary' && {
-                  style: { cursor: 'not-allowed' },
-                })}
-                inputProps={{
-                  id,
-                  ...(id === 'necessary' && {
-                    disabled: true,
-                    checked: true,
-                  }),
-                }}
-                class="switch"
-              />
-              <p>{name}</p>
-              <p class="description">{description}</p>
-            </label>
-            {subGroups && (
-              <div class="sub-groups">
-                {subGroups.map((subGroup) => (
-                  <label for={subGroup.id} class="sub-group">
-                    <Switch
-                      inputProps={{
-                        id: subGroup.id,
-                        'data-parent': id,
-                      }}
-                      class="switch"
-                    />
-                    <p>{subGroup.name}</p>
-                    <p class="description">{subGroup.description}</p>
-                  </label>
-                ))}
-              </div>
-            )}
-          </div>
-        ))
-      }
-    </div>
-    <div class="actions">
-      <button class="setPreferences">{t.buttons.setPreferences}</button>
-      <button class="deny">{t.buttons.deny}</button>
-      <Button className="agree" theme="primary">{t.buttons.agreeAll}</Button>
-    </div>
-  </section>
-</aside>
+    </section>
+  </aside>
+)}
 
 <style lang="scss">
   :global(html) {
@@ -343,7 +351,7 @@ const groups = [
   }
 </style>
 
-<script is:inline define:vars={{ GA4_ID, META_PIXEL_ID }}>
+<script is:inline define:vars={{ GA4_ID, META_PIXEL_ID, autoGrantConsent }}>
   // Constants
   const COOKIE_NAME = 'cookie-consent'
   const CONSENT_ACCEPT_TTL_DAYS = 365
@@ -359,6 +367,15 @@ const groups = [
     personalization_storage: 'denied',
     conversion_api: 'denied',
     advanced_matching: 'denied',
+  }
+
+  const GRANTED_SELECTION = {
+    necessary: true,
+    analytics: true,
+    preferences: true,
+    marketing: true,
+    conversion_api: true,
+    advanced_matching: true,
   }
 
   // State
@@ -651,7 +668,11 @@ const groups = [
 
   // Check for existing consent
   const storedConsentRaw = getCookie(COOKIE_NAME)
-  const storedConsent = parseConsentCookie(storedConsentRaw)
+  const storedConsent = autoGrantConsent ? toConsentMode(GRANTED_SELECTION) : parseConsentCookie(storedConsentRaw)
+
+  if (autoGrantConsent) {
+    setCookie(COOKIE_NAME, JSON.stringify(storedConsent), CONSENT_ACCEPT_TTL_DAYS)
+  }
 
   if (!storedConsent) {
     // No consent decision yet - set default denied
@@ -663,9 +684,9 @@ const groups = [
 
   // DOM elements
   const cookieConsentElement = document.querySelector('.cookie-consent')
-  const acceptAllButton = cookieConsentElement.querySelector('.agree')
-  const preferencesButton = cookieConsentElement.querySelector('.setPreferences')
-  const denyButton = cookieConsentElement.querySelector('.deny')
+  const acceptAllButton = cookieConsentElement?.querySelector('.agree')
+  const preferencesButton = cookieConsentElement?.querySelector('.setPreferences')
+  const denyButton = cookieConsentElement?.querySelector('.deny')
   let isPreferencesOpen = false
 
   // Show banner or initialize tracking based on consent state
@@ -685,18 +706,11 @@ const groups = [
   }
 
   // Event listeners
-  acceptAllButton.addEventListener('click', () => {
-    handleConsentApply({
-      necessary: true,
-      marketing: true,
-      analytics: true,
-      preferences: true,
-      conversion_api: true,
-      advanced_matching: true,
-    })
+  acceptAllButton?.addEventListener('click', () => {
+    handleConsentApply(GRANTED_SELECTION)
   })
 
-  preferencesButton.addEventListener('click', () => {
+  preferencesButton?.addEventListener('click', () => {
     if (!isPreferencesOpen) {
       cookieConsentElement.querySelector('.header [data-header-initial]').style.display = 'none'
       cookieConsentElement.querySelector('.header [data-header-settings]').style.removeProperty('display')
@@ -714,7 +728,7 @@ const groups = [
     }
   })
 
-  denyButton.addEventListener('click', () => {
+  denyButton?.addEventListener('click', () => {
     handleConsentApply({
       necessary: false,
       marketing: false,
@@ -726,11 +740,11 @@ const groups = [
   })
 
   // Marketing switch controls sub-switches
-  const marketingSwitch = cookieConsentElement.querySelector('input[id="marketing"]')
-  const subSwitches = cookieConsentElement.querySelectorAll('.sub-groups input[type="checkbox"]')
+  const marketingSwitch = cookieConsentElement?.querySelector('input[id="marketing"]')
+  const subSwitches = cookieConsentElement?.querySelectorAll('.sub-groups input[type="checkbox"]') ?? []
   let isMarketingSwitchTriggered = false
 
-  marketingSwitch.addEventListener('change', (e) => {
+  marketingSwitch?.addEventListener('change', (e) => {
     isMarketingSwitchTriggered = true
     subSwitches.forEach((subSwitch) => {
       subSwitch.checked = e.target.checked
@@ -748,6 +762,7 @@ const groups = [
 
   // Reset consent button handler
   document.addEventListener('DOMContentLoaded', function () {
+    if (!cookieConsentElement) return
     document.getElementById('reset-cookie-consent')?.addEventListener('click', () => {
       document.cookie = `${COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
       window.gtag('consent', 'default', DENIED_CONSENT_MODE)

@@ -26,7 +26,7 @@ const lang = (Astro.params.lang as Language) || 'pl'
     <slot name="Head" />
   </head>
   <body>
-    <CookieConsent />
+    <CookieConsent autoGrantConsent={true} />
     <Analytics />
     {!hideLayout && <Header lang={lang} />}
     <main id="main">
