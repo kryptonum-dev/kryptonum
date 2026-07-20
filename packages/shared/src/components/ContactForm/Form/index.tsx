@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm, type FieldValues } from 'react-hook-form';
 import Input from '@repo/ui/Input'
 import Checkbox from '@repo/ui/Checkbox'
@@ -51,10 +51,14 @@ const translations = {
     socialMediaLinksPlaceholder: 'Wklej linki do swoich profili (każdy w nowej linii)',
     socialMediaLinksRequired: 'Linki do profili są wymagane',
     socialMediaLinkLabel: 'Link do Twojego profilu',
-    socialMediaLinkPlaceholder: 'np. instagram.com/twojprofil',
-    socialMediaLinkRequired: 'Link do profilu jest wymagany',
+    socialMediaLinkPlaceholder: 'facebook.com/anna albo @anna',
+    socialMediaLinkRequired: 'Wpisz nazwę profilu albo link do niego',
+    phoneOptionalLabel: 'Telefon, jeśli wolisz, żebyśmy zadzwonili',
+    phoneHint: 'Sprawdź numer, wpisz go w formacie +48 123 456 789',
+    emailHint: 'Sprawdź jeszcze raz adres, chyba brakuje w nim @',
     followersLabel: 'Ile masz obserwujących?',
-    followersRequired: 'To pole jest wymagane',
+    followersPlaceholder: 'Wybierz przedział',
+    followersRequired: 'Wybierz przedział z listy',
     publishedVideosLabel: 'Ile opublikowanych wideo',
     publishedVideosRequired: 'To pole jest wymagane',
     exampleVideoLabel: 'Przykładowy film lub link',
@@ -82,10 +86,14 @@ const translations = {
     socialMediaLinksPlaceholder: 'Paste links to your profiles (each on a new line)',
     socialMediaLinksRequired: 'Social media links are required',
     socialMediaLinkLabel: 'Link to your profile',
-    socialMediaLinkPlaceholder: 'e.g. instagram.com/yourprofile',
-    socialMediaLinkRequired: 'Profile link is required',
+    socialMediaLinkPlaceholder: 'facebook.com/anna or @anna',
+    socialMediaLinkRequired: 'Enter your profile name or a link to it',
+    phoneOptionalLabel: 'Phone, if you prefer us to call',
+    phoneHint: 'Check the number, use the format +48 123 456 789',
+    emailHint: 'Check the address again, the @ seems to be missing',
     followersLabel: 'How many followers do you have?',
-    followersRequired: 'This field is required',
+    followersPlaceholder: 'Select a range',
+    followersRequired: 'Select a range from the list',
     publishedVideosLabel: 'Published videos',
     publishedVideosRequired: 'This field is required',
     exampleVideoLabel: 'Example video or link',
@@ -101,6 +109,10 @@ const followersOptions = ['Poniżej 50 000', '50 000 – 100 000', '100 000 – 
 export default function Form({ children, variant, lang, dropdownOptions, dropdownLabel, dropdownPlaceholder, formId, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'rejected'>('idle');
   const [step, setStep] = useState<1 | 2>(1);
+  const isCreatorForm = variant === 'form-creator';
+  const formName = `contact_form_${variant}`;
+  const formStarted = useRef(false);
+  const leadSaved = useRef(false);
   const {
     register,
     handleSubmit,
@@ -108,7 +120,23 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
     formState: { errors },
     trigger,
     setFocus,
-  } = useForm({ mode: 'onTouched' });
+  } = useForm(isCreatorForm ? { mode: 'onBlur', reValidateMode: 'onBlur' } : { mode: 'onTouched' });
+
+  const handleFormFocus = () => {
+    if (!isCreatorForm || formStarted.current) return;
+    formStarted.current = true;
+    if (!shouldTrackAnalytics()) return;
+    trackEvent({
+      meta: {
+        eventName: 'form_start',
+        params: { form_name: formName },
+      },
+      ga4: {
+        eventName: 'form_start',
+        params: { form_name: formName },
+      },
+    });
+  };
 
   useEffect(() => {
     const tryAgain = () => setStatus('idle');
@@ -125,6 +153,18 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
         const isValid = await trigger(fieldsToValidate as unknown as string[]);
         if (isValid) {
           setStep(2);
+          if (isCreatorForm && shouldTrackAnalytics()) {
+            trackEvent({
+              meta: {
+                eventName: 'form_step_2',
+                params: { form_name: formName },
+              },
+              ga4: {
+                eventName: 'form_step_2',
+                params: { form_name: formName },
+              },
+            });
+          }
           requestAnimationFrame(() => setFocus(variant === 'form-influencer' ? 'totalFollowers' : 'email'));
         }
       }
@@ -149,61 +189,89 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
   }, []);
 
   const onSubmit = async (data: FieldValues) => {
-    if (variant === 'form-creator' && data.totalFollowers === 'Poniżej 50 000') {
-      setStatus('rejected');
-      return;
-    }
+    const isBelowThreshold = isCreatorForm && data.totalFollowers === followersOptions[0];
 
     setStatus('loading');
 
-    fetch(`${DOMAIN}/api/s3d`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: data.email,
-        message: data.message,
-        phone: data.phone,
-        dropdown: data.dropdown,
-        fullName: data.fullName,
-        totalFollowers: data.totalFollowers,
-        socialMediaLinks: data.socialMediaLinks,
-        publishedVideos: data.publishedVideos,
-        exampleVideo: data.exampleVideo,
-        formId,
-        utm: getUtmForSheet(),
-        source: typeof window !== 'undefined' ? window.location.hostname + window.location.pathname : '',
-      }),
-      keepalive: true,
-    }).catch(() => {});
+    if (!leadSaved.current) {
+      leadSaved.current = true;
+      fetch(`${DOMAIN}/api/s3d`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          message: data.message,
+          phone: data.phone,
+          dropdown: data.dropdown,
+          fullName: data.fullName,
+          totalFollowers: data.totalFollowers,
+          socialMediaLinks: data.socialMediaLinks,
+          publishedVideos: data.publishedVideos,
+          exampleVideo: data.exampleVideo,
+          formId,
+          utm: getUtmForSheet(),
+          source: typeof window !== 'undefined' ? window.location.hostname + window.location.pathname : '',
+        }),
+        keepalive: true,
+      })
+        .then((response) => {
+          if (!response.ok) leadSaved.current = false;
+        })
+        .catch(() => {
+          leadSaved.current = false;
+        });
+    }
 
     const response = await sendContactEmail({
       ...data,
       formId,
     } as sendContactEmailProps);
     if (response.success) {
-      setStatus('success');
+      setStatus(isBelowThreshold ? 'rejected' : 'success');
       reset();
+      leadSaved.current = false;
       if (typeof fathom !== 'undefined') fathom.trackEvent('contactForm_submit');
       if (shouldTrackAnalytics()) {
-        updateAnalyticsUser({ email: data.email as string });
-        trackEvent({
-          user: {
-            email: data.email as string,
-          },
-          meta: {
-            eventName: 'Lead',
-            contentName: 'contact_form',
-            params: {
-              form_name: `contact_form_${variant}`,
+        updateAnalyticsUser({ email: data.email as string, phone: data.phone as string });
+        const user = {
+          email: data.email as string,
+          phone: data.phone as string,
+        };
+        if (isBelowThreshold) {
+          trackEvent({
+            user,
+            meta: {
+              eventName: 'ApplicationBelowThreshold',
+              contentName: 'contact_form',
+              params: {
+                form_name: formName,
+              }
+            },
+            ga4: {
+              eventName: 'form_submit',
+              params: {
+                form_name: formName,
+              }
             }
-          },
-          ga4: {
-            eventName: 'generate_lead',
-            params: {
-              form_name: `contact_form_${variant}`,
+          });
+        } else {
+          trackEvent({
+            user,
+            meta: {
+              eventName: 'Lead',
+              contentName: 'contact_form',
+              params: {
+                form_name: formName,
+              }
+            },
+            ga4: {
+              eventName: 'generate_lead',
+              params: {
+                form_name: formName,
+              }
             }
-          }
-        });
+          });
+        }
       }
     } else {
       setStatus('error');
@@ -214,7 +282,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
   const t = translations[lang];
 
   return (
-    <form {...props} onSubmit={handleSubmit(onSubmit)} data-status={status} data-variant={variant} data-step={hasMultiStep(variant) ? step : undefined}>
+    <form {...props} onSubmit={handleSubmit(onSubmit)} onFocus={handleFormFocus} data-status={status} data-variant={variant} data-step={hasMultiStep(variant) ? step : undefined}>
       {variant === 'form-with-list' && (
         <>
           <Input
@@ -325,13 +393,18 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             label={t.socialMediaLinkLabel}
             register={register('socialMediaLinks', {
               required: { value: true, message: t.socialMediaLinkRequired },
+              pattern: { value: REGEX.string, message: t.socialMediaLinkRequired },
             })}
             errors={errors}
             placeholder={t.socialMediaLinkPlaceholder}
+            inputMode='url'
+            autoCapitalize='none'
+            autoCorrect='off'
+            spellCheck={false}
           />
           <Select
             label={t.followersLabel}
-            placeholder="500 000+"
+            placeholder={t.followersPlaceholder}
             options={followersOptions}
             register={register('totalFollowers', {
               required: { value: true, message: t.followersRequired },
@@ -342,7 +415,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             label='Email'
             register={register('email', {
               required: { value: true, message: t.emailRequired },
-              pattern: { value: REGEX.email, message: t.emailInvalid },
+              pattern: { value: REGEX.email, message: t.emailHint },
             })}
             errors={errors}
             type='email'
@@ -350,10 +423,9 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             autoComplete='email'
           />
           <Input
-            label={t.phoneLabel}
+            label={t.phoneOptionalLabel}
             register={register('phone', {
-              required: { value: true, message: t.phoneRequired },
-              pattern: { value: REGEX.phone, message: t.phoneInvalid },
+              pattern: { value: REGEX.phone, message: t.phoneHint },
             })}
             errors={errors}
             type='tel'

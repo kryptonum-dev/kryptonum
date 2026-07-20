@@ -6,6 +6,7 @@ import Button from '@repo/ui/Button'
 import Copy from '@repo/ui/Copy.astro'
 import Loader from '@repo/ui/Loader.astro'
 import PortableText from '@repo/ui/portable-text'
+import { DOMAIN } from '@repo/shared/constants'
 import { type Language } from '@repo/shared/languages'
 
 type Props = {
@@ -30,6 +31,7 @@ const translations = {
     secureData: 'Twoje dane są bezpieczne',
     nextStep: 'Przejdź dalej',
     prevStep: 'Wróć',
+    exitToHome: 'Przejdź na kryptonum.eu',
   },
   en: {
     copyEmailSuccess: 'Successfully copied email address',
@@ -41,6 +43,7 @@ const translations = {
     secureData: 'Your data is secure',
     nextStep: 'Next step',
     prevStep: 'Back',
+    exitToHome: 'Go to kryptonum.eu',
   },
 }
 const t = translations[lang]
@@ -133,34 +136,18 @@ const isMultiStepForm = !isFormWithList
   <div class="RejectedState">
     <div class="icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none" viewBox="0 0 25 24">
-        <circle cx="12.5" cy="12" r="10" stroke={`url(#ContactForm-Rejected-${svgId})`}></circle>
-        <path stroke={`url(#ContactForm-Rejected1-${svgId})`} stroke-linejoin="round" d="m9 12.5 2 2 5-5"></path>
-        <defs>
-          <linearGradient
-            id={`ContactForm-Rejected-${svgId}`}
-            x1="22.125"
-            x2="1.311"
-            y1="2"
-            y2="3.326"
-            gradientUnits="userSpaceOnUse">
-            <stop stop-color="#2DD282"></stop>
-            <stop offset="1" stop-color="#90F4E8"></stop>
-          </linearGradient>
-          <linearGradient
-            id={`ContactForm-Rejected1-${svgId}`}
-            x1="15.869"
-            x2="8.612"
-            y1="9.5"
-            y2="10.147"
-            gradientUnits="userSpaceOnUse">
-            <stop stop-color="#2DD282"></stop>
-            <stop offset="1" stop-color="#90F4E8"></stop>
-          </linearGradient>
-        </defs>
+        <rect width="19" height="14" x="3" y="5" stroke="#C6CDCC" rx="2"></rect>
+        <path stroke="#C6CDCC" stroke-linecap="round" stroke-linejoin="round" d="m4 7 7.06 4.9a2.5 2.5 0 0 0 2.88 0L21 7"></path>
       </svg>
     </div>
-    <p class="h2 heading">Dziękujemy za zainteresowanie!</p>
-    <p class="paragraph">Na ten moment współpracujemy z twórcami z minimum 50&nbsp;000 obserwujących. Jak Twoja społeczność urośnie — wróć do nas.</p>
+    <p class="h2 heading">Dziękujemy, mamy Twoje zgłoszenie.</p>
+    <p class="paragraph">
+      Przejrzymy je spokojnie i odezwiemy się, jeśli zobaczymy potencjał na wspólny projekt. Nie odpisujemy każdemu od
+      ręki, bo do każdej współpracy podchodzimy poważnie, ale nic nam nie ginie.
+    </p>
+    <div class="actions">
+      <Button href={DOMAIN} linkType="external" theme="secondary" className="cta">{t.exitToHome}</Button>
+    </div>
   </div>
   <div class="ErrorState">
     <div class="icon">
@@ -376,7 +363,13 @@ const isMultiStepForm = !isFormWithList
     .RejectedState {
       background: var(--primary-gradient-900);
       .icon {
-        background-color: var(--primary-600, #042b2b);
+        background-color: var(--neutral-800, #202025);
+      }
+      .actions {
+        margin-top: 2.25rem;
+        .cta {
+          width: 100%;
+        }
       }
     }
     .ErrorState {

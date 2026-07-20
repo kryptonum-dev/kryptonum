@@ -1,4 +1,5 @@
 import type { ContactLeadData } from './notion'
+import { profileLinkToHref } from './profile-link'
 
 type SlackBlock =
   | { type: 'header'; text: { type: 'plain_text'; text: string } }
@@ -32,9 +33,8 @@ function buildSlackBlocks(data: ContactLeadData): SlackBlock[] {
   if (data.socialMediaLinks) {
     blocks.push({ type: 'divider' })
     const link = data.socialMediaLinks.trim()
-    const formatted = !link.includes('\n')
-      ? `<${link.startsWith('http') ? link : `https://${link}`}|${link}>`
-      : link
+    const href = link.includes('\n') ? null : profileLinkToHref(link)
+    const formatted = href ? `<${href}|${link}>` : link
     blocks.push({
       type: 'section',
       text: { type: 'mrkdwn', text: `*Social media:*\n${formatted}` },

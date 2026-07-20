@@ -4,6 +4,7 @@ import type { APIRoute } from "astro";
 import { DOMAIN, REGEX } from "@repo/shared/constants";
 import { htmlToString } from "@repo/utils/html-to-string";
 import { getFormIntegrationConfig } from "@repo/utils/form-config";
+import { profileLinkToHref } from "@repo/utils/profile-link";
 
 type RequestBody = {
   email: string
@@ -67,8 +68,10 @@ const template = (data: TemplateData) => {
   if (data.socialMediaLinks) {
     const link = data.socialMediaLinks.trim();
     if (!link.includes('\n')) {
-      const href = link.startsWith('http') ? link : `https://${link}`;
-      parts.push(`<p>Social media: <a href="${href}">${link}</a></p>`);
+      const href = profileLinkToHref(link);
+      parts.push(href
+        ? `<p>Social media: <a href="${href}">${link}</a></p>`
+        : `<p>Social media: <b>${link}</b></p>`);
     } else {
       parts.push(`<p>Social media:<br/>${link.replace(/\n/g, '<br />')}</p>`);
     }
@@ -126,7 +129,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const subject = isInfluencerForm
     ? `Nowe zgłoszenie influencera | Kryptonum`
-    : phone
+    : totalFollowers || phone
       ? `Lead z formularza kontaktowego | Kryptonum`
       : `Wiadomość z formularza kontaktowego | Kryptonum`;
 
