@@ -39,6 +39,53 @@ export type AppendLeadResult = {
   error?: string
 }
 
+const LEADS_RT_DATABASE_ID = '033d2d0a22d94a1d8ada8d8593ab8ec5'
+
+const LANDING_PAGES: Record<string, string> = {
+  '/pl/richer-together': 'RT Globalny',
+  '/pl/richer-together-za-granica': 'LP Polka w dolarach',
+  '/pl/richer-together-bez-produktu': 'LP Zasięgi bez produktu',
+  '/pl/richer-together-sprzedajesz': 'LP Sprzedajesz za mało',
+}
+
+function parseUtm(raw?: string): Record<string, string> {
+  if (!raw) return {}
+  const result: Record<string, string> = {}
+  for (const line of raw.split('\n')) {
+    const separator = line.indexOf('=')
+    if (separator === -1) continue
+    const key = line.slice(0, separator).trim()
+    const value = line.slice(separator + 1).trim()
+    if (key && value) result[key] = value
+  }
+  return result
+}
+
+function selectOption(name: string) {
+  return { name: name.replace(/,/g, ' ').trim().slice(0, 100) }
+}
+
+function resolveLandingPage(source?: string): string {
+  if (!source) return 'Inny'
+  const path = source
+    .replace(/^https?:\/\//, '')
+    .replace(/^[^/]*/, '')
+    .replace(/[?#].*$/, '')
+    .replace(/\/+$/, '')
+  return LANDING_PAGES[path] || 'Inny'
+}
+
+function resolvePlatforms(links?: string): string[] {
+  if (!links) return []
+  const value = links.toLowerCase()
+  const found: string[] = []
+  if (value.includes('instagram.com')) found.push('Instagram')
+  if (/facebook\.com|fb\.com|fb\.me/.test(value)) found.push('Facebook')
+  if (value.includes('tiktok.com')) found.push('TikTok')
+  if (/youtube\.com|youtu\.be/.test(value)) found.push('YouTube')
+  return found.length ? found : ['Inna']
+}
+
 export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendLeadResult> {
   const databaseId = data.notionDatabaseId || NOTION_LEADS_DATABASE_ID
 
@@ -54,6 +101,8 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
 
   try {
     const titleContent = data.fullName || data.email
+    const isLeadsRt = databaseId.replace(/-/g, '') === LEADS_RT_DATABASE_ID
+    const utm = parseUtm(data.utm)
     const properties: Record<string, unknown> = {
       'Name': { title: [{ text: { content: titleContent } }] },
       'Status': { select: { name: 'Nowy' } },
@@ -61,14 +110,25 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
       'Email': { email: data.email },
     }
 
+    if (isLeadsRt) {
+      properties['Landing page'] = { select: selectOption(resolveLandingPage(data.source)) }
+      if (utm.utm_source || utm.referrer) {
+        properties['UTM źródło'] = { select: selectOption(utm.utm_source || utm.referrer) }
+      }
+      if (utm.utm_medium) properties['UTM medium'] = { select: selectOption(utm.utm_medium) }
+      if (utm.utm_campaign) properties['Kampania'] = { select: selectOption(utm.utm_campaign) }
+      if (utm.utm_term) properties['Adset'] = { select: selectOption(utm.utm_term) }
+      if (utm.utm_content) properties['Kreacja'] = { select: selectOption(utm.utm_content) }
+    }
+
     if (data.phone) {
       properties['Numer telefonu'] = { phone_number: data.phone }
     }
-    if (data.dropdown) {
+    if (data.dropdown && !isLeadsRt) {
       properties['Branża'] = { select: { name: data.dropdown } }
     }
     if (data.message) {
-      properties['Wiadomość'] = { rich_text: [{ text: { content: data.message.slice(0, 2000) } }] }
+      properties[isLeadsRt ? 'Komentarz' : 'Wiadomość'] = { rich_text: [{ text: { content: data.message.slice(0, 2000) } }] }
     }
     if (data.utm) {
       properties['UTM'] = { rich_text: [{ text: { content: data.utm.slice(0, 2000) } }] }
@@ -79,15 +139,23 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
       }
     }
     if (data.totalFollowers) {
-      properties['Obserwujący'] = { rich_text: [{ text: { content: data.totalFollowers.slice(0, 2000) } }] }
+      properties['Obserwujący'] = isLeadsRt
+        ? { select: selectOption(data.totalFollowers) }
+        : { rich_text: [{ text: { content: data.totalFollowers.slice(0, 2000) } }] }
+      if (isLeadsRt) {
+        properties['Próg 50k'] = { checkbox: data.totalFollowers !== 'Poniżej 50 000' }
+      }
     }
     if (data.socialMediaLinks) {
       properties['Social Media'] = { rich_text: [{ text: { content: data.socialMediaLinks.slice(0, 2000) } }] }
+      if (isLeadsRt) {
+        properties['Platforma'] = { multi_select: resolvePlatforms(data.socialMediaLinks).map(selectOption) }
+      }
     }
-    if (data.publishedVideos) {
+    if (data.publishedVideos && !isLeadsRt) {
       properties['Opublikowane wideo'] = { select: { name: data.publishedVideos } }
     }
-    if (data.exampleVideo) {
+    if (data.exampleVideo && !isLeadsRt) {
       properties['Przykładowy film'] = { url: data.exampleVideo }
     }
 
