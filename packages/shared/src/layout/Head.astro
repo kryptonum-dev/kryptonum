@@ -31,6 +31,8 @@ export type HeadProps = ({ path: string; url?: never } | { url: string; path?: n
 
 const { path, url: _url, title, description, openGraphImage, alternates, lang, noindex } = Astro.props as HeadProps
 
+const origin = Astro.site?.origin || DOMAIN
+
 const getOgImage = async () => {
   const asset = await getImage({
     src: openGraphImage || seo.openGraphImage,
@@ -39,14 +41,14 @@ const getOgImage = async () => {
     inferSize: true,
   })
   return {
-    url: `${DOMAIN}${asset.src}`,
+    url: `${origin}${asset.src}`,
     width: asset.attributes.width,
     height: asset.attributes.height,
   }
 }
 const ogImage = await getOgImage()
 
-const url = _url || `${DOMAIN}${path}`
+const url = _url || `${origin}${path}`
 const shouldNoindex = noindex || !isLanguageIndexable(lang)
 
 // Only output hreflang if current language is indexable AND there are other indexable alternates
@@ -71,7 +73,7 @@ const shouldRenderHreflang = isLanguageIndexable(lang) && indexableAlternates.le
     <link rel="alternate" hreflang="x-default" href={url} />
     <link rel="alternate" hreflang={lang} href={url} />
     {indexableAlternates.map(({ lang: altLang, url: altUrl }) => (
-      <link rel="alternate" hreflang={altLang} href={`${DOMAIN}${altUrl}`} />
+      <link rel="alternate" hreflang={altLang} href={`${origin}${altUrl}`} />
     ))}
   </>
 )}
