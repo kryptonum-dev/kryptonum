@@ -6,6 +6,7 @@
     "./slugify": "./src/slugify.ts",
     "./format-date": "./src/format-date.ts",
     "./hash": "./src/hash.ts",
+    "./meta-normalize": "./src/meta-normalize.ts",
     "./metadata.fetch": "./src/metadata.fetch.ts",
     "./html-to-string": "./src/html-to-string.ts",
     "./get-cookie": "./src/get-cookie.ts",
