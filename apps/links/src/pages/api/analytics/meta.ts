@@ -4,6 +4,7 @@ import type { APIRoute } from 'astro'
 import sanityFetch from '@repo/utils/sanity.fetch'
 import { getCookie } from '@repo/utils/get-cookie'
 import { hash } from '@repo/utils/hash'
+import { normalizeUserFields } from '@repo/utils/meta-normalize'
 
 type MetaRequestBody = {
   event_name: string
@@ -39,7 +40,6 @@ type MetaEventPayload = {
   action_source: 'website'
   user_data: MetaUserData
   event_source_url?: string
-  content_name?: string
   custom_data?: Record<string, unknown>
 }
 
@@ -50,26 +50,31 @@ const META_ANALYTICS_QUERY = `
   }
 `
 
+// The pixel id and token are the same for every request, so a Sanity round-trip on each
+// event only adds latency to a call the browser makes with sendBeacon during page unload.
+// Only successful reads are cached, so a transient failure is not pinned for the whole TTL.
+const CONFIG_CACHE_TTL_MS = 5 * 60 * 1000
+let cachedConfig: { value: MetaAnalyticsConfig; readAt: number } | null = null
+
 async function getMetaAnalyticsConfig(): Promise<MetaAnalyticsConfig> {
+  if (cachedConfig && Date.now() - cachedConfig.readAt < CONFIG_CACHE_TTL_MS) {
+    return cachedConfig.value
+  }
+
   const data = await sanityFetch<MetaAnalyticsConfig>({
     query: META_ANALYTICS_QUERY,
   })
 
-  return {
+  const value: MetaAnalyticsConfig = {
     metaPixelId: data?.metaPixelId ?? null,
     metaConversionToken: data?.metaConversionToken ?? null,
   }
-}
 
-function phoneToE164(raw?: string, defaultCountry = '+48'): string | undefined {
-  if (!raw) return undefined
-  let v = raw.replace(/\s+/g, '').trim()
-  if (!v) return undefined
-  if (!v.startsWith('+')) {
-    if (v.startsWith('0')) v = v.replace(/^0+/, '')
-    v = `${defaultCountry}${v}`
+  if (value.metaPixelId && value.metaConversionToken) {
+    cachedConfig = { value, readAt: Date.now() }
   }
-  return v
+
+  return value
 }
 
 function computeFbc(fbcCookie?: string | null, urlOrRef?: string): string | undefined {
@@ -77,8 +82,9 @@ function computeFbc(fbcCookie?: string | null, urlOrRef?: string): string | unde
   const src = urlOrRef || ''
   const m = src.match(/[?&]fbclid=([^&#]+)/)
   if (!m?.[1]) return undefined
-  const ts = Math.floor(Date.now() / 1000)
-  return `fb.1.${ts}.${m[1]}`
+  // format is `fb.<subdomainIndex>.<creationTime>.<fbclid>` where creationTime is in
+  // MILLISECONDS - the pixel takes it from Date.now() in SignalsPixelCookieUtils
+  return `fb.1.${Date.now()}.${m[1]}`
 }
 
 async function postWithRetry(url: string, body: unknown, maxRetries = 2): Promise<Response> {
@@ -206,25 +212,14 @@ export const POST: APIRoute = async ({ request }) => {
   if (fbp) user_data.fbp = fbp
   if (fbc) user_data.fbc = fbc
 
-  // Add advanced matching data if consented
+  // Add advanced matching data if consented.
+  // Normalization must be identical to what the pixel does in the browser, otherwise
+  // we send a hash of a different string for the same person and Meta will not match it.
   if (advanced_matching === 'granted' && body.user) {
-    const em = body.user.email?.trim().toLowerCase()
-    const ph = phoneToE164(body.user.phone)
-    const fn = body.user.first_name?.trim().toLowerCase()
-    const ln = body.user.last_name?.trim().toLowerCase()
-    const xid = body.user.external_id?.toString().trim().toLowerCase()
-    const zip = body.user.postal_code?.trim().toLowerCase()
-    const ct = body.user.city?.trim().toLowerCase()
-    const country = body.user.country_code?.trim().toLowerCase()
-
-    if (em) user_data.em = [await hash(em)]
-    if (ph) user_data.ph = [await hash(ph)]
-    if (fn) user_data.fn = [await hash(fn)]
-    if (ln) user_data.ln = [await hash(ln)]
-    if (xid) user_data.external_id = [await hash(xid)]
-    if (zip) user_data.zp = [await hash(zip)]
-    if (ct) user_data.ct = [await hash(ct)]
-    if (country) user_data.country = [await hash(country)]
+    const normalized = normalizeUserFields(body.user)
+    for (const [key, value] of Object.entries(normalized)) {
+      if (value) user_data[key] = [await hash(value)]
+    }
   }
 
   // Build event payload
@@ -236,8 +231,12 @@ export const POST: APIRoute = async ({ request }) => {
     user_data,
   }
   if (event_source_url) data.event_source_url = event_source_url
-  if (body.content_name) data.content_name = body.content_name
-  if (body.custom_event_params) data.custom_data = body.custom_event_params
+
+  // `content_name` belongs in custom_data, not at the event root. The client folds it
+  // into the pixel params the same way, so both sides send identical custom_data.
+  const custom_data: Record<string, unknown> = { ...(body.custom_event_params ?? {}) }
+  if (body.content_name) custom_data.content_name = body.content_name
+  if (Object.keys(custom_data).length > 0) data.custom_data = custom_data
 
   const url = `https://graph.facebook.com/v23.0/${encodeURIComponent(pixelId)}/events?access_token=${encodeURIComponent(accessToken)}`
 

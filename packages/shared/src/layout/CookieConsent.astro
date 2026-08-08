@@ -394,7 +394,10 @@ const groups = [
   function setCookie(name, value, days = 1) {
     const date = new Date(Date.now() + 86400000 * days)
     const expires = days ? `; expires=${date.toUTCString()}` : ''
-    document.cookie = `${name}=${encodeURIComponent(value)}${expires}; SameSite=Strict; path=/`
+    // Lax, not Strict: on a cross-site entry (clicking an ad) a Strict cookie is not
+    // sent with the first request, so the server cannot see the consent decision.
+    const secure = location.protocol === 'https:' ? '; Secure' : ''
+    document.cookie = `${name}=${encodeURIComponent(value)}${expires}; SameSite=Lax${secure}; path=/`
   }
 
   function setAnalyticsReady(ready) {
@@ -501,12 +504,14 @@ const groups = [
   function bootstrapMetaPixel() {
     if (typeof window.fbq === 'function') return
 
-    const fbq = function() {
-      fbq.queue.push(arguments)
+    // Shape of the official Meta snippet. Delegating to `callMethod` is mandatory:
+    // once fbevents.js loads it attaches `fbq.callMethod`, and from that point every
+    // call has to go there. A stub that always pushes to `fbq.queue` means nothing
+    // ever runs, because that queue is only drained on a lock release.
+    const fbq = function () {
+      fbq.callMethod ? fbq.callMethod.apply(fbq, arguments) : fbq.queue.push(arguments)
     }
-    fbq.push = function() {
-      fbq.queue.push(arguments)
-    }
+    fbq.push = fbq
     fbq.queue = []
     fbq.loaded = true
     fbq.version = '2.0'

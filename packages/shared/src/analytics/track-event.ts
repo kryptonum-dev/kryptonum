@@ -6,6 +6,7 @@ import type {
   TrackEventMeta,
 } from './types'
 import { loadAnalyticsUser, saveAnalyticsUser, normalizeAnalyticsUser } from './analytics-user-storage'
+import { normalizeUserFields } from '@repo/utils/meta-normalize'
 
 type PendingEvent<
   TMeta extends MetaEventName = MetaEventName,
@@ -100,6 +101,34 @@ function getCookie(name: string): string | null {
   return null
 }
 
+/**
+ * Seeds `_fbp` when it is missing, so CAPI always carries a browser identifier.
+ *
+ * Safe by design: Meta's cookie plugin reads the cookie first and reuses it if it parses
+ * (readPackedCookie -> writeExistingCookie), and only generates its own when there is none.
+ * So whoever writes first wins and both channels end up on the same value.
+ *
+ * This matters most when connect.facebook.net is blocked: the pixel never runs, so nothing
+ * would ever write `_fbp`, and CAPI is left with just IP and user agent to match on.
+ *
+ * Format, payload shape, lifetime and domain follow SignalsPixelCookieUtils: the pixel picks
+ * the cookie domain by subdomain index, and index 1 resolves to the last two labels.
+ * Only ever called after the conversion API consent check.
+ */
+function ensureFbpCookie(): void {
+  if (typeof document === 'undefined' || getCookie('_fbp')) return
+
+  const random = () => Math.floor(Math.random() * 999999999).toString()
+  const value = `fb.1.${Date.now()}.${random()}${random()}`
+
+  const labels = window.location.hostname.split('.')
+  const domain = labels.length >= 2 ? `; domain=.${labels.slice(-2).join('.')}` : ''
+  const secure = window.location.protocol === 'https:' ? '; Secure' : ''
+  const ninetyDaysInSeconds = 90 * 24 * 60 * 60
+
+  document.cookie = `_fbp=${value}; max-age=${ninetyDaysInSeconds}; path=/${domain}; SameSite=Lax${secure}`
+}
+
 function parseConsent(): Partial<Record<string, 'granted' | 'denied'>> {
   const raw = getCookie(COOKIE_NAME)
   if (!raw) return {}
@@ -157,52 +186,17 @@ function flushQueue(): void {
   }
 }
 
-function flushFbqQueue(fbqFn: Window['fbq']): void {
-  if (typeof window === 'undefined') return
-  const queue = window._fbq?.queue
-  if (!Array.isArray(queue) || typeof fbqFn.callMethod !== 'function') {
-    return
-  }
-
-  while (queue.length) {
-    const args = queue.shift()
-    if (!Array.isArray(args)) continue
-    try {
-      fbqFn.callMethod.apply(fbqFn, args as [])
-    } catch (err) {
-      console.error('[Meta] fbq manual flush failed', err)
-    }
-  }
-}
-
-function phoneToE164(raw: string | number | undefined, defaultCountry = '+48'): string | undefined {
-  if (raw === undefined || raw === null) return undefined
-  const stringified = typeof raw === 'number' ? String(raw) : raw
-  const normalized = stringified.replace(/[^ 0-9+]/g, '')
-  if (!normalized) return undefined
-  if (normalized.startsWith('+')) return normalized
-  if (normalized.startsWith('00')) return `+${normalized.slice(2)}`
-  return `${defaultCountry}${normalized}`
-}
-
+/**
+ * Hands the pixel values that are already in Meta's canonical form, so the `ud[...]`
+ * hash it computes is provably the same string the CAPI route hashes. Sharing the
+ * module with the server is the point: the pixel would normalize on its own, but then
+ * parity would depend on our guess about its internals rather than on one rule set.
+ */
 function buildAdvancedMatchingPayload(user?: AnalyticsUser | null): Record<string, string> | null {
   const normalized = normalizeUser(user)
   if (!normalized) return null
 
-  const payload: Record<string, string> = {}
-
-  if (normalized.email) payload.em = normalized.email.trim().toLowerCase()
-  if (normalized.phone) {
-    const phone = phoneToE164(normalized.phone)
-    if (phone) payload.ph = phone
-  }
-  if (normalized.first_name) payload.fn = normalized.first_name.trim().toLowerCase()
-  if (normalized.last_name) payload.ln = normalized.last_name.trim().toLowerCase()
-  if (normalized.city) payload.ct = normalized.city.trim().toLowerCase()
-  if (normalized.postal_code) payload.zp = normalized.postal_code.trim().toLowerCase()
-  if (normalized.country_code) payload.country = normalized.country_code.trim().toLowerCase()
-  if (normalized.external_id) payload.external_id = normalized.external_id.toString().trim()
-
+  const payload = normalizeUserFields(normalized)
   return Object.keys(payload).length ? payload : null
 }
 
@@ -214,12 +208,12 @@ function applyMetaPixelUserData(pixelId: string | undefined | null, payload: Rec
   if (!pixelInstance) {
     return
   }
+  // Only `userData`. It is read at send time by appendUserDataParams and emitted as
+  // `ud[...]`, hashed by the identity plugin. `userDataFormFields` is the separate
+  // `udff[...]` channel for Automatic Advanced Matching, which we opt out of via
+  // fbq('set', 'autoConfig', false), so writing the same values there is dead weight.
   pixelInstance.userData = {
     ...(pixelInstance.userData ?? {}),
-    ...payload,
-  }
-  pixelInstance.userDataFormFields = {
-    ...(pixelInstance.userDataFormFields ?? {}),
     ...payload,
   }
 }
@@ -344,6 +338,8 @@ function sendEvent(event: PendingEvent): void {
     const metaPayload = Object.keys(metaParams).length > 0 ? metaParams : {}
 
     if (canSendMetaCapi && !processedEvent.capiDispatched) {
+      ensureFbpCookie()
+
       const metaBody = {
         event_name: meta.eventName,
         content_name: meta.contentName,
@@ -410,16 +406,11 @@ function sendEvent(event: PendingEvent): void {
               eventID: processedEvent.eventId,
             },
           ]
-          if (typeof fbqFn.callMethod === 'function') {
-            flushFbqQueue(fbqFn)
-            fbqFn.callMethod.apply(fbqFn, args)
-            flushFbqQueue(fbqFn)
-          } else {
-            fbqFn(...args)
-            setTimeout(() => {
-              flushFbqQueue(fbqFn)
-            }, 250)
-          }
+          // Always go through `window.fbq`. The pixel decides whether to send now or
+          // hold the call in its own queue while a lock is active (pixel config, consent,
+          // plugin). That queue is drained by `locks.onUnlocked` inside fbevents.js.
+          // Never drain it by hand: entries are `arguments` objects, not arrays.
+          fbqFn(...args)
         } catch (error) {
           console.error('[Meta] fbq tracking failed', error)
         }
