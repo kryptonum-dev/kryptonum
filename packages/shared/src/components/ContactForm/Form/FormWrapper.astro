@@ -491,7 +491,7 @@ const isMultiStepForm = !isFormWithList
         will-change: filter;
       }
       &[data-step='1'] {
-        :global(> label:nth-child(n+3)) {
+        :global(> label:nth-child(n+4)) {
           filter: blur(8px);
           visibility: hidden;
           position: absolute;
@@ -504,7 +504,7 @@ const isMultiStepForm = !isFormWithList
         }
       }
       &[data-step='2'] {
-        :global(> label:nth-child(-n+2)) {
+        :global(> label:nth-child(-n+3)) {
           filter: blur(8px);
           visibility: hidden;
           position: absolute;
