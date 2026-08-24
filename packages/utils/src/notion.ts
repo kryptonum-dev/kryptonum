@@ -11,7 +11,7 @@
  * | Name (title) | Status | Komentarz | Data | Email | Numer telefonu | Branża | Wiadomość | UTM | Źródło |
  */
 
-import { isValidProfileLink } from './profile-link'
+import { evaluateRtGate } from './rt-gate'
 
 declare const process: { env: Record<string, string | undefined> }
 
@@ -36,6 +36,8 @@ export type ContactLeadData = {
   exampleVideo?: string
   metaIds?: string
   status?: string
+  automatMail?: string
+  automatDate?: string
   notionDatabaseId?: string
 }
 
@@ -45,6 +47,10 @@ export type AppendLeadResult = {
 }
 
 const LEADS_RT_DATABASE_ID = '033d2d0a22d94a1d8ada8d8593ab8ec5'
+
+export function isRtLeadsDatabase(databaseId?: string): boolean {
+  return !!databaseId && databaseId.replace(/-/g, '') === LEADS_RT_DATABASE_ID
+}
 
 const LANDING_PAGES: Record<string, string> = {
   '/pl/richer-together': 'RT Globalny',
@@ -152,15 +158,17 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
       properties['Sprzedaż online'] = { select: selectOption(data.salesRange) }
     }
     if (isLeadsRt && (data.totalFollowers || data.salesRange || data.socialMediaLinks)) {
-      // Mirrors the client-side gate for the Meta Lead event: a real profile
-      // link plus either any sales or 300k+ reach.
-      const sellsAlready = !!data.salesRange && data.salesRange !== 'Jeszcze nie sprzedaję'
-      const hasBigReach = data.totalFollowers === '300 000 – 500 000' || data.totalFollowers === '500 000+'
-      const hasValidLink = !!data.socialMediaLinks && isValidProfileLink(data.socialMediaLinks)
-      properties['Bramka Lead'] = { checkbox: hasValidLink && (sellsAlready || hasBigReach) }
+      // Mirrors the client-side gate for the Meta Lead event.
+      properties['Bramka Lead'] = { checkbox: evaluateRtGate(data) === 'qualified' }
     }
     if (data.metaIds && isLeadsRt) {
       properties['Meta ID'] = { rich_text: [{ text: { content: data.metaIds.slice(0, 2000) } }] }
+    }
+    if (data.automatMail && isLeadsRt) {
+      properties['Automat: mail'] = { select: { name: data.automatMail } }
+    }
+    if (data.automatDate && isLeadsRt) {
+      properties['Automat: data'] = { date: { start: data.automatDate } }
     }
     if (data.socialMediaLinks) {
       properties['Social Media'] = { rich_text: [{ text: { content: data.socialMediaLinks.slice(0, 2000) } }] }

@@ -1,6 +1,8 @@
 export const prerender = false
 
-import { appendLeadToNotion, findLeadByEmail, updateLeadStatus, type ContactLeadData } from '@repo/utils/notion'
+import { appendLeadToNotion, findLeadByEmail, isRtLeadsDatabase, updateLeadStatus, type ContactLeadData } from '@repo/utils/notion'
+import { evaluateRtGate } from '@repo/utils/rt-gate'
+import { sendRtAutomationMail } from '@repo/utils/rt-automation'
 import { sendSlackNotification } from '@repo/utils/slack'
 import { getFormIntegrationConfig } from '@repo/utils/form-config'
 import type { APIRoute } from 'astro'
@@ -120,6 +122,28 @@ export const POST: APIRoute = async ({ request }) => {
     const config = formId ? await getFormIntegrationConfig(formId) : {}
     if (config.notionDatabaseId) {
       leadData.notionDatabaseId = config.notionDatabaseId
+    }
+
+    // RT automation: instant reply matching the qualification gate. Statuses
+    // are only advanced when a mail was actually accepted for delivery, and
+    // submissions without a usable profile link (only possible by bypassing
+    // the form) are archived without any mail.
+    const targetDatabaseId = leadData.notionDatabaseId
+      || process.env.NOTION_LEADS_DATABASE_ID
+      || import.meta.env.NOTION_LEADS_DATABASE_ID
+    if (isRtLeadsDatabase(targetDatabaseId)) {
+      const gate = evaluateRtGate(leadData)
+      if (gate === 'junk') {
+        leadData.status = 'Archiwum'
+      } else {
+        const mailKind = gate === 'qualified' ? 'mail1' : 'mail2'
+        const sent = await sendRtAutomationMail(mailKind, leadData.email, leadData.socialMediaLinks)
+        if (sent) {
+          leadData.status = mailKind === 'mail1' ? 'W trakcie' : 'Do weryfikacji'
+          leadData.automatMail = mailKind
+          leadData.automatDate = new Date().toISOString()
+        }
+      }
     }
 
     await appendLeadToNotion(leadData)

@@ -7,6 +7,7 @@ import { REGEX, DOMAIN } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www/pages/api/contact/sendContactEmail';
 import { type Language } from '@repo/shared/languages';
 import { isValidProfileLink } from '@repo/utils/profile-link';
+import { evaluateRtGate } from '@repo/utils/rt-gate';
 import { trackEvent, updateAnalyticsUser } from '../../../analytics';
 import { getUtmForSheet } from '../../../analytics/utm-storage';
 
@@ -208,10 +209,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
   }, []);
 
   const onSubmit = async (data: FieldValues) => {
-    const sellsAlready = isCreatorForm && !!data.salesRange && data.salesRange !== salesOptions[0];
-    const hasBigReach = isCreatorForm
-      && (data.totalFollowers === followersOptions[3] || data.totalFollowers === followersOptions[4]);
-    const isBelowThreshold = isCreatorForm && !sellsAlready && !hasBigReach;
+    const isBelowThreshold = isCreatorForm && evaluateRtGate(data) !== 'qualified';
 
     setStatus('loading');
 

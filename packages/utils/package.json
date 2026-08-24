@@ -12,6 +12,8 @@
     "./get-cookie": "./src/get-cookie.ts",
     "./notion": "./src/notion.ts",
     "./profile-link": "./src/profile-link.ts",
+    "./rt-gate": "./src/rt-gate.ts",
+    "./rt-automation": "./src/rt-automation.ts",
     "./slack": "./src/slack.ts",
     "./form-config": "./src/form-config.ts"
   },
