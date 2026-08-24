@@ -14,6 +14,7 @@ type RequestBody = {
   dropdown?: string
   fullName?: string
   totalFollowers?: string
+  salesRange?: string
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
@@ -53,6 +54,7 @@ type TemplateData = {
   dropdown?: string
   fullName?: string
   totalFollowers?: string
+  salesRange?: string
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
@@ -65,6 +67,7 @@ const template = (data: TemplateData) => {
   if (data.phone) parts.push(`<p>Telefon: <b>${data.phone}</b></p>`);
   if (data.dropdown) parts.push(`<p>Branża: <b>${data.dropdown}</b></p>`);
   if (data.totalFollowers) parts.push(`<p>Łączna liczba obserwujących: <b>${data.totalFollowers}</b></p>`);
+  if (data.salesRange) parts.push(`<p>Sprzedaż online miesięcznie: <b>${data.salesRange}</b></p>`);
   if (data.socialMediaLinks) {
     const link = data.socialMediaLinks.trim();
     if (!link.includes('\n')) {
@@ -103,7 +106,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const { email, message, legal, phone, dropdown, fullName, totalFollowers, socialMediaLinks, publishedVideos, exampleVideo, formId } = body;
+  const { email, message, legal, phone, dropdown, fullName, totalFollowers, salesRange, socialMediaLinks, publishedVideos, exampleVideo, formId } = body;
 
   const isInfluencerForm = !!fullName;
   const hasRequiredContent = !!message || !!phone || isInfluencerForm || !!socialMediaLinks;
@@ -133,7 +136,7 @@ export const POST: APIRoute = async ({ request }) => {
       ? `Lead z formularza kontaktowego | Kryptonum`
       : `Wiadomość z formularza kontaktowego | Kryptonum`;
 
-  const htmlTemplate = template({ email, message, phone, dropdown, fullName, totalFollowers, socialMediaLinks, publishedVideos, exampleVideo });
+  const htmlTemplate = template({ email, message, phone, dropdown, fullName, totalFollowers, salesRange, socialMediaLinks, publishedVideos, exampleVideo });
   const textTemplate = htmlToString(htmlTemplate);
 
   const config = formId ? await getFormIntegrationConfig(formId) : {};

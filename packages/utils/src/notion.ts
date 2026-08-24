@@ -11,6 +11,8 @@
  * | Name (title) | Status | Komentarz | Data | Email | Numer telefonu | Branża | Wiadomość | UTM | Źródło |
  */
 
+import { isValidProfileLink } from './profile-link'
+
 declare const process: { env: Record<string, string | undefined> }
 
 const NOTION_API_KEY = process.env.NOTION_API_KEY || import.meta.env.NOTION_API_KEY
@@ -28,9 +30,12 @@ export type ContactLeadData = {
   dropdown?: string
   fullName?: string
   totalFollowers?: string
+  salesRange?: string
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
+  metaIds?: string
+  status?: string
   notionDatabaseId?: string
 }
 
@@ -105,7 +110,7 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
     const utm = parseUtm(data.utm)
     const properties: Record<string, unknown> = {
       'Name': { title: [{ text: { content: titleContent } }] },
-      'Status': { select: { name: 'Nowy' } },
+      'Status': { select: { name: data.status || 'Nowy' } },
       'Data': { date: { start: new Date().toISOString() } },
       'Email': { email: data.email },
     }
@@ -142,9 +147,20 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
       properties['Obserwujący'] = isLeadsRt
         ? { select: selectOption(data.totalFollowers) }
         : { rich_text: [{ text: { content: data.totalFollowers.slice(0, 2000) } }] }
-      if (isLeadsRt) {
-        properties['Próg 50k'] = { checkbox: data.totalFollowers !== 'Poniżej 50 000' }
-      }
+    }
+    if (data.salesRange && isLeadsRt) {
+      properties['Sprzedaż online'] = { select: selectOption(data.salesRange) }
+    }
+    if (isLeadsRt && (data.totalFollowers || data.salesRange || data.socialMediaLinks)) {
+      // Mirrors the client-side gate for the Meta Lead event: a real profile
+      // link plus either any sales or 300k+ reach.
+      const sellsAlready = !!data.salesRange && data.salesRange !== 'Jeszcze nie sprzedaję'
+      const hasBigReach = data.totalFollowers === '300 000 – 500 000' || data.totalFollowers === '500 000+'
+      const hasValidLink = !!data.socialMediaLinks && isValidProfileLink(data.socialMediaLinks)
+      properties['Bramka Lead'] = { checkbox: hasValidLink && (sellsAlready || hasBigReach) }
+    }
+    if (data.metaIds && isLeadsRt) {
+      properties['Meta ID'] = { rich_text: [{ text: { content: data.metaIds.slice(0, 2000) } }] }
     }
     if (data.socialMediaLinks) {
       properties['Social Media'] = { rich_text: [{ text: { content: data.socialMediaLinks.slice(0, 2000) } }] }
@@ -184,5 +200,70 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
     console.error('[Notion] Error appending lead:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return { success: false, error: errorMessage }
+  }
+}
+
+/**
+ * Finds the newest lead with the given email. Used to attach a Cal.com
+ * booking to the form submission that preceded it instead of creating a
+ * duplicate record.
+ */
+export async function findLeadByEmail(databaseId: string, email: string): Promise<string | null> {
+  if (!NOTION_API_KEY || !databaseId) return null
+
+  try {
+    const response = await fetch(`${NOTION_API_URL}/databases/${databaseId}/query`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${NOTION_API_KEY}`,
+        'Notion-Version': NOTION_VERSION,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        filter: { property: 'Email', email: { equals: email } },
+        sorts: [{ timestamp: 'created_time', direction: 'descending' }],
+        page_size: 1,
+      }),
+    })
+
+    if (!response.ok) {
+      console.error('[Notion] findLeadByEmail API error:', response.status, await response.text())
+      return null
+    }
+
+    const result = await response.json() as { results?: Array<{ id: string }> }
+    return result.results?.[0]?.id ?? null
+  } catch (error) {
+    console.error('[Notion] findLeadByEmail error:', error)
+    return null
+  }
+}
+
+export async function updateLeadStatus(pageId: string, status: string): Promise<AppendLeadResult> {
+  if (!NOTION_API_KEY) return { success: false, error: 'Missing Notion credentials' }
+
+  try {
+    const response = await fetch(`${NOTION_API_URL}/pages/${pageId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${NOTION_API_KEY}`,
+        'Notion-Version': NOTION_VERSION,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        properties: { 'Status': { select: { name: status } } },
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.text()
+      console.error('[Notion] updateLeadStatus API error:', response.status, error)
+      return { success: false, error: `API ${response.status}: ${error}` }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('[Notion] updateLeadStatus error:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
   }
 }

@@ -8,6 +8,7 @@ export type Props = {
   dropdown?: string
   fullName?: string
   totalFollowers?: string
+  salesRange?: string
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string

@@ -1,6 +1,6 @@
 export const prerender = false
 
-import { appendLeadToNotion, type ContactLeadData } from '@repo/utils/notion'
+import { appendLeadToNotion, findLeadByEmail, updateLeadStatus, type ContactLeadData } from '@repo/utils/notion'
 import { sendSlackNotification } from '@repo/utils/slack'
 import { getFormIntegrationConfig } from '@repo/utils/form-config'
 import type { APIRoute } from 'astro'
@@ -59,11 +59,20 @@ function calPayloadToLead(payload: CalWebhookPayload['payload']): ContactLeadDat
   const title = payload.title || payload.type || 'Spotkanie'
   const startTime = payload.startTime ? new Date(payload.startTime).toLocaleString('pl-PL') : ''
   const message = `Cal.com: ${title}${startTime ? ` – ${startTime}` : ''}`
-  const notionDatabaseId = payload.metadata?.notionDatabaseId
+  const metadata = payload.metadata ?? {}
+  const notionDatabaseId = metadata.notionDatabaseId
+  // CalEmbed passes the visitor's captured UTM cookie and the landing path as
+  // booking metadata, so bookings attribute to the ad the same way form leads do.
+  const utm = (['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const)
+    .filter((key) => metadata[key])
+    .map((key) => `${key}=${metadata[key]}`)
+    .join('\n')
   return {
     email,
     message,
-    source: 'Cal.com',
+    source: metadata.sourcePath || 'Cal.com',
+    status: 'Rozmowa umówiona',
+    ...(utm && { utm }),
     ...(phone && { phone }),
     ...(notionDatabaseId && { notionDatabaseId }),
   }
@@ -83,7 +92,17 @@ export const POST: APIRoute = async ({ request }) => {
       // If we can't build a proper lead (e.g. ping test or other event),
       // just acknowledge the webhook so Cal.com doesn't retry.
       if (lead) {
-        await appendLeadToNotion(lead)
+        // A booking usually follows a form submission from the same person:
+        // update that record instead of creating a duplicate.
+        const databaseId = lead.notionDatabaseId
+          || process.env.NOTION_LEADS_DATABASE_ID
+          || import.meta.env.NOTION_LEADS_DATABASE_ID
+        const existingLeadId = databaseId ? await findLeadByEmail(databaseId, lead.email) : null
+        if (existingLeadId) {
+          await updateLeadStatus(existingLeadId, 'Rozmowa umówiona')
+        } else {
+          await appendLeadToNotion(lead)
+        }
       }
       return new Response(null, { status: 200, headers: corsHeaders })
     }

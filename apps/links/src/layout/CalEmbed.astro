@@ -188,6 +188,25 @@ const { notionDatabaseId } = Astro.props
       if (window.__notionDatabaseId) {
         url.searchParams.set('metadata[notionDatabaseId]', window.__notionDatabaseId)
       }
+
+      // Forward the visitor's captured UTM data and the landing path as booking
+      // metadata: Cal.com echoes it back in the webhook, which is the only way
+      // a booking can be attributed to the ad that brought the visitor here.
+      try {
+        const rawUtmCookie = document.cookie
+          .split('; ')
+          .find((cookie) => cookie.startsWith('kryptonum_utm='))
+        if (rawUtmCookie) {
+          const utmData = JSON.parse(decodeURIComponent(rawUtmCookie.slice('kryptonum_utm='.length)))
+          for (const param of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']) {
+            if (utmData[param]) url.searchParams.set(`metadata[${param}]`, utmData[param])
+          }
+        }
+      } catch {
+        // A malformed cookie must never block the booking flow
+      }
+      url.searchParams.set('metadata[sourcePath]', window.location.hostname + window.location.pathname)
+
       const queryString = url.search
 
       if (window.Cal) {

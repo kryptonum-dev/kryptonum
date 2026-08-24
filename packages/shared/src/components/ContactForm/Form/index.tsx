@@ -6,8 +6,18 @@ import Select from '@repo/ui/Select'
 import { REGEX, DOMAIN } from '@repo/shared/constants';
 import { sendContactEmail, type Props as sendContactEmailProps } from '@apps/www/pages/api/contact/sendContactEmail';
 import { type Language } from '@repo/shared/languages';
+import { isValidProfileLink } from '@repo/utils/profile-link';
 import { trackEvent, updateAnalyticsUser } from '../../../analytics';
 import { getUtmForSheet } from '../../../analytics/utm-storage';
+
+const getMetaIdsForSheet = () => {
+  if (typeof document === 'undefined') return '';
+  const getCookie = (name: string) =>
+    document.cookie.split('; ').find((c) => c.startsWith(`${name}=`))?.slice(name.length + 1) || '';
+  const fbp = getCookie('_fbp');
+  const fbc = getCookie('_fbc');
+  return [fbp && `fbp=${fbp}`, fbc && `fbc=${fbc}`].filter(Boolean).join('\n');
+};
 
 const shouldTrackAnalytics = () => {
   if (typeof window !== 'undefined') {
@@ -53,6 +63,10 @@ const translations = {
     socialMediaLinkLabel: 'Link do Twojego profilu',
     socialMediaLinkPlaceholder: 'facebook.com/anna albo @anna',
     socialMediaLinkRequired: 'Wpisz nazwę profilu albo link do niego',
+    socialMediaLinkInvalid: 'Podaj link do profilu albo @nazwę, np. instagram.com/anna albo @anna',
+    salesLabel: 'Ile sprzedajesz online miesięcznie?',
+    salesPlaceholder: 'Wybierz przedział',
+    salesRequired: 'Wybierz przedział z listy',
     phoneOptionalLabel: 'Telefon, jeśli wolisz, żebyśmy zadzwonili',
     phoneHint: 'Sprawdź numer, wpisz go w formacie +48 123 456 789',
     emailHint: 'Sprawdź jeszcze raz adres, chyba brakuje w nim @',
@@ -88,6 +102,10 @@ const translations = {
     socialMediaLinkLabel: 'Link to your profile',
     socialMediaLinkPlaceholder: 'facebook.com/anna or @anna',
     socialMediaLinkRequired: 'Enter your profile name or a link to it',
+    socialMediaLinkInvalid: 'Enter a profile link or @handle, e.g. instagram.com/anna or @anna',
+    salesLabel: 'Monthly online sales',
+    salesPlaceholder: 'Select a range',
+    salesRequired: 'Select a range from the list',
     phoneOptionalLabel: 'Phone, if you prefer us to call',
     phoneHint: 'Check the number, use the format +48 123 456 789',
     emailHint: 'Check the address again, the @ seems to be missing',
@@ -105,6 +123,7 @@ const hasMultiStep = (variant: Variant) => variant === 'form-with-person' || var
 
 const publishedVideosOptions = ['0-10', '10-30', '30-100', '100+'];
 const followersOptions = ['Poniżej 50 000', '50 000 – 100 000', '100 000 – 300 000', '300 000 – 500 000', '500 000+'];
+const salesOptions = ['Jeszcze nie sprzedaję', 'Do 5 000 zł', '5 000 do 20 000 zł', '20 000 do 50 000 zł', 'Powyżej 50 000 zł'];
 
 export default function Form({ children, variant, lang, dropdownOptions, dropdownLabel, dropdownPlaceholder, formId, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'rejected'>('idle');
@@ -146,7 +165,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
         const fieldsToValidate = variant === 'form-lead'
           ? (['phone', 'dropdown'] as const)
           : variant === 'form-creator'
-            ? (['socialMediaLinks', 'totalFollowers'] as const)
+            ? (['socialMediaLinks', 'totalFollowers', 'salesRange'] as const)
             : variant === 'form-influencer'
               ? (['fullName', 'email'] as const)
               : (['message'] as const);
@@ -189,13 +208,15 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
   }, []);
 
   const onSubmit = async (data: FieldValues) => {
-    const isBelowThreshold = isCreatorForm && data.totalFollowers === followersOptions[0];
+    const sellsAlready = isCreatorForm && !!data.salesRange && data.salesRange !== salesOptions[0];
+    const hasBigReach = isCreatorForm
+      && (data.totalFollowers === followersOptions[3] || data.totalFollowers === followersOptions[4]);
+    const isBelowThreshold = isCreatorForm && !sellsAlready && !hasBigReach;
 
     setStatus('loading');
 
     if (!leadSaved.current) {
-      leadSaved.current = true;
-      fetch(`${DOMAIN}/api/s3d`, {
+      const saveLead = () => fetch(`${DOMAIN}/api/s3d`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -205,21 +226,24 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
           dropdown: data.dropdown,
           fullName: data.fullName,
           totalFollowers: data.totalFollowers,
+          salesRange: data.salesRange,
           socialMediaLinks: data.socialMediaLinks,
           publishedVideos: data.publishedVideos,
           exampleVideo: data.exampleVideo,
           formId,
           utm: getUtmForSheet(),
+          metaIds: getMetaIdsForSheet(),
           source: typeof window !== 'undefined' ? window.location.hostname + window.location.pathname : '',
         }),
         keepalive: true,
-      })
-        .then((response) => {
-          if (!response.ok) leadSaved.current = false;
-        })
-        .catch(() => {
-          leadSaved.current = false;
-        });
+      }).then((response) => response.ok).catch(() => false);
+
+      leadSaved.current = await saveLead();
+      if (!leadSaved.current) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        leadSaved.current = await saveLead();
+        if (!leadSaved.current) console.error('[Form] Lead save failed twice, submission continues via email only');
+      }
     }
 
     const response = await sendContactEmail({
@@ -393,7 +417,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             label={t.socialMediaLinkLabel}
             register={register('socialMediaLinks', {
               required: { value: true, message: t.socialMediaLinkRequired },
-              pattern: { value: REGEX.string, message: t.socialMediaLinkRequired },
+              validate: (value: string) => isValidProfileLink(value) || t.socialMediaLinkInvalid,
             })}
             errors={errors}
             placeholder={t.socialMediaLinkPlaceholder}
@@ -408,6 +432,15 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             options={followersOptions}
             register={register('totalFollowers', {
               required: { value: true, message: t.followersRequired },
+            })}
+            errors={errors}
+          />
+          <Select
+            label={t.salesLabel}
+            placeholder={t.salesPlaceholder}
+            options={salesOptions}
+            register={register('salesRange', {
+              required: { value: true, message: t.salesRequired },
             })}
             errors={errors}
           />
