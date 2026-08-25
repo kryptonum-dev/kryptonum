@@ -36,23 +36,38 @@ const DEFAULT_BCC = ['michal@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@krypto
 
 /**
  * Short identification of the lead for the mail subject: `@handle` for social
- * profiles, the bare domain for own-brand sites.
+ * profiles, the bare domain for own-brand sites. Share links, video links and
+ * numeric profile ids carry no name, so those fall back to the lead's email
+ * local part, which always exists and identifies the person.
  */
-export function deriveProfileTag(profileLink?: string): string {
+const GENERIC_SEGMENTS = new Set([
+  'share', 'profile.php', 'people', 'groups', 'pages', 'p', 'reel', 'reels',
+  'stories', 'story.php', 'watch', 'channel', 'c', 'user', 'shorts', 'video',
+  'videos', 'posts', 'photo.php', 'permalink.php', 'events', 'live', 'hashtag',
+])
+
+const LINK_ONLY_DOMAINS = /^(?:youtu\.be|fb\.me|vm\.tiktok\.com|vt\.tiktok\.com|l\.facebook\.com|lm\.facebook\.com)$/i
+
+export function deriveProfileTag(profileLink?: string, fallbackEmail?: string): string {
+  const emailTag = (fallbackEmail || '').split('@')[0].slice(0, 32)
   const raw = (profileLink || '')
     .trim()
     .replace(/^https?:\/\//i, '')
     .replace(/^www\./i, '')
+    .replace(/^m\./i, '')
     .replace(/[?#].*$/, '')
     .replace(/\/+$/, '')
-  if (!raw) return ''
+  if (!raw) return emailTag
   if (raw.startsWith('@')) return raw.slice(0, 32)
-  const social = raw.match(/^(?:instagram\.com|facebook\.com|fb\.com|fb\.me|tiktok\.com|youtube\.com|youtu\.be)\/(.+)$/i)
+  const domain = raw.split('/')[0].toLowerCase()
+  if (LINK_ONLY_DOMAINS.test(domain)) return emailTag
+  const social = raw.match(/^(?:instagram\.com|facebook\.com|fb\.com|tiktok\.com|youtube\.com)\/(.+)$/i)
   if (social) {
     const handle = social[1].split('/')[0].replace(/^@/, '')
-    return handle ? `@${handle}`.slice(0, 32) : ''
+    const isGeneric = GENERIC_SEGMENTS.has(handle.toLowerCase()) || /^[\d.-]+$/.test(handle) || handle.length < 3
+    return isGeneric ? emailTag : `@${handle}`.slice(0, 32)
   }
-  return raw.split('/')[0].slice(0, 32)
+  return domain.slice(0, 32)
 }
 
 let configCache: { data: RtAutomationConfig | null; ts: number } | null = null
@@ -111,7 +126,7 @@ export async function sendRtAutomationMail(kind: RtMailKind, to: string, profile
   // Per-lead subject: the template carries a {{profil}} placeholder, replaced
   // with the lead's handle or domain. Easy to tell leads apart in the inbox,
   // and it stops Gmail from collapsing every BCC copy into one thread.
-  const tag = deriveProfileTag(profileLink)
+  const tag = deriveProfileTag(profileLink, to)
   const subject = template.subject.includes('{{profil}}')
     ? tag
       ? template.subject.replace('{{profil}}', tag)
