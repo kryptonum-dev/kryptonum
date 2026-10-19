@@ -26,6 +26,7 @@ const translations = {
     copyTelSuccess: 'Pomyślnie skopiowano numer telefonu',
     submit: 'Porozmawiajmy o biznesie',
     submitLead: 'Umów rozmowę',
+    submitCreator: 'Wysyłam zgłoszenie',
     submitInfluencer: 'Wyślij zgłoszenie',
     tryAgain: 'Spróbuj ponownie',
     secureData: 'Twoje dane są bezpieczne',
@@ -38,6 +39,7 @@ const translations = {
     copyTelSuccess: 'Successfully copied phone number',
     submit: 'Let\'s talk about business',
     submitLead: 'Schedule a call',
+    submitCreator: 'Send application',
     submitInfluencer: 'Submit application',
     tryAgain: 'Try again',
     secureData: 'Your data is secure',
@@ -73,7 +75,7 @@ const isMultiStepForm = !isFormWithList
           <Button type="button" className="next-step">
             {t.nextStep}
           </Button>
-          <Button type="submit" className="submit-button">{isInfluencerForm ? t.submitInfluencer : (isLeadForm || isCreatorForm) ? t.submitLead : t.submit}</Button>
+          <Button type="submit" className="submit-button">{isInfluencerForm ? t.submitInfluencer : isCreatorForm ? t.submitCreator : isLeadForm ? t.submitLead : t.submit}</Button>
         )
       }
     </div>
@@ -230,6 +232,11 @@ const isMultiStepForm = !isFormWithList
       .next-step,
       .submit-button {
         flex-grow: 1;
+      }
+      :global(.step-counter) {
+        margin: 0.25rem 0 0;
+        font-size: var(--typography-body-s, 0.75rem);
+        color: var(--neutral-400, #c6cdcc);
       }
       .secure-data {
         display: inline-grid;
@@ -491,7 +498,7 @@ const isMultiStepForm = !isFormWithList
         will-change: filter;
       }
       &[data-step='1'] {
-        :global(> label:nth-child(n+4)) {
+        :global(> label:nth-child(n+5)) {
           filter: blur(8px);
           visibility: hidden;
           position: absolute;
@@ -504,7 +511,7 @@ const isMultiStepForm = !isFormWithList
         }
       }
       &[data-step='2'] {
-        :global(> label:nth-child(-n+3)) {
+        :global(> label:nth-child(-n+4)) {
           filter: blur(8px);
           visibility: hidden;
           position: absolute;

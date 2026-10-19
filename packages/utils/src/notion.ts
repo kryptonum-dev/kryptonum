@@ -31,6 +31,7 @@ export type ContactLeadData = {
   fullName?: string
   totalFollowers?: string
   salesRange?: string
+  productType?: string
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
@@ -57,6 +58,8 @@ const LANDING_PAGES: Record<string, string> = {
   '/pl/richer-together-za-granica': 'LP Polka w dolarach',
   '/pl/richer-together-bez-produktu': 'LP Zasięgi bez produktu',
   '/pl/richer-together-sprzedajesz': 'LP Sprzedajesz za mało',
+  '/pl/wspolnik-na-zapleczu': 'LP Wspólnik na zapleczu',
+  '/pl/wspolnik-za-granica': 'LP Wspólnik za granicą',
 }
 
 function parseUtm(raw?: string): Record<string, string> {
@@ -156,6 +159,9 @@ export async function appendLeadToNotion(data: ContactLeadData): Promise<AppendL
     }
     if (data.salesRange && isLeadsRt) {
       properties['Sprzedaż online'] = { select: selectOption(data.salesRange) }
+    }
+    if (data.productType && isLeadsRt) {
+      properties['Produkt'] = { select: selectOption(data.productType) }
     }
     if (isLeadsRt && (data.totalFollowers || data.salesRange || data.socialMediaLinks)) {
       // Mirrors the client-side gate for the Meta Lead event.

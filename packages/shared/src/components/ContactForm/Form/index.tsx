@@ -62,9 +62,13 @@ const translations = {
     socialMediaLinksPlaceholder: 'Wklej linki do swoich profili (każdy w nowej linii)',
     socialMediaLinksRequired: 'Linki do profili są wymagane',
     socialMediaLinkLabel: 'Link do Twojego profilu',
-    socialMediaLinkPlaceholder: 'facebook.com/anna albo @anna',
-    socialMediaLinkRequired: 'Wpisz nazwę profilu albo link do niego',
-    socialMediaLinkInvalid: 'Podaj link do profilu albo @nazwę, np. instagram.com/anna albo @anna',
+    socialMediaLinkPlaceholder: 'https://instagram.com/twojprofil',
+    socialMediaLinkRequired: 'Wklej link do swojego profilu',
+    socialMediaLinkInvalid: 'Wklej pełny link do profilu, np. https://instagram.com/twojprofil',
+    productLabel: 'Co dziś sprzedajesz?',
+    productPlaceholder: 'Wybierz',
+    productRequired: 'Wybierz, co sprzedajesz',
+    stepCounter: 'Krok {step} z 2',
     salesLabel: 'Ile sprzedajesz online miesięcznie?',
     salesPlaceholder: 'Wybierz przedział',
     salesRequired: 'Wybierz przedział z listy',
@@ -101,9 +105,13 @@ const translations = {
     socialMediaLinksPlaceholder: 'Paste links to your profiles (each on a new line)',
     socialMediaLinksRequired: 'Social media links are required',
     socialMediaLinkLabel: 'Link to your profile',
-    socialMediaLinkPlaceholder: 'facebook.com/anna or @anna',
-    socialMediaLinkRequired: 'Enter your profile name or a link to it',
-    socialMediaLinkInvalid: 'Enter a profile link or @handle, e.g. instagram.com/anna or @anna',
+    socialMediaLinkPlaceholder: 'https://instagram.com/yourprofile',
+    socialMediaLinkRequired: 'Paste a link to your profile',
+    socialMediaLinkInvalid: 'Paste the full profile link, e.g. https://instagram.com/yourprofile',
+    productLabel: 'What do you sell today?',
+    productPlaceholder: 'Select',
+    productRequired: 'Select what you sell',
+    stepCounter: 'Step {step} of 2',
     salesLabel: 'Monthly online sales',
     salesPlaceholder: 'Select a range',
     salesRequired: 'Select a range from the list',
@@ -125,6 +133,7 @@ const hasMultiStep = (variant: Variant) => variant === 'form-with-person' || var
 const publishedVideosOptions = ['0-10', '10-30', '30-100', '100+'];
 const followersOptions = ['Poniżej 50 000', '50 000 – 100 000', '100 000 – 300 000', '300 000 – 500 000', '500 000+'];
 const salesOptions = ['Jeszcze nie sprzedaję', 'Do 5 000 zł', '5 000 do 20 000 zł', '20 000 do 50 000 zł', 'Powyżej 50 000 zł'];
+const productOptions = ['E-book', 'Kurs albo program', 'Wyzwanie albo subskrypcja', 'Konsultacje', 'Jeszcze nic'];
 
 export default function Form({ children, variant, lang, dropdownOptions, dropdownLabel, dropdownPlaceholder, formId, ...props }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'rejected'>('idle');
@@ -166,7 +175,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
         const fieldsToValidate = variant === 'form-lead'
           ? (['phone', 'dropdown'] as const)
           : variant === 'form-creator'
-            ? (['socialMediaLinks', 'totalFollowers', 'salesRange'] as const)
+            ? (['socialMediaLinks', 'totalFollowers', 'salesRange', 'productType'] as const)
             : variant === 'form-influencer'
               ? (['fullName', 'email'] as const)
               : (['message'] as const);
@@ -225,6 +234,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
           fullName: data.fullName,
           totalFollowers: data.totalFollowers,
           salesRange: data.salesRange,
+          productType: data.productType,
           socialMediaLinks: data.socialMediaLinks,
           publishedVideos: data.publishedVideos,
           exampleVideo: data.exampleVideo,
@@ -442,6 +452,15 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
             })}
             errors={errors}
           />
+          <Select
+            label={t.productLabel}
+            placeholder={t.productPlaceholder}
+            options={productOptions}
+            register={register('productType', {
+              required: { value: true, message: t.productRequired },
+            })}
+            errors={errors}
+          />
           <Input
             label='Email'
             register={register('email', {
@@ -472,6 +491,7 @@ export default function Form({ children, variant, lang, dropdownOptions, dropdow
           >
             {t.legal}
           </Checkbox>
+          <p className="step-counter" aria-live="polite">{t.stepCounter.replace('{step}', String(step))}</p>
         </>
       )}
       {variant === 'form-influencer' && (

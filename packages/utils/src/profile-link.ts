@@ -25,7 +25,6 @@ export function isValidProfileLink(value: string): boolean {
   const v = value.trim()
   if (!v || /\s/.test(v)) return false
   if (/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v)) return false
-  if (/^@[a-z0-9._-]{2,}$/i.test(v)) return true
   const stripped = v.replace(/^https?:\/\//i, '').replace(/^www\./i, '')
   if (!stripped.includes('.')) return false
   return /^[a-z0-9-]+(\.[a-z0-9-]+)+(\/[^\s]*)?$/i.test(stripped)

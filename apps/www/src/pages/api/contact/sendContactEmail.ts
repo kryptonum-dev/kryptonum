@@ -9,6 +9,7 @@ export type Props = {
   fullName?: string
   totalFollowers?: string
   salesRange?: string
+  productType?: string
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
