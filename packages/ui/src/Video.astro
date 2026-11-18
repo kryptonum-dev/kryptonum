@@ -10,6 +10,8 @@ type Props = {
 const { playbackId, aspectRatio, hideControls, ...props } = Astro.props
 
 const aspect_ratio = aspectRatio?.replace(':', ' / ')
+// Shown until the player script loads, so the video never starts as an empty black box.
+const placeholder = `https://image.mux.com/${playbackId}/thumbnail.webp?width=960`
 
 export type VideoDataProps = Props
 
@@ -27,7 +29,7 @@ export const VideoDataQuery = (name: string) => `
   playback-id={playbackId}
   primary-color="#fff"
   accent-color="#2DD282"
-  style={`aspect-ratio: ${aspect_ratio}; ${hideControls ? '--controls: none;' : ''}`}
+  style={`aspect-ratio: ${aspect_ratio}; background: url('${placeholder}') center / cover no-repeat; ${hideControls ? '--controls: none;' : ''}`}
   {...hideControls ? { muted: true, autoplay: true, loop: true } : {}}
   {...props}>
 </mux-player>
