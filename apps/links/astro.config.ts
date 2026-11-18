@@ -19,10 +19,6 @@ export default defineConfig({
   prefetch: {
     prefetchAll: true
   },
-  build: {
-    // One landing is usually the whole visit, so a separate stylesheet only delays the first paint.
-    inlineStylesheets: 'always',
-  },
   vite: {
     ssr: {
       noExternal: ['react-hook-form']
