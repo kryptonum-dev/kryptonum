@@ -5,6 +5,7 @@ import metadataFetch from '@repo/utils/metadata.fetch'
 import Breadcrumbs from '@repo/ui/Breadcrumbs.astro'
 import { type Language } from '@repo/shared/languages'
 import Components, { Components_Query, type ComponentsProps } from '@repo/shared/components/index.astro'
+import { videoStill } from '@repo/ui/Video.astro'
 
 type FetchDataReturn = NonNullable<Awaited<ReturnType<typeof fetchData>>>
 
@@ -52,9 +53,31 @@ export async function staticPaths() {
 const { page, metadata, slug } = Astro.props
 
 const breadcrumbs = [{ name: page.name, path: slug }]
+
+// When the page opens with a video, its still frame is the largest thing on the
+// first screen. Preloading it from the head starts the download with the first
+// bytes of the page instead of after the whole head has arrived.
+type HeroMedia = { _type: string; hasUi?: boolean; asset?: { playbackId?: string } }
+const hero = page.components?.[0] as unknown as { _type?: string; media?: HeroMedia[] } | undefined
+const heroMedia = hero?._type === 'NarrowHeaderAndMedia' ? (hero.media?.length === 1 ? hero.media[0] : hero.media?.[1]) : undefined
+const heroStill =
+  heroMedia?._type === 'video' && heroMedia.hasUi && heroMedia.asset?.playbackId ? videoStill(heroMedia.asset.playbackId) : null
 ---
 
 <Layout {...metadata} notionDatabaseId={page.notionDatabaseId}>
+  {
+    heroStill && (
+      <link
+        slot="Head"
+        rel="preload"
+        as="image"
+        href={heroStill.src}
+        imagesrcset={heroStill.srcset}
+        imagesizes={heroStill.sizes}
+        fetchpriority="high"
+      />
+    )
+  }
   <Breadcrumbs data={breadcrumbs} isHidden={true} />
   <Components data={page.components} />
 </Layout>

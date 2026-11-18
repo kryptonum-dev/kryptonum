@@ -14,9 +14,23 @@ const { playbackId, aspectRatio, hideControls, priority = false, class: classNam
 const aspect_ratio = aspectRatio?.replace(':', ' / ')
 const [ratioWidth, ratioHeight] = (aspectRatio || '16:9').split(':').map(Number)
 const still = (width: number) => `https://image.mux.com/${playbackId}/thumbnail.webp?width=${width}`
+const stillImage = videoStill(playbackId)
 const playLabel = Astro.params.lang === 'en' ? 'Play video' : 'Odtwórz wideo'
 
 export type VideoDataProps = Props
+
+/**
+ * The still frame shown before the player loads. Exported so a page can preload
+ * exactly the same picture when the video is the first thing on it.
+ */
+export const videoStill = (playbackId: string) => {
+  const url = (width: number) => `https://image.mux.com/${playbackId}/thumbnail.webp?width=${width}`
+  return {
+    src: url(960),
+    srcset: [480, 640, 768, 960, 1280].map((width) => `${url(width)} ${width}w`).join(', '),
+    sizes: '(max-width: 63rem) 100vw, 40rem',
+  }
+}
 
 export const VideoDataQuery = (name: string) => `
   ${name} {
@@ -51,9 +65,9 @@ export const VideoDataQuery = (name: string) => `
       data-playback-id={playbackId}
       {...props}>
       <img
-        src={still(960)}
-        srcset={`${still(480)} 480w, ${still(640)} 640w, ${still(960)} 960w, ${still(1280)} 1280w`}
-        sizes="(max-width: 63rem) 100vw, 40rem"
+        src={stillImage.src}
+        srcset={stillImage.srcset}
+        sizes={stillImage.sizes}
         width={ratioWidth * 100}
         height={ratioHeight * 100}
         alt=""
