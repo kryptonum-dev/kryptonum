@@ -83,11 +83,22 @@ const isSingleMedia = media?.length === 1
   .NarrowHeaderAndMedia {
     padding: clamp(4rem, calc(5vw / 0.48), 6rem) 0;
     header {
-      max-width: 34rem;
+      // wide enough for a long heading to settle in two lines on a computer
+      max-width: 46rem;
       text-align: center;
       margin: 0 auto;
+      // lines of similar length, so a centred heading or paragraph never ends
+      // with one or two words left alone
+      text-wrap: balance;
+      :global(.heading) {
+        // on narrow phones the heading shrinks a little with the screen, so a
+        // long one takes three lines, not four, and the media starts higher
+        font-size: min(var(--typography-heading-2xl, 2.25rem), 6.9vw);
+      }
       .paragraph {
-        margin: clamp(1rem, calc(1.5vw / 0.48), 1.5rem) 0 clamp(2rem, calc(3vw / 0.48), 3rem);
+        // the paragraph stays narrower than the heading, long lines read badly
+        max-width: 38rem;
+        margin: clamp(1rem, calc(1.5vw / 0.48), 1.5rem) auto clamp(2rem, calc(3vw / 0.48), 3rem);
       }
       .cta-wrapper {
         justify-content: center;
