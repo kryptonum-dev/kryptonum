@@ -137,7 +137,7 @@ const page = await sanityFetch<{
       <ul class='group offers'>
         {page.offers.map(({ label, title, description, url }) => (
           <li>
-            <a href={url} class='group-link offer'>
+            <a href={url} class='group-link offer' data-astro-prefetch='viewport'>
               <div class='blur' />
               <div class='offer-text'>
                 {label && <p class='offer-label'>{label}</p>}

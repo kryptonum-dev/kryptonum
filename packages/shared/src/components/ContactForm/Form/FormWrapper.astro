@@ -71,7 +71,7 @@ const isCampaignForm = isCreatorForm || isSiteForm
 const isMultiStepForm = !isFormWithList
 ---
 
-<Form className="Form" variant={variant} lang={lang} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} formId={formId} client:load>
+<Form className="Form" variant={variant} lang={lang} dropdownOptions={dropdownOptions} dropdownLabel={dropdownLabel} dropdownPlaceholder={dropdownPlaceholder} formId={formId} client:idle>
   <div class="submit-wrapper">
     <div class="wrapper">
       {isFormWithList && <Button type="submit" className="submit-button">{t.submit}</Button>}

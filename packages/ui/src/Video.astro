@@ -5,13 +5,16 @@ type Props = {
   playbackId: string
   aspectRatio: string
   hideControls?: boolean
+  /** The video sits at the top of the page, so its still frame should load first */
+  priority?: boolean
 } & HTMLAttributes<'div'>
 
-const { playbackId, aspectRatio, hideControls, ...props } = Astro.props
+const { playbackId, aspectRatio, hideControls, priority = false, class: className, ...props } = Astro.props
 
 const aspect_ratio = aspectRatio?.replace(':', ' / ')
-// Shown until the player script loads, so the video never starts as an empty black box.
-const placeholder = `https://image.mux.com/${playbackId}/thumbnail.webp?width=960`
+const [ratioWidth, ratioHeight] = (aspectRatio || '16:9').split(':').map(Number)
+const still = (width: number) => `https://image.mux.com/${playbackId}/thumbnail.webp?width=${width}`
+const playLabel = Astro.params.lang === 'en' ? 'Play video' : 'Odtwórz wideo'
 
 export type VideoDataProps = Props
 
@@ -23,16 +26,49 @@ export const VideoDataQuery = (name: string) => `
 `
 ---
 
-<mux-player
-  disable-cookies
-  disable-tracking
-  playback-id={playbackId}
-  primary-color="#fff"
-  accent-color="#2DD282"
-  style={`aspect-ratio: ${aspect_ratio}; background: url('${placeholder}') center / cover no-repeat; ${hideControls ? '--controls: none;' : ''}`}
-  {...hideControls ? { muted: true, autoplay: true, loop: true } : {}}
-  {...props}>
-</mux-player>
+{
+  hideControls ? (
+    // A silent loop plays on its own, so the player loads as soon as it comes into view.
+    <mux-player
+      disable-cookies
+      disable-tracking
+      playback-id={playbackId}
+      primary-color="#fff"
+      accent-color="#2DD282"
+      style={`aspect-ratio: ${aspect_ratio}; background: url('${still(960)}') center / cover no-repeat; --controls: none;`}
+      muted
+      autoplay
+      loop
+      class={className}
+      {...props}
+    />
+  ) : (
+    // A video with controls starts as a still frame with a play button. The player
+    // (about 290 kB of script) is fetched only when somebody actually presses play.
+    <div
+      class:list={['video-facade', className]}
+      style={`aspect-ratio: ${aspect_ratio};`}
+      data-playback-id={playbackId}
+      {...props}>
+      <img
+        src={still(960)}
+        srcset={`${still(480)} 480w, ${still(640)} 640w, ${still(960)} 960w, ${still(1280)} 1280w`}
+        sizes="(max-width: 63rem) 100vw, 40rem"
+        width={ratioWidth * 100}
+        height={ratioHeight * 100}
+        alt=""
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
+        decoding="async"
+      />
+      <button type="button" aria-label={playLabel}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path fill="currentColor" d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11.24-6.86a1 1 0 0 0 0-1.72L9.5 4.28A1 1 0 0 0 8 5.14Z" />
+        </svg>
+      </button>
+    </div>
+  )
+}
 
 <style lang="scss">
   mux-player {
@@ -44,9 +80,74 @@ export const VideoDataQuery = (name: string) => `
     --playback-rate-button: none;
     --pip-button: none;
   }
+  .video-facade {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--neutral-900, #000103);
+    // the player created on play inherits these
+    --seek-backward-button: none;
+    --seek-forward-button: none;
+    --captions-button: none;
+    --playback-rate-button: none;
+    --pip-button: none;
+    img,
+    :global(mux-player),
+    :global(video) {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    img {
+      object-fit: cover;
+    }
+    :global(video) {
+      background: #000;
+    }
+    button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: clamp(3.5rem, calc(4.5vw / 0.48), 4.5rem);
+      height: clamp(3.5rem, calc(4.5vw / 0.48), 4.5rem);
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: rgba(0, 1, 3, 0.6);
+      border: 1px solid rgba(240, 247, 247, 0.5);
+      backdrop-filter: blur(4px);
+      transition:
+        background-color 300ms var(--easing),
+        transform 300ms var(--easing);
+      svg {
+        width: 45%;
+        height: 45%;
+        margin-left: 6%;
+      }
+    }
+    &:hover button,
+    button:focus-visible {
+      background: rgba(4, 43, 43, 0.85);
+      transform: translate(-50%, -50%) scale(1.06);
+    }
+    &[data-started='loading'] button {
+      opacity: 0.6;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      button {
+        transition: none;
+      }
+    }
+  }
 </style>
 
 <script>
+  // Silent loops: load the player when one scrolls into view.
   const observer = new IntersectionObserver(
     async (videos) => {
       for (const video of videos) {
@@ -57,8 +158,66 @@ export const VideoDataQuery = (name: string) => `
     },
     { rootMargin: '100px' }
   )
-
   document.querySelectorAll('mux-player').forEach((video) => {
     observer.observe(video)
+  })
+
+  // Videos with controls: swap the still frame for a real player on the first press.
+  function loadPlayer(facade: HTMLElement, playbackId: string, poster: string) {
+    facade.dataset.started = 'loading'
+    import('@mux/mux-player').then(() => {
+      const player = document.createElement('mux-player')
+      player.setAttribute('playback-id', playbackId)
+      player.setAttribute('disable-cookies', '')
+      player.setAttribute('disable-tracking', '')
+      player.setAttribute('primary-color', '#fff')
+      player.setAttribute('accent-color', '#2DD282')
+      player.setAttribute('autoplay', '')
+      if (poster) player.setAttribute('poster', poster)
+      facade.replaceChildren(player)
+      facade.dataset.started = 'true'
+    }).catch(() => {
+      // the script did not arrive (weak connection): let the next press try again
+      delete facade.dataset.started
+    })
+  }
+
+  // iPhones, iPads and Safari play Mux streams on their own, and they only start a
+  // video with sound when play() runs inside the tap itself. Fetching the player
+  // first would lose that tap, so there the browser's own player is used. Other
+  // browsers also claim they can play the format but often cannot, so they get the
+  // Mux player, which they are happy to start a moment after the tap.
+  const ua = navigator.userAgent
+  const isAppleBrowser =
+    /iP(hone|ad|od)/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+    /^((?!chrome|chromium|android|crios|fxios|edg).)*safari/i.test(ua)
+
+  function play(facade: HTMLElement) {
+    if (facade.dataset.started) return
+    const playbackId = facade.dataset.playbackId
+    if (!playbackId) return
+    const poster = facade.querySelector('img')?.currentSrc || ''
+
+    const video = document.createElement('video')
+    if (isAppleBrowser && video.canPlayType('application/vnd.apple.mpegurl')) {
+      facade.dataset.started = 'true'
+      video.src = `https://stream.mux.com/${playbackId}.m3u8`
+      video.poster = poster
+      video.controls = true
+      video.playsInline = true
+      video.autoplay = true
+      // if the stream fails after all, fall back to the Mux player
+      video.addEventListener('error', () => loadPlayer(facade, playbackId, poster), { once: true })
+      facade.replaceChildren(video)
+      video.play().catch(() => {})
+      return
+    }
+
+    loadPlayer(facade, playbackId, poster)
+  }
+
+  document.querySelectorAll<HTMLElement>('.video-facade').forEach((facade) => {
+    facade.addEventListener('click', () => play(facade))
   })
 </script>

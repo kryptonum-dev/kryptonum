@@ -23,12 +23,6 @@ interface Props {
 const { notionDatabaseId } = Astro.props
 ---
 
-<!-- DNS prefetch and preconnect for faster Cal.com loading -->
-<link rel="dns-prefetch" href="https://cal.com" />
-<link rel="dns-prefetch" href="https://app.cal.com" />
-<link rel="preconnect" href="https://cal.com" crossorigin />
-<link rel="preconnect" href="https://app.cal.com" crossorigin />
-
 <!-- Cal.com Embed SDK -->
 <script is:inline>
   (function (C, A, L) {
@@ -57,6 +51,19 @@ const { notionDatabaseId } = Astro.props
       p(cal, ar);
     };
   })(window, "https://app.cal.com/embed/embed.js", "init");
+
+  // Everything below runs only on pages that link to the calendar. Without this
+  // check every landing fetched the Cal.com script, also those with no booking link.
+  window.__startCal = function () {
+  if (window.__calStarted) return;
+  window.__calStarted = true;
+  ["https://cal.com", "https://app.cal.com"].forEach(function (origin) {
+    var link = document.createElement("link");
+    link.rel = "preconnect";
+    link.href = origin;
+    link.crossOrigin = "";
+    document.head.appendChild(link);
+  });
 
   Cal("init", { origin: "https://cal.com" });
 
@@ -123,6 +130,12 @@ const { notionDatabaseId } = Astro.props
       }
     }
   });
+  };
+  var startIfLinked = function () {
+    if (document.querySelector('a[href*="cal.com"]')) window.__startCal();
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", startIfLinked);
+  else startIfLinked();
 </script>
 
 <!-- Intercept Cal.com links and open as popup -->
@@ -133,6 +146,7 @@ const { notionDatabaseId } = Astro.props
   declare global {
     interface Window {
       Cal?: ((action: string, options?: unknown) => void) & { loaded?: boolean }
+      __startCal?: () => void
       __notionDatabaseId?: string | null
     }
   }
@@ -181,6 +195,7 @@ const { notionDatabaseId } = Astro.props
 
       e.preventDefault()
       e.stopPropagation()
+      window.__startCal?.()
 
       const url = new URL(href)
       const calLink = url.pathname.slice(1)

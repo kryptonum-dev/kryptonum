@@ -67,11 +67,11 @@ const isSingleMedia = media?.length === 1
                     : '(max-width: 63rem) 100vw, 60vw'
               }
               class="item"
-              loading={index === 0 ? 'eager' : 'lazy'}
+              loading={index === 0 && (isSingleMedia || i === 1) ? 'eager' : 'lazy'}
               priority={index === 0 && (isSingleMedia || i === 1)}
             />
           ) : (
-            <Video {...item.asset} hideControls={!item.hasUi} class="item" />
+            <Video {...item.asset} hideControls={!item.hasUi} priority={index === 0 && (isSingleMedia || i === 1)} class="item" />
           )
         )}
       </div>
