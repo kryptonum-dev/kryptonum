@@ -169,11 +169,11 @@ type Announcement = {
   label: string
   /** The lead's name; it links to the Notion record, where everything else is */
   name: string
-  /** Right after the name: the two or three facts that decide what to do with the lead */
+  /** One line each, under the name: the two or three facts that decide what to do with the lead */
   facts: string[]
-  /** Second line: what the automation does next, and who is pinged */
+  /** Last line: what the automation does next, and who is pinged */
   note: string
-  /** How to reach the lead. Shown only when the record did not land in the campaign database. */
+  /** One line each: how to reach the lead. Shown only when the record did not land in the campaign database. */
   contact: string[]
   page: NotionPage | null
   savedElsewhere: boolean
@@ -182,23 +182,25 @@ type Announcement = {
 }
 
 /**
- * One short message per lead: who it is and what to do on the first line, what
- * the automation does on the second. The details stay in Notion, one click
- * away. When the record could not be saved there, Slack is the only place that
- * has the lead, so the message then carries the contact data as well.
+ * One message per lead, one piece of information per line: who it is and what
+ * to do, then the few facts that matter, then what the automation does. The
+ * rest stays in Notion, one click away. When the record could not be saved
+ * there, Slack is the only place that has the lead, so the message then
+ * carries the contact data as well.
  */
 async function announce(lead: Announcement) {
   const icon = lead.failed || !lead.page ? '⚠️' : lead.icon
   const name = lead.page ? slackLink(lead.page.url, lead.name) : slackSafe(lead.name)
-  const header = [`${lead.isTest ? '🧪 TEST · ' : ''}${icon} *${lead.kind} · ${lead.label}*`, name, ...lead.facts].filter(Boolean).join(' · ')
+  const header = `${lead.isTest ? '🧪 TEST ' : ''}${icon} *${lead.kind} ${lead.label}:* ${name}`
   const unsaved = lead.page
-    ? ''
-    : `${
+    ? []
+    : [
         lead.savedElsewhere
           ? 'Baza kampanii jest niedostępna, lead zapisany awaryjnie w starej bazie.'
-          : 'Nie udało się zapisać leada w Notion, sprawdź połączenie bazy.'
-      } Dane: ${lead.contact.filter(Boolean).join(' · ')}`
-  await postToLeadsChannel([header, lead.note, unsaved].filter(Boolean).join('\n'))
+          : 'Nie udało się zapisać leada w Notion, sprawdź połączenie bazy.',
+        ...lead.contact,
+      ]
+  await postToLeadsChannel([header, ...lead.facts, lead.note, ...unsaved].filter(Boolean).join('\n'))
 }
 
 async function holdLine(page: NotionPage | null, mailId: string | null, canHold: boolean, baseUrl: string): Promise<string> {
@@ -277,19 +279,19 @@ async function handleRtLead(lead: CampaignLead, baseUrl: string) {
     name,
     facts:
       route === 'junk'
-        ? ['bez działającego linku do profilu, nic nie wysyłam']
+        ? ['Bez działającego linku do profilu, nic nie wysyłam.']
         : [
-            lead.salesRange ? `sprzedaż: ${slackSafe(lead.salesRange.toLowerCase())}` : '',
-            lead.totalFollowers ? `obserwujący: ${slackSafe(lead.totalFollowers)}` : '',
-            slackUserLink(lead.socialMediaLinks, 'profil'),
+            lead.salesRange ? `Sprzedaż: ${slackSafe(lead.salesRange.toLowerCase())}` : '',
+            lead.totalFollowers ? `Obserwujący: ${slackSafe(lead.totalFollowers)}` : '',
+            lead.socialMediaLinks ? `Profil: ${slackUserLink(lead.socialMediaLinks)}` : '',
           ],
     note: [note, await holdLine(page, mailId, outcome.canHold, baseUrl)].filter(Boolean).join(' '),
     contact: [
-      slackSafe(lead.email),
-      lead.phone?.trim() ? `tel. ${slackSafe(lead.phone.trim())}` : '',
-      slackSafe(lead.socialMediaLinks),
-      products.length ? `sprzedaje: ${slackSafe(products.join(', '))}` : '',
-      `strona: ${slackSafe(RT_LANDING_PAGES[path] || path || 'nieznana')}`,
+      `E-mail: ${slackSafe(lead.email)}`,
+      lead.phone?.trim() ? `Telefon: ${slackSafe(lead.phone.trim())}` : '',
+      route === 'junk' && lead.socialMediaLinks ? `Wpisany profil: ${slackSafe(lead.socialMediaLinks)}` : '',
+      products.length ? `Sprzedaje: ${slackSafe(products.join(', '))}` : '',
+      `Strona: ${slackSafe(RT_LANDING_PAGES[path] || path || 'nieznana')}`,
     ],
     page,
     savedElsewhere,
@@ -360,17 +362,17 @@ async function handleItLead(lead: CampaignLead, baseUrl: string) {
     name,
     facts:
       route === 'junk'
-        ? ['niepełne zgłoszenie, nic nie wysyłam']
+        ? ['Niepełne zgłoszenie, nic nie wysyłam.']
         : [
-            route === 'phone' && phone ? `tel. ${slackSafe(phone)}` : '',
-            lead.budget ? `budżet: ${slackSafe(lead.budget.toLowerCase())}` : '',
-            lead.siteGoal ? `cel: ${slackSafe(lead.siteGoal.toLowerCase())}` : '',
+            route === 'phone' && phone ? `Telefon: ${slackSafe(phone)}` : '',
+            lead.budget ? `Budżet: ${slackSafe(lead.budget.toLowerCase())}` : '',
+            lead.siteGoal ? `Cel: ${slackSafe(lead.siteGoal.toLowerCase())}` : '',
           ],
     note: [note, await holdLine(page, mailId, outcome.canHold, baseUrl)].filter(Boolean).join(' '),
     contact: [
-      slackSafe(lead.email),
-      phone ? `tel. ${slackSafe(phone)}` : '',
-      site ? `strona: ${slackSafe(site)}` : '',
+      `E-mail: ${slackSafe(lead.email)}`,
+      phone && route !== 'phone' ? `Telefon: ${slackSafe(phone)}` : '',
+      site ? `Strona: ${slackSafe(site)}` : '',
     ],
     page,
     savedElsewhere,

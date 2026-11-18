@@ -21,12 +21,16 @@ export const slackSafe = (value?: string) => (value || '').replace(/&/g, '&amp;'
 
 export const slackLink = (href: string, label: string) => `<${href}|${slackSafe(label)}>`
 
-/** A link to an address the lead typed. Anything that is not a plain web address is shown as text. */
-export const slackUserLink = (href: string | undefined, label: string) => {
+/**
+ * A link to an address the lead typed, shown without "https://www." so it reads
+ * at a glance. Anything that is not a plain web address is shown as text.
+ */
+export const slackUserLink = (href: string | undefined) => {
   if (!href) return ''
   try {
     const url = new URL(href)
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return slackSafe(href)
+    const label = `${url.hostname.replace(/^www\./, '')}${url.pathname.replace(/\/$/, '')}`
     return `<${url.href.replace(/[<>|]/g, (char) => encodeURIComponent(char))}|${slackSafe(label)}>`
   } catch {
     return slackSafe(href)

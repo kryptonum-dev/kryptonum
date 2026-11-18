@@ -57,6 +57,6 @@ export const POST: APIRoute = async ({ url }) => {
     'Automat: ID': { rich_text: [] },
     'Następny krok': { select: { name: 'Pierwszy kontakt' } },
   })
-  await postToLeadsChannel(`⏸️ *Odmowa wstrzymana* · ${slackLink(lead.url, name)} · mail nie wyjdzie, lead czeka na decyzję w Notion`)
+  await postToLeadsChannel(`⏸️ *Odmowa wstrzymana:* ${slackLink(lead.url, name)}\nMail nie wyjdzie, lead czeka na decyzję w Notion.`)
   return page('Odmowa wstrzymana', `<p>Mail nie wyjdzie. ${escapeHtml(name)} ma teraz status „W trakcie”.</p>${record}`)
 }
