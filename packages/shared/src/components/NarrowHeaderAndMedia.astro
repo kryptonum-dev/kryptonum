@@ -44,7 +44,7 @@ const { index, sectionId, heading, paragraph, ctas, media } = Astro.props
 const isSingleMedia = media?.length === 1
 ---
 
-<section class="NarrowHeaderAndMedia" id={sectionId}>
+<section class="NarrowHeaderAndMedia" id={sectionId} data-first={index === 0 ? 'true' : undefined}>
   <header>
     <PortableText value={heading} heading={index === 0 ? 'h1' : 'h2'} class="heading h1" />
     <PortableText value={paragraph} class="paragraph" />
@@ -140,6 +140,23 @@ const isSingleMedia = media?.length === 1
               order: -1;
             }
           }
+        }
+      }
+    }
+    // On a phone the text starts at the left edge, like the rest of the page,
+    // and the first section sits closer to the menu.
+    @media (max-width: 34rem) {
+      &[data-first='true'] {
+        padding-top: 2.5rem;
+      }
+      header {
+        text-align: left;
+        .paragraph {
+          // lines run the full width, only a lonely last word is avoided
+          text-wrap: pretty;
+        }
+        .cta-wrapper {
+          justify-content: flex-start;
         }
       }
     }
