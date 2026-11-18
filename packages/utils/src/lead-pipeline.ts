@@ -119,20 +119,28 @@ type Outcome = {
   sendAt: Date | null
   /** Opens the Slack message, so the channel can be read by eye */
   icon: string
-  /** A word or two after the icon: what kind of lead this is, or what to do with it */
+  /** After the icon, in full words: which offer the lead came for and what state it is in */
   label: string
-  /** Second line of the Slack message, about the automatic mail; `{when}` is the send time */
+  /** Last line of the Slack message, a plain sentence about what happens next; `{when}` is the send time */
   slackNote: string
   canHold: boolean
 }
 
-async function deliver(lead: CampaignLead, outcome: Outcome, enabled: boolean, isTest: boolean, who: string) {
-  if (!outcome.mail || !outcome.sendAt) return { mailId: null as string | null, note: outcome.slackNote.trim(), failed: false }
-  const writeTo = `Napisz ręcznie: ${slackSafe(lead.email)} ${who}`.trim()
-  if (!enabled) return { mailId: null, note: `Automat jest wyłączony w Notion, mail nie wyszedł. ${writeTo}`, failed: true }
+/** How the two offers are called in Slack messages: full words, no internal shortcuts. */
+const RT_NAME = 'Richer Together'
+const IT_NAME = 'Strona dla firmy'
+
+/** Slack italics. They set the sentence about the automation apart from the lead's data. */
+const italic = (sentence: string) => (sentence.trim() ? `_${sentence.trim()}_` : '')
+
+async function deliver(lead: CampaignLead, outcome: Outcome, enabled: boolean, isTest: boolean) {
+  if (!outcome.mail || !outcome.sendAt) return { mailId: null as string | null, note: italic(outcome.slackNote), failed: false }
+  // the address stays outside the italics, an underscore in it would break them
+  const writeTo = (problem: string) => `${italic(`${problem} Napisz ręcznie:`)} ${slackSafe(lead.email)}`
+  if (!enabled) return { mailId: null, note: writeTo('Automat jest wyłączony w Notion, mail nie wyszedł.'), failed: true }
   const mailId = await sendLeadMail({ to: lead.email, mail: outcome.mail, sendAt: outcome.sendAt, test: isTest })
-  if (!mailId) return { mailId: null, note: `Mail automatu nie wyszedł, wysyłka zwróciła błąd. ${writeTo}`, failed: true }
-  return { mailId, note: outcome.slackNote.replace('{when}', describeSendTime(outcome.sendAt)).trim(), failed: false }
+  if (!mailId) return { mailId: null, note: writeTo('Mail automatu nie wyszedł, wysyłka zwróciła błąd.'), failed: true }
+  return { mailId, note: italic(outcome.slackNote.replace('{when}', describeSendTime(outcome.sendAt))), failed: false }
 }
 
 /**
@@ -165,7 +173,6 @@ async function saveToOldDatabase(lead: CampaignLead, name: string, path: string,
 
 type Announcement = {
   icon: string
-  kind: 'RT' | 'IT'
   label: string
   /** The lead's name; it links to the Notion record, where everything else is */
   name: string
@@ -191,7 +198,7 @@ type Announcement = {
 async function announce(lead: Announcement) {
   const icon = lead.failed || !lead.page ? '⚠️' : lead.icon
   const name = lead.page ? slackLink(lead.page.url, lead.name) : slackSafe(lead.name)
-  const header = `${lead.isTest ? '🧪 TEST ' : ''}${icon} *${lead.kind} ${lead.label}:* ${name}`
+  const header = `${icon} *${lead.label}:* ${name}`
   const unsaved = lead.page
     ? []
     : [
@@ -200,7 +207,8 @@ async function announce(lead: Announcement) {
           : 'Nie udało się zapisać leada w Notion, sprawdź połączenie bazy.',
         ...lead.contact,
       ]
-  await postToLeadsChannel([header, ...lead.facts, lead.note, ...unsaved].filter(Boolean).join('\n'))
+  const testLine = lead.isTest ? `🧪 ${italic('Zgłoszenie próbne, nikogo nie oznaczam.')}` : ''
+  await postToLeadsChannel([testLine, header, ...lead.facts, lead.note, ...unsaved].filter(Boolean).join('\n'))
 }
 
 async function holdLine(page: NotionPage | null, mailId: string | null, canHold: boolean, baseUrl: string): Promise<string> {
@@ -233,27 +241,27 @@ async function handleRtLead(lead: CampaignLead, baseUrl: string) {
   const outcomes: Record<RtRoute, Outcome> = {
     'questions': {
       status: 'Nowe', path: 'Pytania', mail: rtQuestionsMail(mailInput), sendAt: mailTime, canHold: false,
-      icon: '✉️', label: 'pytania',
-      slackNote: `Mail z pytaniami wyjdzie {when}. ${who}`,
+      icon: '✉️', label: `${RT_NAME}, nowy lead`,
+      slackNote: 'Mail z pytaniami wyjdzie {when}.',
     },
     'big-reach': {
       status: 'Nowe', path: 'Duży profil bez sprzedaży', mail: rtBigReachMail(mailInput), sendAt: mailTime, canHold: false,
-      icon: '⭐', label: 'duży profil bez sprzedaży',
-      slackNote: `Obejrzyj profil przed rozmową. Mail z pytaniami wyjdzie {when}. ${who}`,
+      icon: '⭐', label: `${RT_NAME}, duży profil bez sprzedaży`,
+      slackNote: 'Obejrzyj profil przed rozmową. Mail z pytaniami wyjdzie {when}.',
     },
     'reject': {
       status: 'Odrzucone', path: 'Odmowa', mail: rtDeclineMail({ firstName, profileTag }), sendAt: pickDeclineTime(now), canHold: true,
-      icon: '🚫', label: 'odmowa',
-      slackNote: 'Odmowa wyjdzie {when}.',
+      icon: '🚫', label: `${RT_NAME}, odmowa`,
+      slackNote: 'Za mała sprzedaż i zasięg. Odmowa wyjdzie {when}.',
     },
     'junk': {
       status: 'Odrzucone', path: 'Spam', mail: null, sendAt: null, canHold: false,
-      icon: '🗑️', label: 'spam',
-      slackNote: '',
+      icon: '🗑️', label: `${RT_NAME}, spam`,
+      slackNote: 'Bez działającego linku do profilu. Nic nie wysyłam.',
     },
   }
   const outcome = outcomes[route]
-  const { mailId, note, failed } = await deliver(lead, outcome, settings.enabled, isTest, who)
+  const { mailId, note, failed } = await deliver(lead, outcome, settings.enabled, isTest)
   const name = [firstName || lead.email, profileTag.startsWith('@') ? profileTag : ''].filter(Boolean).join(' · ')
 
   const page = await createLeadPage(RT_LEADS_DATABASE_ID, {
@@ -274,18 +282,18 @@ async function handleRtLead(lead: CampaignLead, baseUrl: string) {
 
   await announce({
     icon: outcome.icon,
-    kind: 'RT',
     label: outcome.label,
     name,
     facts:
       route === 'junk'
-        ? ['Bez działającego linku do profilu, nic nie wysyłam.']
+        ? []
         : [
             lead.salesRange ? `Sprzedaż: ${slackSafe(lead.salesRange.toLowerCase())}` : '',
             lead.totalFollowers ? `Obserwujący: ${slackSafe(lead.totalFollowers)}` : '',
             lead.socialMediaLinks ? `Profil: ${slackUserLink(lead.socialMediaLinks)}` : '',
           ],
-    note: [note, await holdLine(page, mailId, outcome.canHold, baseUrl)].filter(Boolean).join(' '),
+    // somebody is pinged when there is something to do: a new lead or a mail that failed
+    note: [note, failed || outcome.status === 'Nowe' ? who : '', await holdLine(page, mailId, outcome.canHold, baseUrl)].filter(Boolean).join(' '),
     contact: [
       `E-mail: ${slackSafe(lead.email)}`,
       lead.phone?.trim() ? `Telefon: ${slackSafe(lead.phone.trim())}` : '',
@@ -316,27 +324,27 @@ async function handleItLead(lead: CampaignLead, baseUrl: string) {
   const outcomes: Record<ItRoute, Outcome> = {
     'phone': {
       status: 'Nowe', path: 'Telefon', mail: itHeadsUpMail(mailInput), sendAt: mailTime, canHold: false,
-      icon: '📞', label: 'dzwoń',
-      slackNote: `Zapowiedź telefonu wyjdzie {when}. ${who}`,
+      icon: '📞', label: `${IT_NAME}, do telefonu`,
+      slackNote: 'Jest numer, zadzwoń. Mail z zapowiedzią telefonu wyjdzie {when}.',
     },
     'questions': {
       status: 'Nowe', path: 'Pytania mailem', mail: itQuestionsMail(mailInput), sendAt: mailTime, canHold: false,
-      icon: '✉️', label: 'pytania',
-      slackNote: `Bez numeru. Mail z pytaniami wyjdzie {when}. ${who}`,
+      icon: '✉️', label: `${IT_NAME}, nowy lead`,
+      slackNote: 'Bez numeru, więc mail z pytaniami wyjdzie {when}.',
     },
     'reject': {
       status: 'Odrzucone', path: 'Odmowa', mail: itDeclineMail({ email: lead.email }), sendAt: pickDeclineTime(now), canHold: true,
-      icon: '🚫', label: 'odmowa',
-      slackNote: 'Odmowa wyjdzie {when}.',
+      icon: '🚫', label: `${IT_NAME}, odmowa`,
+      slackNote: 'Budżet poniżej 30 tys. zł. Odmowa wyjdzie {when}.',
     },
     'junk': {
       status: 'Odrzucone', path: 'Spam', mail: null, sendAt: null, canHold: false,
-      icon: '🗑️', label: 'spam',
-      slackNote: '',
+      icon: '🗑️', label: `${IT_NAME}, spam`,
+      slackNote: 'Niepełne zgłoszenie. Nic nie wysyłam.',
     },
   }
   const outcome = outcomes[route]
-  const { mailId, note, failed } = await deliver(lead, outcome, settings.enabled, isTest, who)
+  const { mailId, note, failed } = await deliver(lead, outcome, settings.enabled, isTest)
   const name = [firstName || lead.email, site || ''].filter(Boolean).join(' · ')
   const phone = lead.phone?.trim()
 
@@ -357,18 +365,17 @@ async function handleItLead(lead: CampaignLead, baseUrl: string) {
 
   await announce({
     icon: outcome.icon,
-    kind: 'IT',
     label: outcome.label,
     name,
     facts:
       route === 'junk'
-        ? ['Niepełne zgłoszenie, nic nie wysyłam.']
+        ? []
         : [
             route === 'phone' && phone ? `Telefon: ${slackSafe(phone)}` : '',
             lead.budget ? `Budżet: ${slackSafe(lead.budget.toLowerCase())}` : '',
             lead.siteGoal ? `Cel: ${slackSafe(lead.siteGoal.toLowerCase())}` : '',
           ],
-    note: [note, await holdLine(page, mailId, outcome.canHold, baseUrl)].filter(Boolean).join(' '),
+    note: [note, failed || outcome.status === 'Nowe' ? who : '', await holdLine(page, mailId, outcome.canHold, baseUrl)].filter(Boolean).join(' '),
     contact: [
       `E-mail: ${slackSafe(lead.email)}`,
       phone && route !== 'phone' ? `Telefon: ${slackSafe(phone)}` : '',

@@ -36,7 +36,10 @@ const sameWarsawDay = (a: Date, b: Date) => {
 }
 
 const item = (page: NotionPage, detail: string) =>
-  `• ${slackLink(page.url, readTitle(page) || 'bez nazwy')}${detail ? ` · ${slackSafe(detail)}` : ''}`
+  `• ${slackLink(page.url, readTitle(page) || 'bez nazwy')}${detail ? `: ${slackSafe(detail)}` : ''}`
+
+/** How the two offers are called in the list: full words, no internal shortcuts. */
+const OFFER = { RT: 'Richer Together', IT: 'strona dla firmy' } as const
 
 function sortLeads(pages: NotionPage[], kind: 'RT' | 'IT', now: Date) {
   const call: string[] = []
@@ -57,26 +60,26 @@ function sortLeads(pages: NotionPage[], kind: 'RT' | 'IT', now: Date) {
       if (now.getTime() - mailAt.getTime() < 20 * HOUR) continue
       const silentFor = businessDaysBetween(mailAt, now)
       if (silentFor >= CLOSE_AFTER_BUSINESS_DAYS) {
-        close.push(item(page, `${kind}, cisza od ${silentFor} dni roboczych`))
+        close.push(item(page, `${OFFER[kind]}, cisza od ${silentFor} dni roboczych`))
       } else if (kind === 'IT' && path === 'Telefon') {
-        call.push(item(page, `IT, ${phone}, jeszcze bez rozmowy`))
+        call.push(item(page, `${OFFER.IT}, ${phone}, jeszcze bez rozmowy`))
       } else if (phone) {
-        call.push(item(page, `${kind}, ${phone}, nie odpisał(a) na maila`))
+        call.push(item(page, `${OFFER[kind]}, ${phone}, nie odpisał(a) na maila`))
       } else {
-        nudge.push(item(page, `${kind}, bez numeru`))
+        nudge.push(item(page, `${OFFER[kind]}, bez numeru`))
       }
     }
 
     if (status === 'W trakcie') {
       const idleFor = businessDaysBetween(new Date(page.last_edited_time), now)
-      if (idleFor >= 1) waiting.push(item(page, `${kind}, bez ruchu od ${idleFor} ${idleFor === 1 ? 'dnia roboczego' : 'dni roboczych'}`))
+      if (idleFor >= 1) waiting.push(item(page, `${OFFER[kind]}, bez ruchu od ${idleFor} ${idleFor === 1 ? 'dnia roboczego' : 'dni roboczych'}`))
     }
 
     if (status === 'Rozmowa umówiona') {
       const meeting = readDate(page, 'Rozmowa')
       if (meeting && sameWarsawDay(meeting, now)) {
         const time = warsawParts(meeting)
-        today.push(item(page, `${kind}, ${time.hour}:${String(time.minute).padStart(2, '0')}${phone ? `, ${phone}` : ''}`))
+        today.push(item(page, `${OFFER[kind]}, ${time.hour}:${String(time.minute).padStart(2, '0')}${phone ? `, ${phone}` : ''}`))
       }
     }
   }
@@ -96,7 +99,7 @@ async function declinesToday(pages: NotionPage[], kind: 'RT' | 'IT', now: Date):
     if (!sendAt || sendAt <= now || !sameWarsawDay(sendAt, now) || !readText(page, 'Automat: ID')) continue
     const time = warsawParts(sendAt)
     const hold = slackLink(`${DOMAIN}/api/lead-hold?p=${page.id}&s=${await signLeadId(page.id)}`, 'wstrzymaj')
-    lines.push(`${item(page, `${kind}, odmowa o ${time.hour}:${String(time.minute).padStart(2, '0')}`)} · ${hold}`)
+    lines.push(`${item(page, `${OFFER[kind]}, odmowa o ${time.hour}:${String(time.minute).padStart(2, '0')}`)} ${hold}`)
   }
   return lines
 }
