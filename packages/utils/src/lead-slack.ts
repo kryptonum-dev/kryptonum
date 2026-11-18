@@ -1,6 +1,11 @@
 /**
  * Slack side of the campaign leads: every message about a lead goes to one
  * channel (#krypto-leady) and carries the link to the lead's Notion record.
+ *
+ * Every message opens with an icon, so the channel can be read by eye:
+ * 📞 call this lead, ✉️ questions went out by mail, ⭐ big profile without
+ * sales, 🚫 a decline is on its way, 🗑️ spam, 📋 the morning list,
+ * ⏸️ a decline was held back, ⚠️ something failed, 🧪 a test submission.
  */
 
 declare const process: { env: Record<string, string | undefined> }
@@ -15,6 +20,18 @@ export const SLACK_BOGUMIL = '<@U04FHCHV7QV>'
 export const slackSafe = (value?: string) => (value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
 export const slackLink = (href: string, label: string) => `<${href}|${slackSafe(label)}>`
+
+/** A link to an address the lead typed. Anything that is not a plain web address is shown as text. */
+export const slackUserLink = (href: string | undefined, label: string) => {
+  if (!href) return ''
+  try {
+    const url = new URL(href)
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return slackSafe(href)
+    return `<${url.href.replace(/[<>|]/g, (char) => encodeURIComponent(char))}|${slackSafe(label)}>`
+  } catch {
+    return slackSafe(href)
+  }
+}
 
 /** Posts plain mrkdwn to the leads channel. Quietly does nothing until the webhook address is set. */
 export async function postToLeadsChannel(message: string): Promise<boolean> {

@@ -142,7 +142,7 @@ export const GET: APIRoute = async ({ request }) => {
   const today = warsawParts(now)
   const isAway = !!settings.absentUntil && `${today.year}-${String(today.month).padStart(2, '0')}-${String(today.day).padStart(2, '0')}` < settings.absentUntil.slice(0, 10)
   const who = isAway ? `${SLACK_KUBA} ${SLACK_BOGUMIL}` : SLACK_MICHAL
-  const message = [`${who} lista leadów na dziś`, ...filled.map(([heading, lines]) => `\n*${heading}*\n${lines.join('\n')}`)].join('\n')
+  const message = [`📋 *Lista leadów na dziś* ${who}`, ...filled.map(([heading, lines]) => `\n*${heading}*\n${lines.join('\n')}`)].join('\n')
   const posted = await postToLeadsChannel(message)
   return new Response(posted ? 'Posted' : 'Slack is not configured', { status: posted ? 200 : 503 })
 }
