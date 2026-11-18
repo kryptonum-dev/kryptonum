@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'apps/sanity/**'
+      - '.github/workflows/sanity-deploy.yml'
+  workflow_dispatch:
 jobs:
   deploy:
     name: Build and Deploy
@@ -14,12 +16,13 @@ jobs:
       SANITY_STUDIO_PREVIEW_LINKS_DOMAIN: ${{ secrets.SANITY_STUDIO_PREVIEW_LINKS_DOMAIN }}
       SANITY_STUDIO_PREVIEW_LEARN_DOMAIN: ${{ secrets.SANITY_STUDIO_PREVIEW_LEARN_DOMAIN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-      - uses: actions/setup-node@v2
+      # Sanity 5 needs Node >=20.19.1 <22 or >=22.12
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '22.x'
       - uses: oven-sh/setup-bun@v2
       - name: Deploy Sanity Studio
         run: |
