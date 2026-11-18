@@ -27,82 +27,55 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'offers',
+      type: 'array',
+      title: 'Offers',
+      description: 'The main links of the page, shown as large cards right under the heading (for example one per landing page).',
+      of: [
+        defineField({
+          name: 'offer',
+          type: 'object',
+          title: 'Offer',
+          fields: [
+            defineField({
+              name: 'label',
+              type: 'string',
+              title: 'Label (optional)',
+              description: 'Small line above the title that says who the offer is for, e.g. "Jesteś twórczynią".',
+            }),
+            defineField({
+              name: 'title',
+              type: 'string',
+              title: 'Title',
+              validation: Rule => Rule.required(),
+            }),
+            defineField({
+              name: 'description',
+              type: 'string',
+              title: 'Description (optional)',
+            }),
+            defineField({
+              name: 'url',
+              type: 'string',
+              title: 'Link',
+              description: 'A path on this domain (e.g. /pl/wspolnik-na-zapleczu) or a full address starting with https://',
+              validation: Rule => Rule.required().custom(value => {
+                if (!value) return true;
+                return value.startsWith('/') || value.startsWith('https://') || 'Start the link with / or https://';
+              }),
+            }),
+          ],
+          preview: {
+            select: { title: 'title', subtitle: 'url' },
+          },
+        }),
+      ],
+    }),
+    defineField({
       name: 'homepageTitle',
       type: 'string',
       title: 'Homepage title',
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'services',
-      type: 'object',
-      title: 'Services',
-      fields: [
-        defineField({
-          name: 'title',
-          type: 'string',
-          title: 'Title',
-          validation: Rule => Rule.required(),
-        }),
-        defineField({
-          name: 'items',
-          type: 'array',
-          title: 'Items',
-          of: [{
-            type: 'reference',
-            to: [{ type: 'Service_Collection' }],
-            options: {
-              disableNew: true,
-              filter: ({ parent, document }) => {
-                const language = (document as { language?: string })?.language;
-                const selectedIds = (parent as { _ref?: string }[])?.filter(item => item._ref).map(item => item._ref) || [];
-                if (selectedIds.length > 0) {
-                  return {
-                    filter: '!(_id in $selectedIds) && !(_id in path("drafts.**")) && language == $lang && coalesce(isArchived, false) != true',
-                    params: { selectedIds, lang: language }
-                  }
-                }
-                return {
-                  filter: 'language == $lang && !(_id in path("drafts.**")) && coalesce(isArchived, false) != true',
-                  params: { lang: language }
-                }
-              }
-            }
-          }],
-          validation: Rule => [Rule.required(), Rule.unique()],
-        }),
-      ],
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'pages',
-      type: 'object',
-      title: 'Pages',
-      fields: [
-        defineField({
-          name: 'title',
-          type: 'string',
-          title: 'Title',
-          validation: Rule => Rule.required(),
-        }),
-        defineField({
-          name: 'portfolioTitle',
-          type: 'string',
-          title: 'Portfolio Title',
-          validation: Rule => Rule.required(),
-        }),
-        defineField({
-          name: 'teamTitle',
-          type: 'string',
-          title: 'Team Title',
-          validation: Rule => Rule.required(),
-        }),
-        defineField({
-          name: 'blogTitle',
-          type: 'string',
-          title: 'Blog Title',
-          validation: Rule => Rule.required(),
-        })
-      ],
+      description: 'A quieter link to the main website, shown under the offers.',
       validation: Rule => Rule.required(),
     }),
     defineField({

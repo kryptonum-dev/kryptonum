@@ -33,39 +33,12 @@ const page = await sanityFetch<{
     title: string
     slug: string
   }
-  services: {
+  offers?: {
+    label?: string
     title: string
-    items: {
-      name: string
-      slug: string
-    }[]
-  }
-  pages: {
-    title: string
-    portfolio: {
-      title: string
-      slug: string
-      thumbnails: {
-        img: ImageDataProps
-      }[]
-      leftCount: number
-    }
-    team: {
-      title: string
-      slug: string
-      avatars: {
-        img: ImageDataProps
-      }[]
-    }
-    blog: {
-      title: string
-      slug: string
-      thumbnails: {
-        img: ImageDataProps
-      }[]
-      leftCount: number
-    }
-  }
+    description?: string
+    url: string
+  }[]
   contact: {
     title: string
     img: ImageDataProps
@@ -97,38 +70,11 @@ const page = await sanityFetch<{
         "title": homepageTitle,
         "slug": *[_type == "Index_Page" && language == $language][0].slug.current,
       },
-      services {
+      offers[] {
+        label,
         title,
-        items[] -> {
-          name,
-          "slug": slug.current,
-        }
-      },
-      pages {
-        title,
-        "portfolio": {
-          "title": portfolioTitle,
-          "slug": *[_type == "Portfolio_Page" && language == $language][0].slug.current,
-          "thumbnails": *[_type == "CaseStudy_Collection" && language == $language][] | order(date desc) [0...3] {
-            ${ImageDataQuery('img')}
-          },
-          "leftCount": count(*[_type == "CaseStudy_Collection" && language == $language]) - 3,
-        },
-        "team": {
-          "title": teamTitle,
-          "slug": *[_type == "Team_Page" && language == $language][0].slug.current,
-          "avatars": *[_type == "TeamMember_Collection" && language == $language][] | order(_createdAt asc) {
-            ${ImageDataQuery('img')}
-          },
-        },
-        "blog": {
-          "title": blogTitle,
-          "slug": *[_type == "Blog_Page" && language == $language][0].slug.current,
-          "thumbnails": *[_type == "BlogPost_Collection" && language == $language][] | order(coalesce(publishedDate, _createdAt) desc) [0...3] {
-            ${ImageDataQuery('img')}
-          },
-          "leftCount": count(*[_type == "BlogPost_Collection" && language == $language]) - 3,
-        },
+        description,
+        url,
       },
       contact {
         title,
@@ -186,6 +132,27 @@ const page = await sanityFetch<{
     </defs>
   </svg>
   <PortableText value={page.heading} heading='h1' class='h2 heading' />
+  {
+    !!page.offers?.length && (
+      <ul class='group offers'>
+        {page.offers.map(({ label, title, description, url }) => (
+          <li>
+            <a href={url} class='group-link offer'>
+              <div class='blur' />
+              <div class='offer-text'>
+                {label && <p class='offer-label'>{label}</p>}
+                <p class='offer-title'>{title}</p>
+                {description && <p class='offer-description'>{description}</p>}
+              </div>
+              <svg class='offer-arrow' xmlns='http://www.w3.org/2000/svg' width='13' height='10' fill='none' viewBox='0 0 13 10' aria-hidden='true'>
+                <path stroke='#90F4E8' stroke-linecap='round' stroke-linejoin='round' d='M1.168 5h10.667m0 0-4-4m4 4-4 4' />
+              </svg>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
   <div class='group'>
     <a href={`${DOMAIN}${page.homepage.slug}`} class='group-link'>
       <div class='blur'></div>
@@ -240,55 +207,6 @@ const page = await sanityFetch<{
         </svg>
       </div>
     </a>
-  </div>
-  <div class='group'>
-    <p class='group-title'>{page.services.title}</p>
-    <ul class='group-list'>
-      {
-        page.services.items.map(({ name, slug }) => (
-          <li class='item'>
-            <a href={`${DOMAIN}${slug}`} class='group-link'>
-              <div class='blur' />
-              {name}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
-  <div class='group'>
-    <p class='group-title'>{page.pages.title}</p>
-    <ul class='group-list'>
-      <li class='item'>
-        <a href={`${DOMAIN}${page.pages.portfolio.slug}`} class='group-link' data-link-portfolio>
-          <div class='blur'></div>
-          {page.pages.portfolio.title}
-          <div class='thumbnails'>
-            {page.pages.portfolio.thumbnails.map(({ img }) => <Image {...img} sizes='54px' />)}
-            {page.pages.portfolio.leftCount > 0 && <p class='overflowing-icon'>+{page.pages.portfolio.leftCount}</p>}
-          </div>
-        </a>
-      </li>
-      <li class='item'>
-        <a href={`${DOMAIN}${page.pages.team.slug}`} class='group-link' data-link-team>
-          <div class='blur'></div>
-          {page.pages.team.title}
-          <div class='avatars'>
-            {page.pages.team.avatars.map(({ img }) => <Image {...img} sizes='32px' class='gradient-thumbnail' />)}
-          </div>
-        </a>
-      </li>
-      <li class='item'>
-        <a href={`${DOMAIN}${page.pages.blog.slug}`} class='group-link' data-link-blog>
-          <div class='blur'></div>
-          {page.pages.blog.title}
-          <div class='thumbnails'>
-            {page.pages.blog.thumbnails.map(({ img }) => <Image {...img} sizes='57px' />)}
-            {page.pages.blog.leftCount > 0 && <p class='overflowing-icon'>+{page.pages.blog.leftCount}</p>}
-          </div>
-        </a>
-      </li>
-    </ul>
   </div>
   <div class='group'>
     <p class='group-title'>{page.contact.title}</p>
@@ -366,9 +284,41 @@ const page = await sanityFetch<{
     font-size: var(--typography-body-m, 0.875rem);
     margin-bottom: 0.75rem;
   }
-  .group-list {
+  .offers {
+    list-style: none;
+    padding: 0;
     display: grid;
     gap: 0.5rem;
+    &:not(:last-child) {
+      margin-bottom: 0.5rem;
+    }
+  }
+  .group-link.offer {
+    flex-wrap: nowrap;
+    padding: 1.5rem 1.25rem;
+    .offer-text {
+      display: grid;
+      gap: 0.375rem;
+    }
+    .offer-label {
+      width: fit-content;
+      font-size: var(--typography-body-s, 0.75rem);
+      background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .offer-title {
+      font-size: var(--typography-body-2xl, 1.125rem);
+      line-height: 1.35;
+    }
+    .offer-description {
+      font-size: var(--typography-body-m, 0.875rem);
+      color: var(--neutral-400, #c6cdcc);
+    }
+    .offer-arrow {
+      flex-shrink: 0;
+    }
   }
   .group-link {
     width: 100%;
@@ -423,40 +373,6 @@ const page = await sanityFetch<{
       .blur {
         &::before {
           transform: translate3d(-50%, -50%, 0) scale(2);
-        }
-      }
-    }
-    &[data-link-portfolio] {
-      .thumbnails {
-        display: flex;
-        gap: 0.25rem;
-        img {
-          width: 54px;
-          border-radius: 0.25rem;
-          border: 1px solid var(--primary-500, #064040);
-        }
-      }
-    }
-    &[data-link-team] {
-      .avatars {
-        display: flex;
-        img {
-          width: 32px;
-          height: 32px;
-          &:not(:first-child) {
-            margin-left: -6px;
-          }
-        }
-      }
-    }
-    &[data-link-blog] {
-      .thumbnails {
-        display: flex;
-        gap: 0.25rem;
-        img {
-          width: 57px;
-          border-radius: 0.25rem;
-          border: 1px solid var(--primary-500, #064040);
         }
       }
     }
