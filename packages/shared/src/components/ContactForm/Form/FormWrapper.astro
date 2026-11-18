@@ -26,11 +26,15 @@ const translations = {
     copyTelSuccess: 'Pomyślnie skopiowano numer telefonu',
     submit: 'Porozmawiajmy o biznesie',
     submitLead: 'Umów rozmowę',
-    submitCreator: 'Wysyłam zgłoszenie',
+    submitCreator: 'Zgłaszam swój profil',
     submitInfluencer: 'Wyślij zgłoszenie',
     tryAgain: 'Spróbuj ponownie',
     secureData: 'Twoje dane są bezpieczne',
     nextStep: 'Przejdź dalej',
+    nextShort: 'Dalej',
+    legalNote: 'Wysyłając formularz, akceptujesz',
+    legalLink: 'politykę prywatności',
+    legalHref: `${DOMAIN}/pl/polityka-prywatnosci`,
     prevStep: 'Wróć',
     exitToHome: 'Przejdź na kryptonum.eu',
   },
@@ -39,11 +43,15 @@ const translations = {
     copyTelSuccess: 'Successfully copied phone number',
     submit: 'Let\'s talk about business',
     submitLead: 'Schedule a call',
-    submitCreator: 'Send application',
+    submitCreator: 'Submit my profile',
     submitInfluencer: 'Submit application',
     tryAgain: 'Try again',
     secureData: 'Your data is secure',
     nextStep: 'Next step',
+    nextShort: 'Next',
+    legalNote: 'By sending the form you accept the',
+    legalLink: 'privacy policy',
+    legalHref: `${DOMAIN}/en/privacy-policy`,
     prevStep: 'Back',
     exitToHome: 'Go to kryptonum.eu',
   },
@@ -57,6 +65,9 @@ const isFormWithList = variant === 'form-with-list'
 const isLeadForm = String(variant) === 'form-lead'
 const isCreatorForm = String(variant) === 'form-creator'
 const isInfluencerForm = String(variant) === 'form-influencer'
+const isSiteForm = String(variant) === 'form-site'
+// Campaign lead forms: tile questions in steps, no consent checkbox
+const isCampaignForm = isCreatorForm || isSiteForm
 const isMultiStepForm = !isFormWithList
 ---
 
@@ -73,9 +84,9 @@ const isMultiStepForm = !isFormWithList
             {t.prevStep}
           </button>
           <Button type="button" className="next-step">
-            {t.nextStep}
+            {isCampaignForm ? t.nextShort : t.nextStep}
           </Button>
-          <Button type="submit" className="submit-button">{isInfluencerForm ? t.submitInfluencer : isCreatorForm ? t.submitCreator : isLeadForm ? t.submitLead : t.submit}</Button>
+          <Button type="submit" className="submit-button">{isInfluencerForm ? t.submitInfluencer : isCreatorForm ? t.submitCreator : isLeadForm || isSiteForm ? t.submitLead : t.submit}</Button>
         )
       }
     </div>
@@ -90,6 +101,13 @@ const isMultiStepForm = !isFormWithList
       </svg>
       {t.secureData}
     </p>
+    {
+      isCampaignForm && (
+        <p class="legal-note">
+          {t.legalNote} <a href={t.legalHref} target="_blank" rel="noopener noreferrer" class="link">{t.legalLink}</a>.
+        </p>
+      )
+    }
   </div>
   <Loader class="Loader" />
   <div class="SuccessState">
@@ -144,8 +162,7 @@ const isMultiStepForm = !isFormWithList
     </div>
     <p class="h2 heading">Dziękujemy, mamy Twoje zgłoszenie.</p>
     <p class="paragraph">
-      Przejrzymy je spokojnie i odezwiemy się, jeśli zobaczymy potencjał na wspólny projekt. Nie odpisujemy każdemu od
-      ręki, bo do każdej współpracy podchodzimy poważnie, ale nic nam nie ginie.
+      Przejrzymy je i odpiszemy mailem w ciągu jednego dnia roboczego.
     </p>
     <div class="actions">
       <Button href={DOMAIN} linkType="external" theme="primary" className="cta">{t.exitToHome}</Button>
@@ -233,8 +250,10 @@ const isMultiStepForm = !isFormWithList
       .submit-button {
         flex-grow: 1;
       }
-      :global(.step-counter) {
-        margin: 0.25rem 0 0;
+      .legal-note {
+        display: none;
+        justify-self: center;
+        text-align: center;
         font-size: var(--typography-body-s, 0.75rem);
         color: var(--neutral-400, #c6cdcc);
       }
@@ -492,34 +511,113 @@ const isMultiStepForm = !isFormWithList
         }
       }
     }
-    &[data-variant='form-creator'] {
-      :global(> label) {
-        transition: filter 500ms var(--easing);
-        will-change: filter;
+    &[data-variant='form-creator'],
+    &[data-variant='form-site'] {
+      :global(.form-steps) {
+        list-style: none;
+        margin: 0 0 0.25rem;
+        padding: 0;
+        display: grid;
+        gap: 0.5rem;
       }
-      &[data-step='1'] {
-        :global(> label:nth-child(n+5)) {
-          filter: blur(8px);
-          visibility: hidden;
-          position: absolute;
-        }
-        .submit-wrapper {
-          .submit-button,
-          .prev-step {
-            display: none;
-          }
+      :global(.form-steps li) {
+        position: relative;
+        padding-top: 0.875rem;
+        display: flex;
+        align-items: baseline;
+        gap: 0.375rem;
+        font-size: var(--typography-body-s, 0.75rem);
+        color: var(--neutral-500, #75758a);
+        transition: color 500ms var(--easing);
+      }
+      :global(.form-steps li::before),
+      :global(.form-steps li::after) {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 1px;
+        border-radius: 1px;
+      }
+      :global(.form-steps li::before) {
+        right: 0;
+        background-color: var(--neutral-700, #383842);
+      }
+      :global(.form-steps li::after) {
+        width: 0;
+        background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+        transition: width 800ms var(--easing);
+      }
+      :global(.form-steps .index) {
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.04em;
+      }
+      :global(.form-steps li[data-state='done']) {
+        color: var(--neutral-400, #c6cdcc);
+      }
+      :global(.form-steps li[data-state='done']::after),
+      :global(.form-steps li[data-state='active']::after) {
+        width: 100%;
+      }
+      :global(.form-steps li[data-state='active']) {
+        color: var(--neutral-200, #f0f7f7);
+      }
+      :global(.form-steps li[data-state='active'] .index) {
+        background: var(--primary-gradient-400, linear-gradient(266deg, #2dd282, #90f4e8));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      :global(.lead-step) {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(1.25rem, calc(1.5vw / 0.48), 1.5rem);
+      }
+      :global(.lead-step[hidden]),
+      :global(.lead-step [hidden]) {
+        display: none;
+      }
+      :global(.lead-field) {
+        display: grid;
+        gap: 0.375rem;
+      }
+      :global(.lead-hint) {
+        padding: 0 0.125rem;
+        font-size: var(--typography-body-s, 0.75rem);
+        line-height: 1.5;
+        color: var(--neutral-400, #c6cdcc);
+      }
+      :global(.lead-hint .link) {
+        color: var(--neutral-200, #f0f7f7);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        :global(.form-steps li),
+        :global(.form-steps li::after) {
+          transition: none;
         }
       }
-      &[data-step='2'] {
-        :global(> label:nth-child(-n+4)) {
-          filter: blur(8px);
-          visibility: hidden;
-          position: absolute;
+      // After sending, only the end screen stays. Placed after the rules above so it wins over them.
+      &[data-status='success'],
+      &[data-status='rejected'],
+      &[data-status='error'] {
+        :global(.form-steps),
+        :global(.lead-step) {
+          display: none;
         }
-        .submit-wrapper {
-          .next-step {
-            display: none;
-          }
+      }
+      &[data-step='1'] .submit-wrapper .prev-step {
+        display: none;
+      }
+      &:not([data-last-step='true']) .submit-wrapper .submit-button {
+        display: none;
+      }
+      &[data-last-step='true'] .submit-wrapper {
+        .next-step,
+        .secure-data {
+          display: none;
+        }
+        .legal-note {
+          display: block;
         }
       }
     }
@@ -563,7 +661,7 @@ const isMultiStepForm = !isFormWithList
     section.querySelector<HTMLButtonElement>('.tryAgain')!.addEventListener('click', () => {
       document.dispatchEvent(new CustomEvent('Contact-TryAgain'))
     })
-    if (section.dataset.variant === 'form-with-person' || section.dataset.variant === 'form-lead' || section.dataset.variant === 'form-creator' || section.dataset.variant === 'form-influencer') {
+    if (section.dataset.variant === 'form-with-person' || section.dataset.variant === 'form-lead' || section.dataset.variant === 'form-creator' || section.dataset.variant === 'form-site' || section.dataset.variant === 'form-influencer') {
       section.querySelector<HTMLButtonElement>('.next-step')!.addEventListener('click', () => {
         document.dispatchEvent(new CustomEvent('Contact-NextStep'))
       })

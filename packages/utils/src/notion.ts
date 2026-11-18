@@ -47,7 +47,7 @@ export type AppendLeadResult = {
   error?: string
 }
 
-const LEADS_RT_DATABASE_ID = '033d2d0a22d94a1d8ada8d8593ab8ec5'
+export const LEADS_RT_DATABASE_ID = '033d2d0a22d94a1d8ada8d8593ab8ec5'
 
 export function isRtLeadsDatabase(databaseId?: string): boolean {
   return !!databaseId && databaseId.replace(/-/g, '') === LEADS_RT_DATABASE_ID

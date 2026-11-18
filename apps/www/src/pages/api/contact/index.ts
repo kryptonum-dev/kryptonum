@@ -5,6 +5,7 @@ import { DOMAIN, REGEX } from "@repo/shared/constants";
 import { htmlToString } from "@repo/utils/html-to-string";
 import { getFormIntegrationConfig } from "@repo/utils/form-config";
 import { profileLinkToHref } from "@repo/utils/profile-link";
+import { isTestLead } from "@repo/utils/lead-routing";
 
 type RequestBody = {
   email: string
@@ -15,11 +16,15 @@ type RequestBody = {
   fullName?: string
   totalFollowers?: string
   salesRange?: string
-  productType?: string
+  productType?: string | string[]
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
   formId?: string
+  formKind?: string
+  firstName?: string
+  siteGoal?: string
+  budget?: string
 }
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
@@ -56,21 +61,27 @@ type TemplateData = {
   fullName?: string
   totalFollowers?: string
   salesRange?: string
-  productType?: string
+  productType?: string | string[]
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
+  firstName?: string
+  siteGoal?: string
+  budget?: string
 }
 
 const template = (data: TemplateData) => {
   const parts: string[] = [];
   if (data.fullName) parts.push(`<p>Imię i nazwisko: <b>${data.fullName}</b></p>`);
+  if (data.firstName) parts.push(`<p>Imię: <b>${data.firstName}</b></p>`);
   parts.push(`<p>Adres email: <b>${data.email}</b></p>`);
   if (data.phone) parts.push(`<p>Telefon: <b>${data.phone}</b></p>`);
   if (data.dropdown) parts.push(`<p>Branża: <b>${data.dropdown}</b></p>`);
+  if (data.siteGoal) parts.push(`<p>Co ma robić strona: <b>${data.siteGoal}</b></p>`);
+  if (data.budget) parts.push(`<p>Budżet: <b>${data.budget}</b></p>`);
   if (data.totalFollowers) parts.push(`<p>Łączna liczba obserwujących: <b>${data.totalFollowers}</b></p>`);
   if (data.salesRange) parts.push(`<p>Sprzedaż online miesięcznie: <b>${data.salesRange}</b></p>`);
-  if (data.productType) parts.push(`<p>Produkt: <b>${data.productType}</b></p>`);
+  if (data.productType?.length) parts.push(`<p>Produkt: <b>${[data.productType].flat().join(', ')}</b></p>`);
   if (data.socialMediaLinks) {
     const link = data.socialMediaLinks.trim();
     if (!link.includes('\n')) {
@@ -109,10 +120,11 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const { email, message, legal, phone, dropdown, fullName, totalFollowers, salesRange, productType, socialMediaLinks, publishedVideos, exampleVideo, formId } = body;
+  const { email, message, legal, phone, dropdown, fullName, totalFollowers, salesRange, productType, socialMediaLinks, publishedVideos, exampleVideo, formId, formKind, firstName, siteGoal, budget } = body;
 
   const isInfluencerForm = !!fullName;
-  const hasRequiredContent = !!message || !!phone || isInfluencerForm || !!socialMediaLinks;
+  const isCampaignLead = formKind === 'rt' || formKind === 'it';
+  const hasRequiredContent = !!message || !!phone || isInfluencerForm || !!socialMediaLinks || (formKind === 'it' && !!siteGoal && !!budget);
   if (!REGEX.email.test(email) || !hasRequiredContent || !legal) {
     return new Response(JSON.stringify({
       message: "Missing required fields",
@@ -135,16 +147,20 @@ export const POST: APIRoute = async ({ request }) => {
 
   const subject = isInfluencerForm
     ? `Nowe zgłoszenie influencera | Kryptonum`
+    : isCampaignLead
+      ? `Lead ${formKind === 'rt' ? 'RT' : 'IT'}: ${firstName || email} | Kryptonum`
     : totalFollowers || phone
       ? `Lead z formularza kontaktowego | Kryptonum`
       : `Wiadomość z formularza kontaktowego | Kryptonum`;
 
-  const htmlTemplate = template({ email, message, phone, dropdown, fullName, totalFollowers, salesRange, productType, socialMediaLinks, publishedVideos, exampleVideo });
+  const htmlTemplate = template({ email, message, phone, dropdown, fullName, totalFollowers, salesRange, productType, socialMediaLinks, publishedVideos, exampleVideo, firstName, siteGoal, budget });
   const textTemplate = htmlToString(htmlTemplate);
 
   const config = formId ? await getFormIntegrationConfig(formId) : {};
-  const defaultTo = 'michal@kryptonum.eu';
-  const defaultBcc = ['ola@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@kryptonum.eu'];
+  // A `+test` address checks the whole path without landing in the team's inboxes.
+  const isTest = isTestLead(email);
+  const defaultTo = isTest ? 'bogumil@kryptonum.eu' : 'michal@kryptonum.eu';
+  const defaultBcc = isTest ? [] : ['ola@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@kryptonum.eu'];
 
   try {
     const res = await fetch(`https://api.resend.com/emails`, {
@@ -155,12 +171,14 @@ export const POST: APIRoute = async ({ request }) => {
       },
       body: JSON.stringify({
         from: 'Formularz kontaktowy | Kryptonum <formularz@send.kryptonum.eu>',
-        to: config.recipientEmail || defaultTo,
-        ...(config.recipientEmail
-          ? (config.recipientBcc?.length ? { bcc: config.recipientBcc } : {})
-          : { bcc: defaultBcc }),
+        to: isTest ? defaultTo : config.recipientEmail || defaultTo,
+        ...(isTest
+          ? {}
+          : config.recipientEmail
+            ? (config.recipientBcc?.length ? { bcc: config.recipientBcc } : {})
+            : { bcc: defaultBcc }),
         reply_to: email,
-        subject,
+        subject: isTest ? `[TEST] ${subject}` : subject,
         html: htmlTemplate,
         text: textTemplate,
         headers: {

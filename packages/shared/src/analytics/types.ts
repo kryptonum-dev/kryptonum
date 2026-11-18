@@ -33,6 +33,7 @@ export type MetaEventName =
   | 'ApplicationBelowThreshold'
   | 'form_start'
   | 'form_step_2'
+  | 'form_step_3'
 
 export type MetaEventParamsMap = {
   PageView: {
@@ -133,6 +134,9 @@ export type MetaEventParamsMap = {
   form_step_2: {
     form_name?: string
   }
+  form_step_3: {
+    form_name?: string
+  }
 }
 
 export type Ga4EventName =
@@ -158,6 +162,7 @@ export type Ga4EventName =
   | 'view_cart'
   | 'form_start'
   | 'form_step_2'
+  | 'form_step_3'
 
 export type Ga4EventParamsMap = {
   page_view: {
@@ -252,6 +257,9 @@ export type Ga4EventParamsMap = {
     form_name?: string
   }
   form_step_2: {
+    form_name?: string
+  }
+  form_step_3: {
     form_name?: string
   }
 }

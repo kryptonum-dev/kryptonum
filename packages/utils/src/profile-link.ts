@@ -29,3 +29,35 @@ export function isValidProfileLink(value: string): boolean {
   if (!stripped.includes('.')) return false
   return /^[a-z0-9-]+(\.[a-z0-9-]+)+(\/[^\s]*)?$/i.test(stripped)
 }
+
+const SOCIAL_PROFILE_URL: Record<string, (handle: string) => string> = {
+  Instagram: (handle) => `https://www.instagram.com/${handle}`,
+  TikTok: (handle) => `https://www.tiktok.com/@${handle}`,
+  YouTube: (handle) => `https://www.youtube.com/@${handle}`,
+  Facebook: (handle) => `https://www.facebook.com/${handle}`,
+}
+
+/**
+ * Builds a working profile link from what a creator types into the form.
+ *
+ * She picks the platform and gives either the profile name (`fitania`,
+ * `@fitania`, `ania.fit`) or a pasted link. A pasted link wins as it is. A bare
+ * name becomes that platform's address, so the handle never has to match
+ * across platforms and the link in Notion always opens. With "Inna strona"
+ * only a real address passes. Returns null when nothing usable was given.
+ */
+export function buildProfileLink(platform: string, raw: string): string | null {
+  const value = raw.trim()
+  if (!value || /\s/.test(value)) return null
+
+  const withoutProtocol = value.replace(/^https?:\/\//i, '').replace(/^www\./i, '')
+  const looksLikeLink = /^https?:\/\//i.test(value) || /^[a-z0-9-]+(\.[a-z0-9-]+)+\/.+/i.test(withoutProtocol)
+  if (looksLikeLink) return isValidProfileLink(value) ? `https://${withoutProtocol.replace(/\/+$/, '')}` : null
+
+  const toSocialUrl = SOCIAL_PROFILE_URL[platform]
+  if (!toSocialUrl) return isValidProfileLink(value) ? `https://${withoutProtocol}` : null
+
+  const handle = value.replace(/^@+/, '')
+  if (!/^[a-z0-9._-]{2,60}$/i.test(handle)) return null
+  return toSocialUrl(handle)
+}

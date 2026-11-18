@@ -9,11 +9,15 @@ export type Props = {
   fullName?: string
   totalFollowers?: string
   salesRange?: string
-  productType?: string
+  productType?: string | string[]
   socialMediaLinks?: string
   publishedVideos?: string
   exampleVideo?: string
   formId?: string
+  formKind?: 'rt' | 'it'
+  firstName?: string
+  siteGoal?: string
+  budget?: string
 }
 
 export async function sendContactEmail(data: Props): Promise<{ success: boolean }> {

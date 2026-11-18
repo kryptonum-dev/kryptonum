@@ -3,6 +3,7 @@ export const prerender = false
 import { appendLeadToNotion, findLeadByEmail, isRtLeadsDatabase, updateLeadStatus, type ContactLeadData } from '@repo/utils/notion'
 import { evaluateRtGate } from '@repo/utils/rt-gate'
 import { sendRtAutomationMail } from '@repo/utils/rt-automation'
+import { handleCampaignLead, type CampaignLead } from '@repo/utils/lead-pipeline'
 import { sendSlackNotification } from '@repo/utils/slack'
 import { getFormIntegrationConfig } from '@repo/utils/form-config'
 import type { APIRoute } from 'astro'
@@ -114,9 +115,17 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(null, { status: 403, headers: corsHeaders })
     }
 
-    const { formId, ...leadData } = parsed as ContactLeadData & { formId?: string }
+    const { formId, ...leadData } = parsed as ContactLeadData & { formId?: string; formKind?: string }
     if (!leadData.email) {
       return new Response(null, { status: 400, headers: corsHeaders })
+    }
+
+    // Campaign forms (RT creators, IT companies) have their own path: routing,
+    // a scheduled mail in Michał's name, the campaign databases and Slack.
+    const { formKind } = parsed as { formKind?: string }
+    if (formKind === 'rt' || formKind === 'it') {
+      await handleCampaignLead(parsed as CampaignLead, DOMAIN)
+      return new Response(null, { status: 204, headers: corsHeaders })
     }
 
     const config = formId ? await getFormIntegrationConfig(formId) : {}

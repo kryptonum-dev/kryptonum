@@ -15,7 +15,15 @@
     "./rt-gate": "./src/rt-gate.ts",
     "./rt-automation": "./src/rt-automation.ts",
     "./slack": "./src/slack.ts",
-    "./form-config": "./src/form-config.ts"
+    "./form-config": "./src/form-config.ts",
+    "./lead-routing": "./src/lead-routing.ts",
+    "./lead-schedule": "./src/lead-schedule.ts",
+    "./lead-mails": "./src/lead-mails.ts",
+    "./lead-notion": "./src/lead-notion.ts",
+    "./lead-slack": "./src/lead-slack.ts",
+    "./lead-sign": "./src/lead-sign.ts",
+    "./lead-pipeline": "./src/lead-pipeline.ts",
+    "./email-typo": "./src/email-typo.ts"
   },
   "scripts": {
     "dev": "tsc --watch",
