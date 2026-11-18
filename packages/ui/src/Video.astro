@@ -158,8 +158,9 @@ export const VideoDataQuery = (name: string) => `
       // older browsers size the button from the window, newer ones from the video
       width: clamp(3.5rem, calc(4.5vw / 0.48), 4.5rem);
       width: clamp(2.75rem, 28cqmin, 4.5rem);
-      height: auto;
-      aspect-ratio: 1;
+      // the same two values again: every browser then gets a true circle
+      height: clamp(3.5rem, calc(4.5vw / 0.48), 4.5rem);
+      height: clamp(2.75rem, 28cqmin, 4.5rem);
       padding: 0;
       border: 0;
       border-radius: 50%;
