@@ -7,14 +7,15 @@ type Props = {
   hideControls?: boolean
   /** The video sits at the top of the page, so its still frame should load first */
   priority?: boolean
+  /** Second of the video used as its cover; set in Sanity on the video ("thumbnail time"). Without it Mux picks the middle. */
+  thumbTime?: number | null
 } & HTMLAttributes<'div'>
 
-const { playbackId, aspectRatio, hideControls, priority = false, class: className, ...props } = Astro.props
+const { playbackId, aspectRatio, hideControls, priority = false, thumbTime, class: className, ...props } = Astro.props
 
 const aspect_ratio = aspectRatio?.replace(':', ' / ')
 const [ratioWidth, ratioHeight] = (aspectRatio || '16:9').split(':').map(Number)
-const still = (width: number) => `https://image.mux.com/${playbackId}/thumbnail.webp?width=${width}`
-const stillImage = videoStill(playbackId)
+const stillImage = videoStill(playbackId, thumbTime)
 const playLabel = Astro.params.lang === 'en' ? 'Play video' : 'Odtwórz wideo'
 
 export type VideoDataProps = Props
@@ -23,8 +24,9 @@ export type VideoDataProps = Props
  * The still frame shown before the player loads. Exported so a page can preload
  * exactly the same picture when the video is the first thing on it.
  */
-export const videoStill = (playbackId: string) => {
-  const url = (width: number) => `https://image.mux.com/${playbackId}/thumbnail.webp?width=${width}`
+export const videoStill = (playbackId: string, thumbTime?: number | null) => {
+  const time = typeof thumbTime === 'number' ? `&time=${thumbTime}` : ''
+  const url = (width: number) => `https://image.mux.com/${playbackId}/thumbnail.webp?width=${width}${time}`
   return {
     src: url(960),
     srcset: [480, 640, 768, 960, 1280].map((width) => `${url(width)} ${width}w`).join(', '),
@@ -36,6 +38,7 @@ export const VideoDataQuery = (name: string) => `
   ${name} {
     "playbackId": asset -> playbackId,
     "aspectRatio": asset -> data.aspect_ratio,
+    "thumbTime": asset -> thumbTime,
   }
 `
 ---
@@ -49,7 +52,7 @@ export const VideoDataQuery = (name: string) => `
       playback-id={playbackId}
       primary-color="#fff"
       accent-color="#2DD282"
-      style={`aspect-ratio: ${aspect_ratio}; background: url('${still(960)}') center / cover no-repeat; --controls: none;`}
+      style={`aspect-ratio: ${aspect_ratio}; background: url('${stillImage.src}') center / cover no-repeat; --controls: none;`}
       muted
       autoplay
       loop

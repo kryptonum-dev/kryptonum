@@ -57,11 +57,11 @@ const breadcrumbs = [{ name: page.name, path: slug }]
 // When the page opens with a video, its still frame is the largest thing on the
 // first screen. Preloading it from the head starts the download with the first
 // bytes of the page instead of after the whole head has arrived.
-type HeroMedia = { _type: string; hasUi?: boolean; asset?: { playbackId?: string } }
+type HeroMedia = { _type: string; hasUi?: boolean; asset?: { playbackId?: string; thumbTime?: number | null } }
 const hero = page.components?.[0] as unknown as { _type?: string; media?: HeroMedia[] } | undefined
 const heroMedia = hero?._type === 'NarrowHeaderAndMedia' ? (hero.media?.length === 1 ? hero.media[0] : hero.media?.[1]) : undefined
 const heroStill =
-  heroMedia?._type === 'video' && heroMedia.hasUi && heroMedia.asset?.playbackId ? videoStill(heroMedia.asset.playbackId) : null
+  heroMedia?._type === 'video' && heroMedia.hasUi && heroMedia.asset?.playbackId ? videoStill(heroMedia.asset.playbackId, heroMedia.asset.thumbTime) : null
 ---
 
 <Layout {...metadata} notionDatabaseId={page.notionDatabaseId}>
