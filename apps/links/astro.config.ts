@@ -36,8 +36,9 @@ export default defineConfig({
     ...(isProductionDeployment && {
       isr: {
         bypassToken: process.env.VERCEL_DEPLOYMENT_ID,
-        // moved landings redirect with the visitor's own query string, so they must not be cached
-        exclude: [/^\/api\/.+/, /^\/pl\/wspolnik-.+/]
+        // Moved landings redirect with the visitor's own query string, so they must not be cached.
+        // A regex here is matched against route patterns, only a string excludes one exact path.
+        exclude: [/^\/api\/.+/, '/pl/wspolnik-na-zapleczu', '/pl/wspolnik-za-granica']
       }
     })
   }),
