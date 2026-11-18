@@ -4,6 +4,15 @@ import { type Language } from '@repo/shared/languages'
 
 const lang = Astro.params.lang as Language
 const slug = { pl: '/pl/', en: '/en/' }[lang] + Astro.params.slug
+
+// Landings that moved to another address. The query string (UTM, fbclid) goes
+// along, so a click from an ad or an old link keeps its source.
+const MOVED: Record<string, string> = {
+  '/pl/wspolnik-na-zapleczu': '/pl/richer-together',
+  '/pl/wspolnik-za-granica': '/pl/richer-together',
+}
+if (MOVED[slug]) return Astro.redirect(MOVED[slug] + Astro.url.search, 302)
+
 const data = await fetchData(lang, slug)
 if (!data) return Astro.redirect('/en')
 

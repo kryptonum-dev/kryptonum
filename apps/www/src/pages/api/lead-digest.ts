@@ -43,6 +43,8 @@ function sortLeads(pages: NotionPage[], kind: 'RT' | 'IT', now: Date) {
   const close: string[] = []
 
   for (const page of pages) {
+    // Test submissions (+test address) stay in Notion as examples, the list skips them.
+    if (readTitle(page).startsWith('[TEST]')) continue
     const status = readSelect(page, 'Status')
     const path = readSelect(page, 'Ścieżka')
     const phone = readPhone(page)

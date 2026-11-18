@@ -72,6 +72,18 @@ function sourcePath(source?: string): string {
     .replace(/\/+$/, '')
 }
 
+/**
+ * Creators abroad get one more line in the mail (which country, so the call
+ * lands at a sane hour). There is one RT landing now, so the signal comes
+ * from the ad set name in the UTM or from a foreign phone number; the old
+ * diaspora path still counts.
+ */
+function livesAbroad(lead: CampaignLead, path: string): boolean {
+  const phone = (lead.phone || '').replace(/[\s-]/g, '')
+  const foreignPhone = /^(\+|00)\d/.test(phone) && !/^(\+48|0048)/.test(phone)
+  return path.includes('za-granica') || /diaspor|za[-_ ]?granic/i.test(lead.utm || '') || foreignPhone
+}
+
 function parseUtm(raw?: string): Record<string, string> {
   const result: Record<string, string> = {}
   for (const line of (raw || '').split('\n')) {
@@ -177,7 +189,7 @@ async function handleRtLead(lead: CampaignLead, baseUrl: string) {
     profileTag,
     sendAt: mailTime,
     hasPhone: !!lead.phone?.trim(),
-    isDiaspora: path.includes('za-granica'),
+    isDiaspora: livesAbroad(lead, path),
     absentUntil: settings.absentUntil,
   }
   const who = settings.absentUntil ? `${SLACK_KUBA} ${SLACK_BOGUMIL}` : SLACK_MICHAL
