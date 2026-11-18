@@ -123,11 +123,11 @@ type Outcome = {
 }
 
 async function deliver(lead: CampaignLead, outcome: Outcome, enabled: boolean, isTest: boolean) {
-  if (!outcome.mail || !outcome.sendAt) return { mailId: null as string | null, note: outcome.slackNote }
+  if (!outcome.mail || !outcome.sendAt) return { mailId: null as string | null, note: outcome.slackNote.trim() }
   if (!enabled) return { mailId: null, note: 'Automat jest wyłączony w Notion, mail nie wyszedł. Napisz ręcznie.' }
   const mailId = await sendLeadMail({ to: lead.email, mail: outcome.mail, sendAt: outcome.sendAt, test: isTest })
   if (!mailId) return { mailId: null, note: 'Mail automatu nie wyszedł, wysyłka zwróciła błąd. Napisz ręcznie.' }
-  return { mailId, note: outcome.slackNote.replace('{when}', describeSendTime(outcome.sendAt)) }
+  return { mailId, note: outcome.slackNote.replace('{when}', describeSendTime(outcome.sendAt)).trim() }
 }
 
 /**
@@ -192,7 +192,8 @@ async function handleRtLead(lead: CampaignLead, baseUrl: string) {
     isDiaspora: livesAbroad(lead, path),
     absentUntil: settings.absentUntil,
   }
-  const who = settings.absentUntil ? `${SLACK_KUBA} ${SLACK_BOGUMIL}` : SLACK_MICHAL
+  // A test submission should not ping anybody on Slack.
+  const who = isTest ? '' : settings.absentUntil ? `${SLACK_KUBA} ${SLACK_BOGUMIL}` : SLACK_MICHAL
 
   const outcomes: Record<RtRoute, Outcome> = {
     'questions': {
@@ -254,7 +255,8 @@ async function handleItLead(lead: CampaignLead, baseUrl: string) {
   const path = sourcePath(lead.source)
   const mailTime = pickMailTime(now)
   const mailInput = { email: lead.email, siteGoal: lead.siteGoal, sendAt: mailTime, absentUntil: settings.absentUntil }
-  const who = settings.absentUntil ? `${SLACK_KUBA} ${SLACK_BOGUMIL}` : SLACK_MICHAL
+  // A test submission should not ping anybody on Slack.
+  const who = isTest ? '' : settings.absentUntil ? `${SLACK_KUBA} ${SLACK_BOGUMIL}` : SLACK_MICHAL
 
   const outcomes: Record<ItRoute, Outcome> = {
     'phone': {

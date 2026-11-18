@@ -77,13 +77,15 @@ export function pickMailTime(now: Date = new Date(), random: () => number = Math
 }
 
 /**
- * The decline mail: the next business morning between 8:30 and 9:00, so it
- * reads as a decision and leaves the team half a day to hold it back.
+ * The decline mail: the next business day between 14:00 and 14:30. It reads
+ * as a decision, and a decline announced on Slack in the evening can still be
+ * held back the next morning, when the 9:00 list shows it again.
  */
 export function pickDeclineTime(now: Date = new Date(), random: () => number = Math.random): Date {
   let day = shiftDay(warsawParts(now), 1)
   while (!isBusinessDay(day.weekday)) day = shiftDay(day, 1)
-  const start = warsawToDate(day.year, day.month, day.day, 8, 30)
+  // Early afternoon, so the team has the whole working morning (and the 9:00 list) to hold it back.
+  const start = warsawToDate(day.year, day.month, day.day, 14, 0)
   return new Date(start.getTime() + random() * 30 * MINUTE)
 }
 

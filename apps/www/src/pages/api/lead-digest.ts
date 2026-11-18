@@ -9,11 +9,14 @@ import {
   readDate,
   readPhone,
   readSelect,
+  readText,
   readTitle,
   type NotionPage,
 } from '@repo/utils/lead-notion'
 import { businessDaysBetween, warsawParts } from '@repo/utils/lead-schedule'
 import { SLACK_BOGUMIL, SLACK_KUBA, SLACK_MICHAL, postToLeadsChannel, slackLink, slackSafe } from '@repo/utils/lead-slack'
+import { signLeadId } from '@repo/utils/lead-sign'
+import { DOMAIN } from '@repo/shared/constants'
 
 /**
  * The morning list for whoever handles the leads, posted to Slack on weekdays.
@@ -80,6 +83,24 @@ function sortLeads(pages: NotionPage[], kind: 'RT' | 'IT', now: Date) {
   return { call, nudge, waiting, today, close }
 }
 
+/**
+ * Automatic declines that go out later today. They are listed with a link
+ * that holds them back, so nobody is turned down only because the Slack
+ * message about them came in the evening.
+ */
+async function declinesToday(pages: NotionPage[], kind: 'RT' | 'IT', now: Date): Promise<string[]> {
+  const lines: string[] = []
+  for (const page of pages) {
+    if (readTitle(page).startsWith('[TEST]')) continue
+    const sendAt = readDate(page, 'Automat: wysyłka')
+    if (!sendAt || sendAt <= now || !sameWarsawDay(sendAt, now) || !readText(page, 'Automat: ID')) continue
+    const time = warsawParts(sendAt)
+    const hold = slackLink(`${DOMAIN}/api/lead-hold?p=${page.id}&s=${await signLeadId(page.id)}`, 'wstrzymaj')
+    lines.push(`${item(page, `${kind}, odmowa o ${time.hour}:${String(time.minute).padStart(2, '0')}`)} · ${hold}`)
+  }
+  return lines
+}
+
 export const GET: APIRoute = async ({ request }) => {
   const secret = process.env.CRON_SECRET || import.meta.env.CRON_SECRET
   if (!secret) return new Response('CRON_SECRET is not set', { status: 503 })
@@ -89,16 +110,27 @@ export const GET: APIRoute = async ({ request }) => {
   if (warsawParts(now).weekday > 5) return new Response('Weekend, no list', { status: 200 })
 
   const filter = { or: OPEN_STATUSES.map((name) => ({ property: 'Status', select: { equals: name } })) }
-  const [rtPages, itPages, settings] = await Promise.all([
+  const declineFilter = {
+    and: [
+      { property: 'Status', select: { equals: 'Odrzucone' } },
+      { property: 'Etap odrzucenia', select: { equals: 'Automat' } },
+      { property: 'Automat: wysyłka', date: { on_or_after: now.toISOString() } },
+    ],
+  }
+  const [rtPages, itPages, rtDeclines, itDeclines, settings] = await Promise.all([
     queryLeadPages(RT_LEADS_DATABASE_ID, filter),
     queryLeadPages(IT_LEADS_DATABASE_ID, filter),
+    queryLeadPages(RT_LEADS_DATABASE_ID, declineFilter),
+    queryLeadPages(IT_LEADS_DATABASE_ID, declineFilter),
     getLeadSettings(),
   ])
   const rt = sortLeads(rtPages, 'RT', now)
   const it = sortLeads(itPages, 'IT', now)
+  const declines = [...(await declinesToday(rtDeclines, 'RT', now)), ...(await declinesToday(itDeclines, 'IT', now))]
 
   const sections: Array<[string, string[]]> = [
     ['Rozmowy dziś, potwierdź rano', [...rt.today, ...it.today]],
+    ['Dziś wyjdą odmowy, wstrzymaj, jeśli ktoś jest wart rozmowy', declines],
     ['Do telefonu', [...it.call, ...rt.call]],
     ['Do ponaglenia mailem', [...rt.nudge, ...it.nudge]],
     ['Czekają na Twój ruch', [...rt.waiting, ...it.waiting]],

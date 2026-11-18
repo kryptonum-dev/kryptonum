@@ -45,7 +45,9 @@ export const POST: APIRoute = async ({ url }) => {
   const name = readTitle(lead)
   const record = `<p><a href="${lead.url}">Otwórz rekord w Notion</a></p>`
   const mailId = readText(lead, 'Automat: ID')
-  const cancelled = mailId ? await cancelLeadMail(mailId) : false
+  // No mail id on the record means somebody has already held this decline back.
+  if (!mailId) return page('Odmowa jest już wstrzymana', `<p>Mail nie wyjdzie. ${escapeHtml(name)} czeka na decyzję w Notion.</p>${record}`)
+  const cancelled = await cancelLeadMail(mailId)
   if (!cancelled) return page('Za późno, odmowa już wyszła', `<p>Tego maila nie da się już cofnąć. Jeśli chcesz wrócić do tej osoby, napisz do niej sam.</p>${record}`)
 
   await updateLeadPage(lead.id, {
