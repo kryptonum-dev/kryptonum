@@ -76,8 +76,34 @@ export const VideoDataQuery = (name: string) => `
         decoding="async"
       />
       <button type="button" aria-label={playLabel}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path fill="currentColor" d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11.24-6.86a1 1 0 0 0 0-1.72L9.5 4.28A1 1 0 0 0 8 5.14Z" />
+        {/*
+          The drawing fills the whole circle (100 units across). The triangle is
+          equilateral and built around its centre of mass, which sits exactly in
+          the middle of the circle, so its three corners end up the same distance
+          from the ring. That is what makes it look centred. Centring its outline
+          box instead would make it look pushed to the left.
+        */}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">
+          <path
+            class="play"
+            d="M67.32 50 41.34 65V35Z"
+            fill="currentColor"
+            stroke="currentColor"
+            stroke-width="6"
+            stroke-linejoin="round"
+          />
+          <circle
+            class="spinner"
+            cx="50"
+            cy="50"
+            r="15"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="4"
+            stroke-linecap="round"
+            pathLength="100"
+            stroke-dasharray="72 28"
+          />
         </svg>
       </button>
     </div>
@@ -100,6 +126,10 @@ export const VideoDataQuery = (name: string) => `
     overflow: hidden;
     cursor: pointer;
     background: var(--neutral-900, #000103);
+    // lets the button take its size from the video, not from the window
+    container-type: size;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     // the player created on play inherits these
     --seek-backward-button: none;
     --seek-forward-button: none;
@@ -123,39 +153,103 @@ export const VideoDataQuery = (name: string) => `
     }
     button {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      inset: 0;
+      margin: auto;
+      // older browsers size the button from the window, newer ones from the video
       width: clamp(3.5rem, calc(4.5vw / 0.48), 4.5rem);
-      height: clamp(3.5rem, calc(4.5vw / 0.48), 4.5rem);
-      transform: translate(-50%, -50%);
-      display: grid;
-      place-items: center;
+      width: clamp(2.75rem, 28cqmin, 4.5rem);
+      height: auto;
+      aspect-ratio: 1;
+      padding: 0;
+      border: 0;
       border-radius: 50%;
       color: #fff;
-      background: rgba(0, 1, 3, 0.6);
-      border: 1px solid rgba(240, 247, 247, 0.5);
-      backdrop-filter: blur(4px);
+      // dark glass in the brand's green: the footage shows through blurred, so
+      // the white triangle stays readable on a bright shirt and on a dark wall
+      background-color: rgba(4, 43, 43, 0.8);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      box-shadow:
+        inset 0 0 0 1px rgba(190, 240, 232, 0.36),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.16),
+        0 1px 2px rgba(0, 1, 3, 0.3),
+        0 14px 32px -10px rgba(0, 1, 3, 0.65);
       transition:
-        background-color 300ms var(--easing),
-        transform 300ms var(--easing);
+        transform 220ms var(--easing),
+        background-color 220ms ease;
       svg {
-        width: 45%;
-        height: 45%;
-        margin-left: 6%;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      &:focus-visible {
+        outline: 2px solid #90f4e8;
+        outline-offset: 3px;
       }
     }
-    &:hover button,
-    button:focus-visible {
-      background: rgba(4, 43, 43, 0.85);
-      transform: translate(-50%, -50%) scale(1.06);
+    .play,
+    .spinner {
+      transform-origin: 50px 50px;
     }
-    &[data-started='loading'] button {
-      opacity: 0.6;
+    .play {
+      transition:
+        opacity 150ms ease,
+        transform 220ms var(--easing);
+    }
+    .spinner {
+      opacity: 0;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      &:hover button {
+        transform: scale(1.06);
+        background-color: rgba(6, 64, 64, 0.9);
+      }
+    }
+    button:focus-visible {
+      background-color: rgba(6, 64, 64, 0.9);
+    }
+    &:active button {
+      transform: scale(0.96);
+      transition-duration: 120ms;
+    }
+    // The player is on its way (other browsers than Safari fetch it on the first
+    // press). The ring only appears when that takes longer than a blink.
+    &[data-started='loading'] {
+      cursor: progress;
+      .play {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      .spinner {
+        opacity: 1;
+        transition: opacity 150ms ease 120ms;
+        animation: video-facade-spin 700ms linear infinite;
+      }
     }
     @media (prefers-reduced-motion: reduce) {
-      button {
+      button,
+      .play {
         transition: none;
       }
+      &:hover button,
+      &:active button {
+        transform: none;
+      }
+      &[data-started='loading'] {
+        .play {
+          opacity: 0.5;
+          transform: none;
+        }
+        .spinner {
+          display: none;
+        }
+      }
+    }
+  }
+  @keyframes video-facade-spin {
+    to {
+      transform: rotate(360deg);
     }
   }
 </style>
