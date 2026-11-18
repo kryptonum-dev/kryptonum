@@ -74,12 +74,14 @@ const Subheading = index === 0 ? 'h2' : 'h3'
           )}
           {isHighlighted && highlight && (
             <div class="highlight">
-              <div class="avatars">
-                {highlight?.avatars?.map((avatar) => (
-                  <Image {...avatar} sizes="32px" class="avatar-image" />
-                ))}
-                <span>{highlight?.avatarsTruncation}</span>
-              </div>
+              {(!!highlight.avatars?.length || highlight.avatarsTruncation) && (
+                <div class="avatars">
+                  {highlight.avatars?.map((avatar) => (
+                    <Image {...avatar} sizes="32px" class="avatar-image" />
+                  ))}
+                  {highlight.avatarsTruncation && <span>{highlight.avatarsTruncation}</span>}
+                </div>
+              )}
               <Image {...highlight.icon} class="highlight-icon" sizes="24px" />
               <p class="highlight-title">{highlight?.title}</p>
             </div>
