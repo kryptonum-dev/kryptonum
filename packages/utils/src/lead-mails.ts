@@ -72,16 +72,16 @@ const subjectWithTag = (tag: string | undefined, rest: string) =>
 function rtClosingBlock(input: RtMailInput): string[] {
   const backOn = awayOn(input.sendAt, input.absentUntil)
   const when = backOn
-    ? `Do ${backOn} jestem poza biurem. Napisz, kiedy masz czas po tym dniu, a ja potwierdzę godzinę 📅`
-    : `Napisz, kiedy masz czas ${nextTwoBusinessDays(input.sendAt)}, a ja potwierdzę godzinę 📅`
+    ? `Do ${backOn} jestem poza biurem. Napisz, kiedy masz czas po tym dniu, a ja potwierdzę godzinę.`
+    : `Napisz, kiedy masz czas ${nextTwoBusinessDays(input.sendAt)}, a ja potwierdzę godzinę.`
   const lines = [`Rozmowa zajmie nam 15 do 30 minut. ${when}`]
   if (input.isDiaspora) lines.push('Dopisz też, w jakim kraju mieszkasz, żebym nie zadzwonił w środku nocy.')
   lines.push(
     input.hasPhone
-      ? 'Mam też Twój numer. Jeśli wolisz najpierw szybki telefon, napisz tylko, o jakiej porze ☎️'
-      : 'Wolisz najpierw szybki telefon? Zostaw numer, zadzwonię i od razu ustalimy termin ☎️',
+      ? 'Mam też Twój numer. Jeśli wolisz najpierw szybki telefon, napisz tylko, o jakiej porze.'
+      : 'Wolisz najpierw szybki telefon? Zostaw numer, zadzwonię i od razu ustalimy termin.',
   )
-  lines.push('Wszystko, co mi napiszesz, zostaje między mną a moim zespołem 🤐')
+  lines.push('Wszystko, co mi napiszesz, zostaje między mną a moim zespołem.')
   lines.push(`${weekdayClosing(input.sendAt)} ☀️\nMichał`)
   lines.push(SIGNATURE)
   return lines
@@ -96,7 +96,7 @@ export function rtQuestionsMail(input: RtMailInput): MailContent {
       'z tej strony klawiatury Michał Chrapek z Kryptonum. Mam Twoje zgłoszenie i chcę się dobrze przygotować do naszej rozmowy.',
       'Odpisz mi proszę na trzy pytania. Wystarczy po jednym zdaniu:',
       [
-        '1. Gdzie mogę zobaczyć i kupić to, co sprzedajesz? Wklej link do sklepu albo strony 🛒',
+        '1. Gdzie mogę zobaczyć i kupić to, co sprzedajesz? Wklej link do sklepu albo strony.',
         '2. Co sprzedaje się u Ciebie najlepiej i ile kosztuje?',
         '3. Były już u Ciebie płatne reklamy? Wystarczy „tak”, „nie” albo „tak i wolę nie pamiętać” 😉',
       ].join('\n'),
@@ -128,9 +128,9 @@ export function rtDeclineMail(input: { firstName?: string; profileTag?: string }
   return {
     subject: subjectWithTag(input.profileTag, 'odpowiedź na Twoje zgłoszenie'),
     text: [
-      input.firstName ? `Cześć ${input.firstName} 👋` : 'Cześć! 👋',
+      input.firstName ? `Cześć ${input.firstName},` : 'Cześć,',
       'dzięki za zgłoszenie i odpowiedzi. W tym modelu wchodzimy tam, gdzie sprzedaż online już się kręci, więc na tym etapie jest dla nas za wcześnie.',
-      'Kiedy Twoje produkty cyfrowe zaczną przynosić 5 000 zł zysku miesięcznie, odezwij się 🚀 Prawdopodobnie wiemy, jak tę kwotę przemnożyć.',
+      'Kiedy Twoje produkty cyfrowe zaczną przynosić 5 000 zł zysku miesięcznie, odezwij się. Prawdopodobnie wiemy, jak tę kwotę przemnożyć.',
       'Trzymam kciuki 🤞\nMichał',
       SIGNATURE,
     ].join('\n\n'),
@@ -156,8 +156,8 @@ export function itHeadsUpMail(input: ItMailInput): MailContent {
       'Dzień dobry,',
       'z tej strony Michał Chrapek z Kryptonum. Mam Państwa zgłoszenie w sprawie strony.',
       backOn
-        ? `Do ${backOn} jestem poza biurem, więc zadzwonię zaraz po powrocie, żeby umówić 20 minut rozmowy. Dzwonię z numeru ${MICHAL_PHONE} ☎️`
-        : `Zadzwonię pod numer z formularza, żeby umówić 20 minut rozmowy. Dzwonię z numeru ${MICHAL_PHONE} ☎️`,
+        ? `Do ${backOn} jestem poza biurem, więc zadzwonię zaraz po powrocie, żeby umówić 20 minut rozmowy. Dzwonię z numeru ${MICHAL_PHONE}.`
+        : `Zadzwonię pod numer z formularza, żeby umówić 20 minut rozmowy. Dzwonię z numeru ${MICHAL_PHONE}.`,
       'Jeśli jest pora, o której najłatwiej Państwa złapać, proszę o jedno zdanie w odpowiedzi.',
       IT_SIGN_OFF,
     ].join('\n\n'),
@@ -180,7 +180,7 @@ export function itQuestionsMail(input: ItMailInput): MailContent {
       'Dzień dobry,',
       `z tej strony Michał Chrapek z Kryptonum. Mam Państwa zgłoszenie i przed rozmową chcę lepiej zrozumieć projekt. Proszę o odpowiedź na ${QUESTION_COUNT[questions.length]}, wystarczy kilka zdań:`,
       questions.map((question, index) => `${index + 1}. ${question}`).join('\n'),
-      'Szczegóły najszybciej ustalimy przez telefon ☎️ Proszę podać numer i porę, kiedy mogę zadzwonić. Jeśli wolą Państwo mailowo, po odpowiedzi zaproponuję termin spotkania.',
+      'Szczegóły najszybciej ustalimy przez telefon. Proszę podać numer i porę, kiedy mogę zadzwonić. Jeśli wolą Państwo mailowo, po odpowiedzi zaproponuję termin spotkania.',
       ...(backOn ? [`Do ${backOn} jestem poza biurem, więc odpowiem zaraz po powrocie.`] : []),
       IT_SIGN_OFF,
     ].join('\n\n'),
@@ -194,7 +194,7 @@ export function itDeclineMail(input: { email: string }): MailContent {
     text: [
       'Dzień dobry,',
       'z tej strony Michał Chrapek z Kryptonum. Dziękuję za zgłoszenie.',
-      'Napiszę wprost: przy budżecie poniżej 30 tys. zł nie zrobimy tego dobrze. Nasze projekty zaczynają się od warsztatu, przeniesienia treści i panelu, w którym zespół sam zmienia stronę, a za mniej nie da się tego dowieźć.',
+      'Napiszę wprost: przy budżecie poniżej 30 tys. zł nie zrobimy tego dobrze. Nasze projekty zaczynają się od warsztatu, projektu graficznego, przeniesienia treści i panelu, w którym zespół sam zmienia stronę, a za mniej nie da się tego dowieźć.',
       'Jeśli budżet się zmieni albo projekt urośnie, proszę śmiało wrócić. Chętnie wtedy porozmawiam.',
       IT_SIGN_OFF,
     ].join('\n\n'),
