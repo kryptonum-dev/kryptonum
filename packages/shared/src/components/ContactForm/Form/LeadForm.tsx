@@ -115,6 +115,11 @@ const translations = {
 };
 
 const asList = (value: unknown): string[] => [value].flat().filter((item): item is string => typeof item === 'string' && !!item);
+
+/** Fields a person types into. The tiles are radio and checkbox inputs, they do not count. */
+const TYPED_FIELD = 'input:not([type="radio"]):not([type="checkbox"]):not([data-keyboard-holder]), textarea';
+/** A phone or a tablet, where putting the cursor in a field brings up the on-screen keyboard. */
+const isTouchDevice = () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
 const trimmed = (value: unknown) => (typeof value === 'string' ? value.trim() : value);
 
 export default function LeadForm({ children, variant, lang, formId, ...props }: Props) {
@@ -129,6 +134,9 @@ export default function LeadForm({ children, variant, lang, formId, ...props }: 
   const stepRef = useRef(step);
   stepRef.current = step;
   const formRef = useRef<HTMLFormElement>(null);
+  const keyboardHolder = useRef<HTMLInputElement>(null);
+  /** What gets the cursor once a step is on screen: the field to type in (going forward) or the first control (going back). */
+  const focusAfterStep = useRef<'typed' | 'first' | null>(null);
   const formStarted = useRef(false);
   const leadSaved = useRef(false);
 
@@ -157,23 +165,57 @@ export default function LeadForm({ children, variant, lang, formId, ...props }: 
     track('form_start');
   };
 
-  const goTo = (target: number) => {
+  const goTo = (target: number, focus: 'typed' | 'first' = 'first') => {
+    focusAfterStep.current = focus;
     setStep(target);
-    requestAnimationFrame(() => {
-      const form = formRef.current;
-      if (!form) return;
-      // A shorter step can leave the form above the screen: bring its top back.
-      const top = form.getBoundingClientRect().top;
-      if (top < 72) window.scrollBy({ top: top - 96, behavior: 'smooth' });
-      form.querySelector<HTMLElement>(`[data-lead-step="${target}"] input`)?.focus({ preventScroll: true });
-    });
   };
+
+  // Runs once the new step is on screen: puts the cursor where the person continues.
+  useEffect(() => {
+    const mode = focusAfterStep.current;
+    focusAfterStep.current = null;
+    const form = formRef.current;
+    if (!mode || !form) return;
+    const stepElement = form.querySelector<HTMLElement>(`[data-lead-step="${step}"]`);
+    const typed = mode === 'typed' ? stepElement?.querySelector<HTMLElement>(TYPED_FIELD) : null;
+    const formTop = form.getBoundingClientRect().top;
+
+    if (typed && isTouchDevice()) {
+      // The keyboard covers the lower half of the screen. When the field still fits
+      // above it with the top of the form in view, show the form from its top;
+      // otherwise bring the field itself right under the page header.
+      const field = (typed.closest('label') ?? typed).getBoundingClientRect();
+      const clear = Math.min(window.innerHeight * 0.42, 300);
+      const fitsWithFormTop = field.bottom - formTop + 76 <= clear;
+      window.scrollBy({ top: fitsWithFormTop ? formTop - 76 : field.top - 84, behavior: 'instant' });
+      typed.focus({ preventScroll: true });
+      return;
+    }
+
+    // A shorter step can leave the form above the screen: bring its top back.
+    if (formTop < 72) window.scrollBy({ top: formTop - 96, behavior: 'smooth' });
+    const target = typed ?? stepElement?.querySelector<HTMLElement>('input');
+    if (target) target.focus({ preventScroll: true });
+    else keyboardHolder.current?.blur();
+  }, [step]);
 
   const next = async () => {
     const current = stepRef.current;
     if (current >= total) return;
-    if (!(await trigger(steps[current - 1]))) return;
-    goTo(current + 1);
+    const fields = steps[current - 1];
+    // An iPhone opens its keyboard only for a field that gets the cursor during the
+    // tap itself, and checking the step takes a moment longer than that. So when the
+    // step looks filled in, the tap first puts the cursor in a hidden helper field,
+    // and it moves to the real field as soon as the next step is on screen.
+    const sellsNothing = asList(getValues('productType')).includes(RT_NO_PRODUCT);
+    const looksFilled = fields.every((name) => (name === 'salesRange' && sellsNothing) || asList(getValues(name)).length > 0);
+    if (looksFilled && isTouchDevice()) keyboardHolder.current?.focus({ preventScroll: true });
+    // A step with a mistake keeps the person on it, with the cursor on the first field to fix.
+    if (!(await trigger(fields, { shouldFocus: true }))) {
+      if (document.activeElement === keyboardHolder.current) keyboardHolder.current?.blur();
+      return;
+    }
+    goTo(current + 1, 'typed');
     track(current + 1 === 2 ? 'form_step_2' : 'form_step_3');
   };
 
@@ -305,6 +347,18 @@ export default function LeadForm({ children, variant, lang, formId, ...props }: 
       data-step={step}
       data-last-step={step === total}
     >
+      {/* Takes the cursor during the tap on "Dalej", so a phone keeps its keyboard open until the next field is on screen. */}
+      <input
+        ref={keyboardHolder}
+        className="lead-keyboard-holder"
+        data-keyboard-holder
+        tabIndex={-1}
+        aria-hidden="true"
+        autoComplete="off"
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+      />
       <ol className="form-steps" aria-label={t.stepsLabel} style={{ gridTemplateColumns: `repeat(${total}, 1fr)` }}>
         {stepNames.map((name, i) => {
           const n = i + 1;
