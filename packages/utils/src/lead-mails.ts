@@ -29,10 +29,20 @@ export function cleanFirstName(raw?: string): string {
     .replace(/(^|[-'])(\p{L})/gu, (_, separator: string, letter: string) => separator + letter.toLocaleUpperCase('pl'))
 }
 
+// Mailboxes anybody can open. Their domain is not a company site, so it must
+// not end up in a mail subject or in the "Strona" column.
 const FREE_MAIL = new Set([
-  'gmail.com', 'googlemail.com', 'wp.pl', 'o2.pl', 'onet.pl', 'onet.eu', 'op.pl', 'poczta.onet.pl', 'vp.pl',
-  'interia.pl', 'interia.eu', 'poczta.fm', 'tlen.pl', 'gazeta.pl', 'icloud.com', 'me.com', 'outlook.com',
-  'hotmail.com', 'live.com', 'yahoo.com', 'yahoo.co.uk', 'proton.me', 'protonmail.com', 'gmx.de', 'gmx.net',
+  'gmail.com', 'googlemail.com', 'wp.pl', 'wp.eu', 'o2.pl', 'go2.pl', 'onet.pl', 'onet.eu', 'onet.com.pl', 'op.pl',
+  'poczta.onet.pl', 'vp.pl', 'interia.pl', 'interia.eu', 'interia.com', 'poczta.fm', 'tlen.pl', 'gazeta.pl', 'int.pl',
+  'spoko.pl', 'opoczta.pl', 'autograf.pl', 'buziaczek.pl', 'prokonto.pl', 'poczta.pl',
+  'icloud.com', 'me.com', 'mac.com', 'outlook.com', 'outlook.pl', 'outlook.de', 'outlook.fr', 'outlook.es', 'outlook.it',
+  'hotmail.com', 'hotmail.pl', 'hotmail.co.uk', 'hotmail.de', 'hotmail.fr', 'hotmail.it', 'hotmail.es',
+  'live.com', 'live.pl', 'live.co.uk', 'live.de', 'live.fr', 'live.nl', 'msn.com',
+  'yahoo.com', 'yahoo.pl', 'yahoo.co.uk', 'yahoo.de', 'yahoo.fr', 'ymail.com', 'rocketmail.com', 'aol.com',
+  'proton.me', 'protonmail.com', 'pm.me', 'tutanota.com', 'tuta.com', 'tutamail.com', 'mail.com', 'email.com',
+  'gmx.de', 'gmx.net', 'gmx.com', 'gmx.at', 'gmx.pl', 'web.de', 't-online.de', 'zoho.com', 'fastmail.com', 'hey.com',
+  'duck.com', 'yandex.com', 'yandex.ru', 'mail.ru', 'seznam.cz', 'ukr.net', 'btinternet.com', 'sky.com',
+  'orange.fr', 'free.fr', 'laposte.net', 'libero.it', 'bluewin.ch',
 ])
 
 /** Company address guessed from a business e-mail; null for free mailboxes. */
@@ -56,9 +66,8 @@ function awayOn(sendAt: Date, absentUntil?: string | null): string | null {
 }
 
 type RtMailInput = {
+  /** Also opens the subject, so the mail reads like one written to this person */
   firstName?: string
-  /** `@handle` or a domain, used to tell leads apart in the inbox */
-  profileTag?: string
   sendAt: Date
   hasPhone: boolean
   isDiaspora: boolean
@@ -90,7 +99,7 @@ function rtClosingBlock(input: RtMailInput): string[] {
 /** RT, lead who already sells: three questions before the first call. */
 export function rtQuestionsMail(input: RtMailInput): MailContent {
   return {
-    subject: subjectWithTag(input.profileTag, 'trzy szybkie pytania przed naszą rozmową 😉'),
+    subject: subjectWithTag(input.firstName, 'trzy szybkie pytania przed naszą rozmową 😉'),
     text: [
       greeting(input.firstName),
       'z tej strony klawiatury Michał Chrapek z Kryptonum. Mam Twoje zgłoszenie i chcę się dobrze przygotować do naszej rozmowy.',
@@ -108,7 +117,7 @@ export function rtQuestionsMail(input: RtMailInput): MailContent {
 /** RT, big audience and nothing for sale yet: different questions, never a decline. */
 export function rtBigReachMail(input: RtMailInput): MailContent {
   return {
-    subject: subjectWithTag(input.profileTag, 'trzy szybkie pytania przed naszą rozmową 😉'),
+    subject: subjectWithTag(input.firstName, 'trzy szybkie pytania przed naszą rozmową 😉'),
     text: [
       greeting(input.firstName),
       'z tej strony klawiatury Michał Chrapek z Kryptonum. Mam Twoje zgłoszenie i chcę się dobrze przygotować do naszej rozmowy.',
@@ -124,9 +133,9 @@ export function rtBigReachMail(input: RtMailInput): MailContent {
 }
 
 /** RT, no sales to scale yet and a small audience: a short decline with the way back. */
-export function rtDeclineMail(input: { firstName?: string; profileTag?: string }): MailContent {
+export function rtDeclineMail(input: { firstName?: string }): MailContent {
   return {
-    subject: subjectWithTag(input.profileTag, 'odpowiedź na Twoje zgłoszenie'),
+    subject: subjectWithTag(input.firstName, 'odpowiedź na Twoje zgłoszenie'),
     text: [
       input.firstName ? `Cześć ${input.firstName},` : 'Cześć,',
       'dzięki za zgłoszenie i odpowiedzi. W tym modelu wchodzimy tam, gdzie sprzedaż online już się kręci, więc na tym etapie jest dla nas za wcześnie.',

@@ -34,7 +34,7 @@ import {
 } from './lead-notion'
 import { SLACK_BOGUMIL, SLACK_KUBA, SLACK_MICHAL, postToLeadsChannel, slackLink, slackSafe, slackUserLink } from './lead-slack'
 import { signLeadId } from './lead-sign'
-import { deriveProfileTag } from './rt-automation'
+import { profileTagFromLink } from './rt-automation'
 import { LEADS_RT_DATABASE_ID, appendLeadToNotion } from './notion'
 
 export type CampaignLead = {
@@ -223,13 +223,13 @@ async function handleRtLead(lead: CampaignLead, baseUrl: string) {
   const now = new Date()
   const route: RtRoute = routeRtLead(lead)
   const firstName = cleanFirstName(lead.firstName)
-  const profileTag = deriveProfileTag(lead.socialMediaLinks, lead.email)
+  // `@handle` for the Notion and Slack name only. The mail subject opens with the first name.
+  const profileTag = profileTagFromLink(lead.socialMediaLinks) ?? ''
   const path = sourcePath(lead.source)
   const products = (Array.isArray(lead.productType) ? lead.productType : lead.productType ? [lead.productType] : []).filter(Boolean)
   const mailTime = pickMailTime(now)
   const mailInput = {
     firstName,
-    profileTag,
     sendAt: mailTime,
     hasPhone: !!lead.phone?.trim(),
     isDiaspora: livesAbroad(lead, path),
@@ -250,7 +250,7 @@ async function handleRtLead(lead: CampaignLead, baseUrl: string) {
       slackNote: 'Obejrzyj profil przed rozmową. Mail z pytaniami wyjdzie {when}.',
     },
     'reject': {
-      status: 'Odrzucone', path: 'Odmowa', mail: rtDeclineMail({ firstName, profileTag }), sendAt: pickDeclineTime(now), canHold: true,
+      status: 'Odrzucone', path: 'Odmowa', mail: rtDeclineMail({ firstName }), sendAt: pickDeclineTime(now), canHold: true,
       icon: '🚫', label: `${RT_NAME}, odmowa`,
       slackNote: 'Za mała sprzedaż i zasięg. Odmowa wyjdzie {when}.',
     },

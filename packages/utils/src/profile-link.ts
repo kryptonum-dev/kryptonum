@@ -30,6 +30,32 @@ export function isValidProfileLink(value: string): boolean {
   return /^[a-z0-9-]+(\.[a-z0-9-]+)+(\/[^\s]*)?$/i.test(stripped)
 }
 
+/**
+ * The four platforms from the form, whatever ending or prefix was typed:
+ * `youtube.pl`, `m.facebook.com`, `pl-pl.facebook.com`. Short links and
+ * redirects (`fb.me`, `vm.tiktok.com`) are a different address and stay as they are.
+ */
+const SHORT_LINK_HOSTS = /^(?:youtu\.be|fb\.me|fb\.watch|v[mt]\.tiktok\.com|lm?\.facebook\.com|l\.instagram\.com)$/i
+const PLATFORM_HOSTS: Array<[RegExp, string]> = [
+  [/(^|\.)instagram\.[a-z.]+$/i, 'www.instagram.com'],
+  [/(^|\.)(?:facebook|fb)\.[a-z.]+$/i, 'www.facebook.com'],
+  [/(^|\.)tiktok\.[a-z.]+$/i, 'www.tiktok.com'],
+  [/(^|\.)youtube\.[a-z.]+$/i, 'www.youtube.com'],
+]
+
+/** The proper address of a social platform for a host somebody typed, or null when it is not one of them. */
+export function canonicalSocialHost(host: string): string | null {
+  if (SHORT_LINK_HOSTS.test(host)) return null
+  return PLATFORM_HOSTS.find(([pattern]) => pattern.test(host))?.[1] ?? null
+}
+
+/**
+ * Things typed into the profile field that name a platform, not a profile:
+ * "fb", "instagram", "youtube.pl". Accepting them produced links such as
+ * instagram.com/fb, so the form asks again.
+ */
+const NOT_A_PROFILE = /^(?:www\.)?(?:instagram|insta|ig|facebook|face|fb|tiktok|tik-tok|tt|youtube|you-tube|yt|google|brak|niemam|nie|none)(?:\.(?:com|pl|eu|net|org|me|co|io|com\.pl))?$/i
+
 const SOCIAL_PROFILE_URL: Record<string, (handle: string) => string> = {
   Instagram: (handle) => `https://www.instagram.com/${handle}`,
   TikTok: (handle) => `https://www.tiktok.com/@${handle}`,
@@ -52,7 +78,16 @@ export function buildProfileLink(platform: string, raw: string): string | null {
 
   const withoutProtocol = value.replace(/^https?:\/\//i, '').replace(/^www\./i, '')
   const looksLikeLink = /^https?:\/\//i.test(value) || /^[a-z0-9-]+(\.[a-z0-9-]+)+\/.+/i.test(withoutProtocol)
-  if (looksLikeLink) return isValidProfileLink(value) ? `https://${withoutProtocol.replace(/\/+$/, '')}` : null
+  if (looksLikeLink) {
+    if (!isValidProfileLink(value)) return null
+    const [host, ...path] = withoutProtocol.replace(/\/+$/, '').split('/')
+    // a platform's front page alone is not a profile
+    if (!path.length && canonicalSocialHost(host)) return null
+    // youtube.pl/@anna opens nothing useful, www.youtube.com/@anna does
+    return `https://${[canonicalSocialHost(host) ?? host, ...path].join('/')}`
+  }
+
+  if (NOT_A_PROFILE.test(value.replace(/^@+/, ''))) return null
 
   const toSocialUrl = SOCIAL_PROFILE_URL[platform]
   if (!toSocialUrl) return isValidProfileLink(value) ? `https://${withoutProtocol}` : null

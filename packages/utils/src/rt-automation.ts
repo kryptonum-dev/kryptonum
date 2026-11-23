@@ -35,39 +35,61 @@ const DEFAULT_REPLY_TO = ['michal@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@k
 const DEFAULT_BCC = ['michal@kryptonum.eu', 'kuba@kryptonum.eu', 'bogumil@kryptonum.eu']
 
 /**
- * Short identification of the lead for the mail subject: `@handle` for social
- * profiles, the bare domain for own-brand sites. Share links, video links and
- * numeric profile ids carry no name, so those fall back to the lead's email
- * local part, which always exists and identifies the person.
+ * Short identification of the lead for the mail subject: `@handle` for a
+ * profile on a social platform, the bare domain for an own-brand site. Share
+ * links, video links, numeric ids and a platform's front page carry no name,
+ * so those give null and the caller decides what to put in the subject.
  */
 const GENERIC_SEGMENTS = new Set([
   'share', 'profile.php', 'people', 'groups', 'pages', 'p', 'reel', 'reels',
   'stories', 'story.php', 'watch', 'channel', 'c', 'user', 'shorts', 'video',
   'videos', 'posts', 'photo.php', 'permalink.php', 'events', 'live', 'hashtag',
+  'instagram', 'facebook', 'tiktok', 'youtube', 'home', 'explore', 'feed',
 ])
 
-const LINK_ONLY_DOMAINS = /^(?:youtu\.be|fb\.me|vm\.tiktok\.com|vt\.tiktok\.com|l\.facebook\.com|lm\.facebook\.com)$/i
+/** Short links, redirects and shared documents: the address says nothing about who the person is. */
+const NAMELESS_HOSTS =
+  /^(?:youtu\.be|fb\.me|fb\.watch|v[mt]\.tiktok\.com|lm?\.facebook\.com|l\.instagram\.com|bit\.ly|tinyurl\.com|t\.co|wa\.me|t\.me|linkedin\.com|(?:[a-z0-9-]+\.)*google\.[a-z.]+)$/i
 
-export function deriveProfileTag(profileLink?: string, fallbackEmail?: string): string {
-  const emailTag = (fallbackEmail || '').split('@')[0].slice(0, 32)
+/**
+ * Places where the first part of the path is the person's name. The big
+ * platforms are matched whatever ending was typed (youtube.pl, instagram.pl,
+ * pl-pl.facebook.com), because people type them from memory.
+ */
+const HANDLE_HOSTS =
+  /(?:^|\.)(?:instagram|facebook|fb|tiktok|youtube|threads|twitter|twitch|pinterest|patreon)\.[a-z.]+$|^(?:x\.com|linktr\.ee|beacons\.ai|naffy\.io)$/i
+
+export function profileTagFromLink(profileLink?: string): string | null {
   const raw = (profileLink || '')
     .trim()
     .replace(/^https?:\/\//i, '')
     .replace(/^www\./i, '')
-    .replace(/^m\./i, '')
     .replace(/[?#].*$/, '')
     .replace(/\/+$/, '')
-  if (!raw) return emailTag
+  if (!raw) return null
   if (raw.startsWith('@')) return raw.slice(0, 32)
-  const domain = raw.split('/')[0].toLowerCase()
-  if (LINK_ONLY_DOMAINS.test(domain)) return emailTag
-  const social = raw.match(/^(?:instagram\.com|facebook\.com|fb\.com|tiktok\.com|youtube\.com)\/(.+)$/i)
-  if (social) {
-    const handle = social[1].split('/')[0].replace(/^@/, '')
-    const isGeneric = GENERIC_SEGMENTS.has(handle.toLowerCase()) || /^[\d.-]+$/.test(handle) || handle.length < 3
-    return isGeneric ? emailTag : `@${handle}`.slice(0, 32)
+  const [host, ...segments] = raw.split('/')
+  const domain = host.toLowerCase()
+  if (NAMELESS_HOSTS.test(domain)) return null
+  if (HANDLE_HOSTS.test(domain)) {
+    // youtube.com/c/Name and /user/Name keep the name one step further
+    const first = segments[0] || ''
+    const named = /^(?:c|user)$/i.test(first) && segments[1] ? segments[1] : first
+    const handle = named.replace(/^@/, '')
+    const carriesNoName =
+      GENERIC_SEGMENTS.has(handle.toLowerCase()) || /^[\d.-]+$/.test(handle) || handle.length < 3 || !/^[\p{L}\p{N}._-]+$/u.test(handle)
+    return carriesNoName ? null : `@${handle}`.slice(0, 32)
   }
-  return domain.slice(0, 32)
+  return domain.replace(/^m\./, '').slice(0, 32)
+}
+
+/**
+ * The same tag with the old fallback: the part of the e-mail before the @.
+ * Only the mails of the earlier automation use it; the campaign mails fall
+ * back to the first name, because "info" or "praca" in a subject reads badly.
+ */
+export function deriveProfileTag(profileLink?: string, fallbackEmail?: string): string {
+  return profileTagFromLink(profileLink) ?? (fallbackEmail || '').split('@')[0].slice(0, 32)
 }
 
 let configCache: { data: RtAutomationConfig | null; ts: number } | null = null
