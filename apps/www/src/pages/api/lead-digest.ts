@@ -64,7 +64,9 @@ function sortLeads(pages: NotionPage[], kind: 'RT' | 'IT', now: Date) {
       } else if (kind === 'IT' && path === 'Telefon') {
         call.push(item(page, `${OFFER.IT}, ${phone}, jeszcze bez rozmowy`))
       } else if (phone) {
-        call.push(item(page, `${OFFER[kind]}, ${phone}, nie odpisał(a) na maila`))
+        // The list cannot see the mailbox. It only knows the record is still "Nowe"
+        // a day after the mail went out, so it says exactly that.
+        call.push(item(page, `${OFFER[kind]}, ${phone}, status nadal „Nowe”, sprawdź skrzynkę`))
       } else {
         nudge.push(item(page, `${OFFER[kind]}, bez numeru`))
       }
